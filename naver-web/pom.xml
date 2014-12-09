@@ -69,19 +69,6 @@
             </resource>
         </resources>
 
-        <testResources>
-            <testResource>
-                <directory>${basedir}/src/test/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </testResource>
-            <testResource>
-                <filtering>true</filtering>
-                <directory>${basedir}/src/test/resources</directory>
-            </testResource>
-        </testResources>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -93,7 +80,6 @@
                             <artifactId>pinpoint-web</artifactId>
                         </overlay>
                     </overlays>
-                    <webappDirectory>target/deploy</webappDirectory>
                 </configuration>
             </plugin>
         </plugins>
