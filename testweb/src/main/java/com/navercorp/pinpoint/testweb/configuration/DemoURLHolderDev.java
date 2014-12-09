@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.configuration;
+package com.navercorp.pinpoint.testweb.configuration;
 
 import java.util.Random;
 

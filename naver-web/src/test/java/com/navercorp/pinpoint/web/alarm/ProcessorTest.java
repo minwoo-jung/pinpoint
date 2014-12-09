@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.alarm;
+package com.navercorp.pinpoint.web.alarm;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -13,16 +13,18 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.common.ServiceType;
-import com.nhn.pinpoint.web.alarm.DataCollectorFactory.DataCollectorCategory;
-import com.nhn.pinpoint.web.alarm.checker.AlarmChecker;
-import com.nhn.pinpoint.web.alarm.collector.ResponseTimeDataCollector;
-import com.nhn.pinpoint.web.alarm.vo.Rule;
-import com.nhn.pinpoint.web.applicationmap.histogram.TimeHistogram;
-import com.nhn.pinpoint.web.dao.MapResponseDao;
-import com.nhn.pinpoint.web.vo.Application;
-import com.nhn.pinpoint.web.vo.Range;
-import com.nhn.pinpoint.web.vo.ResponseTime;
+import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.web.alarm.AlarmProcessor;
+import com.navercorp.pinpoint.web.alarm.CheckerCategory;
+import com.navercorp.pinpoint.web.alarm.DataCollectorFactory.DataCollectorCategory;
+import com.navercorp.pinpoint.web.alarm.checker.AlarmChecker;
+import com.navercorp.pinpoint.web.alarm.collector.ResponseTimeDataCollector;
+import com.navercorp.pinpoint.web.alarm.vo.Rule;
+import com.navercorp.pinpoint.web.applicationmap.histogram.TimeHistogram;
+import com.navercorp.pinpoint.web.dao.MapResponseDao;
+import com.navercorp.pinpoint.web.vo.Application;
+import com.navercorp.pinpoint.web.vo.Range;
+import com.navercorp.pinpoint.web.vo.ResponseTime;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")

@@ -1,11 +1,12 @@
-package com.nhn.pinpoint.testweb.util;
+package com.navercorp.pinpoint.testweb.util;
 
 import java.util.HashMap;
 
 import org.junit.Test;
 
-import com.nhn.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
-import com.nhn.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.plugin.arcus;
+package com.navercorp.pinpoint.plugin.arcus;
 
 
 public abstract class Constants {

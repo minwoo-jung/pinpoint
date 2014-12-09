@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

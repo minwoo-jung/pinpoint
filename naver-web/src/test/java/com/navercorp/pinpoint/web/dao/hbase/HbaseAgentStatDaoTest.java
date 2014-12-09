@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.dao.hbase;
+package com.navercorp.pinpoint.web.dao.hbase;
 
 import java.util.List;
 
@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.web.vo.AgentStat;
-import com.nhn.pinpoint.web.vo.Range;
+import com.navercorp.pinpoint.web.dao.hbase.HbaseAgentStatDao;
+import com.navercorp.pinpoint.web.vo.AgentStat;
+import com.navercorp.pinpoint.web.vo.Range;
 
 /**
  * @author harebox

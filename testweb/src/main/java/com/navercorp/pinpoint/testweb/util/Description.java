@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.util;
+package com.navercorp.pinpoint.testweb.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,8 +1,8 @@
-package com.nhn.pinpoint.plugin.arcus.accessor;
+package com.navercorp.pinpoint.plugin.arcus.accessor;
 
 import net.spy.memcached.ops.Operation;
 
-import com.nhn.pinpoint.bootstrap.interceptor.tracevalue.TraceValue;
+import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.TraceValue;
 
 public interface OperationAccessor extends TraceValue {
     public Operation __getOperation();

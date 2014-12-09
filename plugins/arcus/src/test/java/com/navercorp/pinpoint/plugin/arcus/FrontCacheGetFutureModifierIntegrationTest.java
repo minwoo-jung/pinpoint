@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.plugin.arcus;
+package com.navercorp.pinpoint.plugin.arcus;
 
 import org.junit.Before;
 import org.junit.Ignore;

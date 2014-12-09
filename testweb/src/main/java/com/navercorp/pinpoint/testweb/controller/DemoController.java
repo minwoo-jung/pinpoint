@@ -1,13 +1,14 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.configuration.DemoURLHolder;
-import com.nhn.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
-import com.nhn.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
-import com.nhn.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
-import com.nhn.pinpoint.testweb.service.CacheService;
-import com.nhn.pinpoint.testweb.service.CubridService;
-import com.nhn.pinpoint.testweb.service.MemberService;
+import com.navercorp.pinpoint.testweb.configuration.DemoURLHolder;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
+import com.navercorp.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
+import com.navercorp.pinpoint.testweb.service.CacheService;
+import com.navercorp.pinpoint.testweb.service.CubridService;
+import com.navercorp.pinpoint.testweb.service.MemberService;
 import com.ning.http.client.cookie.Cookie;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

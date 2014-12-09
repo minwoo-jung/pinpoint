@@ -1,14 +1,15 @@
-package com.nhn.pinpoint.plugin.arcus.interceptor;
+package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 
-import com.nhn.pinpoint.bootstrap.context.TraceContext;
-import com.nhn.pinpoint.bootstrap.instrument.MethodInfo;
-import com.nhn.pinpoint.bootstrap.interceptor.MethodDescriptor;
-import com.nhn.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
-import com.nhn.pinpoint.profiler.interceptor.DefaultMethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
+import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
+import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
+import com.navercorp.pinpoint.plugin.arcus.interceptor.ApiInterceptor;
+import com.navercorp.pinpoint.profiler.interceptor.DefaultMethodDescriptor;
 
 public class ApiInterceptorTest {
 

@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.httpclient;
+package com.navercorp.pinpoint.testweb.httpclient;
 
 import java.io.File;
 import java.io.IOException;

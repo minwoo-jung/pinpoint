@@ -1,14 +1,14 @@
-package com.nhn.pinpoint.profiler.modifier.connector.npc;
+package com.navercorp.pinpoint.profiler.modifier.connector.npc;
 
 import java.security.ProtectionDomain;
 
-import com.nhn.pinpoint.bootstrap.Agent;
-import com.nhn.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.nhn.pinpoint.bootstrap.interceptor.Interceptor;
-import com.nhn.pinpoint.profiler.modifier.AbstractModifier;
-import com.nhn.pinpoint.profiler.modifier.connector.npc.interceptor.InvokeInterceptor;
-import com.nhn.pinpoint.profiler.modifier.method.interceptor.MethodInterceptor;
+import com.navercorp.pinpoint.bootstrap.Agent;
+import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
+import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
+import com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor.InvokeInterceptor;
+import com.navercorp.pinpoint.profiler.modifier.method.interceptor.MethodInterceptor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,15 +44,15 @@ public class KeepAliveNpcHessianConnectorModifier extends AbstractModifier {
 			connectorClass.addTraceVariable("_serverAddress", "__setServerAddress", "__getServerAddress", "java.net.InetSocketAddress");
 
 			// package constructor
-			Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.connector.npc.interceptor.ConnectorConstructorInterceptor");
+			Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor.ConnectorConstructorInterceptor");
 			connectorClass.addConstructorInterceptor(new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" }, constructorInterceptor);
 
 			// public constructor
-			Interceptor constructorInterceptor2 = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.connector.npc.interceptor.ConnectorConstructorInterceptor");
+			Interceptor constructorInterceptor2 = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor.ConnectorConstructorInterceptor");
 			connectorClass.addConstructorInterceptor(new String[] { "java.net.InetSocketAddress", "long", "long", "java.nio.charset.Charset" }, constructorInterceptor2);
 
 			// initializing connector
-			Interceptor initializeConnectorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.connector.npc.interceptor.InitializeConnectorInterceptor");
+			Interceptor initializeConnectorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor.InitializeConnectorInterceptor");
 			connectorClass.addInterceptor("initializeConnector", null, initializeConnectorInterceptor);
 
 			// invokeImpl

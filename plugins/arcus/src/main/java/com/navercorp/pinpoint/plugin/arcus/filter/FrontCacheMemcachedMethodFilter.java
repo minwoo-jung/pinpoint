@@ -1,11 +1,11 @@
-package com.nhn.pinpoint.plugin.arcus.filter;
+package com.navercorp.pinpoint.plugin.arcus.filter;
 
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.nhn.pinpoint.bootstrap.instrument.MethodInfo;
-import com.nhn.pinpoint.bootstrap.instrument.MethodFilter;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 
 /**
  * @author emeroad

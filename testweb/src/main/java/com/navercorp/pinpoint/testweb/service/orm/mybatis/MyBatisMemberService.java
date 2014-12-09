@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.service.orm.mybatis;
+package com.navercorp.pinpoint.testweb.service.orm.mybatis;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nhn.pinpoint.testweb.domain.Member;
-import com.nhn.pinpoint.testweb.repository.mybatis.MemberMapper;
-import com.nhn.pinpoint.testweb.service.MemberService;
+import com.navercorp.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.repository.mybatis.MemberMapper;
+import com.navercorp.pinpoint.testweb.service.MemberService;
 
 /**
  * @author Hyun Jeong

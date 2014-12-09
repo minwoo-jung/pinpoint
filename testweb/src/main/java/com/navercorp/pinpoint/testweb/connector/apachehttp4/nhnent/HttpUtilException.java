@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.connector.apachehttp4.nhnent;
+package com.navercorp.pinpoint.testweb.connector.apachehttp4.nhnent;
 
 /**
  * DUMMY

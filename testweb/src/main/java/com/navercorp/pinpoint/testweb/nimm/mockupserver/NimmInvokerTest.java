@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.nimm.mockupserver;
+package com.navercorp.pinpoint.testweb.nimm.mockupserver;
 
 import java.nio.ByteBuffer;
 

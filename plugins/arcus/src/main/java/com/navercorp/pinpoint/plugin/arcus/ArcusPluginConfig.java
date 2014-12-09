@@ -1,6 +1,6 @@
-package com.nhn.pinpoint.plugin.arcus;
+package com.navercorp.pinpoint.plugin.arcus;
 
-import com.nhn.pinpoint.bootstrap.config.ProfilerConfig;
+import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 
 public class ArcusPluginConfig {
     private final boolean arcus;

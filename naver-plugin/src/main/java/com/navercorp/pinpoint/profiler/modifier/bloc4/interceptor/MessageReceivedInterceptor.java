@@ -1,10 +1,10 @@
-package com.nhn.pinpoint.profiler.modifier.bloc4.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.bloc4.interceptor;
 
-import com.nhn.pinpoint.bootstrap.context.RecordableTrace;
-import com.nhn.pinpoint.bootstrap.context.Trace;
-import com.nhn.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.nhn.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.nhn.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
+import com.navercorp.pinpoint.common.ServiceType;
 
 public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor implements TargetClassLoader {
 

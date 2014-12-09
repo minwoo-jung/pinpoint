@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.repository;
+package com.navercorp.pinpoint.testweb.repository;
 
 /**
  * @author emeroad

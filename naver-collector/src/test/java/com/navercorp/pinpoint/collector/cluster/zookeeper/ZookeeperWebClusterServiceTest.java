@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.cluster.zookeeper;
+package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import java.util.List;
 
@@ -15,10 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.collector.cluster.ClusterPointRouter;
-import com.nhn.pinpoint.collector.config.CollectorConfiguration;
-import com.nhn.pinpoint.rpc.server.ChannelContext;
-import com.nhn.pinpoint.rpc.server.PinpointServerSocket;
+import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClient;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperEventWatcher;
+import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.rpc.server.ChannelContext;
+import com.navercorp.pinpoint.rpc.server.PinpointServerSocket;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")

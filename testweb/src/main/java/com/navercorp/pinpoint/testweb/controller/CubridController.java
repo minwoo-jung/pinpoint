@@ -1,6 +1,7 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.service.CubridService;
+import com.navercorp.pinpoint.testweb.service.CubridService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

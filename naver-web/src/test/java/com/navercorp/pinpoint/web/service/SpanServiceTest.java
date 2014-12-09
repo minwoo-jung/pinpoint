@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.service;
+package com.navercorp.pinpoint.web.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,13 +6,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.nhn.pinpoint.collector.dao.TracesDao;
-import com.nhn.pinpoint.collector.util.AcceptedTimeService;
-import com.nhn.pinpoint.common.util.TransactionIdUtils;
-import com.nhn.pinpoint.thrift.dto.TAnnotation;
-import com.nhn.pinpoint.thrift.dto.TAnnotationValue;
-import com.nhn.pinpoint.thrift.dto.TSpan;
-import com.nhn.pinpoint.web.vo.TransactionId;
+import com.navercorp.pinpoint.collector.dao.TracesDao;
+import com.navercorp.pinpoint.collector.util.AcceptedTimeService;
+import com.navercorp.pinpoint.common.AnnotationKey;
+import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.common.hbase.HBaseTables;
+import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
+import com.navercorp.pinpoint.common.util.SpanUtils;
+import com.navercorp.pinpoint.common.util.TransactionIdUtils;
+import com.navercorp.pinpoint.thrift.dto.TAnnotation;
+import com.navercorp.pinpoint.thrift.dto.TAnnotationValue;
+import com.navercorp.pinpoint.thrift.dto.TSpan;
+import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
+import com.navercorp.pinpoint.web.service.SpanResult;
+import com.navercorp.pinpoint.web.service.SpanService;
+import com.navercorp.pinpoint.web.vo.TransactionId;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.thrift.TException;
@@ -25,13 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.nhn.pinpoint.web.calltree.span.SpanAlign;
-import com.nhn.pinpoint.common.AnnotationKey;
-import com.nhn.pinpoint.common.ServiceType;
-import com.nhn.pinpoint.common.hbase.HBaseTables;
-import com.nhn.pinpoint.common.hbase.HbaseTemplate2;
-import com.nhn.pinpoint.common.util.SpanUtils;
 
 /**
  * @author emeroad
@@ -61,7 +62,7 @@ public class SpanServiceTest {
 	@Before
 	public void before() throws TException {
 		TSpan span = createRootSpan();
-        com.nhn.pinpoint.common.util.TransactionId id = TransactionIdUtils.parseTransactionId(span.getTransactionId());
+        com.navercorp.pinpoint.common.util.TransactionId id = TransactionIdUtils.parseTransactionId(span.getTransactionId());
 		logger.debug("id:{}", new TransactionId(id.getAgentId(), id.getAgentStartTime(), id.getTransactionSequence()));
 		insert(span);
 		deleteSpans.add(span);
@@ -111,7 +112,7 @@ public class SpanServiceTest {
 	}
 
 	private void doRead(TSpan span) {
-        com.nhn.pinpoint.common.util.TransactionId id = TransactionIdUtils.parseTransactionId(span.getTransactionId());
+        com.navercorp.pinpoint.common.util.TransactionId id = TransactionIdUtils.parseTransactionId(span.getTransactionId());
         TransactionId traceId = new TransactionId(id.getAgentId(), id.getAgentStartTime(), id.getTransactionSequence());
         // selectedHint를 좀더 정확히 수정할것.
         SpanResult spanResult = spanService.selectSpan(traceId, spanAcceptTime);

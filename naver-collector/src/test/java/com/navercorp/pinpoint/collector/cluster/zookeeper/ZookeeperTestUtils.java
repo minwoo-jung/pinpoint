@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.cluster.zookeeper;
+package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,14 +8,14 @@ import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nhn.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
-import com.nhn.pinpoint.rpc.client.MessageListener;
-import com.nhn.pinpoint.rpc.packet.HandshakeResponseCode;
-import com.nhn.pinpoint.rpc.packet.HandshakeResponseType;
-import com.nhn.pinpoint.rpc.packet.RequestPacket;
-import com.nhn.pinpoint.rpc.packet.SendPacket;
-import com.nhn.pinpoint.rpc.server.ServerMessageListener;
-import com.nhn.pinpoint.rpc.server.SocketChannel;
+import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
+import com.navercorp.pinpoint.rpc.client.MessageListener;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
+import com.navercorp.pinpoint.rpc.packet.RequestPacket;
+import com.navercorp.pinpoint.rpc.packet.SendPacket;
+import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
+import com.navercorp.pinpoint.rpc.server.SocketChannel;
 
 final class ZookeeperTestUtils {
 

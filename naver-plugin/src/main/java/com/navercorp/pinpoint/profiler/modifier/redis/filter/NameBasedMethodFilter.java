@@ -1,10 +1,10 @@
-package com.nhn.pinpoint.profiler.modifier.redis.filter;
+package com.navercorp.pinpoint.profiler.modifier.redis.filter;
 
 import java.lang.reflect.Modifier;
 import java.util.Set;
 
-import com.nhn.pinpoint.bootstrap.instrument.MethodInfo;
-import com.nhn.pinpoint.bootstrap.instrument.MethodFilter;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 
 /**
  * Name based on method filter

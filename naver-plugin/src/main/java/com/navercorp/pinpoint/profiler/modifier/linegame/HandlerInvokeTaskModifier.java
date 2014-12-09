@@ -1,16 +1,16 @@
-package com.nhn.pinpoint.profiler.modifier.linegame;
+package com.navercorp.pinpoint.profiler.modifier.linegame;
 
 import java.security.ProtectionDomain;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nhn.pinpoint.bootstrap.Agent;
-import com.nhn.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentException;
-import com.nhn.pinpoint.bootstrap.interceptor.Interceptor;
-import com.nhn.pinpoint.profiler.modifier.AbstractModifier;
+import com.navercorp.pinpoint.bootstrap.Agent;
+import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
+import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
+import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
 
 /**
  * line game의 baseframework에서 netty pipeline으로 사용하는 HttpCustomServerHandler의 비동기
@@ -44,10 +44,10 @@ public class HandlerInvokeTaskModifier extends AbstractModifier {
 			aClass.addTraceVariable("__messageEvent", "__setMessageEvent", "__getMessageEvent", "org.jboss.netty.channel.MessageEvent");
 
 			// non static inner class는 constructor argument의 첫번째가 parent class임.
-			Interceptor constInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskConstructorInterceptor");
+			Interceptor constInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskConstructorInterceptor");
 			aClass.addConstructorInterceptor(new String[] { "com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent" }, constInterceptor);
 
-			Interceptor runInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskRunInterceptor");
+			Interceptor runInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskRunInterceptor");
 			aClass.addInterceptor("run", null, runInterceptor);
 
 			return aClass.toBytecode();

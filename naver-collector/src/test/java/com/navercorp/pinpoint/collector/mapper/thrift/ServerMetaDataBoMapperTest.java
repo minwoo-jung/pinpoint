@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.mapper.thrift;
+package com.navercorp.pinpoint.collector.mapper.thrift;
 
 import static org.junit.Assert.*;
 
@@ -12,10 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.common.bo.ServerMetaDataBo;
-import com.nhn.pinpoint.common.bo.ServiceInfoBo;
-import com.nhn.pinpoint.thrift.dto.TServerMetaData;
-import com.nhn.pinpoint.thrift.dto.TServiceInfo;
+import com.navercorp.pinpoint.collector.mapper.thrift.ServerMetaDataBoMapper;
+import com.navercorp.pinpoint.common.bo.ServerMetaDataBo;
+import com.navercorp.pinpoint.common.bo.ServiceInfoBo;
+import com.navercorp.pinpoint.thrift.dto.TServerMetaData;
+import com.navercorp.pinpoint.thrift.dto.TServiceInfo;
 
 /**
  * @author hyungil.jeong

@@ -1,15 +1,15 @@
-package com.nhn.pinpoint.profiler.modifier.connector.npc.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor;
 
 import java.net.InetSocketAddress;
 
-import com.nhn.pinpoint.bootstrap.interceptor.*;
-import com.nhn.pinpoint.common.AnnotationKey;
-import com.nhn.pinpoint.common.ServiceType;
-import com.nhn.pinpoint.bootstrap.context.Trace;
-import com.nhn.pinpoint.bootstrap.context.TraceContext;
-import com.nhn.pinpoint.bootstrap.context.TraceId;
-import com.nhn.pinpoint.bootstrap.logging.PLogger;
-import com.nhn.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.interceptor.*;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.common.AnnotationKey;
+import com.navercorp.pinpoint.common.ServiceType;
 import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
 
 public class CreateConnectorInterceptor implements SimpleAroundInterceptor, ByteCodeMethodDescriptorSupport, TraceContextSupport, TargetClassLoader {

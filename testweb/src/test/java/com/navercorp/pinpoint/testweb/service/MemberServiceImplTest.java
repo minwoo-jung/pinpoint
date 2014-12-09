@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.service;
+package com.navercorp.pinpoint.testweb.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -11,8 +11,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.nhn.pinpoint.testweb.domain.Member;
-import com.nhn.pinpoint.testweb.repository.MemberDao;
+import com.navercorp.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.repository.MemberDao;
+import com.navercorp.pinpoint.testweb.service.MemberServiceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MemberServiceImplTest {

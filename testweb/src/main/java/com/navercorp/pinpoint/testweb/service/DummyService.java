@@ -1,11 +1,11 @@
-package com.nhn.pinpoint.testweb.service;
+package com.navercorp.pinpoint.testweb.service;
 
 import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
 
-import com.nhn.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
-import com.nhn.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
 
 @Service
 public class DummyService {

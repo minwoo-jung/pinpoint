@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.repository;
+package com.navercorp.pinpoint.testweb.repository;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -13,8 +13,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nhn.pinpoint.testweb.DBUnitSupport;
-import com.nhn.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.DBUnitSupport;
+import com.navercorp.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.repository.MemberDaoIbatis;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext-testweb.xml", "/servlet-context.xml" })

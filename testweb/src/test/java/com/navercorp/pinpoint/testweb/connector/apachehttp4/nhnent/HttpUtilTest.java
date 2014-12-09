@@ -1,8 +1,11 @@
-package com.nhn.pinpoint.testweb.connector.apachehttp4.nhnent;
+package com.navercorp.pinpoint.testweb.connector.apachehttp4.nhnent;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.nhnent.HttpUtil;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.nhnent.HttpUtilException;
 
 /**
  * 

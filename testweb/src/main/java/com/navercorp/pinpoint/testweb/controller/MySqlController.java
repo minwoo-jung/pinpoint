@@ -1,9 +1,10 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.domain.Member;
-import com.nhn.pinpoint.testweb.service.MemberService;
-import com.nhn.pinpoint.testweb.service.MySqlService;
-import com.nhn.pinpoint.testweb.util.Description;
+import com.navercorp.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.service.MemberService;
+import com.navercorp.pinpoint.testweb.service.MySqlService;
+import com.navercorp.pinpoint.testweb.util.Description;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

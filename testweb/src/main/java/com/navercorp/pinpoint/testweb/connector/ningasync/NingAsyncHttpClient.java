@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.connector.ningasync;
+package com.navercorp.pinpoint.testweb.connector.ningasync;
 
 import java.util.ArrayList;
 import java.util.HashMap;

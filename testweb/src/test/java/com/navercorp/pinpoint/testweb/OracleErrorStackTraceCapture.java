@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb;
+package com.navercorp.pinpoint.testweb;
 
 import oracle.jdbc.driver.OracleDriver;
 

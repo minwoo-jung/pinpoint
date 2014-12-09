@@ -1,7 +1,8 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.service.OracleService;
-import com.nhn.pinpoint.testweb.util.Description;
+import com.navercorp.pinpoint.testweb.service.OracleService;
+import com.navercorp.pinpoint.testweb.util.Description;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

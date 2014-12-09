@@ -48,7 +48,7 @@
     </bean>
 
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.nhn.pinpoint.testweb.repository.mybatis" />
+		<property name="basePackage" value="com.navercorp.pinpoint.testweb.repository.mybatis" />
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" /> 
 	</bean>
 	

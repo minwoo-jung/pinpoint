@@ -1,16 +1,16 @@
-package com.nhn.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.redis;
 
 import java.security.ProtectionDomain;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nhn.pinpoint.bootstrap.Agent;
-import com.nhn.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.nhn.pinpoint.bootstrap.interceptor.Interceptor;
-import com.nhn.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
-import com.nhn.pinpoint.profiler.modifier.AbstractModifier;
+import com.navercorp.pinpoint.bootstrap.Agent;
+import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
+import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
 
 /**
  * jedis(redis client) Client modifier
@@ -44,7 +44,7 @@ public class JedisClientModifier extends AbstractModifier {
             // trace endPoint
             instrumentClass.addTraceValue(MapTraceValue.class);
             
-            final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.redis.interceptor.JedisClientConstructorInterceptor");
+            final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.JedisClientConstructorInterceptor");
             instrumentClass.addConstructorInterceptor(new String[] { "java.lang.String" }, constructorInterceptor);
             instrumentClass.addConstructorInterceptor(new String[] { "java.lang.String", "int" }, constructorInterceptor);
 

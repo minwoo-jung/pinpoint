@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.connector.apachehttp4;
+package com.navercorp.pinpoint.testweb.connector.apachehttp4;
 
 import java.io.IOException;
 import java.io.InputStream;

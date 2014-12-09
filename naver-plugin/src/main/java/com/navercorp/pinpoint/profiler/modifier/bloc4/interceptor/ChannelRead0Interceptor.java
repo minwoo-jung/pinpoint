@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.profiler.modifier.bloc4.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.bloc4.interceptor;
 
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -11,19 +11,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.nhn.pinpoint.bootstrap.context.Header;
-import com.nhn.pinpoint.bootstrap.context.RecordableTrace;
-import com.nhn.pinpoint.bootstrap.context.Trace;
-import com.nhn.pinpoint.bootstrap.context.TraceId;
-import com.nhn.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.nhn.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.nhn.pinpoint.bootstrap.sampler.SamplingFlagUtils;
-import com.nhn.pinpoint.bootstrap.util.MetaObject;
-import com.nhn.pinpoint.bootstrap.util.NumberUtils;
-import com.nhn.pinpoint.bootstrap.util.StringUtils;
-import com.nhn.pinpoint.common.AnnotationKey;
-import com.nhn.pinpoint.common.ServiceType;
-import com.nhn.pinpoint.profiler.context.SpanId;
+import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
+import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
+import com.navercorp.pinpoint.bootstrap.util.MetaObject;
+import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
+import com.navercorp.pinpoint.bootstrap.util.StringUtils;
+import com.navercorp.pinpoint.common.AnnotationKey;
+import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.profiler.context.SpanId;
 
 /**
  * @author netspider

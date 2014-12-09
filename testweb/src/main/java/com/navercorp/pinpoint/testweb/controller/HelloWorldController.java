@@ -1,18 +1,20 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
-import com.nhn.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
-import com.nhn.pinpoint.testweb.domain.Member;
-import com.nhn.pinpoint.testweb.service.CacheService;
-import com.nhn.pinpoint.testweb.service.DummyService;
-import com.nhn.pinpoint.testweb.service.MemberService;
-import com.nhn.pinpoint.testweb.util.Description;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
+import com.navercorp.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.service.CacheService;
+import com.navercorp.pinpoint.testweb.service.DummyService;
+import com.navercorp.pinpoint.testweb.service.MemberService;
+import com.navercorp.pinpoint.testweb.util.Description;
 import com.nhncorp.lucy.net.invoker.InvocationFuture;
 import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
+
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ArcusClient;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -23,6 +25,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import perftest.LevelManager;
 
 import java.io.IOException;

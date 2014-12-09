@@ -1,13 +1,13 @@
-package com.nhn.pinpoint.profiler.modifier.bloc4;
+package com.navercorp.pinpoint.profiler.modifier.bloc4;
 
 import java.security.ProtectionDomain;
 
-import com.nhn.pinpoint.bootstrap.Agent;
-import com.nhn.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentException;
-import com.nhn.pinpoint.bootstrap.interceptor.Interceptor;
-import com.nhn.pinpoint.profiler.modifier.AbstractModifier;
+import com.navercorp.pinpoint.bootstrap.Agent;
+import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
+import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
+import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class NettyInboundHandlerModifier extends AbstractModifier {
 
 			aClass.addGetter("__getUriEncoding", "uriEncoding", "java.nio.charset.Charset");
 			
-			Interceptor read0nterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.bloc4.interceptor.ChannelRead0Interceptor");
+			Interceptor read0nterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.bloc4.interceptor.ChannelRead0Interceptor");
 			aClass.addInterceptor("channelRead0", new String[] { "io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest" }, read0nterceptor);
 
 			return aClass.toBytecode();

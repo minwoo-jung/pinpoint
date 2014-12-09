@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.controller;
+package com.navercorp.pinpoint.web.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,11 +14,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.nhn.pinpoint.web.alarm.CheckerCategory;
-import com.nhn.pinpoint.web.alarm.vo.AlarmEmp;
-import com.nhn.pinpoint.web.alarm.vo.Rule;
-import com.nhn.pinpoint.web.controller.AlarmController.EmpGroup;
-import com.nhn.pinpoint.web.controller.AlarmController.RuleGroup;
+import com.navercorp.pinpoint.web.alarm.CheckerCategory;
+import com.navercorp.pinpoint.web.alarm.vo.AlarmEmp;
+import com.navercorp.pinpoint.web.alarm.vo.Rule;
+import com.navercorp.pinpoint.web.controller.AlarmController;
+import com.navercorp.pinpoint.web.controller.AlarmController.EmpGroup;
+import com.navercorp.pinpoint.web.controller.AlarmController.RuleGroup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:servlet-context.xml", "classpath:applicationContext-test.xml"})

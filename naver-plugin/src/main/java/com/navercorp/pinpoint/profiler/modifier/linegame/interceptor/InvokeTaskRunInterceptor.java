@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.profiler.modifier.linegame.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.linegame.interceptor;
 
 import java.nio.charset.Charset;
 import java.util.Iterator;
@@ -6,23 +6,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.nhn.pinpoint.bootstrap.context.*;
-import com.nhn.pinpoint.bootstrap.interceptor.*;
+import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
+import com.navercorp.pinpoint.bootstrap.context.*;
+import com.navercorp.pinpoint.bootstrap.interceptor.*;
+import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
+import com.navercorp.pinpoint.bootstrap.util.MetaObject;
+import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
+import com.navercorp.pinpoint.bootstrap.util.StringUtils;
+import com.navercorp.pinpoint.common.AnnotationKey;
+import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.profiler.context.SpanId;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
-
-import com.nhn.pinpoint.bootstrap.config.ProfilerConfig;
-import com.nhn.pinpoint.bootstrap.sampler.SamplingFlagUtils;
-import com.nhn.pinpoint.bootstrap.util.MetaObject;
-import com.nhn.pinpoint.bootstrap.util.NumberUtils;
-import com.nhn.pinpoint.bootstrap.util.StringUtils;
-import com.nhn.pinpoint.common.AnnotationKey;
-import com.nhn.pinpoint.common.ServiceType;
-import com.nhn.pinpoint.profiler.context.SpanId;
 import org.jboss.netty.util.CharsetUtil;
 
 /**

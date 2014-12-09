@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.repository.ibatis;
+package com.navercorp.pinpoint.testweb.repository.ibatis;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.nhn.pinpoint.testweb.domain.Member;
-import com.nhn.pinpoint.testweb.repository.MemberDao;
+import com.navercorp.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.repository.MemberDao;
 
 /**
  * @author Hyun Jeong

@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.regionsplit;
+package com.navercorp.pinpoint.collector.regionsplit;
 
 import java.util.ArrayList;
 import java.util.List;

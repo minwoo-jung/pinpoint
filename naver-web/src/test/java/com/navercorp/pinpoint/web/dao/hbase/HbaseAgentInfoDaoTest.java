@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.dao.hbase;
+package com.navercorp.pinpoint.web.dao.hbase;
 
 import junit.framework.Assert;
 
@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.common.bo.AgentInfoBo;
-import com.nhn.pinpoint.thrift.dto.TAgentInfo;
+import com.navercorp.pinpoint.common.bo.AgentInfoBo;
+import com.navercorp.pinpoint.thrift.dto.TAgentInfo;
+import com.navercorp.pinpoint.web.dao.hbase.HbaseAgentInfoDao;
 
 /**
  * @author emeroad
@@ -23,7 +24,7 @@ public class HbaseAgentInfoDaoTest {
 	private HbaseAgentInfoDao selectDao;
 
     @Autowired
-	private com.nhn.pinpoint.collector.dao.hbase.HbaseAgentInfoDao insertDao;
+	private com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentInfoDao insertDao;
 
 	@Test
 	public void testSelectAgentInfoStartTime() throws Exception {

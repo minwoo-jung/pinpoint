@@ -1,6 +1,6 @@
-package com.nhn.pinpoint.plugin.arcus;
+package com.navercorp.pinpoint.plugin.arcus;
 
-import com.nhn.pinpoint.bootstrap.instrument.MethodInfo;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 
 /**
  * @author emeroad

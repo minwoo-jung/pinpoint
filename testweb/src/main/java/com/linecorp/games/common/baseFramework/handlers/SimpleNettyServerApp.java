@@ -17,7 +17,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nhn.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
+import com.navercorp.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
 import com.ning.http.client.Response;
 
 /**

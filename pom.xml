@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.nhn.pinpoint</groupId>
+        <groupId>com.navercorp.pinpoint</groupId>
         <artifactId>pom</artifactId>
         <version>1.0.4-SNAPSHOT</version>
     </parent>
@@ -158,9 +158,9 @@
                         <ruleset>/rulesets/basic.xml</ruleset> <ruleset>/rulesets/imports.xml</ruleset> 
                         <ruleset>/rulesets/design.xml</ruleset> </rulesets> -->
                     <excludes>
-                        <exclude>com/nhn/pinpoint/thrift/dto/**/*.java</exclude>
-                        <exclude>com/nhn/pinpoint/common/util/apache/**/*.java</exclude>
-                        <exclude>com/nhn/pinpoint/profiler/util/jdk/**/*.java</exclude>
+                        <exclude>com/navercorp/pinpoint/thrift/dto/**/*.java</exclude>
+                        <exclude>com/navercorp/pinpoint/common/util/apache/**/*.java</exclude>
+                        <exclude>com/navercorp/pinpoint/profiler/util/jdk/**/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

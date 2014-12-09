@@ -1,12 +1,12 @@
-package com.nhn.pinpoint.profiler.modifier.redis.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.redis.interceptor;
 
 import java.util.Map;
 
-import com.nhn.pinpoint.bootstrap.context.RecordableTrace;
-import com.nhn.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
-import com.nhn.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.nhn.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
-import com.nhn.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
+import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
+import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
+import com.navercorp.pinpoint.common.ServiceType;
 
 /**
  * RedisCluster pipeline(nBase-ARC client) method interceptor

@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.cluster.zookeeper;
+package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -20,13 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.collector.cluster.ClusterPointRouter;
-import com.nhn.pinpoint.collector.config.CollectorConfiguration;
-import com.nhn.pinpoint.rpc.PinpointSocketException;
-import com.nhn.pinpoint.rpc.client.MessageListener;
-import com.nhn.pinpoint.rpc.client.PinpointSocket;
-import com.nhn.pinpoint.rpc.client.PinpointSocketFactory;
-import com.nhn.pinpoint.rpc.server.PinpointServerSocket;
+import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterManager;
+import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.rpc.PinpointSocketException;
+import com.navercorp.pinpoint.rpc.client.MessageListener;
+import com.navercorp.pinpoint.rpc.client.PinpointSocket;
+import com.navercorp.pinpoint.rpc.client.PinpointSocketFactory;
+import com.navercorp.pinpoint.rpc.server.PinpointServerSocket;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")

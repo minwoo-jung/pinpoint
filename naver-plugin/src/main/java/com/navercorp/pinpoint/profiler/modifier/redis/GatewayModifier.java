@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.redis;
 
 import java.security.ProtectionDomain;
 import java.util.List;
@@ -6,13 +6,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nhn.pinpoint.bootstrap.Agent;
-import com.nhn.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.nhn.pinpoint.bootstrap.instrument.MethodInfo;
-import com.nhn.pinpoint.bootstrap.interceptor.Interceptor;
-import com.nhn.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
-import com.nhn.pinpoint.profiler.modifier.AbstractModifier;
+import com.navercorp.pinpoint.bootstrap.Agent;
+import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
+import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
+import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
 
 /**
  * Gateway(nBase-ARC client) modifier
@@ -45,14 +45,14 @@ public class GatewayModifier extends AbstractModifier {
 
             // trace destinationId
             instrumentClass.addTraceValue(MapTraceValue.class);
-            final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.redis.interceptor.GatewayConstructorInterceptor");
+            final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.GatewayConstructorInterceptor");
             instrumentClass.addConstructorInterceptor(new String[] { "com.nhncorp.redis.cluster.gateway.GatewayConfig" }, constructorInterceptor);
 
             // method
             final List<MethodInfo> declaredMethods = instrumentClass.getDeclaredMethods();
             for (MethodInfo method : declaredMethods) {
                 if (method.getName().equals("getServer")) {
-                    final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.redis.interceptor.GatewayMethodInterceptor");
+                    final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.GatewayMethodInterceptor");
                     instrumentClass.addInterceptor(method.getName(), method.getParameterTypes(), methodInterceptor);
                 }
             }

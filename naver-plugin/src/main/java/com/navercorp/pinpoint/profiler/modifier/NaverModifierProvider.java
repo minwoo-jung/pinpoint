@@ -1,36 +1,38 @@
-package com.nhn.pinpoint.profiler.modifier;
+package com.navercorp.pinpoint.profiler.modifier;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nhn.pinpoint.bootstrap.Agent;
-import com.nhn.pinpoint.bootstrap.config.ProfilerConfig;
-import com.nhn.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.nhn.pinpoint.profiler.modifier.bloc4.NettyInboundHandlerModifier;
-import com.nhn.pinpoint.profiler.modifier.bloc4.NpcHandlerModifier;
-import com.nhn.pinpoint.profiler.modifier.bloc4.RequestProcessorModifier;
-import com.nhn.pinpoint.profiler.modifier.connector.lucynet.CompositeInvocationFutureModifier;
-import com.nhn.pinpoint.profiler.modifier.connector.lucynet.DefaultInvocationFutureModifier;
-import com.nhn.pinpoint.profiler.modifier.connector.nimm.NimmInvokerModifier;
-import com.nhn.pinpoint.profiler.modifier.connector.npc.KeepAliveNpcHessianConnectorModifier;
-import com.nhn.pinpoint.profiler.modifier.connector.npc.LightWeightConnectorModifier;
-import com.nhn.pinpoint.profiler.modifier.connector.npc.NioNpcHessianConnectorModifier;
-import com.nhn.pinpoint.profiler.modifier.connector.npc.NpcHessianConnectorModifier;
-import com.nhn.pinpoint.profiler.modifier.linegame.HandlerInvokeTaskModifier;
-import com.nhn.pinpoint.profiler.modifier.linegame.HttpCustomServerHandlerModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.BinaryJedisModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.BinaryRedisClusterModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.BinaryTriplesRedisClusterModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.GatewayModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.GatewayServerModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.JedisClientModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.JedisModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.JedisMultiKeyPipelineBaseModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.JedisPipelineBaseModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.JedisPipelineModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.RedisClusterModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.RedisClusterPipelineModifier;
-import com.nhn.pinpoint.profiler.modifier.redis.TriplesRedisClusterModifier;
+import com.navercorp.pinpoint.bootstrap.Agent;
+import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
+import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
+import com.navercorp.pinpoint.profiler.modifier.Modifier;
+import com.navercorp.pinpoint.profiler.modifier.ModifierProvider;
+import com.navercorp.pinpoint.profiler.modifier.bloc4.NettyInboundHandlerModifier;
+import com.navercorp.pinpoint.profiler.modifier.bloc4.NpcHandlerModifier;
+import com.navercorp.pinpoint.profiler.modifier.bloc4.RequestProcessorModifier;
+import com.navercorp.pinpoint.profiler.modifier.connector.lucynet.CompositeInvocationFutureModifier;
+import com.navercorp.pinpoint.profiler.modifier.connector.lucynet.DefaultInvocationFutureModifier;
+import com.navercorp.pinpoint.profiler.modifier.connector.nimm.NimmInvokerModifier;
+import com.navercorp.pinpoint.profiler.modifier.connector.npc.KeepAliveNpcHessianConnectorModifier;
+import com.navercorp.pinpoint.profiler.modifier.connector.npc.LightWeightConnectorModifier;
+import com.navercorp.pinpoint.profiler.modifier.connector.npc.NioNpcHessianConnectorModifier;
+import com.navercorp.pinpoint.profiler.modifier.connector.npc.NpcHessianConnectorModifier;
+import com.navercorp.pinpoint.profiler.modifier.linegame.HandlerInvokeTaskModifier;
+import com.navercorp.pinpoint.profiler.modifier.linegame.HttpCustomServerHandlerModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.BinaryJedisModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.BinaryRedisClusterModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.BinaryTriplesRedisClusterModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.GatewayModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.GatewayServerModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.JedisClientModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.JedisModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.JedisMultiKeyPipelineBaseModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.JedisPipelineBaseModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.JedisPipelineModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.RedisClusterModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.RedisClusterPipelineModifier;
+import com.navercorp.pinpoint.profiler.modifier.redis.TriplesRedisClusterModifier;
 
 public class NaverModifierProvider implements ModifierProvider {
 

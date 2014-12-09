@@ -1,10 +1,12 @@
-package com.nhn.pinpoint.profiler.modifier.redis.filter;
+package com.navercorp.pinpoint.profiler.modifier.redis.filter;
 
 import static org.junit.Assert.*;
 
 import java.util.Set;
 
 import org.junit.Test;
+
+import com.navercorp.pinpoint.profiler.modifier.redis.filter.RedisClusterMethodNames;
 
 public class RedisClusterMethodNamesTest {
 

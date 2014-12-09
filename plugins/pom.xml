@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.nhn.pinpoint</groupId>
+        <groupId>com.navercorp.pinpoint</groupId>
         <artifactId>pinpoint-naver</artifactId>
         <version>1.0.4-SNAPSHOT</version>
     </parent>
@@ -18,15 +18,15 @@
     <dependencies>
         <!-- should be replaced with below dependencies after pinpoint-test project is completed -->
          <dependency>
-            <groupId>com.nhn.pinpoint</groupId>
+            <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-profiler</artifactId>
         </dependency>
 <!--         <dependency>
-            <groupId>com.nhn.pinpoint</groupId>
+            <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-bootstrap</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.nhn.pinpoint</groupId>
+            <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-test</artifactId>
             <scope>test</scope>
         </dependency> -->

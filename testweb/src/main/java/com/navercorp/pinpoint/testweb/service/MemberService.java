@@ -1,8 +1,8 @@
-package com.nhn.pinpoint.testweb.service;
+package com.navercorp.pinpoint.testweb.service;
 
 import java.util.List;
 
-import com.nhn.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.domain.Member;
 
 public interface MemberService {
 

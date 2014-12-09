@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.dao.hbase;
+package com.navercorp.pinpoint.collector.dao.hbase;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -16,16 +16,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.collector.dao.AgentStatDao;
-import com.nhn.pinpoint.collector.mapper.thrift.ThriftBoMapper;
-import com.nhn.pinpoint.common.bo.AgentStatCpuLoadBo;
-import com.nhn.pinpoint.common.bo.AgentStatMemoryGcBo;
-import com.nhn.pinpoint.common.hbase.HBaseTables;
-import com.nhn.pinpoint.common.hbase.HbaseOperations2;
-import com.nhn.pinpoint.thrift.dto.TAgentStat;
-import com.nhn.pinpoint.thrift.dto.TCpuLoad;
-import com.nhn.pinpoint.thrift.dto.TJvmGc;
-import com.nhn.pinpoint.thrift.dto.TJvmGcType;
+import com.navercorp.pinpoint.collector.dao.AgentStatDao;
+import com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentStatDao;
+import com.navercorp.pinpoint.collector.mapper.thrift.ThriftBoMapper;
+import com.navercorp.pinpoint.common.bo.AgentStatCpuLoadBo;
+import com.navercorp.pinpoint.common.bo.AgentStatMemoryGcBo;
+import com.navercorp.pinpoint.common.hbase.HBaseTables;
+import com.navercorp.pinpoint.common.hbase.HbaseOperations2;
+import com.navercorp.pinpoint.thrift.dto.TAgentStat;
+import com.navercorp.pinpoint.thrift.dto.TCpuLoad;
+import com.navercorp.pinpoint.thrift.dto.TJvmGc;
+import com.navercorp.pinpoint.thrift.dto.TJvmGcType;
 import com.sematext.hbase.wd.AbstractRowKeyDistributor;
 
 /**

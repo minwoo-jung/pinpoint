@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.plugin.arcus.interceptor;
+package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -6,15 +6,15 @@ import java.net.SocketAddress;
 import net.spy.memcached.MemcachedNode;
 import net.spy.memcached.ops.Operation;
 
-import com.nhn.pinpoint.bootstrap.context.Trace;
-import com.nhn.pinpoint.bootstrap.context.TraceContext;
-import com.nhn.pinpoint.bootstrap.interceptor.MethodDescriptor;
-import com.nhn.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.nhn.pinpoint.bootstrap.logging.PLogger;
-import com.nhn.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.nhn.pinpoint.common.ServiceType;
-import com.nhn.pinpoint.plugin.arcus.accessor.OperationAccessor;
-import com.nhn.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.arcus.accessor.OperationAccessor;
+import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
 
 /**
  * @author emeroad

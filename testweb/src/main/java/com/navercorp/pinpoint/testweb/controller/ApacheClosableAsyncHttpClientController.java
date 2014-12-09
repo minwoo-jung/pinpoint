@@ -1,6 +1,7 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.connector.apachehttp4.ApacheClosableAsyncHttpClient;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.ApacheClosableAsyncHttpClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.dao.hbase;
+package com.navercorp.pinpoint.collector.dao.hbase;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

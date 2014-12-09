@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.mapper.thrift;
+package com.navercorp.pinpoint.collector.mapper.thrift;
 
 import static org.junit.Assert.*;
 
@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.common.bo.AgentStatCpuLoadBo;
-import com.nhn.pinpoint.thrift.dto.TAgentStat;
-import com.nhn.pinpoint.thrift.dto.TCpuLoad;
+import com.navercorp.pinpoint.collector.mapper.thrift.AgentStatCpuLoadBoMapper;
+import com.navercorp.pinpoint.common.bo.AgentStatCpuLoadBo;
+import com.navercorp.pinpoint.thrift.dto.TAgentStat;
+import com.navercorp.pinpoint.thrift.dto.TCpuLoad;
 
 /**
  * @author hyungil.jeong

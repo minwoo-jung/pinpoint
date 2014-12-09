@@ -1,11 +1,11 @@
-package com.nhn.pinpoint.testweb.repository.mybatis;
+package com.navercorp.pinpoint.testweb.repository.mybatis;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.nhn.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.domain.Member;
 
 /**
  * @author Hyun Jeong

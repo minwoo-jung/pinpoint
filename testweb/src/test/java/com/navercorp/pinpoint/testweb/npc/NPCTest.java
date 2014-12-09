@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.npc;
+package com.navercorp.pinpoint.testweb.npc;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;

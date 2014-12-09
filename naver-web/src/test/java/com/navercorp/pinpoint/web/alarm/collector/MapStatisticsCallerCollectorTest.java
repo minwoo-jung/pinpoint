@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.alarm.collector;
+package com.navercorp.pinpoint.web.alarm.collector;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.common.ServiceType;
-import com.nhn.pinpoint.web.applicationmap.histogram.TimeHistogram;
-import com.nhn.pinpoint.web.applicationmap.rawdata.LinkCallData;
-import com.nhn.pinpoint.web.applicationmap.rawdata.LinkCallDataMap;
-import com.nhn.pinpoint.web.applicationmap.rawdata.LinkData;
-import com.nhn.pinpoint.web.applicationmap.rawdata.LinkDataMap;
-import com.nhn.pinpoint.web.dao.hbase.HbaseMapStatisticsCallerDao;
-import com.nhn.pinpoint.web.vo.Application;
-import com.nhn.pinpoint.web.vo.Range;
+import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.web.applicationmap.histogram.TimeHistogram;
+import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallData;
+import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallDataMap;
+import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkData;
+import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkDataMap;
+import com.navercorp.pinpoint.web.dao.hbase.HbaseMapStatisticsCallerDao;
+import com.navercorp.pinpoint.web.vo.Application;
+import com.navercorp.pinpoint.web.vo.Range;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")

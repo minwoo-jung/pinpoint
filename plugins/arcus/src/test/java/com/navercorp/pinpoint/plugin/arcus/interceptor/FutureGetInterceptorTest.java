@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.plugin.arcus.interceptor;
+package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -26,9 +26,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nhn.pinpoint.plugin.arcus.interceptor.FutureGetInterceptor;
-import com.nhn.pinpoint.test.BaseInterceptorTest;
-import com.nhn.pinpoint.test.MockTraceContextFactory;
+import com.navercorp.pinpoint.plugin.arcus.interceptor.FutureGetInterceptor;
+import com.navercorp.pinpoint.test.BaseInterceptorTest;
+import com.navercorp.pinpoint.test.MockTraceContextFactory;
 
 public class FutureGetInterceptorTest /*extends BaseInterceptorTest*/ {
 

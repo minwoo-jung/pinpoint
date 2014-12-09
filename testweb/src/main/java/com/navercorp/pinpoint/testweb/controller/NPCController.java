@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
 import com.nhncorp.lucy.net.invoker.InvocationFuture;
 import com.nhncorp.lucy.net.invoker.InvocationFutureListener;

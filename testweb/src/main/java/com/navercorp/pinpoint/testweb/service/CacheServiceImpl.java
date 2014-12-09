@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.service;
+package com.navercorp.pinpoint.testweb.service;
 
 import java.util.Random;
 import java.util.concurrent.Future;

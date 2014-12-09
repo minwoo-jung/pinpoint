@@ -1,10 +1,10 @@
-package com.nhn.pinpoint.testweb.service;
+package com.navercorp.pinpoint.testweb.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nhn.pinpoint.testweb.repository.CubridDao;
+import com.navercorp.pinpoint.testweb.repository.CubridDao;
 
 /**
  *

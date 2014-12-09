@@ -1,7 +1,8 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.domain.ControllerMappingInfo;
-import com.nhn.pinpoint.testweb.util.Description;
+import com.navercorp.pinpoint.testweb.domain.ControllerMappingInfo;
+import com.navercorp.pinpoint.testweb.util.Description;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ public class MainController {
     private Description getDescription(HandlerMethod handlerMethod) {
         Annotation[] annotations = handlerMethod.getMethod().getAnnotations();
         for (Annotation annotation : annotations) {
-            if (annotation instanceof com.nhn.pinpoint.testweb.util.Description) {
+            if (annotation instanceof com.navercorp.pinpoint.testweb.util.Description) {
                 return (Description) annotation;
             }
         }

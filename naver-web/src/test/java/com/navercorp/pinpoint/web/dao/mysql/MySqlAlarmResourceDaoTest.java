@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.dao.mysql;
+package com.navercorp.pinpoint.web.dao.mysql;
 
 import static org.junit.Assert.*;
 
@@ -12,9 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.web.alarm.CheckerCategory;
-import com.nhn.pinpoint.web.alarm.vo.AlarmEmp;
-import com.nhn.pinpoint.web.alarm.vo.Rule;
+import com.navercorp.pinpoint.web.alarm.CheckerCategory;
+import com.navercorp.pinpoint.web.alarm.vo.AlarmEmp;
+import com.navercorp.pinpoint.web.alarm.vo.Rule;
+import com.navercorp.pinpoint.web.dao.mysql.MySqlAlarmResourceDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")

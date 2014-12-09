@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.profiler.modifier.redis.filter;
+package com.navercorp.pinpoint.profiler.modifier.redis.filter;
 
 import java.util.Arrays;
 import java.util.Set;

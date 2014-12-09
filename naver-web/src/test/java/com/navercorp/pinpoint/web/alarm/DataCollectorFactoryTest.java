@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.alarm;
+package com.navercorp.pinpoint.web.alarm;
 
 import static org.junit.Assert.*;
 
@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.web.alarm.collector.DataCollector;
+import com.navercorp.pinpoint.web.alarm.CheckerCategory;
+import com.navercorp.pinpoint.web.alarm.DataCollectorFactory;
+import com.navercorp.pinpoint.web.alarm.collector.DataCollector;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")

@@ -1,13 +1,13 @@
-package com.nhn.pinpoint.profiler.modifier.redis.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.redis.interceptor;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.nhn.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.nhn.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.nhn.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
-import com.nhn.pinpoint.bootstrap.logging.PLogger;
-import com.nhn.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
+import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 
 /**
  * Jedis client(redis client) constructor interceptor

@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.plugin.arcus;
+package com.navercorp.pinpoint.plugin.arcus;
 
 import static org.junit.Assert.*;
 
@@ -6,14 +6,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.nhn.pinpoint.plugin.arcus.accessor.CacheKeyAccessor;
-import com.nhn.pinpoint.plugin.arcus.accessor.CacheNameAccessor;
-import com.nhn.pinpoint.plugin.arcus.accessor.OperationAccessor;
-import com.nhn.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
-import com.nhn.pinpoint.test.fork.ForkRunner;
-import com.nhn.pinpoint.test.fork.OnChildClassLoader;
-import com.nhn.pinpoint.test.fork.PinpointAgent;
-import com.nhn.pinpoint.test.fork.PinpointConfig;
+import com.navercorp.pinpoint.plugin.arcus.accessor.CacheKeyAccessor;
+import com.navercorp.pinpoint.plugin.arcus.accessor.CacheNameAccessor;
+import com.navercorp.pinpoint.plugin.arcus.accessor.OperationAccessor;
+import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
+import com.navercorp.pinpoint.test.fork.ForkRunner;
+import com.navercorp.pinpoint.test.fork.OnChildClassLoader;
+import com.navercorp.pinpoint.test.fork.PinpointAgent;
+import com.navercorp.pinpoint.test.fork.PinpointConfig;
 
 @RunWith(ForkRunner.class)
 @PinpointConfig("pinpoint-test.config")

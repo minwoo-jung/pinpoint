@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.cluster;
+package com.navercorp.pinpoint.collector.cluster;
 
 import static org.mockito.Mockito.*;
 
@@ -19,24 +19,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
-import com.nhn.pinpoint.collector.util.CollectorUtils;
-import com.nhn.pinpoint.rpc.DefaultFuture;
-import com.nhn.pinpoint.rpc.Future;
-import com.nhn.pinpoint.rpc.ResponseMessage;
-import com.nhn.pinpoint.rpc.packet.HandshakeResponseCode;
-import com.nhn.pinpoint.rpc.packet.HandshakeResponseType;
-import com.nhn.pinpoint.rpc.packet.RequestPacket;
-import com.nhn.pinpoint.rpc.packet.SendPacket;
-import com.nhn.pinpoint.rpc.server.ChannelContext;
-import com.nhn.pinpoint.rpc.server.PinpointServerSocket;
-import com.nhn.pinpoint.rpc.server.ServerMessageListener;
-import com.nhn.pinpoint.rpc.server.SocketChannel;
-import com.nhn.pinpoint.thrift.dto.command.TCommandEcho;
-import com.nhn.pinpoint.thrift.dto.command.TCommandTransfer;
-import com.nhn.pinpoint.thrift.io.DeserializerFactory;
-import com.nhn.pinpoint.thrift.io.SerializerFactory;
-import com.nhn.pinpoint.thrift.util.SerializationUtils;
+import com.navercorp.pinpoint.collector.cluster.ChannelContextClusterPoint;
+import com.navercorp.pinpoint.collector.cluster.ClusterPoint;
+import com.navercorp.pinpoint.collector.cluster.ClusterPointRepository;
+import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.TargetClusterPoint;
+import com.navercorp.pinpoint.collector.cluster.WebCluster;
+import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
+import com.navercorp.pinpoint.collector.util.CollectorUtils;
+import com.navercorp.pinpoint.rpc.DefaultFuture;
+import com.navercorp.pinpoint.rpc.Future;
+import com.navercorp.pinpoint.rpc.ResponseMessage;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
+import com.navercorp.pinpoint.rpc.packet.RequestPacket;
+import com.navercorp.pinpoint.rpc.packet.SendPacket;
+import com.navercorp.pinpoint.rpc.server.ChannelContext;
+import com.navercorp.pinpoint.rpc.server.PinpointServerSocket;
+import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
+import com.navercorp.pinpoint.rpc.server.SocketChannel;
+import com.navercorp.pinpoint.thrift.dto.command.TCommandEcho;
+import com.navercorp.pinpoint.thrift.dto.command.TCommandTransfer;
+import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
+import com.navercorp.pinpoint.thrift.io.SerializerFactory;
+import com.navercorp.pinpoint.thrift.util.SerializationUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")

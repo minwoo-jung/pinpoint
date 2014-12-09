@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.plugin.arcus.interceptor;
+package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
 import junit.framework.Assert;
 import net.spy.memcached.ops.OperationState;

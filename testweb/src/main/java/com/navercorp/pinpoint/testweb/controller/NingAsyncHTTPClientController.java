@@ -1,10 +1,11 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
+import com.navercorp.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
 import com.ning.http.client.Part;
 import com.ning.http.client.Response;
 import com.ning.http.client.cookie.Cookie;
 import com.ning.http.multipart.StringPart;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

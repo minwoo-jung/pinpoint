@@ -22,7 +22,7 @@
 	</settings>
     
     <typeAliases>
-        <typeAlias alias="Member" type="com.nhn.pinpoint.testweb.domain.Member" />
+        <typeAlias alias="Member" type="com.navercorp.pinpoint.testweb.domain.Member" />
     </typeAliases>
 
 </configuration>

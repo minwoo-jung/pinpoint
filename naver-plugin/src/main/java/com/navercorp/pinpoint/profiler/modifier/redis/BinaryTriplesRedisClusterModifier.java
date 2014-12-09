@@ -1,13 +1,13 @@
-package com.nhn.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.redis;
 
 import java.security.ProtectionDomain;
 
-import com.nhn.pinpoint.bootstrap.Agent;
-import com.nhn.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentException;
-import com.nhn.pinpoint.bootstrap.instrument.NotFoundInstrumentException;
-import com.nhn.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
+import com.navercorp.pinpoint.bootstrap.Agent;
+import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
+import com.navercorp.pinpoint.bootstrap.instrument.NotFoundInstrumentException;
+import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
 
 /**
  * RedisCluster(nBase-ARC client) modifier

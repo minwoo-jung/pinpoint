@@ -50,7 +50,7 @@ import org.springframework.core.convert.ConverterNotFoundException;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.nhn.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
+import com.navercorp.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
 
 public class HttpCustomServerHandler extends SimpleChannelUpstreamHandler {
 	private static final Logger logger = LoggerFactory.getLogger(HttpCustomServerHandler.class.getName());

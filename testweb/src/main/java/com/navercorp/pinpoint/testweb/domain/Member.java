@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.domain;
+package com.navercorp.pinpoint.testweb.domain;
 
 import java.util.Date;
 

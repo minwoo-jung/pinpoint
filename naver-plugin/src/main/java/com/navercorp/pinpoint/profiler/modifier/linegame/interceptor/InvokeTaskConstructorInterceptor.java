@@ -1,8 +1,8 @@
-package com.nhn.pinpoint.profiler.modifier.linegame.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.linegame.interceptor;
 
-import com.nhn.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.nhn.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.nhn.pinpoint.bootstrap.util.MetaObject;
+import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
+import com.navercorp.pinpoint.bootstrap.util.MetaObject;
 
 /**
  * 

@@ -1,12 +1,14 @@
-package com.nhn.pinpoint.testweb.controller;
+package com.navercorp.pinpoint.testweb.controller;
 
-import com.nhn.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
-import com.nhn.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.HashMap;
 
 /**

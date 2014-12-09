@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.collector.receiver.tcp;
+package com.navercorp.pinpoint.collector.receiver.tcp;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,17 +18,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nhn.pinpoint.collector.receiver.TcpDispatchHandler;
-import com.nhn.pinpoint.rpc.packet.Packet;
-import com.nhn.pinpoint.rpc.packet.RequestPacket;
-import com.nhn.pinpoint.rpc.packet.ResponsePacket;
-import com.nhn.pinpoint.rpc.packet.SendPacket;
-import com.nhn.pinpoint.thrift.dto.TAgentInfo;
-import com.nhn.pinpoint.thrift.dto.TResult;
-import com.nhn.pinpoint.thrift.io.HeaderTBaseDeserializer;
-import com.nhn.pinpoint.thrift.io.HeaderTBaseDeserializerFactory;
-import com.nhn.pinpoint.thrift.io.HeaderTBaseSerializer;
-import com.nhn.pinpoint.thrift.io.HeaderTBaseSerializerFactory;
+import com.navercorp.pinpoint.collector.receiver.TcpDispatchHandler;
+import com.navercorp.pinpoint.collector.receiver.tcp.TCPReceiver;
+import com.navercorp.pinpoint.rpc.packet.Packet;
+import com.navercorp.pinpoint.rpc.packet.RequestPacket;
+import com.navercorp.pinpoint.rpc.packet.ResponsePacket;
+import com.navercorp.pinpoint.rpc.packet.SendPacket;
+import com.navercorp.pinpoint.thrift.dto.TAgentInfo;
+import com.navercorp.pinpoint.thrift.dto.TResult;
+import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializer;
+import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializerFactory;
+import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializer;
+import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializerFactory;
 
 
 /**

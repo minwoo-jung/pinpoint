@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.testweb.repository;
+package com.navercorp.pinpoint.testweb.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.nhn.pinpoint.testweb.domain.Member;
+import com.navercorp.pinpoint.testweb.domain.Member;
 
 @Repository
 public class MemberDaoJdbc implements MemberDao {

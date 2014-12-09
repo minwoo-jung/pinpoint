@@ -5,7 +5,7 @@
  * NHN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-package com.nhn.pinpoint.testweb.connector.apachehttp4.nhnent;
+package com.navercorp.pinpoint.testweb.connector.apachehttp4.nhnent;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

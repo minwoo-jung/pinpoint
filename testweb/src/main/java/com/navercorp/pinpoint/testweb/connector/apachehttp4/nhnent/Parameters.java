@@ -5,7 +5,7 @@
  * NHN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-package com.nhn.pinpoint.testweb.connector.apachehttp4.nhnent;
+package com.navercorp.pinpoint.testweb.connector.apachehttp4.nhnent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 
-import com.nhn.pinpoint.testweb.connector.apachehttp4.nhnent.HttpUtil.Method;
+import com.navercorp.pinpoint.testweb.connector.apachehttp4.nhnent.HttpUtil.Method;
 
 /**
  * HttpUtil에 들어가는 파라메터 클래스 HttpUtil을 보다 쉽게 사용하기 위해서 제공되는 클래스 외부에서 생성할 수 있는 방법은

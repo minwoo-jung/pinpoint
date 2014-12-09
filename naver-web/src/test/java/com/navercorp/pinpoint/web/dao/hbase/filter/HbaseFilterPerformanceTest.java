@@ -1,4 +1,4 @@
-package com.nhn.pinpoint.web.dao.hbase.filter;
+package com.navercorp.pinpoint.web.dao.hbase.filter;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,17 +22,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.hadoop.hbase.HbaseConfigurationFactoryBean;
 import org.springframework.data.hadoop.hbase.HbaseSystemException;
 
-import com.nhn.pinpoint.common.buffer.AutomaticBuffer;
-import com.nhn.pinpoint.common.buffer.Buffer;
-import com.nhn.pinpoint.common.hbase.HBaseTables;
-import com.nhn.pinpoint.common.hbase.HbaseTemplate2;
-import com.nhn.pinpoint.common.util.SpanUtils;
-import com.nhn.pinpoint.web.mapper.TraceIndexScatterMapper;
-import com.nhn.pinpoint.web.vo.Range;
-import com.nhn.pinpoint.web.vo.ResponseTimeRange;
-import com.nhn.pinpoint.web.vo.SelectedScatterArea;
-import com.nhn.pinpoint.web.vo.TransactionId;
-import com.nhn.pinpoint.web.vo.scatter.Dot;
+import com.navercorp.pinpoint.common.buffer.AutomaticBuffer;
+import com.navercorp.pinpoint.common.buffer.Buffer;
+import com.navercorp.pinpoint.common.hbase.HBaseTables;
+import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
+import com.navercorp.pinpoint.common.util.SpanUtils;
+import com.navercorp.pinpoint.web.mapper.TraceIndexScatterMapper;
+import com.navercorp.pinpoint.web.vo.Range;
+import com.navercorp.pinpoint.web.vo.ResponseTimeRange;
+import com.navercorp.pinpoint.web.vo.SelectedScatterArea;
+import com.navercorp.pinpoint.web.vo.TransactionId;
+import com.navercorp.pinpoint.web.vo.scatter.Dot;
 import com.sematext.hbase.wd.AbstractRowKeyDistributor;
 import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash;
 

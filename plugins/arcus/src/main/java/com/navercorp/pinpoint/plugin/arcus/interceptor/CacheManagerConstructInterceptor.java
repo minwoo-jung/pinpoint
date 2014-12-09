@@ -1,9 +1,9 @@
-package com.nhn.pinpoint.plugin.arcus.interceptor;
+package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
-import com.nhn.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.nhn.pinpoint.bootstrap.logging.PLogger;
-import com.nhn.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.nhn.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
+import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
 
 /**
  * 

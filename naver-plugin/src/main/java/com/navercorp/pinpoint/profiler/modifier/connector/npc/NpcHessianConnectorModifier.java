@@ -1,13 +1,13 @@
-package com.nhn.pinpoint.profiler.modifier.connector.npc;
+package com.navercorp.pinpoint.profiler.modifier.connector.npc;
 
 import java.security.ProtectionDomain;
 
-import com.nhn.pinpoint.bootstrap.Agent;
-import com.nhn.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.nhn.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.nhn.pinpoint.bootstrap.interceptor.Interceptor;
-import com.nhn.pinpoint.profiler.modifier.AbstractModifier;
-import com.nhn.pinpoint.profiler.modifier.method.interceptor.MethodInterceptor;
+import com.navercorp.pinpoint.bootstrap.Agent;
+import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
+import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
+import com.navercorp.pinpoint.profiler.modifier.method.interceptor.MethodInterceptor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class NpcHessianConnectorModifier extends AbstractModifier {
 
 			// create connector
 			if (connectorClass.hasDeclaredMethod("createConnecor", new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" })) {
-				Interceptor connectInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.nhn.pinpoint.profiler.modifier.connector.npc.interceptor.CreateConnectorInterceptor");
+				Interceptor connectInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor.CreateConnectorInterceptor");
 				connectorClass.addInterceptor("createConnecor", new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" }, connectInterceptor);
 			}
 

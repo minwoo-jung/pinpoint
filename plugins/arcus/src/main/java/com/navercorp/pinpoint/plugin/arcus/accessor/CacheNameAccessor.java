@@ -1,6 +1,6 @@
-package com.nhn.pinpoint.plugin.arcus.accessor;
+package com.navercorp.pinpoint.plugin.arcus.accessor;
 
-import com.nhn.pinpoint.bootstrap.interceptor.tracevalue.TraceValue;
+import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.TraceValue;
 
 public interface CacheNameAccessor extends TraceValue {
     public String __getCacheName();
