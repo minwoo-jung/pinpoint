@@ -17,6 +17,19 @@
     <dependencies>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-rpc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-thrift</artifactId>
+        </dependency>
+    
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-web</artifactId>
             <type>war</type>
         </dependency>
@@ -25,7 +38,7 @@
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-web</artifactId>
             <classifier>classes</classifier>
-            <scope>test</scope>
+			<scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
