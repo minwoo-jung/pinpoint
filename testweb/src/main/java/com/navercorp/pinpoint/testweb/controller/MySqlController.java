@@ -30,10 +30,12 @@ public class MySqlController {
     @Qualifier("memberService")
     private MemberService service;
 
+    private final Random RANDOM = new Random();
+
     @RequestMapping(value = "/mysql/crud")
     @ResponseBody
     public String crud() {
-        int id = (new Random()).nextInt();
+        int id = RANDOM.nextInt();
 
         Member member = new Member();
         member.setId(id);
@@ -51,7 +53,7 @@ public class MySqlController {
     @ResponseBody
     public String crudWithStatement() {
 
-        int id = (new Random()).nextInt();
+        int id = RANDOM.nextInt();
 
         Member member = new Member();
         member.setId(id);
