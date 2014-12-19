@@ -106,6 +106,12 @@
                 <artifactId>arcus-spring</artifactId>
                 <version>0.3.5</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.nhncorp.lucy</groupId>
+                <artifactId>lucy-core</artifactId>
+                <version>1.7.7</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
