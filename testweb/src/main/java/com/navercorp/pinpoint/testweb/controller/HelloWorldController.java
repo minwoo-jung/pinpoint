@@ -46,6 +46,8 @@ public class HelloWorldController implements DisposableBean {
     private final MemcachedClient memcached;
     private final LevelManager levelManager;
 
+    private static final Random RANDOM = new Random();
+
     public HelloWorldController() throws IOException {
         arcus = ArcusClient.createArcusClient("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27", new ConnectionFactoryBuilder());
         memcached = new MemcachedClient(AddrUtil.getAddresses("10.99.200.15:11316,10.99.200.16:11316,10.99.200.17:11316"));
@@ -101,7 +103,7 @@ public class HelloWorldController implements DisposableBean {
     @RequestMapping(value = "/mysql")
     @ResponseBody
     public String mysql() {
-        int id = (new Random()).nextInt();
+        int id = RANDOM.nextInt();
 
         Member member = new Member();
         member.setId(id);
@@ -124,7 +126,7 @@ public class HelloWorldController implements DisposableBean {
     @RequestMapping(value = "/mysqlStatement")
     @ResponseBody
     public String mysqlStatement() {
-        int id = (new Random()).nextInt();
+        int id = RANDOM.nextInt();
 
         Member member = new Member();
         member.setId(id);
