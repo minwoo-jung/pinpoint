@@ -104,6 +104,12 @@
             <artifactId>log4j</artifactId>
             <scope>compile</scope>
         </dependency>
+                
+        <dependency>
+            <groupId>com.navercorp.arcus</groupId>
+            <artifactId>arcus-java-client</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
