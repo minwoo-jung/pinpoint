@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>pinpoint-testweb</artifactId>
-    <name>pinpoint test web</name>
+    <name>naver-pinpoint-test-web</name>
     <packaging>war</packaging>
 
     <dependencies>
