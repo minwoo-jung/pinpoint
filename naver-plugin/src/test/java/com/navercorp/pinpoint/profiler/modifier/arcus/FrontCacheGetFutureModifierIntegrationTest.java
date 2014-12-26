@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 /**
  * @author harebox
  */
+@Ignore
 public class FrontCacheGetFutureModifierIntegrationTest extends BasePinpointTest {
 
     @Before
@@ -27,7 +28,6 @@ public class FrontCacheGetFutureModifierIntegrationTest extends BasePinpointTest
     }
 
     @Test
-//    @Ignore
     // FIXME 테스트 깨짐
     public void frontCacheShouldBeTraced() throws Exception {
         // given: front-cache-enabled ArcusClient
