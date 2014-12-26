@@ -442,11 +442,10 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     @Override
     public void setTraceContext(TraceContext traceContext) {
         super.setTraceContext(traceContext);
-
+        // TODO implements interceptor configuration
         final ProfilerConfig profilerConfig = traceContext.getProfilerConfig();
-
-        this.paramDumpSize = profilerConfig.getLineGameNettyParamDumpSize();
-        this.entityDumpSize = profilerConfig.getLineGameNettyEntityDumpSize();
+        this.paramDumpSize = profilerConfig.readInt("profiler.line.game.netty.param.dumpsize", 512);
+        this.entityDumpSize = profilerConfig.readInt("profiler.line.game.netty.entity.dumpsize", 512);
     }
 
 }
