@@ -6,6 +6,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.nhncorp.lucy.net.invoker.InvocationFuture;
@@ -13,6 +14,7 @@ import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Ignore
 public class NPCTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
