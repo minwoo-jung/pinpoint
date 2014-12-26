@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>pinpoint-naver</artifactId>
-    <name>pinpoint private projects</name>
+    <name>naver-pinpoint-projects</name>
     <packaging>pom</packaging>
 
     <distributionManagement>

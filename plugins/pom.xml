@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>pinpoint-plugins</artifactId>
-    <name>pinpoint plugins</name>
+    <name>naver-pinpoint-plugins</name>
     <packaging>pom</packaging>
     
     <modules>
