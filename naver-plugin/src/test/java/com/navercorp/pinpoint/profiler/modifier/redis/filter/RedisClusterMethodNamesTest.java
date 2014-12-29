@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.navercorp.pinpoint.profiler.modifier.redis.filter.RedisClusterMethodNames;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.filter.RedisClusterMethodNames;
 
 public class RedisClusterMethodNamesTest {
 

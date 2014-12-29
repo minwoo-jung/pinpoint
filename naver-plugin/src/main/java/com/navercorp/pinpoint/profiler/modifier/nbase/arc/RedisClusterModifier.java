@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc;
 
 import java.security.ProtectionDomain;
 import java.util.List;
@@ -14,8 +14,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.instrument.NotFoundInstrumentException;
 import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
 import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.filter.NameBasedMethodFilter;
-import com.navercorp.pinpoint.profiler.modifier.redis.filter.RedisClusterMethodNames;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.filter.NameBasedMethodFilter;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.filter.RedisClusterMethodNames;
 
 /**
  * RedisCluster(nBase-ARC client) modifier
@@ -70,7 +70,7 @@ public class RedisClusterModifier extends AbstractModifier {
         final List<MethodInfo> declaredMethods = instrumentClass.getDeclaredMethods(new NameBasedMethodFilter(RedisClusterMethodNames.get()));
         for (MethodInfo method : declaredMethods) {
             try {
-                final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.RedisClusterMethodInterceptor");
+                final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor.RedisClusterMethodInterceptor");
                 instrumentClass.addInterceptor(method.getName(), method.getParameterTypes(), methodInterceptor);
             } catch (Exception e) {
                 if (logger.isWarnEnabled()) {
@@ -82,7 +82,7 @@ public class RedisClusterModifier extends AbstractModifier {
     }
 
     protected void addConstructorInterceptor(ClassLoader classLoader, ProtectionDomain protectedDomain, final InstrumentClass instrumentClass) throws InstrumentException, NotFoundInstrumentException {
-        final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.RedisClusterConstructorInterceptor");
+        final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor.RedisClusterConstructorInterceptor");
         instrumentClass.addConstructorInterceptor(new String[]{"java.lang.String"}, constructorInterceptor);
         instrumentClass.addConstructorInterceptor(new String[] { "java.lang.String", "int" }, constructorInterceptor);
         instrumentClass.addConstructorInterceptor(new String[] { "java.lang.String", "int", "int" }, constructorInterceptor);
