@@ -9,6 +9,7 @@ import net.spy.memcached.ConnectionFactoryBuilder;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
@@ -18,15 +19,15 @@ import static org.junit.Assert.*;
 /**
  * @author harebox
  */
+@Ignore
 public class FrontCacheGetFutureModifierIntegrationTest extends BasePinpointTest {
 
     @Before
     public void setUp() throws Exception {
-//        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    @Ignore
     // FIXME 테스트 깨짐
     public void frontCacheShouldBeTraced() throws Exception {
         // given: front-cache-enabled ArcusClient

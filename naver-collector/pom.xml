@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>pinpoint-naver-collector</artifactId>
-    <name>Pinpoint Collector for Naver</name>
+    <name>naver-pinpoint-collector</name>
     <packaging>war</packaging>
 
     <properties>
