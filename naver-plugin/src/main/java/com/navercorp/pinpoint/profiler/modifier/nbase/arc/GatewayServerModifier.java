@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc;
 
 import java.security.ProtectionDomain;
 import java.util.List;
@@ -50,7 +50,7 @@ public class GatewayServerModifier extends AbstractModifier {
             final List<MethodInfo> declaredMethods = instrumentClass.getDeclaredMethods();
             for (MethodInfo method : declaredMethods) {
                 if (method.getName().equals("getResource")) {
-                    final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.GatewayServerMethodInterceptor");
+                    final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor.GatewayServerMethodInterceptor");
                     instrumentClass.addInterceptor(method.getName(), method.getParameterTypes(), methodInterceptor);
                 }
             }

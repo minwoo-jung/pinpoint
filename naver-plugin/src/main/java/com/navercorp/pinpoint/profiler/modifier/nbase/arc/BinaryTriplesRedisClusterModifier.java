@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc;
 
 import java.security.ProtectionDomain;
 
@@ -10,25 +10,25 @@ import com.navercorp.pinpoint.bootstrap.instrument.NotFoundInstrumentException;
 import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
 
 /**
- * jedis(redis client) modifier
+ * RedisCluster(nBase-ARC client) modifier
  * 
  * @author jaehong.kim
  *
  */
-public class BinaryJedisModifier extends JedisModifier {
+public class BinaryTriplesRedisClusterModifier extends RedisClusterModifier {
 
-    public BinaryJedisModifier(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
+    public BinaryTriplesRedisClusterModifier(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         super(byteCodeInstrumentor, agent);
     }
 
     @Override
     public String getTargetClass() {
-        return "redis/clients/jedis/BinaryJedis";
+        return "com/nhncorp/redis/cluster/triples/BinaryTriplesRedisCluster";
     }
 
     @Override
     protected void beforeAddInterceptor(ClassLoader classLoader, ProtectionDomain protectedDomain, final InstrumentClass instrumentClass) throws NotFoundInstrumentException, InstrumentException {
-        // trace endPoint. 
+        // trace destinationId, endPoint
         instrumentClass.addTraceValue(MapTraceValue.class);
     }
 }

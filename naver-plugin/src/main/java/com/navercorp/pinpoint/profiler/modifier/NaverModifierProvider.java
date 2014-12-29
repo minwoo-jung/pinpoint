@@ -19,26 +19,26 @@ import com.navercorp.pinpoint.profiler.modifier.connector.npc.NioNpcHessianConne
 import com.navercorp.pinpoint.profiler.modifier.connector.npc.NpcHessianConnectorModifier;
 import com.navercorp.pinpoint.profiler.modifier.linegame.HandlerInvokeTaskModifier;
 import com.navercorp.pinpoint.profiler.modifier.linegame.HttpCustomServerHandlerModifier;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.BinaryRedisClusterModifier;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.BinaryTriplesRedisClusterModifier;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.GatewayModifier;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.GatewayServerModifier;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.RedisClusterModifier;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.RedisClusterPipelineModifier;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.TriplesRedisClusterModifier;
 import com.navercorp.pinpoint.profiler.modifier.redis.BinaryJedisModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.BinaryRedisClusterModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.BinaryTriplesRedisClusterModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.GatewayModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.GatewayServerModifier;
 import com.navercorp.pinpoint.profiler.modifier.redis.JedisClientModifier;
 import com.navercorp.pinpoint.profiler.modifier.redis.JedisModifier;
 import com.navercorp.pinpoint.profiler.modifier.redis.JedisMultiKeyPipelineBaseModifier;
 import com.navercorp.pinpoint.profiler.modifier.redis.JedisPipelineBaseModifier;
 import com.navercorp.pinpoint.profiler.modifier.redis.JedisPipelineModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.RedisClusterModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.RedisClusterPipelineModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.TriplesRedisClusterModifier;
 
 public class NaverModifierProvider implements ModifierProvider {
 
     @Override
     public List<Modifier> getModifiers(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         List<Modifier> modifiers = new ArrayList<Modifier>();
-        
+
         addBLOC3Modifier(modifiers, byteCodeInstrumentor, agent);
         addBLOC4Modifier(modifiers, byteCodeInstrumentor, agent);
         addNpcModifier(modifiers, byteCodeInstrumentor, agent);
@@ -47,9 +47,10 @@ public class NaverModifierProvider implements ModifierProvider {
         addLineGameBaseFrameworkModifier(modifiers, byteCodeInstrumentor, agent);
         addNbaseArcSupport(modifiers, byteCodeInstrumentor, agent);
         addRedisSupport(modifiers, byteCodeInstrumentor, agent);
-        
+
         return modifiers;
     }
+
     /**
      * BLOC 3.x
      */
@@ -64,10 +65,10 @@ public class NaverModifierProvider implements ModifierProvider {
     private void addBLOC4Modifier(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         NettyInboundHandlerModifier nettyInboundHandlerModifier = new NettyInboundHandlerModifier(byteCodeInstrumentor, agent);
         modifiers.add(nettyInboundHandlerModifier);
-        
+
         NpcHandlerModifier npcHandlerModifier = new NpcHandlerModifier(byteCodeInstrumentor, agent);
         modifiers.add(npcHandlerModifier);
-        
+
         RequestProcessorModifier requestProcessorModifier = new RequestProcessorModifier(byteCodeInstrumentor, agent);
         modifiers.add(requestProcessorModifier);
     }
@@ -80,16 +81,16 @@ public class NaverModifierProvider implements ModifierProvider {
         modifiers.add(new NioNpcHessianConnectorModifier(byteCodeInstrumentor, agent));
         modifiers.add(new NpcHessianConnectorModifier(byteCodeInstrumentor, agent));
     }
-    
+
     private void addNimmModifier(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         modifiers.add(new NimmInvokerModifier(byteCodeInstrumentor, agent));
     }
-    
+
     private void addLucyNetModifier(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         modifiers.add(new DefaultInvocationFutureModifier(byteCodeInstrumentor, agent));
         modifiers.add(new CompositeInvocationFutureModifier(byteCodeInstrumentor, agent));
     }
-    
+
     /**
      * line game에서 사용하는 baseframework의 http handler를 지원.
      */
@@ -100,12 +101,12 @@ public class NaverModifierProvider implements ModifierProvider {
 
     private void addRedisSupport(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         ProfilerConfig profilerConfig = agent.getProfilerConfig();
-        
+
         if (profilerConfig.isRedisEnabled()) {
             modifiers.add(new BinaryJedisModifier(byteCodeInstrumentor, agent));
             modifiers.add(new JedisModifier(byteCodeInstrumentor, agent));
         }
-        
+
         if (profilerConfig.isRedisPipelineEnabled()) {
             modifiers.add(new JedisClientModifier(byteCodeInstrumentor, agent));
             modifiers.add(new JedisPipelineBaseModifier(byteCodeInstrumentor, agent));
@@ -113,24 +114,18 @@ public class NaverModifierProvider implements ModifierProvider {
             modifiers.add(new JedisPipelineModifier(byteCodeInstrumentor, agent));
         }
     }
-    
+
     private void addNbaseArcSupport(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         ProfilerConfig profilerConfig = agent.getProfilerConfig();
-        
-        if (profilerConfig.isNbaseArcEnabled() || profilerConfig.isNbaseArcPipelineEnabled()) {
-            modifiers.add(new GatewayModifier(byteCodeInstrumentor, agent));
-            modifiers.add(new GatewayServerModifier(byteCodeInstrumentor, agent));
-            
-            if (profilerConfig.isNbaseArcEnabled()) {
-                modifiers.add(new RedisClusterModifier(byteCodeInstrumentor, agent));
-                modifiers.add(new BinaryRedisClusterModifier(byteCodeInstrumentor, agent));
-                modifiers.add(new TriplesRedisClusterModifier(byteCodeInstrumentor, agent));
-                modifiers.add(new BinaryTriplesRedisClusterModifier(byteCodeInstrumentor, agent));
-            }
 
-            if (profilerConfig.isNbaseArcPipelineEnabled()) {
-                modifiers.add(new RedisClusterPipelineModifier(byteCodeInstrumentor, agent));
-            }
-        }
+        modifiers.add(new GatewayModifier(byteCodeInstrumentor, agent));
+        modifiers.add(new GatewayServerModifier(byteCodeInstrumentor, agent));
+
+        modifiers.add(new RedisClusterModifier(byteCodeInstrumentor, agent));
+        modifiers.add(new BinaryRedisClusterModifier(byteCodeInstrumentor, agent));
+        modifiers.add(new TriplesRedisClusterModifier(byteCodeInstrumentor, agent));
+        modifiers.add(new BinaryTriplesRedisClusterModifier(byteCodeInstrumentor, agent));
+
+        modifiers.add(new RedisClusterPipelineModifier(byteCodeInstrumentor, agent));
     }
 }

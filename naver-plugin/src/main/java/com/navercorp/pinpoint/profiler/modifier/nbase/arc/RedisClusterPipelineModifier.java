@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc;
 
 import java.security.ProtectionDomain;
 import java.util.List;
@@ -14,8 +14,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
 import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.filter.NameBasedMethodFilter;
-import com.navercorp.pinpoint.profiler.modifier.redis.filter.RedisClusterPipelineMethodNames;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.filter.NameBasedMethodFilter;
+import com.navercorp.pinpoint.profiler.modifier.nbase.arc.filter.RedisClusterPipelineMethodNames;
 
 /**
  * RedisCluster(nBase-ARC client) pipeline modifier
@@ -64,7 +64,7 @@ public class RedisClusterPipelineModifier extends AbstractModifier {
     }
 
     protected void addConstructorInterceptor(ClassLoader classLoader, ProtectionDomain protectedDomain, final InstrumentClass instrumentClass) throws InstrumentException {
-        final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.RedisClusterPipelineConstructorInterceptor");
+        final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor.RedisClusterPipelineConstructorInterceptor");
         try {
             instrumentClass.addConstructorInterceptor(new String[] { "com.nhncorp.redis.cluster.gateway.GatewayServer" }, constructorInterceptor);
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class RedisClusterPipelineModifier extends AbstractModifier {
         final List<MethodInfo> declaredMethods = instrumentClass.getDeclaredMethods(new NameBasedMethodFilter(RedisClusterPipelineMethodNames.get()));
         for (MethodInfo method : declaredMethods) {
             try {
-                final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.RedisClusterPipelineMethodInterceptor");
+                final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor.RedisClusterPipelineMethodInterceptor");
                 instrumentClass.addInterceptor(method.getName(), method.getParameterTypes(), methodInterceptor);
             } catch (Exception e) {
                 if (logger.isWarnEnabled()) {

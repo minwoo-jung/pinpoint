@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc;
 
 import java.security.ProtectionDomain;
 import java.util.List;
@@ -45,14 +45,14 @@ public class GatewayModifier extends AbstractModifier {
 
             // trace destinationId
             instrumentClass.addTraceValue(MapTraceValue.class);
-            final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.GatewayConstructorInterceptor");
+            final Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor.GatewayConstructorInterceptor");
             instrumentClass.addConstructorInterceptor(new String[] { "com.nhncorp.redis.cluster.gateway.GatewayConfig" }, constructorInterceptor);
 
             // method
             final List<MethodInfo> declaredMethods = instrumentClass.getDeclaredMethods();
             for (MethodInfo method : declaredMethods) {
                 if (method.getName().equals("getServer")) {
-                    final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.redis.interceptor.GatewayMethodInterceptor");
+                    final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor.GatewayMethodInterceptor");
                     instrumentClass.addInterceptor(method.getName(), method.getParameterTypes(), methodInterceptor);
                 }
             }

@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,15 +8,15 @@ import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
 import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.MapTraceValue;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.nhncorp.redis.cluster.gateway.GatewayServer;
+import com.nhncorp.redis.cluster.gateway.GatewayConfig;
 
 /**
- * RedisCluster pipeline(nBase-ARC client) constructor interceptor - trace destinationId & endPoint
+ * Gateway(nBase-ARC client) constructor interceptor - trace destinationId
  * 
  * @author jaehong.kim
  *
  */
-public class RedisClusterPipelineConstructorInterceptor implements SimpleAroundInterceptor, TargetClassLoader {
+public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, TargetClassLoader {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -31,24 +31,21 @@ public class RedisClusterPipelineConstructorInterceptor implements SimpleAroundI
             return;
         }
 
-        // trace destinationId & endPoint
         final Map<String, Object> traceValue = new HashMap<String, Object>();
-
-        // first arg : GatewayServer
         try {
-            final GatewayServer server = (GatewayServer) args[0];
-            traceValue.put("endPoint", server.getAddress().getHost() + ":" + server.getAddress().getPort());
-        } catch (Exception e) {
-            // expect 'class not found exception - GatewayServer'
-            if (logger.isWarnEnabled()) {
-                logger.warn("Failed to trace endPoint('not found GatewayServer' is compatibility error). caused={}", e.getMessage(), e);
+            final GatewayConfig config = (GatewayConfig) args[0];
+            if (config.getDomainAddress() != null) {
+                traceValue.put("destinationId", config.getDomainAddress());
+            } else if (config.getIpAddress() != null) {
+                traceValue.put("destinationId", config.getIpAddress());
+            } else if (config.getClusterName() != null) {
+                // over 1.1.x
+                traceValue.put("destinationId", config.getClusterName());
             }
-        }
-
-        if (args[0] instanceof MapTraceValue) {
-            final Map<String, Object> gatewayServerTraceValue = ((MapTraceValue) args[0]).__getTraceBindValue();
-            if (gatewayServerTraceValue != null) {
-                traceValue.put("destinationId", gatewayServerTraceValue.get("destinationId"));
+        } catch (Exception e) {
+            // backward compatibility error or expect 'class not found exception - GatewayConfig'
+            if (logger.isWarnEnabled()) {
+                logger.warn("Failed to trace destinationId('not found getClusterName' is compatibility error). caused={}", e.getMessage(), e);
             }
         }
 

@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,13 +10,12 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 
 /**
- * Jedis Pipeline(redis client) constructor interceptor
- * - trace endPoint
+ * RedisCluster(nBase-ARC client) constructor interceptor - trace endPoint
  * 
  * @author jaehong.kim
  *
  */
-public class JedisPipelineConstructorInterceptor implements SimpleAroundInterceptor, TargetClassLoader {
+public class RedisClusterConstructorInterceptor implements SimpleAroundInterceptor, TargetClassLoader {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -27,19 +26,26 @@ public class JedisPipelineConstructorInterceptor implements SimpleAroundIntercep
             logger.beforeInterceptor(target, args);
         }
 
-        // trace endPoint
-        if (!(target instanceof MapTraceValue) || !(args[0] instanceof MapTraceValue)) {
+        if (!(target instanceof MapTraceValue)) {
             return;
         }
 
-        // first arg - redis.clients.jedis.Client
-        final Map<String, Object> clientTraceValue = ((MapTraceValue) args[0]).__getTraceBindValue();
-        if (clientTraceValue == null) {
-            return;
+        // trace endPoint
+        // first arg - host
+        final StringBuilder endPoint = new StringBuilder();
+        if (args[0] instanceof String) {
+            endPoint.append(args[0]);
+            // second arg - port
+            if (args.length >= 2 && args[1] instanceof Integer) {
+                endPoint.append(":").append(args[1]);
+            } else {
+                // default port
+                endPoint.append(":").append(6379);
+            }
         }
 
         final Map<String, Object> traceValue = new HashMap<String, Object>();
-        traceValue.put("endPoint", clientTraceValue.get("endPoint"));
+        traceValue.put("endPoint", endPoint.toString());
         ((MapTraceValue) target).__setTraceBindValue(traceValue);
     }
 

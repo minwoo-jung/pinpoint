@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis.interceptor;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor;
 
 import java.util.Map;
 

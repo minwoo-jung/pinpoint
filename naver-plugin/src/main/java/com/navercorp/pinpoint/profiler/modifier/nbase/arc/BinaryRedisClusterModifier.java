@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.redis;
+package com.navercorp.pinpoint.profiler.modifier.nbase.arc;
 
 import com.navercorp.pinpoint.bootstrap.Agent;
 import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
@@ -9,14 +9,14 @@ import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
  * @author jaehong.kim
  *
  */
-public class TriplesRedisClusterModifier extends RedisClusterModifier {
+public class BinaryRedisClusterModifier extends RedisClusterModifier {
 
-    public TriplesRedisClusterModifier(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
+    public BinaryRedisClusterModifier(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         super(byteCodeInstrumentor, agent);
     }
 
     @Override
     public String getTargetClass() {
-        return "com/nhncorp/redis/cluster/triples/TriplesRedisCluster";
+        return "com/nhncorp/redis/cluster/BinaryRedisCluster";
     }
 }
