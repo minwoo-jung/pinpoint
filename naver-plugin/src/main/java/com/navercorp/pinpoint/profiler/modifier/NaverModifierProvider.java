@@ -26,12 +26,6 @@ import com.navercorp.pinpoint.profiler.modifier.nbase.arc.GatewayServerModifier;
 import com.navercorp.pinpoint.profiler.modifier.nbase.arc.RedisClusterModifier;
 import com.navercorp.pinpoint.profiler.modifier.nbase.arc.RedisClusterPipelineModifier;
 import com.navercorp.pinpoint.profiler.modifier.nbase.arc.TriplesRedisClusterModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.BinaryJedisModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.JedisClientModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.JedisModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.JedisMultiKeyPipelineBaseModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.JedisPipelineBaseModifier;
-import com.navercorp.pinpoint.profiler.modifier.redis.JedisPipelineModifier;
 
 public class NaverModifierProvider implements ModifierProvider {
 
@@ -46,7 +40,6 @@ public class NaverModifierProvider implements ModifierProvider {
         addLucyNetModifier(modifiers, byteCodeInstrumentor, agent);
         addLineGameBaseFrameworkModifier(modifiers, byteCodeInstrumentor, agent);
         addNbaseArcSupport(modifiers, byteCodeInstrumentor, agent);
-        addRedisSupport(modifiers, byteCodeInstrumentor, agent);
 
         return modifiers;
     }
@@ -99,33 +92,25 @@ public class NaverModifierProvider implements ModifierProvider {
         modifiers.add(new HttpCustomServerHandlerModifier(byteCodeInstrumentor, agent));
     }
 
-    private void addRedisSupport(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
-        ProfilerConfig profilerConfig = agent.getProfilerConfig();
-
-        if (profilerConfig.isRedisEnabled()) {
-            modifiers.add(new BinaryJedisModifier(byteCodeInstrumentor, agent));
-            modifiers.add(new JedisModifier(byteCodeInstrumentor, agent));
-        }
-
-        if (profilerConfig.isRedisPipelineEnabled()) {
-            modifiers.add(new JedisClientModifier(byteCodeInstrumentor, agent));
-            modifiers.add(new JedisPipelineBaseModifier(byteCodeInstrumentor, agent));
-            modifiers.add(new JedisMultiKeyPipelineBaseModifier(byteCodeInstrumentor, agent));
-            modifiers.add(new JedisPipelineModifier(byteCodeInstrumentor, agent));
-        }
-    }
-
     private void addNbaseArcSupport(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         ProfilerConfig profilerConfig = agent.getProfilerConfig();
-
-        modifiers.add(new GatewayModifier(byteCodeInstrumentor, agent));
-        modifiers.add(new GatewayServerModifier(byteCodeInstrumentor, agent));
-
-        modifiers.add(new RedisClusterModifier(byteCodeInstrumentor, agent));
-        modifiers.add(new BinaryRedisClusterModifier(byteCodeInstrumentor, agent));
-        modifiers.add(new TriplesRedisClusterModifier(byteCodeInstrumentor, agent));
-        modifiers.add(new BinaryTriplesRedisClusterModifier(byteCodeInstrumentor, agent));
-
-        modifiers.add(new RedisClusterPipelineModifier(byteCodeInstrumentor, agent));
+        final boolean enabled = profilerConfig.readBoolean("profiler.nbase_arc", true);
+        final boolean pipelineEnabled = profilerConfig.readBoolean("profiler.nbase_arc.pipeline", true);
+        
+        if(enabled || pipelineEnabled) {
+            modifiers.add(new GatewayModifier(byteCodeInstrumentor, agent));
+            modifiers.add(new GatewayServerModifier(byteCodeInstrumentor, agent));
+            
+            if(enabled) {
+                modifiers.add(new RedisClusterModifier(byteCodeInstrumentor, agent));
+                modifiers.add(new BinaryRedisClusterModifier(byteCodeInstrumentor, agent));
+                modifiers.add(new TriplesRedisClusterModifier(byteCodeInstrumentor, agent));
+                modifiers.add(new BinaryTriplesRedisClusterModifier(byteCodeInstrumentor, agent));
+            }
+            
+            if(pipelineEnabled) {
+                modifiers.add(new RedisClusterPipelineModifier(byteCodeInstrumentor, agent));
+            }
+        }
     }
 }
