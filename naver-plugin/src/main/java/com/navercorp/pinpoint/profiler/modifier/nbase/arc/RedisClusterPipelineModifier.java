@@ -49,7 +49,8 @@ public class RedisClusterPipelineModifier extends AbstractModifier {
             instrumentClass.addTraceValue(MapTraceValue.class);
 
             addConstructorInterceptor(classLoader, protectedDomain, instrumentClass);
-
+            addSetServerMethodInterceptor(classLoader, protectedDomain, instrumentClass);
+            
             // method
             addMethodInterceptor(classLoader, protectedDomain, instrumentClass);
 
@@ -75,6 +76,24 @@ public class RedisClusterPipelineModifier extends AbstractModifier {
         }
     }
 
+    protected void addSetServerMethodInterceptor(ClassLoader classLoader, ProtectionDomain protectedDomain, final InstrumentClass instrumentClass) throws InstrumentException {
+        final List<MethodInfo> declaredMethods = instrumentClass.getDeclaredMethods();
+        for (MethodInfo method : declaredMethods) {
+            if(!method.getName().equals("setServer")) {
+                continue;
+            }
+
+            try {
+                final Interceptor methodInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.nbase.arc.interceptor.RedisClusterPipelineSetServerMethodInterceptor");
+                instrumentClass.addInterceptor(method.getName(), method.getParameterTypes(), methodInterceptor);
+            } catch (Exception e) {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Failed to add 'setServer' method interceptor('not found ...' is jedis compatibility error). caused={}", e.getMessage(), e);
+                }
+            }
+        }
+    }
+    
     protected void addMethodInterceptor(ClassLoader classLoader, ProtectionDomain protectedDomain, final InstrumentClass instrumentClass) throws InstrumentException {
         final List<MethodInfo> declaredMethods = instrumentClass.getDeclaredMethods(new NameBasedMethodFilter(RedisClusterPipelineMethodNames.get()));
         for (MethodInfo method : declaredMethods) {
