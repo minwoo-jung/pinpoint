@@ -30,7 +30,7 @@ import com.navercorp.pinpoint.common.ServiceType;
 
 public class RetryRequestInterceptor implements SimpleAroundInterceptor, ByteCodeMethodDescriptorSupport, TraceContextSupport, TargetClassLoader {
 
-    private final PLogger logger = PLoggerFactory.getLogger(RetryRequestInterceptor.class);
+    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
     private MethodDescriptor descriptor;
