@@ -5,11 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -154,10 +150,12 @@ public class MockUpServerSettler {
 					return false;
 				byte[] serverIP = inetAddress.getAddress().getAddress();
 				// TODO array를 잘못비교하고 있는것으로 보임.  equals수정해야 되는지 검토
-				if (localHost != null && (localHost.getAddress().equals(serverIP)))
-					continue;
-				else if (!serverIP.equals(loopbackIP))
-					return false;
+				if (localHost != null && Arrays.equals(localHost.getAddress(), serverIP)) {
+                    continue;
+                }
+				else if (!Arrays.equals(serverIP, loopbackIP)) {
+                    return false;
+                }
 			}
 		}
 		return true;

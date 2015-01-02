@@ -99,7 +99,7 @@ public class HttpUtil {
 	 */
 	public enum Method {
 		GET, POST
-	};
+	}
 
 	/**
 	 * Static Util 클래스이므로, 생성자 막음

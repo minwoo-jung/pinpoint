@@ -28,7 +28,7 @@ public class AlarmMailTemplate {
         Rule rule = checker.getRule();
 
         StringBuilder body = new StringBuilder();
-        body.append("<strong>" + createSubject() + "</strong>");
+        body.append("<strong>").append(createSubject()).append("</strong>");
         body.append(LINE_FEED);
         body.append(LINE_FEED);
         body.append(String.format("Rule : %s", rule.getCheckerName()));
