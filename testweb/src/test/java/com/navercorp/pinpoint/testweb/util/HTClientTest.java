@@ -14,11 +14,11 @@ public class HTClientTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-	@Test
-	public void test() {
-		ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-		String executeToBloc = client.execute("http://localhost:9080/", new HashMap<String, Object>());
-		logger.debug(executeToBloc);
+    @Test
+    public void test() {
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        String executeToBloc = client.execute("http://localhost:9080/", new HashMap<String, Object>());
+        logger.debug(executeToBloc);
 
-	}
+    }
 }

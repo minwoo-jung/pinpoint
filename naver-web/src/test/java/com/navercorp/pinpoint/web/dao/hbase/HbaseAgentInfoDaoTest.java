@@ -20,42 +20,42 @@ import com.navercorp.pinpoint.web.dao.hbase.HbaseAgentInfoDao;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class HbaseAgentInfoDaoTest {
 
-	@Autowired
-	private HbaseAgentInfoDao selectDao;
+    @Autowired
+    private HbaseAgentInfoDao selectDao;
 
     @Autowired
-	private com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentInfoDao insertDao;
+    private com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentInfoDao insertDao;
 
-	@Test
-	public void testSelectAgentInfoStartTime() throws Exception {
-		TAgentInfo agentInfo1 = createAgentInfo(10000);
-		insertDao.insert(agentInfo1);
+    @Test
+    public void testSelectAgentInfoStartTime() throws Exception {
+        TAgentInfo agentInfo1 = createAgentInfo(10000);
+        insertDao.insert(agentInfo1);
 
-		TAgentInfo agentInfo2 = createAgentInfo(20000);
-		insertDao.insert(agentInfo2);
+        TAgentInfo agentInfo2 = createAgentInfo(20000);
+        insertDao.insert(agentInfo2);
 
-		TAgentInfo agentInfo3 = createAgentInfo(30000);
-		insertDao.insert(agentInfo3);
+        TAgentInfo agentInfo3 = createAgentInfo(30000);
+        insertDao.insert(agentInfo3);
 
-		AgentInfoBo testcaseAgent1 = selectDao.findAgentInfoBeforeStartTime("testcaseAgent", 20005);
-		Assert.assertEquals(testcaseAgent1.getStartTime(), 20000);
+        AgentInfoBo testcaseAgent1 = selectDao.findAgentInfoBeforeStartTime("testcaseAgent", 20005);
+        Assert.assertEquals(testcaseAgent1.getStartTime(), 20000);
 
-		AgentInfoBo testcaseAgent2 = selectDao.findAgentInfoBeforeStartTime("testcaseAgent", 10004);
-		Assert.assertEquals(testcaseAgent2.getStartTime(), 10000);
+        AgentInfoBo testcaseAgent2 = selectDao.findAgentInfoBeforeStartTime("testcaseAgent", 10004);
+        Assert.assertEquals(testcaseAgent2.getStartTime(), 10000);
 
-		AgentInfoBo testcaseAgent3 = selectDao.findAgentInfoBeforeStartTime("testcaseAgent", 50000);
-		Assert.assertEquals(testcaseAgent3.getStartTime(), 30000);
+        AgentInfoBo testcaseAgent3 = selectDao.findAgentInfoBeforeStartTime("testcaseAgent", 50000);
+        Assert.assertEquals(testcaseAgent3.getStartTime(), 30000);
 
-	}
+    }
 
-	private TAgentInfo createAgentInfo(long startTime) {
-		TAgentInfo agentInfo = new TAgentInfo();
-		agentInfo.setAgentId("testcaseAgent");
-		agentInfo.setApplicationName("testcaseApplication");
-		agentInfo.setHostname("testcaseHostName");
-		agentInfo.setPorts("9995");
+    private TAgentInfo createAgentInfo(long startTime) {
+        TAgentInfo agentInfo = new TAgentInfo();
+        agentInfo.setAgentId("testcaseAgent");
+        agentInfo.setApplicationName("testcaseApplication");
+        agentInfo.setHostname("testcaseHostName");
+        agentInfo.setPorts("9995");
         agentInfo.setStartTimestamp(startTime);
 
-		return agentInfo;
-	}
+        return agentInfo;
+    }
 }

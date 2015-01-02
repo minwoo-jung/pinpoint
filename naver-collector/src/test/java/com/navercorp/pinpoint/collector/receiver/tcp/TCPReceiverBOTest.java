@@ -40,97 +40,97 @@ import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializerFactory;
 public class TCPReceiverBOTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	TcpDispatchHandler handler;
+    @Autowired
+    TcpDispatchHandler handler;
 
-	@Autowired
-	private TCPReceiver tcpReceiver;
-	
-	
-	@Test
-	public void agentInfoTest1() throws Exception {
-		Socket socket = connectTcpReceiver();
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
+    @Autowired
+    private TCPReceiver tcpReceiver;
 
-		TAgentInfo agentInfo = getAgentInfo();
-		encodeAndWrite(os, agentInfo, false);
-		ResponsePacket responsePacket = readAndDecode(is, 1000);
-		Assert.assertNull(responsePacket);
 
-	}
+    @Test
+    public void agentInfoTest1() throws Exception {
+        Socket socket = connectTcpReceiver();
+        OutputStream os = socket.getOutputStream();
+        InputStream is = socket.getInputStream();
 
-	@Test
-	public void agentInfoTest2() throws Exception {
-		Socket socket = connectTcpReceiver();
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
+        TAgentInfo agentInfo = getAgentInfo();
+        encodeAndWrite(os, agentInfo, false);
+        ResponsePacket responsePacket = readAndDecode(is, 1000);
+        Assert.assertNull(responsePacket);
 
-		TAgentInfo agentInfo = getAgentInfo();
-		encodeAndWrite(os, agentInfo, true);
-		ResponsePacket responsePacket = readAndDecode(is, 1000);
+    }
+
+    @Test
+    public void agentInfoTest2() throws Exception {
+        Socket socket = connectTcpReceiver();
+        OutputStream os = socket.getOutputStream();
+        InputStream is = socket.getInputStream();
+
+        TAgentInfo agentInfo = getAgentInfo();
+        encodeAndWrite(os, agentInfo, true);
+        ResponsePacket responsePacket = readAndDecode(is, 1000);
 
         HeaderTBaseDeserializer deserializer = new HeaderTBaseDeserializerFactory().createDeserializer();
-		TResult result = (TResult) deserializer.deserialize(responsePacket.getPayload());
-		
-		Assert.assertTrue(result.isSuccess());
-	}
+        TResult result = (TResult) deserializer.deserialize(responsePacket.getPayload());
 
-	private Socket connectTcpReceiver() throws IOException {
-		Socket socket = new Socket();
-		socket.connect(new InetSocketAddress("127.0.0.1", 9994));
+        Assert.assertTrue(result.isSuccess());
+    }
 
-		return socket;
-	}
+    private Socket connectTcpReceiver() throws IOException {
+        Socket socket = new Socket();
+        socket.connect(new InetSocketAddress("127.0.0.1", 9994));
 
-	private void encodeAndWrite(OutputStream os, TBase tbase, boolean isReqRes) throws Exception {
-		HeaderTBaseSerializer serializer = HeaderTBaseSerializerFactory.DEFAULT_FACTORY.createSerializer();
-		byte[] payload = serializer.serialize(tbase);
+        return socket;
+    }
 
-		Packet packet = null;
-		if (isReqRes) {
-			packet = new RequestPacket(payload);
-		} else {
-			packet = new SendPacket(payload);
-		}
+    private void encodeAndWrite(OutputStream os, TBase tbase, boolean isReqRes) throws Exception {
+        HeaderTBaseSerializer serializer = HeaderTBaseSerializerFactory.DEFAULT_FACTORY.createSerializer();
+        byte[] payload = serializer.serialize(tbase);
 
-		os.write(packet.toBuffer().toByteBuffer().array());
-		os.flush();
-	}
+        Packet packet = null;
+        if (isReqRes) {
+            packet = new RequestPacket(payload);
+        } else {
+            packet = new SendPacket(payload);
+        }
 
-	private ResponsePacket readAndDecode(InputStream is, long waitTimeMillis) throws Exception {
-		long startTimeMillis = System.currentTimeMillis();
+        os.write(packet.toBuffer().toByteBuffer().array());
+        os.flush();
+    }
 
-		while (true) {
-			int avaiableRead = is.available();
+    private ResponsePacket readAndDecode(InputStream is, long waitTimeMillis) throws Exception {
+        long startTimeMillis = System.currentTimeMillis();
 
-			if (avaiableRead > 0) {
-				byte[] payload = new byte[avaiableRead];
-				is.read(payload);
+        while (true) {
+            int avaiableRead = is.available();
 
-				for (byte b : payload) {
-					logger.warn("!!!{}", b);
-				}
-				
-				ChannelBuffer cb = ChannelBuffers.wrappedBuffer(payload);
-				cb.readByte();
-				cb.readByte();
-				
-				
-				ResponsePacket responsePacket = ResponsePacket.readBuffer((short) 6, cb);
-				return responsePacket;
-			}
+            if (avaiableRead > 0) {
+                byte[] payload = new byte[avaiableRead];
+                is.read(payload);
 
-			Thread.sleep(20);
-			if (waitTimeMillis < System.currentTimeMillis() - startTimeMillis) {
-				return null;
-			}
-		}
-	}
+                for (byte b : payload) {
+                    logger.warn("!!!{}", b);
+                }
 
-	private TAgentInfo getAgentInfo() {
-		TAgentInfo agentInfo = new TAgentInfo("hostname", "127.0.0.1", "8081", "agentId", "appName", (short) 2, 1111, "1", System.currentTimeMillis());
-		return agentInfo;
-	}
+                ChannelBuffer cb = ChannelBuffers.wrappedBuffer(payload);
+                cb.readByte();
+                cb.readByte();
+
+
+                ResponsePacket responsePacket = ResponsePacket.readBuffer((short) 6, cb);
+                return responsePacket;
+            }
+
+            Thread.sleep(20);
+            if (waitTimeMillis < System.currentTimeMillis() - startTimeMillis) {
+                return null;
+            }
+        }
+    }
+
+    private TAgentInfo getAgentInfo() {
+        TAgentInfo agentInfo = new TAgentInfo("hostname", "127.0.0.1", "8081", "agentId", "appName", (short) 2, 1111, "1", System.currentTimeMillis());
+        return agentInfo;
+    }
 
 }

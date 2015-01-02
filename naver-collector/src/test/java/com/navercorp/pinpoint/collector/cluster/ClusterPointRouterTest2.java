@@ -48,167 +48,167 @@ import com.navercorp.pinpoint.thrift.util.SerializationUtils;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class ClusterPointRouterTest2 {
 
-	private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = 22215;
+    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = 22215;
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private final long currentTime = System.currentTimeMillis();
+    private final long currentTime = System.currentTimeMillis();
 
-	@Autowired
-	ClusterPointRouter clusterPointRouter;
+    @Autowired
+    ClusterPointRouter clusterPointRouter;
 
-	@Autowired
-	private SerializerFactory commandSerializerFactory;
+    @Autowired
+    private SerializerFactory commandSerializerFactory;
 
-	@Autowired
-	private DeserializerFactory commandDeserializerFactory;
+    @Autowired
+    private DeserializerFactory commandDeserializerFactory;
 
-	@Test
-	public void profilerClusterPointtest() throws TException, InterruptedException {
-		WebCluster webCluster = null;
-		try {
-			webCluster = new WebCluster(CollectorUtils.getServerIdentifier(), clusterPointRouter);
-			
-			PinpointServerSocket pinpointServerSocket = createServerSocket("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+    @Test
+    public void profilerClusterPointtest() throws TException, InterruptedException {
+        WebCluster webCluster = null;
+        try {
+            webCluster = new WebCluster(CollectorUtils.getServerIdentifier(), clusterPointRouter);
 
-			InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
-			webCluster.connectPointIfAbsent(address);
+            PinpointServerSocket pinpointServerSocket = createServerSocket("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
-			// profiler쪽 clusterPoint 생성
-			SocketChannel socketChannel = mock(SocketChannel.class);
-			ClusterPoint clusterPoint = new ChannelContextClusterPoint(createChannelContext(socketChannel));
+            InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            webCluster.connectPointIfAbsent(address);
 
-			ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
-			clusterPointRepository.addClusterPoint(clusterPoint);
+            // profiler쪽 clusterPoint 생성
+            SocketChannel socketChannel = mock(SocketChannel.class);
+            ClusterPoint clusterPoint = new ChannelContextClusterPoint(createChannelContext(socketChannel));
 
-			byte[] echoPayload = createEchoPayload("hello");
-			when(socketChannel.sendRequestMessage(echoPayload)).thenReturn(createExpectedFuture(echoPayload));
+            ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
+            clusterPointRepository.addClusterPoint(clusterPoint);
 
-			byte[] commandDeliveryPayload = createDeliveryCommandPayload("application", "agent", currentTime, echoPayload);
+            byte[] echoPayload = createEchoPayload("hello");
+            when(socketChannel.sendRequestMessage(echoPayload)).thenReturn(createExpectedFuture(echoPayload));
 
-			List<ChannelContext> contextList = pinpointServerSocket.getDuplexCommunicationChannelContext();
-			ChannelContext context = contextList.get(0);
-			Future<ResponseMessage> future = context.getSocketChannel().sendRequestMessage(commandDeliveryPayload);
-			future.await();
+            byte[] commandDeliveryPayload = createDeliveryCommandPayload("application", "agent", currentTime, echoPayload);
 
-			TCommandEcho base = (TCommandEcho) SerializationUtils.deserialize(future.getResult().getMessage(), commandDeserializerFactory);
-			
-			Assert.assertEquals(base.getMessage(), "hello");
-		} finally {
-			if (webCluster != null) {
-				webCluster.close();
-			}
-		}
-	}
-	
-	private PinpointServerSocket createServerSocket(String host, int port) {
-		PinpointServerSocket pinpointServerSocket = new PinpointServerSocket();
-		pinpointServerSocket.setMessageListener(new PinpointSocketManagerHandler());
-		pinpointServerSocket.bind(host, port);
+            List<ChannelContext> contextList = pinpointServerSocket.getDuplexCommunicationChannelContext();
+            ChannelContext context = contextList.get(0);
+            Future<ResponseMessage> future = context.getSocketChannel().sendRequestMessage(commandDeliveryPayload);
+            future.await();
 
-		
-		return pinpointServerSocket;
-	}
-	
-	private ChannelContext createChannelContext(SocketChannel socketChannel) {
-		ChannelContext channelContext = new ChannelContext(socketChannel, null);
-		channelContext.setChannelProperties(getParams());
+            TCommandEcho base = (TCommandEcho) SerializationUtils.deserialize(future.getResult().getMessage(), commandDeserializerFactory);
 
-		return channelContext;
-	}
-	
-	private DefaultFuture createExpectedFuture(byte[] payload) {
-		ResponseMessage responseMessage = new ResponseMessage();
-		responseMessage.setMessage(payload);
+            Assert.assertEquals(base.getMessage(), "hello");
+        } finally {
+            if (webCluster != null) {
+                webCluster.close();
+            }
+        }
+    }
 
-		DefaultFuture future = new DefaultFuture();
-		future.setResult(responseMessage);
+    private PinpointServerSocket createServerSocket(String host, int port) {
+        PinpointServerSocket pinpointServerSocket = new PinpointServerSocket();
+        pinpointServerSocket.setMessageListener(new PinpointSocketManagerHandler());
+        pinpointServerSocket.bind(host, port);
 
-		return future;
-	}
 
-	private byte[] createEchoPayload(String message) throws TException {
-		TCommandEcho echo = new TCommandEcho();
-		echo.setMessage("hello");
+        return pinpointServerSocket;
+    }
 
-		byte[] payload = SerializationUtils.serialize(echo, commandSerializerFactory);
-		return payload;
-	}
-	
-	private byte[] createDeliveryCommandPayload(String application, String agent, long currentTime, byte[] echoPayload) throws TException {
-		TCommandTransfer commandTransfer = new TCommandTransfer();
-		commandTransfer.setApplicationName("application");
-		commandTransfer.setAgentId("agent");
-		commandTransfer.setStartTime(currentTime);
-		commandTransfer.setPayload(echoPayload);
+    private ChannelContext createChannelContext(SocketChannel socketChannel) {
+        ChannelContext channelContext = new ChannelContext(socketChannel, null);
+        channelContext.setChannelProperties(getParams());
 
-		byte[] payload = SerializationUtils.serialize(commandTransfer, commandSerializerFactory);
-		return payload;
-	}
+        return channelContext;
+    }
 
-	private class PinpointSocketManagerHandler implements ServerMessageListener {
-		@Override
-		public void handleSend(SendPacket sendPacket, SocketChannel channel) {
-			logger.warn("Unsupport send received {} {}", sendPacket, channel);
-		}
+    private DefaultFuture createExpectedFuture(byte[] payload) {
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setMessage(payload);
 
-		@Override
-		public void handleRequest(RequestPacket requestPacket, SocketChannel channel) {
-			logger.warn("Unsupport request received {} {}", requestPacket, channel);
-		}
+        DefaultFuture future = new DefaultFuture();
+        future.setResult(responseMessage);
 
-		@Override
-		public HandshakeResponseCode handleHandshake(Map properties) {
-			logger.warn("do handleEnableWorker {}", properties);
-			return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
-		}
-	}
+        return future;
+    }
 
-	private Map<Object, Object> getParams() {
-		Map<Object, Object> properties = new HashMap<Object, Object>();
-		
-		properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
-		properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
-		properties.put(AgentHandshakePropertyType.HOSTNAME.getName(), "hostname");
-		properties.put(AgentHandshakePropertyType.IP.getName(), "ip");
-		properties.put(AgentHandshakePropertyType.PID.getName(), 1111);
-		properties.put(AgentHandshakePropertyType.SERVICE_TYPE.getName(), 10);
-		properties.put(AgentHandshakePropertyType.START_TIMESTAMP.getName(), currentTime);
-		properties.put(AgentHandshakePropertyType.VERSION.getName(), "1.0.3-SNAPSHOT");
+    private byte[] createEchoPayload(String message) throws TException {
+        TCommandEcho echo = new TCommandEcho();
+        echo.setMessage("hello");
 
-		return properties;
-	}
+        byte[] payload = SerializationUtils.serialize(echo, commandSerializerFactory);
+        return payload;
+    }
 
-	private TargetClusterPoint findClusterPoint(String applicationName, String agentId, long startTimeStamp, List<TargetClusterPoint> targetClusterPointList) {
+    private byte[] createDeliveryCommandPayload(String application, String agent, long currentTime, byte[] echoPayload) throws TException {
+        TCommandTransfer commandTransfer = new TCommandTransfer();
+        commandTransfer.setApplicationName("application");
+        commandTransfer.setAgentId("agent");
+        commandTransfer.setStartTime(currentTime);
+        commandTransfer.setPayload(echoPayload);
 
-		List<TargetClusterPoint> result = new ArrayList<TargetClusterPoint>();
+        byte[] payload = SerializationUtils.serialize(commandTransfer, commandSerializerFactory);
+        return payload;
+    }
 
-		for (TargetClusterPoint targetClusterPoint : targetClusterPointList) {
-			if (!targetClusterPoint.getApplicationName().equals(applicationName)) {
-				continue;
-			}
+    private class PinpointSocketManagerHandler implements ServerMessageListener {
+        @Override
+        public void handleSend(SendPacket sendPacket, SocketChannel channel) {
+            logger.warn("Unsupport send received {} {}", sendPacket, channel);
+        }
 
-			if (!targetClusterPoint.getAgentId().equals(agentId)) {
-				continue;
-			}
+        @Override
+        public void handleRequest(RequestPacket requestPacket, SocketChannel channel) {
+            logger.warn("Unsupport request received {} {}", requestPacket, channel);
+        }
 
-			if (!(targetClusterPoint.getStartTimeStamp() == startTimeStamp)) {
-				continue;
-			}
+        @Override
+        public HandshakeResponseCode handleHandshake(Map properties) {
+            logger.warn("do handleEnableWorker {}", properties);
+            return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
+        }
+    }
 
-			result.add(targetClusterPoint);
-		}
+    private Map<Object, Object> getParams() {
+        Map<Object, Object> properties = new HashMap<Object, Object>();
 
-		if (result.size() == 1) {
-			return result.get(0);
-		}
+        properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
+        properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
+        properties.put(AgentHandshakePropertyType.HOSTNAME.getName(), "hostname");
+        properties.put(AgentHandshakePropertyType.IP.getName(), "ip");
+        properties.put(AgentHandshakePropertyType.PID.getName(), 1111);
+        properties.put(AgentHandshakePropertyType.SERVICE_TYPE.getName(), 10);
+        properties.put(AgentHandshakePropertyType.START_TIMESTAMP.getName(), currentTime);
+        properties.put(AgentHandshakePropertyType.VERSION.getName(), "1.0.3-SNAPSHOT");
 
-		if (result.size() > 1) {
-			logger.warn("Ambiguous ClusterPoint {}, {}, {} (Valid Agent list={}).", applicationName, agentId, startTimeStamp, result);
-			return null;
-		}
+        return properties;
+    }
 
-		return null;
-	}
+    private TargetClusterPoint findClusterPoint(String applicationName, String agentId, long startTimeStamp, List<TargetClusterPoint> targetClusterPointList) {
+
+        List<TargetClusterPoint> result = new ArrayList<TargetClusterPoint>();
+
+        for (TargetClusterPoint targetClusterPoint : targetClusterPointList) {
+            if (!targetClusterPoint.getApplicationName().equals(applicationName)) {
+                continue;
+            }
+
+            if (!targetClusterPoint.getAgentId().equals(agentId)) {
+                continue;
+            }
+
+            if (!(targetClusterPoint.getStartTimeStamp() == startTimeStamp)) {
+                continue;
+            }
+
+            result.add(targetClusterPoint);
+        }
+
+        if (result.size() == 1) {
+            return result.get(0);
+        }
+
+        if (result.size() > 1) {
+            logger.warn("Ambiguous ClusterPoint {}, {}, {} (Valid Agent list={}).", applicationName, agentId, startTimeStamp, result);
+            return null;
+        }
+
+        return null;
+    }
 
 }

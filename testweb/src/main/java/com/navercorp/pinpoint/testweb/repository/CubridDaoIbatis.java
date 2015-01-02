@@ -58,28 +58,28 @@ public class CubridDaoIbatis implements CubridDao {
     
     @Override
     public boolean createErrorStatement() {
-    	Connection connection = null;
-    	Statement statement = null;
-    	try {
-    		connection = datasource.getConnection();
-    		statement = connection.createStatement();
-    		return statement.execute("SELECT * FROM NOT_EXISTS_TABLE");
-    	} catch (SQLException e) {
-    		throw new RuntimeException(e);
-    	} finally {
-    		if (statement != null) {
-    			try {
-    				statement.close();
-    			} catch (SQLException e) {
-    			}
-    		}
-    		if (connection != null) {
-    			try {
-    				connection.close();
-    			} catch (SQLException e) {
-    			}
-    		}
-    		
-    	}
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = datasource.getConnection();
+            statement = connection.createStatement();
+            return statement.execute("SELECT * FROM NOT_EXISTS_TABLE");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                }
+            }
+
+        }
     }
 }

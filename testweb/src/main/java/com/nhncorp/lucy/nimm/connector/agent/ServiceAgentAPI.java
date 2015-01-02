@@ -5,6 +5,6 @@ import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
 interface ServiceAgentAPI {
 
 
-	void sendMessage(NimmAddress targetAddress, byte[] message);
+    void sendMessage(NimmAddress targetAddress, byte[] message);
 
 }

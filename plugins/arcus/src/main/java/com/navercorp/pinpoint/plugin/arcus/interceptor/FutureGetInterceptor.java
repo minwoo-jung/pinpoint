@@ -21,7 +21,7 @@ import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
  */
 public class FutureGetInterceptor implements SimpleAroundInterceptor {
 
-	private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
     private final MethodDescriptor methodDescriptor;
@@ -33,30 +33,30 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
     }
 
     @Override
-	public void before(Object target, Object[] args) {
-		if (isDebug) {
-			logger.beforeInterceptor(target, args);
-		}
+    public void before(Object target, Object[] args) {
+        if (isDebug) {
+            logger.beforeInterceptor(target, args);
+        }
 
-		final Trace trace = traceContext.currentTraceObject();
-		if (trace == null) {
+        final Trace trace = traceContext.currentTraceObject();
+        if (trace == null) {
             return;
-		}
-		
-		trace.traceBlockBegin();
-		trace.markBeforeTime();
-	}
+        }
+
+        trace.traceBlockBegin();
+        trace.markBeforeTime();
+    }
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
-		if (isDebug) {
-			logger.afterInterceptor(target, args, result, throwable);
-		}
+        if (isDebug) {
+            logger.afterInterceptor(target, args, result, throwable);
+        }
 
-		final Trace trace = traceContext.currentTraceObject();
-		if (trace == null) {
-			return;
-		}
+        final Trace trace = traceContext.currentTraceObject();
+        if (trace == null) {
+            return;
+        }
 
         try {
             trace.recordApi(methodDescriptor);

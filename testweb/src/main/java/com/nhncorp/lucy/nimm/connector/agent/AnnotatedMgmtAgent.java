@@ -15,69 +15,69 @@ import com.nhncorp.lucy.nimm.connector.worker.NimmWorker;
 @AgentInfo( domainId = 7, socketId = 1)
 public class AnnotatedMgmtAgent extends NimmAgentArchetype implements ManagementAgentAPI {
 
-	private static final Logger LOGGER = Logger.getLogger(AnnotatedMgmtAgent.class.getName());
-	
-	private final NimmWorker worker;
-	
-	public AnnotatedMgmtAgent() {
-		this.worker = new AnnotatedMgmtWorker();
-	}
-	@Override
-	public void destroy() {
-		LOGGER.info("AnnotatedMgmtAgent.destroy()");
-	}
+    private static final Logger LOGGER = Logger.getLogger(AnnotatedMgmtAgent.class.getName());
 
-	@Override
-	public NimmWorker getNimmWorker() {
-		return worker;
-	}
+    private final NimmWorker worker;
 
-	@Override
-	public void init() {
-		LOGGER.info("AnnotatedMgmtAgent.init()");
-	}
+    public AnnotatedMgmtAgent() {
+        this.worker = new AnnotatedMgmtWorker();
+    }
+    @Override
+    public void destroy() {
+        LOGGER.info("AnnotatedMgmtAgent.destroy()");
+    }
 
-	public String getName() {
-		return "AnnotatedMgmtAgent";
-	}
+    @Override
+    public NimmWorker getNimmWorker() {
+        return worker;
+    }
 
-	public String getVersion() {
-		return "1.0.0";
-	}
+    @Override
+    public void init() {
+        LOGGER.info("AnnotatedMgmtAgent.init()");
+    }
 
-	private class AnnotatedMgmtWorker extends NimmAbstractWorker {
+    public String getName() {
+        return "AnnotatedMgmtAgent";
+    }
 
-		@Override
-		public void destroy() {
-			LOGGER.info("AnnotatedMgmtWorker.destroy()");
-		}
+    public String getVersion() {
+        return "1.0.0";
+    }
 
-		@Override
-		public void init() {
-			LOGGER.info("AnnotatedMgmtWorker.init()");
-		}
+    private class AnnotatedMgmtWorker extends NimmAbstractWorker {
 
-		@Override
-		protected void processMessage(NimmMessage message) throws Exception {
-			getMySocket().send(message.getSourceAddress(), message.getMessage());
-		}
+        @Override
+        public void destroy() {
+            LOGGER.info("AnnotatedMgmtWorker.destroy()");
+        }
 
-		@Override
-		protected ByteBuffer responseMessage(NimmMessage request)
-				throws Exception {
-			return request.getMessage();
-		}
+        @Override
+        public void init() {
+            LOGGER.info("AnnotatedMgmtWorker.init()");
+        }
 
-	}
+        @Override
+        protected void processMessage(NimmMessage message) throws Exception {
+            getMySocket().send(message.getSourceAddress(), message.getMessage());
+        }
 
-	public boolean loopMessage() throws Exception {
-		NimmSocket localSocket = createSocket();
+        @Override
+        protected ByteBuffer responseMessage(NimmMessage request)
+                throws Exception {
+            return request.getMessage();
+        }
 
-		byte[] msg = "UlaUlaWowWow".getBytes();
-		MessageFuture future = localSocket.request(getMySocket(), msg);
+    }
 
-		future.await();
+    public boolean loopMessage() throws Exception {
+        NimmSocket localSocket = createSocket();
 
-		return Arrays.equals(future.getResponse().getMessageAsArray(),msg);
-	}
+        byte[] msg = "UlaUlaWowWow".getBytes();
+        MessageFuture future = localSocket.request(getMySocket(), msg);
+
+        future.await();
+
+        return Arrays.equals(future.getResponse().getMessageAsArray(),msg);
+    }
 }

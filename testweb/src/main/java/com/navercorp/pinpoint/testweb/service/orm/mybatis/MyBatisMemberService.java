@@ -17,37 +17,37 @@ import com.navercorp.pinpoint.testweb.service.MemberService;
 @Transactional("mysqlTransactionManager")
 public class MyBatisMemberService implements MemberService {
 
-	@Autowired
-	private MemberMapper memberMapper;
-	
-	@Override
-	public void add(Member member) {
-		this.memberMapper.insertUser(member);
-	}
+    @Autowired
+    private MemberMapper memberMapper;
 
-	@Override
-	public void addStatement(Member member) {
-		this.memberMapper.insertUser(member);
-	}
+    @Override
+    public void add(Member member) {
+        this.memberMapper.insertUser(member);
+    }
 
-	@Override
-	public void update(Member member) {
-		this.memberMapper.updateUser(member);
-	}
+    @Override
+    public void addStatement(Member member) {
+        this.memberMapper.insertUser(member);
+    }
 
-	@Override
-	public Member get(int id) {
-		return this.memberMapper.selectUser(id);
-	}
+    @Override
+    public void update(Member member) {
+        this.memberMapper.updateUser(member);
+    }
 
-	@Override
-	public List<Member> list() {
-		return this.memberMapper.selectAllUsersInvalid();
-	}
+    @Override
+    public Member get(int id) {
+        return this.memberMapper.selectUser(id);
+    }
 
-	@Override
-	public void delete(int id) {
-		this.memberMapper.deleteUser(id);
-	}
+    @Override
+    public List<Member> list() {
+        return this.memberMapper.selectAllUsersInvalid();
+    }
+
+    @Override
+    public void delete(int id) {
+        this.memberMapper.deleteUser(id);
+    }
 
 }

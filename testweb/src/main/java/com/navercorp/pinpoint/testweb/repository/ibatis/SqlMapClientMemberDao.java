@@ -18,67 +18,67 @@ import com.navercorp.pinpoint.testweb.repository.MemberDao;
 @Repository("sqlMapClientMemberDao")
 public class SqlMapClientMemberDao implements MemberDao {
 
-	@Autowired
-	@Qualifier("mysqlSqlMapClientTemplate")
-	protected SqlMapClientTemplate sqlMapClientTemplate;
-	
-	@Override
-	public void add(Member member) {
-		try {
+    @Autowired
+    @Qualifier("mysqlSqlMapClientTemplate")
+    protected SqlMapClientTemplate sqlMapClientTemplate;
+
+    @Override
+    public void add(Member member) {
+        try {
             this.sqlMapClientTemplate.getSqlMapClient().insert("add", member);
-		} catch (SQLException e) {
-			throw translateSqlException("SqlMapClient add", e);
-		}
-	}
+        } catch (SQLException e) {
+            throw translateSqlException("SqlMapClient add", e);
+        }
+    }
 
-	@Override
-	public void addStatement(Member member) {
-		try {
-			this.sqlMapClientTemplate.getSqlMapClient().insert("addStatement", member);
-		} catch (SQLException e) {
-			throw translateSqlException("SqlMapClient addStatement", e);
-		}
-	}
+    @Override
+    public void addStatement(Member member) {
+        try {
+            this.sqlMapClientTemplate.getSqlMapClient().insert("addStatement", member);
+        } catch (SQLException e) {
+            throw translateSqlException("SqlMapClient addStatement", e);
+        }
+    }
 
-	@Override
-	public void update(Member member) {
-		try {
-			this.sqlMapClientTemplate.getSqlMapClient().update("update", member);
-		} catch (SQLException e) {
-			throw translateSqlException("SqlMapClient addStatement", e);
-		}
-	}
+    @Override
+    public void update(Member member) {
+        try {
+            this.sqlMapClientTemplate.getSqlMapClient().update("update", member);
+        } catch (SQLException e) {
+            throw translateSqlException("SqlMapClient addStatement", e);
+        }
+    }
 
-	@Override
-	public Member get(int id) {
-		try {
-			return (Member)this.sqlMapClientTemplate.getSqlMapClient().queryForObject("get", id);
-		} catch (SQLException e) {
-			throw translateSqlException("SqlMapClient get", e);
-		}
-	}
+    @Override
+    public Member get(int id) {
+        try {
+            return (Member)this.sqlMapClientTemplate.getSqlMapClient().queryForObject("get", id);
+        } catch (SQLException e) {
+            throw translateSqlException("SqlMapClient get", e);
+        }
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<Member> list() {
-		try {
-			return this.sqlMapClientTemplate.getSqlMapClient().queryForList("list");
-		} catch (SQLException e) {
-			throw translateSqlException("SqlMapClient list", e);
-		}
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Member> list() {
+        try {
+            return this.sqlMapClientTemplate.getSqlMapClient().queryForList("list");
+        } catch (SQLException e) {
+            throw translateSqlException("SqlMapClient list", e);
+        }
+    }
 
-	@Override
-	public void delete(int id) {
-		try {
-			this.sqlMapClientTemplate.getSqlMapClient().delete("delete", id);
-		} catch (SQLException e) {
-			throw translateSqlException("SqlMapClient delete", e);
-		}
-	}
-	
-	private DataAccessException translateSqlException(String task, SQLException e) {
-		return this.sqlMapClientTemplate.getExceptionTranslator().translate(task, null, e);
-	}
+    @Override
+    public void delete(int id) {
+        try {
+            this.sqlMapClientTemplate.getSqlMapClient().delete("delete", id);
+        } catch (SQLException e) {
+            throw translateSqlException("SqlMapClient delete", e);
+        }
+    }
+
+    private DataAccessException translateSqlException(String task, SQLException e) {
+        return this.sqlMapClientTemplate.getExceptionTranslator().translate(task, null, e);
+    }
 
 }

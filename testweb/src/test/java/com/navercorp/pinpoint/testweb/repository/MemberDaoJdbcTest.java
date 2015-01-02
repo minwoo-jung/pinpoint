@@ -24,35 +24,35 @@ import com.navercorp.pinpoint.testweb.repository.MemberDaoJdbc;
 @Transactional
 public class MemberDaoJdbcTest extends DBUnitSupport {
 
-	@Autowired
+    @Autowired
     MemberDaoJdbc memberDao;
 
-	@Test
-	public void di() {
-		assertThat(memberDao, is(notNullValue()));
-	}
+    @Test
+    public void di() {
+        assertThat(memberDao, is(notNullValue()));
+    }
 
-	@Test
-	public void crud() {
-		Member member = new Member();
-		member.setId(1);
-		member.setName("netspider");
-		member.setJoined(new Date());
-		memberDao.add(member);
-		assertThat(memberDao.list().size(), is(1));
+    @Test
+    public void crud() {
+        Member member = new Member();
+        member.setId(1);
+        member.setName("netspider");
+        member.setJoined(new Date());
+        memberDao.add(member);
+        assertThat(memberDao.list().size(), is(1));
 
-		member.setName("chisu");
-		memberDao.update(member);
-		assertThat(memberDao.get(1).getName(), is("chisu"));
+        member.setName("chisu");
+        memberDao.update(member);
+        assertThat(memberDao.get(1).getName(), is("chisu"));
 
-		memberDao.delete(1);
-		assertThat(memberDao.list().size(), is(0));
-	}
+        memberDao.delete(1);
+        assertThat(memberDao.list().size(), is(0));
+    }
 
-	@Test
-	public void searchByName() {
-		insertXmlData("/testData.xml");
-		assertThat(memberDao.list().size(), is(2));
-	}
+    @Test
+    public void searchByName() {
+        insertXmlData("/testData.xml");
+        assertThat(memberDao.list().size(), is(2));
+    }
 
 }

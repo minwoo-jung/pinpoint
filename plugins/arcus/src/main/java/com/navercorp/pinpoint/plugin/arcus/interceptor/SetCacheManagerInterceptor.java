@@ -12,7 +12,7 @@ import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
  */
 public class SetCacheManagerInterceptor implements SimpleAroundInterceptor {
 
-	private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
     @Override
@@ -21,12 +21,12 @@ public class SetCacheManagerInterceptor implements SimpleAroundInterceptor {
     }
 
     @Override
-	public void before(Object target, Object[] args) {
-		if (isDebug) {
-			logger.beforeInterceptor(target, args);
-		}
-		
-		String serviceCode = ((ServiceCodeAccessor)args[0]).__getServiceCode();
-		((ServiceCodeAccessor)target).__setServiceCode(serviceCode);
-	}
+    public void before(Object target, Object[] args) {
+        if (isDebug) {
+            logger.beforeInterceptor(target, args);
+        }
+
+        String serviceCode = ((ServiceCodeAccessor)args[0]).__getServiceCode();
+        ((ServiceCodeAccessor)target).__setServiceCode(serviceCode);
+    }
 }

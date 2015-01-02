@@ -40,102 +40,102 @@ public class HbaseFilterPerformanceTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-	private static HbaseConfigurationFactoryBean hbaseConfigurationFactoryBean;
-	private static AbstractRowKeyDistributor traceIdRowKeyDistributor;
+    private static HbaseConfigurationFactoryBean hbaseConfigurationFactoryBean;
+    private static AbstractRowKeyDistributor traceIdRowKeyDistributor;
 
-	@BeforeClass
-	public static void beforeClass() throws IOException {
-//		Properties properties = PropertyUtils.loadPropertyFromClassPath("hbase.properties");
+    @BeforeClass
+    public static void beforeClass() throws IOException {
+//        Properties properties = PropertyUtils.loadPropertyFromClassPath("hbase.properties");
 
-		Configuration cfg = HBaseConfiguration.create();
-		cfg.set("hbase.zookeeper.quorum", "dev.zk.pinpoint.navercorp.com");
-		cfg.set("hbase.zookeeper.property.clientPort", "2181");
-		hbaseConfigurationFactoryBean = new HbaseConfigurationFactoryBean();
-		hbaseConfigurationFactoryBean.setConfiguration(cfg);
-		hbaseConfigurationFactoryBean.afterPropertiesSet();
+        Configuration cfg = HBaseConfiguration.create();
+        cfg.set("hbase.zookeeper.quorum", "dev.zk.pinpoint.navercorp.com");
+        cfg.set("hbase.zookeeper.property.clientPort", "2181");
+        hbaseConfigurationFactoryBean = new HbaseConfigurationFactoryBean();
+        hbaseConfigurationFactoryBean.setConfiguration(cfg);
+        hbaseConfigurationFactoryBean.afterPropertiesSet();
 
-		OneByteSimpleHash applicationTraceIndexHash = new com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash(32);
-		traceIdRowKeyDistributor = new com.sematext.hbase.wd.RowKeyDistributorByHashPrefix(applicationTraceIndexHash);
-	}
+        OneByteSimpleHash applicationTraceIndexHash = new com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash(32);
+        traceIdRowKeyDistributor = new com.sematext.hbase.wd.RowKeyDistributorByHashPrefix(applicationTraceIndexHash);
+    }
 
-	@AfterClass
-	public static void afterClass() {
-		if (hbaseConfigurationFactoryBean != null) {
-			hbaseConfigurationFactoryBean.destroy();
-		}
-	}
+    @AfterClass
+    public static void afterClass() {
+        if (hbaseConfigurationFactoryBean != null) {
+            hbaseConfigurationFactoryBean.destroy();
+        }
+    }
 
-	private Scan createScan(String applicationName, Range range) {
-		Scan scan = new Scan();
-		scan.setCaching(256);
+    private Scan createScan(String applicationName, Range range) {
+        Scan scan = new Scan();
+        scan.setCaching(256);
 
-		byte[] bAgent = Bytes.toBytes(applicationName);
-		byte[] traceIndexStartKey = SpanUtils.getTraceIndexRowKey(bAgent, range.getFrom());
-		byte[] traceIndexEndKey = SpanUtils.getTraceIndexRowKey(bAgent, range.getTo());
+        byte[] bAgent = Bytes.toBytes(applicationName);
+        byte[] traceIndexStartKey = SpanUtils.getTraceIndexRowKey(bAgent, range.getFrom());
+        byte[] traceIndexEndKey = SpanUtils.getTraceIndexRowKey(bAgent, range.getTo());
 
-		scan.setStartRow(traceIndexEndKey);
-		scan.setStopRow(traceIndexStartKey);
+        scan.setStartRow(traceIndexEndKey);
+        scan.setStopRow(traceIndexStartKey);
 
-		scan.addFamily(HBaseTables.APPLICATION_TRACE_INDEX_CF_TRACE);
-		scan.setId("ApplicationTraceIndexScan");
+        scan.addFamily(HBaseTables.APPLICATION_TRACE_INDEX_CF_TRACE);
+        scan.setId("ApplicationTraceIndexScan");
 
-		return scan;
-	}
+        return scan;
+    }
 
-	private Filter makePrefixFilter(SelectedScatterArea area, TransactionId offsetTransactionId, int offsetTransactionElapsed) {
-		// filter by response time
-		ResponseTimeRange responseTimeRange = area.getResponseTimeRange();
-		byte[] responseFrom = Bytes.toBytes(responseTimeRange.getFrom());
-		byte[] responseTo = Bytes.toBytes(responseTimeRange.getTo());
-		FilterList filterList = new FilterList(Operator.MUST_PASS_ALL);
-		filterList.addFilter(new QualifierFilter(CompareOp.GREATER_OR_EQUAL, new BinaryPrefixComparator(responseFrom)));
-		filterList.addFilter(new QualifierFilter(CompareOp.LESS_OR_EQUAL, new BinaryPrefixComparator(responseTo)));
+    private Filter makePrefixFilter(SelectedScatterArea area, TransactionId offsetTransactionId, int offsetTransactionElapsed) {
+        // filter by response time
+        ResponseTimeRange responseTimeRange = area.getResponseTimeRange();
+        byte[] responseFrom = Bytes.toBytes(responseTimeRange.getFrom());
+        byte[] responseTo = Bytes.toBytes(responseTimeRange.getTo());
+        FilterList filterList = new FilterList(Operator.MUST_PASS_ALL);
+        filterList.addFilter(new QualifierFilter(CompareOp.GREATER_OR_EQUAL, new BinaryPrefixComparator(responseFrom)));
+        filterList.addFilter(new QualifierFilter(CompareOp.LESS_OR_EQUAL, new BinaryPrefixComparator(responseTo)));
 
-		// add offset
-		if (offsetTransactionId != null) {
-			final Buffer buffer = new AutomaticBuffer(32);
-			buffer.put(offsetTransactionElapsed);
-			buffer.putPrefixedString(offsetTransactionId.getAgentId());
-			buffer.putSVar(offsetTransactionId.getAgentStartTime());
-			buffer.putVar(offsetTransactionId.getTransactionSequence());
-			byte[] qualifierOffset = buffer.getBuffer();
+        // add offset
+        if (offsetTransactionId != null) {
+            final Buffer buffer = new AutomaticBuffer(32);
+            buffer.put(offsetTransactionElapsed);
+            buffer.putPrefixedString(offsetTransactionId.getAgentId());
+            buffer.putSVar(offsetTransactionId.getAgentStartTime());
+            buffer.putVar(offsetTransactionId.getTransactionSequence());
+            byte[] qualifierOffset = buffer.getBuffer();
 
-			filterList.addFilter(new QualifierFilter(CompareOp.GREATER, new BinaryPrefixComparator(qualifierOffset)));
-		}
+            filterList.addFilter(new QualifierFilter(CompareOp.GREATER, new BinaryPrefixComparator(qualifierOffset)));
+        }
 
-		return filterList;
-	}
+        return filterList;
+    }
 
-	@Test
-	@Ignore
-	public void usingFilter() throws Exception {
+    @Test
+    @Ignore
+    public void usingFilter() throws Exception {
 
-		HbaseTemplate2 hbaseTemplate2 = new HbaseTemplate2();
-		hbaseTemplate2.setConfiguration(hbaseConfigurationFactoryBean.getObject());
-		hbaseTemplate2.afterPropertiesSet();
+        HbaseTemplate2 hbaseTemplate2 = new HbaseTemplate2();
+        hbaseTemplate2.setConfiguration(hbaseConfigurationFactoryBean.getObject());
+        hbaseTemplate2.afterPropertiesSet();
 
-		try {
-			long oneday = 60 * 60 * 24 * 1000;
-			int fetchLimit = 1000009;
-			long timeTo = 1395989385734L;
-			long timeFrom = timeTo - oneday;
-			int responseTimeFrom = 0;
-			int responseTimeTo = 10000;
-			SelectedScatterArea area = new SelectedScatterArea(timeFrom, timeTo, responseTimeFrom, responseTimeTo);
+        try {
+            long oneday = 60 * 60 * 24 * 1000;
+            int fetchLimit = 1000009;
+            long timeTo = 1395989385734L;
+            long timeFrom = timeTo - oneday;
+            int responseTimeFrom = 0;
+            int responseTimeTo = 10000;
+            SelectedScatterArea area = new SelectedScatterArea(timeFrom, timeTo, responseTimeFrom, responseTimeTo);
 
-			Scan scan = createScan("API.GATEWAY.DEV", area.getTimeRange());
+            Scan scan = createScan("API.GATEWAY.DEV", area.getTimeRange());
 
-			scan.setFilter(makePrefixFilter(area, null, -1));
+            scan.setFilter(makePrefixFilter(area, null, -1));
 
-			long startTime = System.currentTimeMillis();
-			List<List<Dot>> dotListList = hbaseTemplate2.find(HBaseTables.APPLICATION_TRACE_INDEX, scan, traceIdRowKeyDistributor, fetchLimit, new TraceIndexScatterMapper());
-			logger.debug("elapsed : {}ms", (System.currentTimeMillis() - startTime));
+            long startTime = System.currentTimeMillis();
+            List<List<Dot>> dotListList = hbaseTemplate2.find(HBaseTables.APPLICATION_TRACE_INDEX, scan, traceIdRowKeyDistributor, fetchLimit, new TraceIndexScatterMapper());
+            logger.debug("elapsed : {}ms", (System.currentTimeMillis() - startTime));
             logger.debug("fetched size : {}", dotListList.size());
-		} catch (HbaseSystemException e) {
-			e.printStackTrace();
-		} finally {
-			hbaseTemplate2.destroy();
-		}
+        } catch (HbaseSystemException e) {
+            e.printStackTrace();
+        } finally {
+            hbaseTemplate2.destroy();
+        }
 
-	}
+    }
 }

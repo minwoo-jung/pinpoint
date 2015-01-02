@@ -7,8 +7,8 @@ package com.navercorp.pinpoint.testweb.service;
  */
 public interface CacheService {
 
-	public void arcus();
+    public void arcus();
 
-	public void memcached();
+    public void memcached();
 
 }

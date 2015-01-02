@@ -14,9 +14,9 @@ import com.navercorp.pinpoint.testweb.repository.MemberDao;
 @Transactional("mysqlTransactionManager")
 public class MemberServiceImpl implements MemberService {
 
-	@Autowired
-	@Qualifier("memberDaoJdbc")
-	private MemberDao dao;
+    @Autowired
+    @Qualifier("memberDaoJdbc")
+    private MemberDao dao;
 
     public MemberDao getDao() {
         return dao;
@@ -27,8 +27,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public void add(Member member) {
-		dao.add(member);
-	}
+        dao.add(member);
+    }
 
     @Override
     public void addStatement(Member member) {
@@ -36,19 +36,19 @@ public class MemberServiceImpl implements MemberService {
     }
 
     public void delete(int id) {
-		dao.delete(id);
-	}
+        dao.delete(id);
+    }
 
-	public Member get(int id) {
-		return dao.get(id);
-	}
+    public Member get(int id) {
+        return dao.get(id);
+    }
 
-	public List<Member> list() {
-		return dao.list();
-	}
+    public List<Member> list() {
+        return dao.list();
+    }
 
-	public void update(Member member) {
-		dao.update(member);
-	}
+    public void update(Member member) {
+        dao.update(member);
+    }
 
 }

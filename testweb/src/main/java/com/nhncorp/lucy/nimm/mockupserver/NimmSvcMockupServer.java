@@ -6,22 +6,22 @@ import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
 
 class NimmSvcMockupServer extends NimmMockupServer {
 
-	NimmSvcMockupServer(int portNo, NimmAddress serverAddress) {
-		super(portNo, serverAddress);
+    NimmSvcMockupServer(int portNo, NimmAddress serverAddress) {
+        super(portNo, serverAddress);
 
-	}
+    }
 
-	@Override
-	protected NimmAddress createAddress(byte[] binform)
-			throws AbnormalNimmAddressException {
-		return createAddress(Species.Management, binform);
+    @Override
+    protected NimmAddress createAddress(byte[] binform)
+            throws AbnormalNimmAddressException {
+        return createAddress(Species.Management, binform);
 
-	}
+    }
 
-	@Override
-	protected Species getSpecies() {
-		return Species.Service;
-	}
+    @Override
+    protected Species getSpecies() {
+        return Species.Service;
+    }
 
 
 
