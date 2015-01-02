@@ -38,7 +38,6 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
             // String remoteAddr = request.remoteAddr().toString();
 
             trace.recordEndPoint(request.protocol().toString() + ":" + request.serverName().toString() + ":" + request.getServerPort());
-            trace.recordDestinationId(request.serverName().toString() + ":" + request.getServerPort());
             trace.recordAttribute(AnnotationKey.HTTP_URL, request.requestURI().toString());
         }
 //      부모 정보를 샘플링여부를 따지면 안됨.
