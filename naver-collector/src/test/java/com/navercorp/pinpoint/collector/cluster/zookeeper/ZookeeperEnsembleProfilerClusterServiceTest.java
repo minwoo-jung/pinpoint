@@ -30,214 +30,214 @@ import com.navercorp.pinpoint.rpc.server.SocketChannel;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class ZookeeperEnsembleProfilerClusterServiceTest {
 
-	@Autowired
-	ClusterPointRouter clusterPointRouter;
-	
-	@Test
-	public void simpleTest1() throws Exception {
-		TestingCluster tcluster = null;
-		try {
-			tcluster = createZookeeperCluster(3);
+    @Autowired
+    ClusterPointRouter clusterPointRouter;
 
-			String connectString = getConnectString(tcluster);
+    @Test
+    public void simpleTest1() throws Exception {
+        TestingCluster tcluster = null;
+        try {
+            tcluster = createZookeeperCluster(3);
 
-			CollectorConfiguration collectorConfig = createConfig(connectString);
-			
-			
-			ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-			service.setUp();
+            String connectString = getConnectString(tcluster);
 
-			ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
-			channelContext.setChannelProperties(getParams());
+            CollectorConfiguration collectorConfig = createConfig(connectString);
 
-			ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-			channelContext.changeStateRun();
-			Thread.sleep(1000);
-			
-			List<String> result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(0, result.size());
+            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
+            service.setUp();
 
-			channelContext.changeStateRunDuplexCommunication();
-			Thread.sleep(1000);
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(1, result.size());
+            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
+            channelContext.setChannelProperties(getParams());
 
-			channelContext.changeStateShutdown();
-			Thread.sleep(1000);
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(0, result.size());
+            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-			service.tearDown();
-		} finally {
-			closeZookeeperCluster(tcluster);
-		}
-	}
+            channelContext.changeStateRun();
+            Thread.sleep(1000);
 
-	// 연결되어 있는 쥬키퍼 클러스터가 끊어졌을때 해당 이벤트가 유지되는지
-	// 테스트 코드만으로는 정확한 확인은 힘들다. 로그를 봐야함
-	@Test
-	public void simpleTest2() throws Exception {
-		TestingCluster tcluster = null;
-		try {
-			tcluster = createZookeeperCluster(3);
+            List<String> result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(0, result.size());
 
-			String connectString = getConnectString(tcluster);
+            channelContext.changeStateRunDuplexCommunication();
+            Thread.sleep(1000);
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(1, result.size());
 
-			CollectorConfiguration collectorConfig = createConfig(connectString);
+            channelContext.changeStateShutdown();
+            Thread.sleep(1000);
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(0, result.size());
 
-			ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-			service.setUp();
+            service.tearDown();
+        } finally {
+            closeZookeeperCluster(tcluster);
+        }
+    }
 
-			ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
-			channelContext.setChannelProperties(getParams());
+    // 연결되어 있는 쥬키퍼 클러스터가 끊어졌을때 해당 이벤트가 유지되는지
+    // 테스트 코드만으로는 정확한 확인은 힘들다. 로그를 봐야함
+    @Test
+    public void simpleTest2() throws Exception {
+        TestingCluster tcluster = null;
+        try {
+            tcluster = createZookeeperCluster(3);
 
-			ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            String connectString = getConnectString(tcluster);
 
-			channelContext.changeStateRun();
-			Thread.sleep(1000);
-			List<String> result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(0, result.size());
+            CollectorConfiguration collectorConfig = createConfig(connectString);
 
-			channelContext.changeStateRunDuplexCommunication();
-			Thread.sleep(1000);
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(1, result.size());
+            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
+            service.setUp();
 
-			restart(tcluster);
+            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
+            channelContext.setChannelProperties(getParams());
 
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(1, result.size());
+            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-			channelContext.changeStateShutdown();
-			Thread.sleep(1000);
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(0, result.size());
+            channelContext.changeStateRun();
+            Thread.sleep(1000);
+            List<String> result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(0, result.size());
 
-			service.tearDown();
-		} finally {
-			closeZookeeperCluster(tcluster);
-		}
-	}
+            channelContext.changeStateRunDuplexCommunication();
+            Thread.sleep(1000);
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(1, result.size());
 
-	
-	// 연결되어 있는 쥬키퍼 클러스터가 모두 죽었을 경우
-	// 그 이후 해당 이벤트가 유지되는지
-	// 테스트 코드만으로는 정확한 확인은 힘들다. 로그를 봐야함
-	@Test
-	public void simpleTest3() throws Exception {
-		TestingCluster tcluster = null;
-		try {
-			tcluster = createZookeeperCluster(3);
+            restart(tcluster);
 
-			String connectString = getConnectString(tcluster);
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(1, result.size());
 
-			CollectorConfiguration collectorConfig = createConfig(connectString);
+            channelContext.changeStateShutdown();
+            Thread.sleep(1000);
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(0, result.size());
 
-			ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-			service.setUp();
+            service.tearDown();
+        } finally {
+            closeZookeeperCluster(tcluster);
+        }
+    }
 
-			ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
-			channelContext.setChannelProperties(getParams());
 
-			ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+    // 연결되어 있는 쥬키퍼 클러스터가 모두 죽었을 경우
+    // 그 이후 해당 이벤트가 유지되는지
+    // 테스트 코드만으로는 정확한 확인은 힘들다. 로그를 봐야함
+    @Test
+    public void simpleTest3() throws Exception {
+        TestingCluster tcluster = null;
+        try {
+            tcluster = createZookeeperCluster(3);
 
-			channelContext.changeStateRun();
-			Thread.sleep(1000);
-			List<String> result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(0, result.size());
+            String connectString = getConnectString(tcluster);
 
-			channelContext.changeStateRunDuplexCommunication();
-			Thread.sleep(1000);
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(1, result.size());
+            CollectorConfiguration collectorConfig = createConfig(connectString);
 
-			stop(tcluster);
+            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
+            service.setUp();
 
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(0, result.size());
+            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
+            channelContext.setChannelProperties(getParams());
 
-			restart(tcluster);
+            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(1, result.size());
+            channelContext.changeStateRun();
+            Thread.sleep(1000);
+            List<String> result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(0, result.size());
 
-			channelContext.changeStateShutdown();
-			Thread.sleep(1000);
-			result = profilerClusterManager.getClusterData();
-			Assert.assertEquals(0, result.size());
+            channelContext.changeStateRunDuplexCommunication();
+            Thread.sleep(1000);
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(1, result.size());
 
-			service.tearDown();
-		} finally {
-			closeZookeeperCluster(tcluster);
-		}
-	}
+            stop(tcluster);
 
-	private TestingCluster createZookeeperCluster(int size) throws Exception {
-		return createZookeeperCluster(size, true);
-	}
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(0, result.size());
 
-	private TestingCluster createZookeeperCluster(int size, boolean start) throws Exception {
-		TestingCluster zookeeperCluster = new TestingCluster(size);
+            restart(tcluster);
 
-		// 주의 cluster 초기화에 시간이 좀 걸림 그래서 테스트에 sleep을 좀 길게 둠
-		// 다 된걸 받는 이벤트도 없음
-		if (start) {
-			zookeeperCluster.start();
-			Thread.sleep(5000);
-		}
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(1, result.size());
 
-		return zookeeperCluster;
-	}
+            channelContext.changeStateShutdown();
+            Thread.sleep(1000);
+            result = profilerClusterManager.getClusterData();
+            Assert.assertEquals(0, result.size());
 
-	private void startZookeeperCluster(TestingCluster zookeeperCluster) throws Exception {
-		zookeeperCluster.start();
-		Thread.sleep(5000);
-	}
+            service.tearDown();
+        } finally {
+            closeZookeeperCluster(tcluster);
+        }
+    }
 
-	private void restart(TestingCluster zookeeperCluster) throws Exception {
-		for (TestingZooKeeperServer zookeeperServer : zookeeperCluster.getServers()) {
-			zookeeperServer.restart();
-		}
-		Thread.sleep(5000);
-	}
+    private TestingCluster createZookeeperCluster(int size) throws Exception {
+        return createZookeeperCluster(size, true);
+    }
 
-	private void stop(TestingCluster zookeeperCluster) throws Exception {
-		zookeeperCluster.stop();
-		Thread.sleep(5000);
-	}
+    private TestingCluster createZookeeperCluster(int size, boolean start) throws Exception {
+        TestingCluster zookeeperCluster = new TestingCluster(size);
 
-	private void closeZookeeperCluster(TestingCluster zookeeperCluster) throws Exception {
-		try {
-			if (zookeeperCluster != null) {
-				zookeeperCluster.close();
-			}
-		} catch (Exception e) {
-		}
-	}
+        // 주의 cluster 초기화에 시간이 좀 걸림 그래서 테스트에 sleep을 좀 길게 둠
+        // 다 된걸 받는 이벤트도 없음
+        if (start) {
+            zookeeperCluster.start();
+            Thread.sleep(5000);
+        }
 
-	private String getConnectString(TestingZooKeeperServer testingZooKeeperServer) {
-		return testingZooKeeperServer.getInstanceSpec().getConnectString();
-	}
+        return zookeeperCluster;
+    }
 
-	private String getConnectString(TestingCluster zookeeperCluster) {
-		StringBuilder connectString = new StringBuilder();
+    private void startZookeeperCluster(TestingCluster zookeeperCluster) throws Exception {
+        zookeeperCluster.start();
+        Thread.sleep(5000);
+    }
 
-		Iterator<InstanceSpec> instanceSpecIterator = zookeeperCluster.getInstances().iterator();
-		while (instanceSpecIterator.hasNext()) {
-			InstanceSpec instanceSpec = instanceSpecIterator.next();
-			connectString.append(instanceSpec.getConnectString());
+    private void restart(TestingCluster zookeeperCluster) throws Exception {
+        for (TestingZooKeeperServer zookeeperServer : zookeeperCluster.getServers()) {
+            zookeeperServer.restart();
+        }
+        Thread.sleep(5000);
+    }
 
-			if (instanceSpecIterator.hasNext()) {
-				connectString.append(",");
-			}
-		}
+    private void stop(TestingCluster zookeeperCluster) throws Exception {
+        zookeeperCluster.stop();
+        Thread.sleep(5000);
+    }
 
-		return connectString.toString();
-	}
+    private void closeZookeeperCluster(TestingCluster zookeeperCluster) throws Exception {
+        try {
+            if (zookeeperCluster != null) {
+                zookeeperCluster.close();
+            }
+        } catch (Exception e) {
+        }
+    }
 
-	private Map<Object, Object> getParams() {
-		Map<Object, Object> properties = new HashMap<Object, Object>();
+    private String getConnectString(TestingZooKeeperServer testingZooKeeperServer) {
+        return testingZooKeeperServer.getInstanceSpec().getConnectString();
+    }
+
+    private String getConnectString(TestingCluster zookeeperCluster) {
+        StringBuilder connectString = new StringBuilder();
+
+        Iterator<InstanceSpec> instanceSpecIterator = zookeeperCluster.getInstances().iterator();
+        while (instanceSpecIterator.hasNext()) {
+            InstanceSpec instanceSpec = instanceSpecIterator.next();
+            connectString.append(instanceSpec.getConnectString());
+
+            if (instanceSpecIterator.hasNext()) {
+                connectString.append(",");
+            }
+        }
+
+        return connectString.toString();
+    }
+
+    private Map<Object, Object> getParams() {
+        Map<Object, Object> properties = new HashMap<Object, Object>();
 
         properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
         properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
@@ -248,17 +248,17 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
         properties.put(AgentHandshakePropertyType.START_TIMESTAMP.getName(), System.currentTimeMillis());
         properties.put(AgentHandshakePropertyType.VERSION.getName(), "1.0");
 
-		return properties;
-	}
+        return properties;
+    }
 
-	private CollectorConfiguration createConfig(String connectString) {
-		CollectorConfiguration collectorConfig = new CollectorConfiguration();
+    private CollectorConfiguration createConfig(String connectString) {
+        CollectorConfiguration collectorConfig = new CollectorConfiguration();
 
-		collectorConfig.setClusterEnable(true);
-		collectorConfig.setClusterAddress(connectString);
-		collectorConfig.setClusterSessionTimeout(3000);
+        collectorConfig.setClusterEnable(true);
+        collectorConfig.setClusterAddress(connectString);
+        collectorConfig.setClusterSessionTimeout(3000);
 
-		return collectorConfig;
-	}
+        return collectorConfig;
+    }
 
 }

@@ -86,16 +86,16 @@ public class JtdsConnectionIT extends BasePinpointTest {
         logger.info("Connection class name:{}", connection.getClass().getName());
         logger.info("Connection class cl:{}", connection.getClass().getClassLoader());
 
-		DatabaseInfo url = ((DatabaseInfoTraceValue) connection).__getTraceDatabaseInfo();
-		Assert.assertNotNull(url);
-		List<SpanEventBo> currentSpanEvents = getCurrentSpanEvents();
-		Assert.assertEquals(1, currentSpanEvents.size());
-		logger.debug("{}", currentSpanEvents);
+        DatabaseInfo url = ((DatabaseInfoTraceValue) connection).__getTraceDatabaseInfo();
+        Assert.assertNotNull(url);
+        List<SpanEventBo> currentSpanEvents = getCurrentSpanEvents();
+        Assert.assertEquals(1, currentSpanEvents.size());
+        logger.debug("{}", currentSpanEvents);
 
-		statement(connection);
-		currentSpanEvents = getCurrentSpanEvents();
-		Assert.assertEquals(2, currentSpanEvents.size());
-		logger.debug("{}", currentSpanEvents);
+        statement(connection);
+        currentSpanEvents = getCurrentSpanEvents();
+        Assert.assertEquals(2, currentSpanEvents.size());
+        logger.debug("{}", currentSpanEvents);
 
         preparedStatement(connection);
 

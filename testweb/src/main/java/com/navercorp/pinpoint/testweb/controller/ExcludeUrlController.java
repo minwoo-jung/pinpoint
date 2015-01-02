@@ -16,22 +16,22 @@ import java.util.HashMap;
  */
 @Controller
 public class ExcludeUrlController {
-	@RequestMapping(value = "/excludeURL")
-	@ResponseBody
-	public String excludeUrl(HttpServletRequest request) {
+    @RequestMapping(value = "/excludeURL")
+    @ResponseBody
+    public String excludeUrl(HttpServletRequest request) {
 
-		ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
         client.execute("http://localhost:" + request.getLocalPort() + "/monitor/l7check.html", new HashMap());
-		return "OK";
-	}
+        return "OK";
+    }
 
-	@RequestMapping(value = "/nonExcludeURL")
-	@ResponseBody
-	public String nonExcludeURL(HttpServletRequest request) {
+    @RequestMapping(value = "/nonExcludeURL")
+    @ResponseBody
+    public String nonExcludeURL(HttpServletRequest request) {
 
-		ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-		client.execute("http://localhost:" + request.getLocalPort() + "/", new HashMap());
-		return "OK";
-	}
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        client.execute("http://localhost:" + request.getLocalPort() + "/", new HashMap());
+        return "OK";
+    }
 
 }

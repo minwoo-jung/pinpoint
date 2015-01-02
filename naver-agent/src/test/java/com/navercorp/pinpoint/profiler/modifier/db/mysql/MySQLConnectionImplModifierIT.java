@@ -93,10 +93,10 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         return driver.connect(url, properties);
     }
 
-	@Ignore
+    @Ignore
     @Test
     public void loadBalancedUrlModify() throws Exception {
-		// random fail
+        // random fail
         Connection connection = connectDB(db.getProperty("mysql.url.loadbalance"));
 
         logger.info("Connection class name:{}", connection.getClass().getName());

@@ -19,28 +19,28 @@ public class NPCTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-	@Test
-	public void connect() {
-		try {
-			InetSocketAddress serverAddress = new InetSocketAddress("0.0.0.0", 5000);
-			NpcHessianConnector connector = new NpcHessianConnector(serverAddress, true);
+    @Test
+    public void connect() {
+        try {
+            InetSocketAddress serverAddress = new InetSocketAddress("0.0.0.0", 5000);
+            NpcHessianConnector connector = new NpcHessianConnector(serverAddress, true);
 
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("message", "hello pinpoint");
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("message", "hello pinpoint");
 
-			InvocationFuture future = connector.invoke("welcome/com.nhncorp.lucy.bloc.welcome.EchoBO", "execute", params);
+            InvocationFuture future = connector.invoke("welcome/com.nhncorp.lucy.bloc.welcome.EchoBO", "execute", params);
 
-			future.await();
+            future.await();
 
-			// Object result = future.get();
-			Object result = future.getReturnValue();
+            // Object result = future.get();
+            Object result = future.getReturnValue();
 
             logger.debug("{}", result);
-			Assert.assertNotNull(result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Assert.fail(e.getMessage());
-		}
-	}
+            Assert.assertNotNull(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail(e.getMessage());
+        }
+    }
 
 }

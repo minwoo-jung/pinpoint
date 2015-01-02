@@ -27,79 +27,79 @@ import com.navercorp.pinpoint.rpc.server.PinpointServerSocket;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class ZookeeperWebClusterServiceTest {
 
-	private static final String PINPOINT_CLUSTER_PATH = "/pinpoint-cluster";
-	private static final String PINPOINT_WEB_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/web";
-	private static final String PINPOINT_PROFILER_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/profiler";
+    private static final String PINPOINT_CLUSTER_PATH = "/pinpoint-cluster";
+    private static final String PINPOINT_WEB_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/web";
+    private static final String PINPOINT_PROFILER_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/profiler";
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private static final int DEFAULT_ZOOKEEPER_PORT = 22213;
-	private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = 22214;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final int DEFAULT_ZOOKEEPER_PORT = 22213;
+    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = 22214;
 
-	private static CollectorConfiguration collectorConfig = null;
+    private static CollectorConfiguration collectorConfig = null;
 
-	@Autowired
-	ClusterPointRouter clusterPointRouter;
+    @Autowired
+    ClusterPointRouter clusterPointRouter;
 
-	@BeforeClass
-	public static void setUp() {
-		collectorConfig = new CollectorConfiguration();
+    @BeforeClass
+    public static void setUp() {
+        collectorConfig = new CollectorConfiguration();
 
-		collectorConfig.setClusterEnable(true);
-		collectorConfig.setClusterAddress("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT);
-		collectorConfig.setClusterSessionTimeout(3000);
-	}
+        collectorConfig.setClusterEnable(true);
+        collectorConfig.setClusterAddress("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT);
+        collectorConfig.setClusterSessionTimeout(3000);
+    }
 
-	@Test
-	public void simpleTest1() throws Exception {
-		TestingServer ts = null;
-		try {
-			ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
+    @Test
+    public void simpleTest1() throws Exception {
+        TestingServer ts = null;
+        try {
+            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
 
-			ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-			service.setUp();
+            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
+            service.setUp();
 
-			PinpointServerSocket pinpointServerSocket = new PinpointServerSocket();
-			pinpointServerSocket.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
-			pinpointServerSocket.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            PinpointServerSocket pinpointServerSocket = new PinpointServerSocket();
+            pinpointServerSocket.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
+            pinpointServerSocket.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
-			ZookeeperClient client = new ZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
+            ZookeeperClient client = new ZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
 
-				@Override
-				public void process(WatchedEvent event) {
+                @Override
+                public void process(WatchedEvent event) {
 
-				}
+                }
 
-				@Override
-				public boolean isConnected() {
-					return true;
-				}
-			});
-			client.createPath(PINPOINT_WEB_CLUSTER_PATH, true);
-			client.createNode(PINPOINT_WEB_CLUSTER_PATH + "/" + "127.0.0.1:" + DEFAULT_ACCEPTOR_SOCKET_PORT, "127.0.0.1".getBytes());
+                @Override
+                public boolean isConnected() {
+                    return true;
+                }
+            });
+            client.createPath(PINPOINT_WEB_CLUSTER_PATH, true);
+            client.createNode(PINPOINT_WEB_CLUSTER_PATH + "/" + "127.0.0.1:" + DEFAULT_ACCEPTOR_SOCKET_PORT, "127.0.0.1".getBytes());
 
-			Thread.sleep(5000);
+            Thread.sleep(5000);
 
-			List<ChannelContext> channelContextList = pinpointServerSocket.getDuplexCommunicationChannelContext();
-			Assert.assertEquals(1, channelContextList.size());
+            List<ChannelContext> channelContextList = pinpointServerSocket.getDuplexCommunicationChannelContext();
+            Assert.assertEquals(1, channelContextList.size());
 
-			client.close();
+            client.close();
 
-			Thread.sleep(5000);
-			channelContextList = pinpointServerSocket.getDuplexCommunicationChannelContext();
-			Assert.assertEquals(0, channelContextList.size());
+            Thread.sleep(5000);
+            channelContextList = pinpointServerSocket.getDuplexCommunicationChannelContext();
+            Assert.assertEquals(0, channelContextList.size());
 
-			service.tearDown();
-		} finally {
-			closeZookeeperServer(ts);
-		}
-	}
+            service.tearDown();
+        } finally {
+            closeZookeeperServer(ts);
+        }
+    }
 
-	private void closeZookeeperServer(TestingServer mockZookeeperServer) throws Exception {
-		try {
-			mockZookeeperServer.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private void closeZookeeperServer(TestingServer mockZookeeperServer) throws Exception {
+        try {
+            mockZookeeperServer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -21,39 +21,39 @@ import com.navercorp.pinpoint.profiler.modifier.AbstractModifier;
  */
 public class HandlerInvokeTaskModifier extends AbstractModifier {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public HandlerInvokeTaskModifier(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
-		super(byteCodeInstrumentor, agent);
-	}
+    public HandlerInvokeTaskModifier(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
+        super(byteCodeInstrumentor, agent);
+    }
 
-	public String getTargetClass() {
-		return "com/linecorp/games/common/baseFramework/handlers/HttpCustomServerHandler$InvokeTask";
-	}
+    public String getTargetClass() {
+        return "com/linecorp/games/common/baseFramework/handlers/HttpCustomServerHandler$InvokeTask";
+    }
 
-	public byte[] modify(ClassLoader classLoader, String javassistClassName, ProtectionDomain protectedDomain, byte[] classFileBuffer) {
-		if (logger.isInfoEnabled()) {
-			logger.info("Modifing. {} @ {}", javassistClassName, classLoader);
-		}
+    public byte[] modify(ClassLoader classLoader, String javassistClassName, ProtectionDomain protectedDomain, byte[] classFileBuffer) {
+        if (logger.isInfoEnabled()) {
+            logger.info("Modifing. {} @ {}", javassistClassName, classLoader);
+        }
 
-		try {
-			InstrumentClass aClass = byteCodeInstrumentor.getClass(classLoader, javassistClassName, classFileBuffer);
+        try {
+            InstrumentClass aClass = byteCodeInstrumentor.getClass(classLoader, javassistClassName, classFileBuffer);
 
-			// constructor parameter trace object
-			aClass.addTraceVariable("__channelHandlerContext", "__setChannelHandlerContext", "__getChannelHandlerContext", "org.jboss.netty.channel.ChannelHandlerContext");
-			aClass.addTraceVariable("__messageEvent", "__setMessageEvent", "__getMessageEvent", "org.jboss.netty.channel.MessageEvent");
+            // constructor parameter trace object
+            aClass.addTraceVariable("__channelHandlerContext", "__setChannelHandlerContext", "__getChannelHandlerContext", "org.jboss.netty.channel.ChannelHandlerContext");
+            aClass.addTraceVariable("__messageEvent", "__setMessageEvent", "__getMessageEvent", "org.jboss.netty.channel.MessageEvent");
 
-			// non static inner class는 constructor argument의 첫번째가 parent class임.
-			Interceptor constInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskConstructorInterceptor");
-			aClass.addConstructorInterceptor(new String[] { "com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent" }, constInterceptor);
+            // non static inner class는 constructor argument의 첫번째가 parent class임.
+            Interceptor constInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskConstructorInterceptor");
+            aClass.addConstructorInterceptor(new String[] { "com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent" }, constInterceptor);
 
-			Interceptor runInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskRunInterceptor");
-			aClass.addInterceptor("run", null, runInterceptor);
+            Interceptor runInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskRunInterceptor");
+            aClass.addInterceptor("run", null, runInterceptor);
 
-			return aClass.toBytecode();
-		} catch (InstrumentException e) {
-			logger.info("modify fail. Cause:{}", e.getMessage(), e);
-			return null;
-		}
-	}
+            return aClass.toBytecode();
+        } catch (InstrumentException e) {
+            logger.info("modify fail. Cause:{}", e.getMessage(), e);
+            return null;
+        }
+    }
 }

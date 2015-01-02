@@ -5,9 +5,9 @@ package com.navercorp.pinpoint.testweb.service;
  */
 public interface CubridService {
 
-	int selectOne();
+    int selectOne();
 
-	void createStatement();
+    void createStatement();
 
-	void createErrorStatement();
+    void createErrorStatement();
 }

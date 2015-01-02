@@ -10,13 +10,13 @@ public interface MemberService {
 
     void addStatement(Member member);
 
-	void update(Member member);
+    void update(Member member);
 
-	Member get(int id);
+    Member get(int id);
 
-	List<Member> list();
+    List<Member> list();
 
-	void delete(int id);
+    void delete(int id);
 
 
 }

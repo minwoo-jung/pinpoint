@@ -15,56 +15,56 @@ import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
  */
 public class NimmInvokerConstructorInterceptor implements SimpleAroundInterceptor, TargetClassLoader {
 
-	private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
-	private final boolean isDebug = logger.isDebugEnabled();
+    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final boolean isDebug = logger.isDebugEnabled();
 
-//	private MethodDescriptor descriptor;
-//	private TraceContext traceContext;
+//    private MethodDescriptor descriptor;
+//    private TraceContext traceContext;
 
-	// TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고
-	// 있음.
-	private MetaObject<String> setNimmAddress = new MetaObject<String>("__setNimmAddress", String.class);
+    // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고
+    // 있음.
+    private MetaObject<String> setNimmAddress = new MetaObject<String>("__setNimmAddress", String.class);
 
-	@Override
-	public void before(Object target, Object[] args) {
-		if (isDebug) {
-			logger.beforeInterceptor(target, args);
-		}
+    @Override
+    public void before(Object target, Object[] args) {
+        if (isDebug) {
+            logger.beforeInterceptor(target, args);
+        }
 
-		if (args[0] instanceof com.nhncorp.lucy.nimm.connector.address.NimmAddress) {
-			com.nhncorp.lucy.nimm.connector.address.NimmAddress nimmAddress = (com.nhncorp.lucy.nimm.connector.address.NimmAddress) args[0];
+        if (args[0] instanceof com.nhncorp.lucy.nimm.connector.address.NimmAddress) {
+            com.nhncorp.lucy.nimm.connector.address.NimmAddress nimmAddress = (com.nhncorp.lucy.nimm.connector.address.NimmAddress) args[0];
 
-			StringBuilder address = new StringBuilder();
-			if (Species.Service.equals(nimmAddress.getSpecies())) {
-				address.append("S");
-			} else if (Species.Management.equals(nimmAddress.getSpecies())) {
-				address.append("M");
-			} else {
-				address.append("unknown");
-			}
-			address.append(":");
-			address.append(nimmAddress.getDomainId()).append(":");
-			address.append(nimmAddress.getIdcId()).append(":");
-			address.append(nimmAddress.getServerId()).append(":");
-			address.append(nimmAddress.getSocketId());
+            StringBuilder address = new StringBuilder();
+            if (Species.Service.equals(nimmAddress.getSpecies())) {
+                address.append("S");
+            } else if (Species.Management.equals(nimmAddress.getSpecies())) {
+                address.append("M");
+            } else {
+                address.append("unknown");
+            }
+            address.append(":");
+            address.append(nimmAddress.getDomainId()).append(":");
+            address.append(nimmAddress.getIdcId()).append(":");
+            address.append(nimmAddress.getServerId()).append(":");
+            address.append(nimmAddress.getSocketId());
 
-			setNimmAddress.invoke(target, address.toString());
-		}
-	}
+            setNimmAddress.invoke(target, address.toString());
+        }
+    }
 
-	@Override
-	public void after(Object target, Object[] args, Object result, Throwable throwable) {
+    @Override
+    public void after(Object target, Object[] args, Object result, Throwable throwable) {
 
-	}
+    }
 
-//	@Override
-//	public void setMethodDescriptor(MethodDescriptor descriptor) {
-//		this.descriptor = descriptor;
-//		traceContext.cacheApi(descriptor);
-//	}
+//    @Override
+//    public void setMethodDescriptor(MethodDescriptor descriptor) {
+//        this.descriptor = descriptor;
+//        traceContext.cacheApi(descriptor);
+//    }
 
-//	@Override
-//	public void setTraceContext(TraceContext traceContext) {
-//		this.traceContext = traceContext;
-//	}
+//    @Override
+//    public void setTraceContext(TraceContext traceContext) {
+//        this.traceContext = traceContext;
+//    }
 }

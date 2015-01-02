@@ -16,39 +16,39 @@ import com.navercorp.pinpoint.testweb.repository.MemberDao;
 @Repository("sqlMapSessionMemberDao")
 public class SqlMapSessionMemberDao implements MemberDao {
 
-	@Autowired
-	@Qualifier("mysqlSqlMapClientTemplate")
-	private SqlMapClientTemplate sqlMapClientTemplate;
+    @Autowired
+    @Qualifier("mysqlSqlMapClientTemplate")
+    private SqlMapClientTemplate sqlMapClientTemplate;
 
-	@Override
-	public void add(Member member) {
-		this.sqlMapClientTemplate.insert("add", member);
-	}
+    @Override
+    public void add(Member member) {
+        this.sqlMapClientTemplate.insert("add", member);
+    }
 
-	@Override
-	public void addStatement(Member member) {
-		this.sqlMapClientTemplate.insert("addStatement", member);
-	}
+    @Override
+    public void addStatement(Member member) {
+        this.sqlMapClientTemplate.insert("addStatement", member);
+    }
 
-	@Override
-	public void update(Member member) {
-		this.sqlMapClientTemplate.update("update", member);
-	}
+    @Override
+    public void update(Member member) {
+        this.sqlMapClientTemplate.update("update", member);
+    }
 
-	@Override
-	public Member get(int id) {
-		return (Member)this.sqlMapClientTemplate.queryForObject("get", id);
-	}
+    @Override
+    public Member get(int id) {
+        return (Member)this.sqlMapClientTemplate.queryForObject("get", id);
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<Member> list() {
-		return this.sqlMapClientTemplate.queryForList("list");
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Member> list() {
+        return this.sqlMapClientTemplate.queryForList("list");
+    }
 
-	@Override
-	public void delete(int id) {
-		this.sqlMapClientTemplate.delete("delete", id);
-	}
+    @Override
+    public void delete(int id) {
+        this.sqlMapClientTemplate.delete("delete", id);
+    }
 
 }

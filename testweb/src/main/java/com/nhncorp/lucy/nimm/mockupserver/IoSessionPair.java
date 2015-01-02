@@ -11,21 +11,21 @@ import external.org.apache.mina.common.IoSession;
  * @author Middleware Platform Dev. Team
  */
 public class IoSessionPair {
-	private IoSession ioSession;
-	private NimmAddress address;
+    private IoSession ioSession;
+    private NimmAddress address;
 
 
-	public IoSessionPair(IoSession session, NimmAddress address){
-		this.ioSession = session;
-		this.address = address;
-	}
+    public IoSessionPair(IoSession session, NimmAddress address){
+        this.ioSession = session;
+        this.address = address;
+    }
 
-	public IoSession getIoSession() {
-		return ioSession;
-	}
+    public IoSession getIoSession() {
+        return ioSession;
+    }
 
-	public NimmAddress getAddress() {
-		return address;
-	}
+    public NimmAddress getAddress() {
+        return address;
+    }
 
 }

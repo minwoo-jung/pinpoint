@@ -12,34 +12,34 @@ import com.navercorp.pinpoint.testweb.domain.Member;
 @Repository
 public class MemberDaoIbatis implements MemberDao {
 
-	@Autowired
-	@Qualifier("mysqlSqlMapClientTemplate")
-	private SqlMapClientTemplate sqlMapClientTemplate;
+    @Autowired
+    @Qualifier("mysqlSqlMapClientTemplate")
+    private SqlMapClientTemplate sqlMapClientTemplate;
 
-	public void add(Member member) {
-		sqlMapClientTemplate.insert("add", member);
-	}
+    public void add(Member member) {
+        sqlMapClientTemplate.insert("add", member);
+    }
 
-	@Override
-	public void addStatement(Member member) {
-		sqlMapClientTemplate.insert("addStatement", member);
-	}
+    @Override
+    public void addStatement(Member member) {
+        sqlMapClientTemplate.insert("addStatement", member);
+    }
 
-	public void delete(int id) {
-		sqlMapClientTemplate.delete("delete", id);
-	}
+    public void delete(int id) {
+        sqlMapClientTemplate.delete("delete", id);
+    }
 
-	public Member get(int id) {
-		return (Member) sqlMapClientTemplate.queryForObject("get", id);
-	}
+    public Member get(int id) {
+        return (Member) sqlMapClientTemplate.queryForObject("get", id);
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<Member> list() {
-		return sqlMapClientTemplate.queryForList("list");
-	}
+    @SuppressWarnings("unchecked")
+    public List<Member> list() {
+        return sqlMapClientTemplate.queryForList("list");
+    }
 
-	public void update(Member member) {
-		sqlMapClientTemplate.update("update", member);
-	}
+    public void update(Member member) {
+        sqlMapClientTemplate.update("update", member);
+    }
 
 }

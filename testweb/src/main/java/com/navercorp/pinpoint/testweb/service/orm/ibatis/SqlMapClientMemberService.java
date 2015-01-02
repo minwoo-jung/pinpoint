@@ -18,38 +18,38 @@ import com.navercorp.pinpoint.testweb.service.MemberService;
 @Transactional("mysqlTransactionManager")
 public class SqlMapClientMemberService implements MemberService {
 
-	@Autowired
-	@Qualifier("sqlMapClientMemberDao")
-	private MemberDao sqlMapClientMemberDao;
+    @Autowired
+    @Qualifier("sqlMapClientMemberDao")
+    private MemberDao sqlMapClientMemberDao;
 
-	@Override
-	public void add(Member member) {
-		this.sqlMapClientMemberDao.add(member);
-	}
+    @Override
+    public void add(Member member) {
+        this.sqlMapClientMemberDao.add(member);
+    }
 
-	@Override
-	public void addStatement(Member member) {
-		this.sqlMapClientMemberDao.addStatement(member);
-	}
+    @Override
+    public void addStatement(Member member) {
+        this.sqlMapClientMemberDao.addStatement(member);
+    }
 
-	@Override
-	public void update(Member member) {
-		this.sqlMapClientMemberDao.update(member);
-	}
+    @Override
+    public void update(Member member) {
+        this.sqlMapClientMemberDao.update(member);
+    }
 
-	@Override
-	public Member get(int id) {
-		return this.sqlMapClientMemberDao.get(id);
-	}
+    @Override
+    public Member get(int id) {
+        return this.sqlMapClientMemberDao.get(id);
+    }
 
-	@Override
-	public List<Member> list() {
-		return this.sqlMapClientMemberDao.list();
-	}
+    @Override
+    public List<Member> list() {
+        return this.sqlMapClientMemberDao.list();
+    }
 
-	@Override
-	public void delete(int id) {
-		this.sqlMapClientMemberDao.delete(id);
-	}
+    @Override
+    public void delete(int id) {
+        this.sqlMapClientMemberDao.delete(id);
+    }
 
 }

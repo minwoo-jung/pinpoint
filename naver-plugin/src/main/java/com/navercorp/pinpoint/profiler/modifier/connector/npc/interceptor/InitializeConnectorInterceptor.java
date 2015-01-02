@@ -14,55 +14,55 @@ import com.navercorp.pinpoint.common.ServiceType;
 
 public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, ByteCodeMethodDescriptorSupport, TraceContextSupport, TargetClassLoader {
 
-	private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
-	private final boolean isDebug = logger.isDebugEnabled();
+    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final boolean isDebug = logger.isDebugEnabled();
 
-	private final MetaObject<InetSocketAddress> getServerAddress = new MetaObject<InetSocketAddress>("__getServerAddress");
+    private final MetaObject<InetSocketAddress> getServerAddress = new MetaObject<InetSocketAddress>("__getServerAddress");
 
-	private MethodDescriptor descriptor;
-	private TraceContext traceContext;
+    private MethodDescriptor descriptor;
+    private TraceContext traceContext;
 
-	// private int apiId;
+    // private int apiId;
 
-	@Override
-	public void before(Object target, Object[] args) {
-		if (isDebug) {
-			logger.beforeInterceptor(target, args);
-		}
+    @Override
+    public void before(Object target, Object[] args) {
+        if (isDebug) {
+            logger.beforeInterceptor(target, args);
+        }
 
         // Trace trace = traceContext.currentRawTraceObject();
         // sampling 레이트를 추가로 확인하여 액션을 취하는 로직이 없으므로 그냥 currentTraceObject()fmf g
         Trace trace = traceContext.currentTraceObject();
-		if (trace == null) {
-			return;
-		}
+        if (trace == null) {
+            return;
+        }
 
-		trace.traceBlockBegin();
-		trace.markBeforeTime();
+        trace.traceBlockBegin();
+        trace.markBeforeTime();
 
-		TraceId nextId = trace.getTraceId().getNextTraceId();
-		trace.recordNextSpanId(nextId.getSpanId());
+        TraceId nextId = trace.getTraceId().getNextTraceId();
+        trace.recordNextSpanId(nextId.getSpanId());
 
-		trace.recordServiceType(ServiceType.NPC_CLIENT);
+        trace.recordServiceType(ServiceType.NPC_CLIENT);
 
-		InetSocketAddress serverAddress = getServerAddress.invoke(target);
-		int port = serverAddress.getPort();
+        InetSocketAddress serverAddress = getServerAddress.invoke(target);
+        int port = serverAddress.getPort();
         String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
         trace.recordDestinationId(endPoint);
 
-		trace.recordAttribute(AnnotationKey.NPC_URL, serverAddress.toString());
-	}
+        trace.recordAttribute(AnnotationKey.NPC_URL, serverAddress.toString());
+    }
 
-	@Override
-	public void after(Object target, Object[] args, Object result, Throwable throwable) {
-		if (isDebug) {
-			logger.afterInterceptor(target, args);
-		}
+    @Override
+    public void after(Object target, Object[] args, Object result, Throwable throwable) {
+        if (isDebug) {
+            logger.afterInterceptor(target, args);
+        }
 
-		Trace trace = traceContext.currentTraceObject();
-		if (trace == null) {
-			return;
-		}
+        Trace trace = traceContext.currentTraceObject();
+        if (trace == null) {
+            return;
+        }
         try {
             trace.recordApi(descriptor);
             trace.recordException(throwable);
@@ -71,16 +71,16 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
         } finally {
             trace.traceBlockEnd();
         }
-	}
+    }
 
-	@Override
-	public void setMethodDescriptor(MethodDescriptor descriptor) {
-		this.descriptor = descriptor;
-		traceContext.cacheApi(descriptor);
-	}
+    @Override
+    public void setMethodDescriptor(MethodDescriptor descriptor) {
+        this.descriptor = descriptor;
+        traceContext.cacheApi(descriptor);
+    }
 
-	@Override
-	public void setTraceContext(TraceContext traceContext) {
-		this.traceContext = traceContext;
-	}
+    @Override
+    public void setTraceContext(TraceContext traceContext) {
+        this.traceContext = traceContext;
+    }
 }

@@ -21,39 +21,39 @@ import org.slf4j.LoggerFactory;
  */
 public class NioNpcHessianConnectorModifier extends AbstractModifier {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public NioNpcHessianConnectorModifier(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
-		super(byteCodeInstrumentor, agent);
-	}
+    public NioNpcHessianConnectorModifier(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
+        super(byteCodeInstrumentor, agent);
+    }
 
-	public String getTargetClass() {
-		return "com/nhncorp/lucy/npc/connector/NioNpcHessianConnector";
-	}
+    public String getTargetClass() {
+        return "com/nhncorp/lucy/npc/connector/NioNpcHessianConnector";
+    }
 
-	public byte[] modify(ClassLoader classLoader, String javassistClassName, ProtectionDomain protectedDomain, byte[] classFileBuffer) {
-		if (logger.isInfoEnabled()) {
-			logger.info("Modifing. {}", javassistClassName);
-		}
+    public byte[] modify(ClassLoader classLoader, String javassistClassName, ProtectionDomain protectedDomain, byte[] classFileBuffer) {
+        if (logger.isInfoEnabled()) {
+            logger.info("Modifing. {}", javassistClassName);
+        }
 
-		try {
-			InstrumentClass connectorClass = byteCodeInstrumentor.getClass(classLoader, javassistClassName, classFileBuffer);
+        try {
+            InstrumentClass connectorClass = byteCodeInstrumentor.getClass(classLoader, javassistClassName, classFileBuffer);
 
-			// trace variables
-			connectorClass.addTraceVariable("_serverAddress", "__setServerAddress", "__getServerAddress", "java.net.InetSocketAddress");
-			
-			// constructor
-			Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor.ConnectorConstructorInterceptor");
-			connectorClass.addConstructorInterceptor(new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" }, constructorInterceptor);
+            // trace variables
+            connectorClass.addTraceVariable("_serverAddress", "__setServerAddress", "__getServerAddress", "java.net.InetSocketAddress");
 
-			// invoke
-			Interceptor invokeInterceptor = new InvokeInterceptor();
-			connectorClass.addInterceptor("invoke", new String[] { "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]" }, invokeInterceptor);
+            // constructor
+            Interceptor constructorInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor.ConnectorConstructorInterceptor");
+            connectorClass.addConstructorInterceptor(new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" }, constructorInterceptor);
 
-			return connectorClass.toBytecode();
-		} catch (Throwable e) {
-			logger.warn(this.getClass().getSimpleName() + " modifier error. Caused:{}", e.getMessage(), e);
-			return null;
-		}
-	}
+            // invoke
+            Interceptor invokeInterceptor = new InvokeInterceptor();
+            connectorClass.addInterceptor("invoke", new String[] { "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]" }, invokeInterceptor);
+
+            return connectorClass.toBytecode();
+        } catch (Throwable e) {
+            logger.warn(this.getClass().getSimpleName() + " modifier error. Caused:{}", e.getMessage(), e);
+            return null;
+        }
+    }
 }

@@ -12,14 +12,14 @@ import com.navercorp.pinpoint.testweb.domain.Member;
  */
 @Repository("memberMapper")
 public interface MemberMapper {
-	
-	public Member selectUser(@Param("id") int id);
-	
-	public List<Member> selectAllUsersInvalid();
-	
-	public int insertUser(Member member);
-	
-	public int updateUser(Member member);
-	
-	public int deleteUser(@Param("id") int id);
+
+    public Member selectUser(@Param("id") int id);
+
+    public List<Member> selectAllUsersInvalid();
+
+    public int insertUser(Member member);
+
+    public int updateUser(Member member);
+
+    public int deleteUser(@Param("id") int id);
 }

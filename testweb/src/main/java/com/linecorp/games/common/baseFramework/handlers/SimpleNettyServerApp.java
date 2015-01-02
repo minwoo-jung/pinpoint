@@ -33,69 +33,69 @@ import com.ning.http.client.Response;
  */
 public class SimpleNettyServerApp {
 
-	static final Logger logger = LoggerFactory.getLogger(SimpleNettyServerApp.class);
-	static final int SERVER_PORT = 2222;
-	static final int CLIENT_COUNT = 1;
+    static final Logger logger = LoggerFactory.getLogger(SimpleNettyServerApp.class);
+    static final int SERVER_PORT = 2222;
+    static final int CLIENT_COUNT = 1;
 
-	public static void main(String[] args) {
-		try {
-			logger.info("TEST BEGIN");
+    public static void main(String[] args) {
+        try {
+            logger.info("TEST BEGIN");
 
-			ServerBootstrap bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
-			PipelineFactory factory = new PipelineFactory();
-			bootstrap.setPipelineFactory(factory);
-			bootstrap.bind(new InetSocketAddress(SERVER_PORT));
+            ServerBootstrap bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
+            PipelineFactory factory = new PipelineFactory();
+            bootstrap.setPipelineFactory(factory);
+            bootstrap.bind(new InetSocketAddress(SERVER_PORT));
 
-			final NingAsyncHttpClient invoker = new NingAsyncHttpClient();
-			final CountDownLatch startLatch = new CountDownLatch(1);
-			final CountDownLatch stopLatch = new CountDownLatch(CLIENT_COUNT);
-			final ExecutorService executor = Executors.newCachedThreadPool();
+            final NingAsyncHttpClient invoker = new NingAsyncHttpClient();
+            final CountDownLatch startLatch = new CountDownLatch(1);
+            final CountDownLatch stopLatch = new CountDownLatch(CLIENT_COUNT);
+            final ExecutorService executor = Executors.newCachedThreadPool();
 
-			for (int i = 0; i < CLIENT_COUNT; i++) {
-				executor.submit(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							startLatch.await();
-							Response response = invoker.requestGet("http://localhost:" + SERVER_PORT, NingAsyncHttpClient.getDummyParams(), NingAsyncHttpClient.getDummyHeaders(), NingAsyncHttpClient.getDummyCookies());
-							logger.info(response.getResponseBody());
+            for (int i = 0; i < CLIENT_COUNT; i++) {
+                executor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            startLatch.await();
+                            Response response = invoker.requestGet("http://localhost:" + SERVER_PORT, NingAsyncHttpClient.getDummyParams(), NingAsyncHttpClient.getDummyHeaders(), NingAsyncHttpClient.getDummyCookies());
+                            logger.info(response.getResponseBody());
 
-							Response response2 = invoker.requestPost("http://localhost:" + SERVER_PORT, NingAsyncHttpClient.getDummyHeaders(), "I_AM_BODY");
-							logger.info(response2.getResponseBody());
-						} catch (Exception e) {
-							e.printStackTrace();
-						} finally {
-							stopLatch.countDown();
-						}
-					}
-				});
-			}
-			startLatch.countDown();
-			stopLatch.await();
+                            Response response2 = invoker.requestPost("http://localhost:" + SERVER_PORT, NingAsyncHttpClient.getDummyHeaders(), "I_AM_BODY");
+                            logger.info(response2.getResponseBody());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            stopLatch.countDown();
+                        }
+                    }
+                });
+            }
+            startLatch.countDown();
+            stopLatch.await();
 
-			// bootstrap.shutdown();
-			// executor.shutdown();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			logger.info("TEST END. awaiting other requests.");
-			try {
-				Thread.sleep(Long.MAX_VALUE);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
+            // bootstrap.shutdown();
+            // executor.shutdown();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            logger.info("TEST END. awaiting other requests.");
+            try {
+                Thread.sleep(Long.MAX_VALUE);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
 
-	public static class PipelineFactory implements ChannelPipelineFactory {
-		@Override
-		public ChannelPipeline getPipeline() throws Exception {
-			ChannelPipeline p = Channels.pipeline();
-			p.addLast("decoder", new HttpRequestDecoder());
-			p.addLast("aggregator", new HttpChunkAggregator(65535));
-			p.addLast("encoder", new HttpResponseEncoder());
-			p.addLast("deflater", new HttpContentCompressor());
-			p.addLast("handler", new HttpCustomServerHandler());
-			return p;
-		}
-	}
+    public static class PipelineFactory implements ChannelPipelineFactory {
+        @Override
+        public ChannelPipeline getPipeline() throws Exception {
+            ChannelPipeline p = Channels.pipeline();
+            p.addLast("decoder", new HttpRequestDecoder());
+            p.addLast("aggregator", new HttpChunkAggregator(65535));
+            p.addLast("encoder", new HttpResponseEncoder());
+            p.addLast("deflater", new HttpContentCompressor());
+            p.addLast("handler", new HttpCustomServerHandler());
+            return p;
+        }
+    }
 }

@@ -10,62 +10,62 @@ import com.nhncorp.lucy.nimm.connector.worker.NimmWorker;
 
 public class ServiceAgent extends NimmAgentArchetype implements ServiceAgentAPI {
 
-	private final Worker worker = new Worker();
+    private final Worker worker = new Worker();
 
-	ServiceAgent() {
-	}
+    ServiceAgent() {
+    }
 
-	@Override
-	public void init() {
-		// ServiceAgentTest.initMethodCalled = true;
-	}
+    @Override
+    public void init() {
+        // ServiceAgentTest.initMethodCalled = true;
+    }
 
-	@Override
-	public void destroy() {
-		// ServiceAgentTest.destoryMethodCalled = true;
-	}
+    @Override
+    public void destroy() {
+        // ServiceAgentTest.destoryMethodCalled = true;
+    }
 
-	public String getVersion() {
-		return "ComicSexy";
-	}
+    public String getVersion() {
+        return "ComicSexy";
+    }
 
-	public String getName() {
-		return "MyNameWillBeForgotten";
-	}
-
-
-	@Override
-	public NimmWorker getNimmWorker() {
-		return this.worker;
-	}
+    public String getName() {
+        return "MyNameWillBeForgotten";
+    }
 
 
-	private class Worker extends NimmAbstractWorker {
-
-		@Override
-		public void destroy() {
-
-		}
-
-		@Override
-		public void init() {
-		}
-
-		@Override
-		protected void processMessage(NimmMessage message) throws Exception {
-
-		}
-
-		@Override
-		protected ByteBuffer responseMessage(NimmMessage request)
-				throws Exception {
-			return request.getMessage();
-		}
-
-	}
+    @Override
+    public NimmWorker getNimmWorker() {
+        return this.worker;
+    }
 
 
-	public void sendMessage(NimmAddress targetAddress, byte[] message) {
-		getMySocket().send(targetAddress,message);
-	}
+    private class Worker extends NimmAbstractWorker {
+
+        @Override
+        public void destroy() {
+
+        }
+
+        @Override
+        public void init() {
+        }
+
+        @Override
+        protected void processMessage(NimmMessage message) throws Exception {
+
+        }
+
+        @Override
+        protected ByteBuffer responseMessage(NimmMessage request)
+                throws Exception {
+            return request.getMessage();
+        }
+
+    }
+
+
+    public void sendMessage(NimmAddress targetAddress, byte[] message) {
+        getMySocket().send(targetAddress,message);
+    }
 }

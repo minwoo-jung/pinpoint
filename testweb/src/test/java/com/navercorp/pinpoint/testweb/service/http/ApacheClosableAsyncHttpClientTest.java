@@ -20,12 +20,12 @@ import com.navercorp.pinpoint.testweb.connector.apachehttp4.ApacheClosableAsyncH
 public class ApacheClosableAsyncHttpClientTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	private ApacheClosableAsyncHttpClient apacheClosableAsyncHttpClient;
+    @Autowired
+    private ApacheClosableAsyncHttpClient apacheClosableAsyncHttpClient;
 
-	@Test
-	public void requestPost() {
-		String requestPost = apacheClosableAsyncHttpClient.post();
-		logger.debug(requestPost);
-	}
+    @Test
+    public void requestPost() {
+        String requestPost = apacheClosableAsyncHttpClient.post();
+        logger.debug(requestPost);
+    }
 }
