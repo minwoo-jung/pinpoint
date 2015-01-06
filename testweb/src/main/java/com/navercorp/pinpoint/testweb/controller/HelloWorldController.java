@@ -49,7 +49,7 @@ public class HelloWorldController implements DisposableBean {
     private static final Random RANDOM = new Random();
 
     public HelloWorldController() throws IOException {
-        arcus = ArcusClient.createArcusClient("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27", new ConnectionFactoryBuilder());
+        arcus = ArcusClient.createArcusClient("dev.arcuscloud.nhncorp.com:17288", "dev_pinpoint", new ConnectionFactoryBuilder());
         memcached = new MemcachedClient(AddrUtil.getAddresses("10.99.200.15:11316,10.99.200.16:11316,10.99.200.17:11316"));
         levelManager = new LevelManager();
     }
