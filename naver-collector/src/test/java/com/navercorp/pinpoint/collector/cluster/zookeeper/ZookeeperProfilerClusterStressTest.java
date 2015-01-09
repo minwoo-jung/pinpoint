@@ -72,7 +72,7 @@ public class ZookeeperProfilerClusterStressTest {
 
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
-            pinpointServerSocket = new PinpointServerSocket(service.getChannelStateChangeEventListener());
+            pinpointServerSocket = new PinpointServerSocket(service.getChannelStateChangeEventHandler());
             pinpointServerSocket.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
             pinpointServerSocket.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
@@ -113,7 +113,7 @@ public class ZookeeperProfilerClusterStressTest {
 
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
-            pinpointServerSocket = new PinpointServerSocket(service.getChannelStateChangeEventListener());
+            pinpointServerSocket = new PinpointServerSocket(service.getChannelStateChangeEventHandler());
             pinpointServerSocket.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
             pinpointServerSocket.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
