@@ -52,7 +52,7 @@ public class ZookeeperProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
+            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventHandler());
             channelContext.setChannelProperties(getParams());
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
@@ -90,7 +90,7 @@ public class ZookeeperProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
+            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventHandler());
             channelContext.setChannelProperties(getParams());
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
@@ -134,7 +134,7 @@ public class ZookeeperProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
+            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventHandler());
             channelContext.setChannelProperties(getParams());
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
@@ -177,7 +177,7 @@ public class ZookeeperProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
+            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventHandler());
             channelContext.setChannelProperties(getParams());
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
@@ -221,7 +221,7 @@ public class ZookeeperProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventListener());
+            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventHandler());
             channelContext.setChannelProperties(getParams());
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
