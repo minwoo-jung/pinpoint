@@ -72,6 +72,8 @@ public abstract class AbstractHttpRequestExecute implements TraceContextSupport,
     abstract NameIntValuePair<String> getHost(Object[] args);
 
     abstract HttpRequest getHttpRequest(Object[] args);
+    
+    abstract Integer getStatusCode(Object[] args);
 
     @Override
     public void before(Object target, Object[] args) {

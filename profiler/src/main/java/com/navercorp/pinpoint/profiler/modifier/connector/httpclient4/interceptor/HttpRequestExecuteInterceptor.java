@@ -64,5 +64,10 @@ public class HttpRequestExecuteInterceptor extends AbstractHttpRequestExecute im
         return null;
     }
 
+    @Override
+    Integer getStatusCode(Object[] args) {
+        return null;
+    }
+
 
 }

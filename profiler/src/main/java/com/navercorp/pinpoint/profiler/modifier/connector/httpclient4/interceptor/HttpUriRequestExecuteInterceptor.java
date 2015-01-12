@@ -126,4 +126,9 @@ public class HttpUriRequestExecuteInterceptor extends AbstractHttpRequestExecute
         return target;
     }
 
+    @Override
+    Integer getStatusCode(Object[] args) {
+        return null;
+    }
+
 }
