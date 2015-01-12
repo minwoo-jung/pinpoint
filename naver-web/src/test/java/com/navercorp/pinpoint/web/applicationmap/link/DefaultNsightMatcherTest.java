@@ -4,16 +4,12 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.navercorp.pinpoint.web.applicationmap.link.NSightMatcher;
-import com.navercorp.pinpoint.web.applicationmap.link.ServerMatcher;
-
-public class NSightMatcherTest {
+public class DefaultNsightMatcherTest {
 
     @Test
     public void success() {
-        String sampleString = "dev-pinpoint-workload003.ncl.nhnsystem.com";
-
-        ServerMatcher matcher = new NSightMatcher();
+        String sampleString = "dev-pinpoint-workload003.ncl";
+        ServerMatcher matcher = new DefaultNSightMatcher();
 
         Assert.assertTrue(matcher.isMatched(sampleString));
         String link = matcher.getLink(sampleString);

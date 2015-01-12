@@ -13,6 +13,9 @@
 
 	<import resource="classpath:applicationContext-web.xml" />
 	
-	<bean id="matcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NaverMatcherGroup"/>
-	
+	<bean id="matcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NaverMatcherGroup">
+        <constructor-arg index="0" value="#{matcherInfo}"/>       
+    </bean>
+    
+    <util:properties id="matcherInfo" location="classpath:site-matcher.properties"/>
 </beans>
