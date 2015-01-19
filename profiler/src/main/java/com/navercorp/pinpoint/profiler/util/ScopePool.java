@@ -28,7 +28,7 @@ public class ScopePool {
 
     private final ConcurrentMap<String, Scope> pool = new ConcurrentHashMap<String, Scope>();
 
-    public Scope getScope(String scopeName) {
+    public Scope getScope(String scopeName, boolean withKeepData) {
         if (scopeName == null) {
             throw new NullPointerException("scopeName must not be null");
         }
@@ -36,7 +36,13 @@ public class ScopePool {
         if (scope != null) {
             return scope;
         }
-        final Scope newScope = new DepthScope(scopeName);
+        Scope newScope = null;
+        
+        if (withKeepData) {
+            newScope = new DepthScope(scopeName);
+        } else {
+            newScope = new DepthScopeKeepingData(scopeName);
+        }
         final Scope exist = this.pool.putIfAbsent(scopeName, newScope);
         if (exist != null) {
             return exist;

@@ -126,6 +126,19 @@ public class ClosableHttpClientModifier extends AbstractModifier {
   
         Interceptor httpRequestApi4 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT_CALL_BACK, true, tmpData);
         aClass.addInterceptor("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest", "org.apache.http.client.ResponseHandler", "org.apache.http.protocol.HttpContext"}, httpRequestApi4);
+        
+        
+//        Interceptor httpRequestApi1= newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT, false, tmpData);
+//        aClass.addScopeInterceptorIfDeclared("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest"}, httpRequestApi1, HttpClient4Scope.SCOPE, true);
+//  
+//        Interceptor httpRequestApi2 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT, false, tmpData);
+//        aClass.addScopeInterceptorIfDeclared("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest", "org.apache.http.protocol.HttpContext"}, httpRequestApi2, HttpClient4Scope.SCOPE, true);
+//  
+//        Interceptor httpRequestApi3 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT_CALL_BACK, true, tmpData);
+//        aClass.addScopeInterceptorIfDeclared("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest", "org.apache.http.client.ResponseHandler"}, httpRequestApi3, HttpClient4Scope.SCOPE, true);
+//  
+//        Interceptor httpRequestApi4 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT_CALL_BACK, true, tmpData);
+//        aClass.addScopeInterceptorIfDeclared("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest", "org.apache.http.client.ResponseHandler", "org.apache.http.protocol.HttpContext"}, httpRequestApi4, HttpClient4Scope.SCOPE, true);
     }
 
     private Interceptor newHttpRequestInterceptor(ClassLoader classLoader, ProtectionDomain protectedDomain, ServiceType serviceType, boolean isHasCallbackParam, ThreadLocal<Map<Object, Object>> tmpData) throws InstrumentException {

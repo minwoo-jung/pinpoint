@@ -62,6 +62,8 @@ public interface InstrumentClass {
 
     int addScopeInterceptorIfDeclared(String methodName, String[] args, Interceptor interceptor, String scopeName) throws InstrumentException;
 
+    int addScopeInterceptorIfDeclared(String methodName, String[] args, Interceptor interceptor, String scopeName, boolean withKeepData) throws InstrumentException;
+
     int addInterceptor(String methodName, String[] args, Interceptor interceptor, Type type) throws InstrumentException, NotFoundInstrumentException;
 
     void weaving(String adviceClassName) throws InstrumentException;
@@ -111,4 +113,5 @@ public interface InstrumentClass {
     InstrumentClass getNestedClass(String className);
 
     void addGetter(String getterName, String fieldName, String fieldType) throws InstrumentException;
+
 }

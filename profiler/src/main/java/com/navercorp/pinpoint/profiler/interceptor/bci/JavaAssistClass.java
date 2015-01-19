@@ -391,6 +391,30 @@ public class JavaAssistClass implements InstrumentClass {
             return -1;
         }
     }
+    
+    @Override
+    public int addScopeInterceptorIfDeclared(String methodName, String[] args, Interceptor interceptor, String scopeName, boolean withKeepData) throws InstrumentException {
+        if (methodName == null) {
+            throw new NullPointerException("methodName must not be null");
+        }
+        if (interceptor == null) {
+            throw new IllegalArgumentException("interceptor is null");
+        }
+        if (scopeName == null) {
+            throw new NullPointerException("scopeName must not be null");
+        }
+        final Scope scope = this.instrumentor.getScope(scopeName);
+
+        if (hasDeclaredMethod(methodName, args)) {
+            interceptor = wrapScopeInterceptor(interceptor, scope);
+            return addInterceptor(methodName, args, interceptor);
+        } else {
+            if (logger.isWarnEnabled()) {
+                logger.warn("Method is not declared. class={}, methodName={}, args={}", ctClass.getName(), methodName, Arrays.toString(args));
+            }
+            return -1;
+        }
+    }
 
     private Interceptor wrapScopeInterceptor(Interceptor interceptor, Scope scope) {
         final Logger interceptorLogger = LoggerFactory.getLogger(interceptor.getClass());
