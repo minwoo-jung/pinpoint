@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.profiler.context;
 
+import com.navercorp.pinpoint.common.ServiceType;
+
 /**
  * @author emeroad
  */
@@ -52,4 +54,6 @@ public interface StackFrame {
     Object getFrameObject();
 
     Object detachFrameObject();
+
+    ServiceType getServiceType();
 }

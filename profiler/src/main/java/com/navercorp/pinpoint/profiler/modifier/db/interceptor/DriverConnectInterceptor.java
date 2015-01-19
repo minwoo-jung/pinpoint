@@ -51,7 +51,7 @@ public class DriverConnectInterceptor extends SpanEventSimpleAroundInterceptor {
     protected void logBeforeInterceptor(Object target, Object[] args) {
         // Must not log args because it contains a password
         logger.beforeInterceptor(target, null);
-    }
+    }//aaaaaaaaaaaaaaaaa!!!!!!!!!!!!!
 
     @Override
     protected void prepareBeforeTrace(Object target, Object[] args) {

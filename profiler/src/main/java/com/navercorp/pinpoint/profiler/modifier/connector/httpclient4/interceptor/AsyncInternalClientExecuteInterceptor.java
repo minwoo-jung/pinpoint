@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.profiler.modifier.connector.httpclient4.intercept
 
 import org.apache.http.HttpHost;
 
+import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
 import com.navercorp.pinpoint.bootstrap.pair.NameIntValuePair;
 
@@ -84,10 +85,14 @@ import com.navercorp.pinpoint.bootstrap.pair.NameIntValuePair;
  * 
  */
 public class AsyncInternalClientExecuteInterceptor extends AbstractHttpRequestExecute implements TargetClassLoader {
-
+    
     public AsyncInternalClientExecuteInterceptor() {
-        super(AsyncInternalClientExecuteInterceptor.class);
+        super(AsyncClientExecuteInterceptor.class);
     }
+    
+//    public AsyncInternalClientExecuteInterceptor(Scope scope) {
+//        super(AsyncInternalClientExecuteInterceptor.class, scope);
+//    }
 
     @Override
     protected NameIntValuePair<String> getHost(Object[] args) {
@@ -118,7 +123,8 @@ public class AsyncInternalClientExecuteInterceptor extends AbstractHttpRequestEx
     }
 
     @Override
-    Integer getStatusCode(Object[] args) {
+    Integer getStatusCode(Object[] args, Object result) {
         return null;
     }
+
 }

@@ -16,11 +16,17 @@
 
 package com.navercorp.pinpoint.profiler.modifier.connector.httpclient4.interceptor;
 
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
 import com.navercorp.pinpoint.bootstrap.pair.NameIntValuePair;
+import com.navercorp.pinpoint.common.AnnotationKey;
+import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.profiler.util.DepthScope;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 
 /**
  * MethodInfo interceptor
@@ -40,9 +46,58 @@ public class HttpRequestExecuteInterceptor extends AbstractHttpRequestExecute im
 
     private static final int HTTP_HOST_INDEX = 0;
     private static final int HTTP_REQUEST_INDEX = 1;
+    
+    private Scope scope;
+    private boolean isHasCallbackParam;
 
-    public HttpRequestExecuteInterceptor() {
+//    public HttpRequestExecuteInterceptor() {
+//        super(HttpRequestExecuteInterceptor.class);
+//    }    
+    
+    public HttpRequestExecuteInterceptor(ServiceType serviceType, Scope scope, boolean isHasCallbackParam) {
         super(HttpRequestExecuteInterceptor.class);
+        this.serviceType = serviceType;
+        this.scope = scope;
+        this.isHasCallbackParam = isHasCallbackParam;
+    }
+    
+    @Override
+    public void before(Object target, Object[] args) {
+        if (!isPassibleBeforeProcess()) {
+            return;
+        }
+        
+        super.before(target, args);
+    }
+    
+    @Override
+    public void after(Object target, Object[] args, Object result, Throwable throwable) {
+        if (!isPassibleAfterProcess()) {
+            addStatusCode(result);
+            return;
+        }
+        
+        super.after(target, args, result, throwable);
+    };
+    
+    private boolean isPassibleBeforeProcess() {
+        final int push = scope.push();
+        
+        if (push == DepthScope.ZERO) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean isPassibleAfterProcess() {
+        final int push = scope.pop();
+        
+        if (push == DepthScope.ZERO) {
+            return true;
+        }
+        
+        return false;
     }
 
     @Override
@@ -65,9 +120,47 @@ public class HttpRequestExecuteInterceptor extends AbstractHttpRequestExecute im
     }
 
     @Override
-    Integer getStatusCode(Object[] args) {
+    Integer getStatusCode(Object[] args, Object result) {
+        if (result instanceof HttpResponse) {
+            HttpResponse response = (HttpResponse)result;
+            
+            if (response.getStatusLine() != null) {
+                return response.getStatusLine().getStatusCode(); 
+            }
+        }
+        
         return null;
     }
 
+    void addStatusCode(Object result) {
+        if(!needGetStatusCode()) {
+            return;
+        }
+        
+        //!!!!!!!!!!!! 이건 getstatuscode 함수를 재용ㅇ하면 될듯.
+        if (result instanceof HttpResponse) {
+            HttpResponse response = (HttpResponse)result;
+            
+            if (response.getStatusLine() != null) {
+                traceContext.currentRawTraceObject().recordAttribute(AnnotationKey.HTTP_STATUS_CODE, response.getStatusLine().getStatusCode());
+            }
+        }
+    }
+    
+    private boolean needGetStatusCode() {
+        if (isHasCallbackParam) {
+            return false;
+        }
+        
+        final Trace trace = traceContext.currentRawTraceObject();
+        
+        if (trace == null) {
+            return false;
+        }
+        if (trace.getServiceType() != ServiceType.HTTP_CLIENT_CALL_BACK) {
+            return false;
+        }
 
+        return true;
+    }
 }

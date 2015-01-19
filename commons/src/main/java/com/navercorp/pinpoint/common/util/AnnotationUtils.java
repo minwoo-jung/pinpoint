@@ -74,7 +74,7 @@ public final class AnnotationUtils {
         }
 
         // TODO needs a more generalized implementation for rpc connectors
-        if (serviceType == ServiceType.HTTP_CLIENT || serviceType == ServiceType.JDK_HTTPURLCONNECTOR) {
+        if (serviceType == ServiceType.HTTP_CLIENT || serviceType == ServiceType.HTTP_CLIENT_CALL_BACK || serviceType == ServiceType.JDK_HTTPURLCONNECTOR) {
             return findAnnotationBo(list, AnnotationKey.HTTP_URL);
         }
         

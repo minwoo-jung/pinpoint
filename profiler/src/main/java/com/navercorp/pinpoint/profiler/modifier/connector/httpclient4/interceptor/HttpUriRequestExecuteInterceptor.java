@@ -18,10 +18,12 @@ package com.navercorp.pinpoint.profiler.modifier.connector.httpclient4.intercept
 
 import java.net.URI;
 
+import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
 import com.navercorp.pinpoint.bootstrap.pair.NameIntValuePair;
 
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 
 /**
@@ -42,6 +44,10 @@ public class HttpUriRequestExecuteInterceptor extends AbstractHttpRequestExecute
     public HttpUriRequestExecuteInterceptor() {
         super(HttpUriRequestExecuteInterceptor.class);
     }
+    
+//    public HttpUriRequestExecuteInterceptor(Scope scope) {
+//        super(HttpUriRequestExecuteInterceptor.class, scope);
+//    }
 
     @Override
     protected NameIntValuePair<String> getHost(Object[] args) {
@@ -127,7 +133,17 @@ public class HttpUriRequestExecuteInterceptor extends AbstractHttpRequestExecute
     }
 
     @Override
-    Integer getStatusCode(Object[] args) {
+    Integer getStatusCode(Object[] args, Object result) {
+        HttpResponse response;
+        
+        if (result instanceof HttpResponse) {
+            response = (HttpResponse)result;
+            
+            if (response.getStatusLine() != null) {
+                return response.getStatusLine().getStatusCode(); 
+            }
+        }
+        
         return null;
     }
 

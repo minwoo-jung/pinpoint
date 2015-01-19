@@ -22,6 +22,7 @@ import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.ByteCodeMethodDescriptorSupport;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
@@ -36,6 +37,7 @@ import com.navercorp.pinpoint.bootstrap.util.SimpleSamplerFactory;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.AnnotationKey;
 import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.profiler.util.DepthScope;
 
 import org.apache.http.*;
 import org.apache.http.protocol.HTTP;
@@ -63,17 +65,25 @@ public abstract class AbstractHttpRequestExecute implements TraceContextSupport,
     protected boolean entity;
     protected DumpType entityDumpType;
     protected SimpleSampler entitySampler;
+    
+    protected ServiceType serviceType = ServiceType.HTTP_CLIENT;
 
     public AbstractHttpRequestExecute(Class<? extends AbstractHttpRequestExecute> childClazz) {
         this.logger = PLoggerFactory.getLogger(childClazz);
         this.isDebug = logger.isDebugEnabled();
-    }
+    }    
+    
+//    public AbstractHttpRequestExecute(Class<? extends AbstractHttpRequestExecute> childClazz, Scope scope) {
+//        this.logger = PLoggerFactory.getLogger(childClazz);
+//        this.isDebug = logger.isDebugEnabled();
+//        this.scope = scope;
+//    }
 
     abstract NameIntValuePair<String> getHost(Object[] args);
 
     abstract HttpRequest getHttpRequest(Object[] args);
     
-    abstract Integer getStatusCode(Object[] args);
+    abstract Integer getStatusCode(Object[] args, Object result);
 
     @Override
     public void before(Object target, Object[] args) {
@@ -103,7 +113,7 @@ public abstract class AbstractHttpRequestExecute implements TraceContextSupport,
 
         TraceId nextId = trace.getTraceId().getNextTraceId();
         trace.recordNextSpanId(nextId.getSpanId());
-        trace.recordServiceType(ServiceType.HTTP_CLIENT);
+        trace.recordServiceType(serviceType);
 
         if (httpRequest != null) {
             httpRequest.setHeader(Header.HTTP_TRACE_ID.toString(), nextId.getTransactionId());
@@ -116,8 +126,6 @@ public abstract class AbstractHttpRequestExecute implements TraceContextSupport,
             httpRequest.setHeader(Header.HTTP_PARENT_APPLICATION_TYPE.toString(), Short.toString(traceContext.getServerTypeCode()));
         }
     }
-
-
 
     private String getEndpoint(String host, int port) {
         if (host == null) {
@@ -158,6 +166,13 @@ public abstract class AbstractHttpRequestExecute implements TraceContextSupport,
 
                 recordHttpRequest(trace, httpRequest, throwable);
             }
+            
+            Integer statusCode = getStatusCode(args, result);
+            
+            if (statusCode != null) {
+                trace.recordAttribute(AnnotationKey.HTTP_STATUS_CODE, statusCode);
+            }
+            
             trace.recordApi(descriptor);
             trace.recordException(throwable);
 
