@@ -52,18 +52,18 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            channelContext.changeStateRun();
+            channelContext.changeStateToRunWithoutHandshake();
             Thread.sleep(1000);
 
             List<String> result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
 
-            channelContext.changeStateRunDuplexCommunication();
+            channelContext.changeStateToRunDuplex();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
 
-            channelContext.changeStateShutdown();
+            channelContext.changeStateToShutdown();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
@@ -94,12 +94,12 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            channelContext.changeStateRun();
+            channelContext.changeStateToRunWithoutHandshake();
             Thread.sleep(1000);
             List<String> result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
 
-            channelContext.changeStateRunDuplexCommunication();
+            channelContext.changeStateToRunDuplex();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
@@ -109,7 +109,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
 
-            channelContext.changeStateShutdown();
+            channelContext.changeStateToShutdown();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
@@ -142,12 +142,12 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            channelContext.changeStateRun();
+            channelContext.changeStateToRunWithoutHandshake();
             Thread.sleep(1000);
             List<String> result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
 
-            channelContext.changeStateRunDuplexCommunication();
+            channelContext.changeStateToRunDuplex();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
@@ -162,7 +162,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
 
-            channelContext.changeStateShutdown();
+            channelContext.changeStateToShutdown();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
