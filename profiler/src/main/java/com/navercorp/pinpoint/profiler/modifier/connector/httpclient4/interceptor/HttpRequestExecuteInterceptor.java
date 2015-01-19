@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.profiler.modifier.connector.httpclient4.interceptor;
 
+import java.util.Map;
+
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
@@ -49,16 +51,18 @@ public class HttpRequestExecuteInterceptor extends AbstractHttpRequestExecute im
     
     private Scope scope;
     private boolean isHasCallbackParam;
+    private ThreadLocal<Map<Object, Object>> tmpData;
 
 //    public HttpRequestExecuteInterceptor() {
 //        super(HttpRequestExecuteInterceptor.class);
 //    }    
     
-    public HttpRequestExecuteInterceptor(ServiceType serviceType, Scope scope, boolean isHasCallbackParam) {
+    public HttpRequestExecuteInterceptor(ServiceType serviceType, Scope scope, boolean isHasCallbackParam, ThreadLocal<Map<Object, Object>> tmpData) {
         super(HttpRequestExecuteInterceptor.class);
         this.serviceType = serviceType;
         this.scope = scope;
         this.isHasCallbackParam = isHasCallbackParam;
+        this.tmpData = tmpData;
     }
     
     @Override
@@ -81,6 +85,11 @@ public class HttpRequestExecuteInterceptor extends AbstractHttpRequestExecute im
     };
     
     private boolean isPassibleBeforeProcess() {
+        if (scope.depth() == DepthScope.ZERO) {
+            tmpData.get().clear();
+        }
+
+        tmpData.get().put(scope.depth(), this.serviceType);
         final int push = scope.push();
         
         if (push == DepthScope.ZERO) {
@@ -142,6 +151,7 @@ public class HttpRequestExecuteInterceptor extends AbstractHttpRequestExecute im
             HttpResponse response = (HttpResponse)result;
             
             if (response.getStatusLine() != null) {
+                System.out.println("tmpdata!! : " + tmpData);
                 traceContext.currentRawTraceObject().recordAttribute(AnnotationKey.HTTP_STATUS_CODE, response.getStatusLine().getStatusCode());
             }
         }
@@ -154,11 +164,16 @@ public class HttpRequestExecuteInterceptor extends AbstractHttpRequestExecute im
         
         final Trace trace = traceContext.currentRawTraceObject();
         
-        if (trace == null) {
+        if (trace == null || trace.getServiceType() != ServiceType.HTTP_CLIENT_CALL_BACK) {
             return false;
         }
-        if (trace.getServiceType() != ServiceType.HTTP_CLIENT_CALL_BACK) {
-            return false;
+        
+        Object value = tmpData.get().get(scope.depth()-1);
+        
+        if (value != null && value instanceof ServiceType) {
+            if (ServiceType.HTTP_CLIENT_CALL_BACK != (ServiceType)value) {
+                return false;
+            }
         }
 
         return true;

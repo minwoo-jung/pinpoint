@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.profiler.util;
 
+import java.util.Map;
+
 import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 
 /**
@@ -26,7 +28,6 @@ public final class DepthScope implements Scope {
     public static final int ZERO = 0;
 
     private final NamedThreadLocal<Depth> scope;
-
 
     public DepthScope(final String scopeName) {
         this.scope = new NamedThreadLocal<Depth>(scopeName) {

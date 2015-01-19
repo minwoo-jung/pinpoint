@@ -17,6 +17,8 @@
 package com.navercorp.pinpoint.profiler.modifier.connector.httpclient4;
 
 import java.security.ProtectionDomain;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.navercorp.pinpoint.bootstrap.Agent;
 import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
@@ -103,26 +105,34 @@ public class ClosableHttpClientModifier extends AbstractModifier {
 //        Interceptor httpRequestApi4 = new MethodInterceptor();
 //        aClass.addScopeInterceptorIfDeclared("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest", "org.apache.http.client.ResponseHandler", "org.apache.http.protocol.HttpContext"}, httpRequestApi4, HttpClient4Scope2.SCOPE);
         
+        
+        //depth 조작 
+        ThreadLocal<Map<Object, Object>> tmpData = new ThreadLocal<Map<Object, Object>>() {
+            @Override
+            protected Map<Object, Object> initialValue() {
+                return new HashMap<Object, Object>();
+            }
+        };
+        
 //        depth 조작        
-        Interceptor httpRequestApi1= newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT, false);
+        Interceptor httpRequestApi1= newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT, false, tmpData);
         aClass.addInterceptor("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest"}, httpRequestApi1);
   
-        Interceptor httpRequestApi2 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT, false);
+        Interceptor httpRequestApi2 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT, false, tmpData);
         aClass.addInterceptor("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest", "org.apache.http.protocol.HttpContext"}, httpRequestApi2);
   
-        Interceptor httpRequestApi3 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT_CALL_BACK, true);
+        Interceptor httpRequestApi3 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT_CALL_BACK, true, tmpData);
         aClass.addInterceptor("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest", "org.apache.http.client.ResponseHandler"}, httpRequestApi3);
   
-        Interceptor httpRequestApi4 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT_CALL_BACK, true);
+        Interceptor httpRequestApi4 = newHttpRequestInterceptor(classLoader, protectedDomain, ServiceType.HTTP_CLIENT_CALL_BACK, true, tmpData);
         aClass.addInterceptor("execute", new String[]{"org.apache.http.HttpHost", "org.apache.http.HttpRequest", "org.apache.http.client.ResponseHandler", "org.apache.http.protocol.HttpContext"}, httpRequestApi4);
     }
 
-    private Interceptor newHttpRequestInterceptor(ClassLoader classLoader, ProtectionDomain protectedDomain, ServiceType serviceType, boolean isHasCallbackParam) throws InstrumentException {
+    private Interceptor newHttpRequestInterceptor(ClassLoader classLoader, ProtectionDomain protectedDomain, ServiceType serviceType, boolean isHasCallbackParam, ThreadLocal<Map<Object, Object>> tmpData) throws InstrumentException {
 //        return byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.httpclient4.interceptor.HttpRequestExecuteInterceptor");
-
-        //depth 조작 
+       
         final Scope scope = byteCodeInstrumentor.getScope(HttpClient4Scope.SCOPE);
-        return byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.httpclient4.interceptor.HttpRequestExecuteInterceptor",  new Object[] {serviceType, scope, isHasCallbackParam }, new Class[] { ServiceType.class, Scope.class, boolean.class });
+        return byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.connector.httpclient4.interceptor.HttpRequestExecuteInterceptor",  new Object[] {serviceType, scope, isHasCallbackParam, tmpData }, new Class[] { ServiceType.class, Scope.class, boolean.class, ThreadLocal.class });
     }
 
     private void addHttpUriRequestApi(ClassLoader classLoader, ProtectionDomain protectedDomain, InstrumentClass aClass) throws InstrumentException {
