@@ -9,17 +9,22 @@
 
     <artifactId>pinpoint-naver-agent</artifactId>
     <name>naver-pinpoint-agent-distribution</name>
+    <!-- this module contains integration tests. if we set packaging to pom, tests are not run. so we set it to jar even though the project will not be packaged as a jar.  -->
     <packaging>jar</packaging>
-    
+
     <properties>
+        <jdk.version>1.7</jdk.version>
         <distribution.directory>${project.build.directory}/pinpoint-agent</distribution.directory>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-agent</artifactId>
-            <version>${project.version}</version>
+            <artifactId>pinpoint-profiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-profiler-optional</artifactId>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
@@ -27,12 +32,27 @@
             <version>${project.version}</version>
         </dependency>
         
+        <!-- plug-ins -->
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-plugins</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>        
+
+        <!-- for tests -->
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
         <dependency>
             <groupId>com.nhncorp</groupId>
             <artifactId>triples-redis-client</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -49,6 +69,12 @@
             <scope>test</scope>
         </dependency>
         
+        <dependency>
+            <groupId>com.nhncorp.lucy</groupId>
+            <artifactId>bloc-server</artifactId>
+            <version>4.0.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -71,71 +97,62 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <compilerVersion>${jdk.version}</compilerVersion>
+                    <executable>${env.JAVA_7_HOME}/bin/javac</executable>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <jvm>${env.JAVA_7_HOME}/bin/java</jvm>
+                    <forkMode>once</forkMode>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/distribution.xml</descriptor>
+                    </descriptors>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>copy-dependencies</id>
+                        <id>create-distribution</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <includeScope>runtime</includeScope>
-                            <!-- pinpoint-bootstrap will be placed in the root of distribution directory. pinpoint-commons is included in pinpoint-bootstrap. -->
-                            <excludeArtifactIds>pinpoint-bootstrap-core,pinpoint-bootstrap,pinpoint-commons</excludeArtifactIds>
-                            <outputDirectory>${distribution.directory}/lib</outputDirectory>
-                            <overWriteReleases>true</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-bootstrap-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeArtifactIds>pinpoint-bootstrap</includeArtifactIds>
-                            <outputDirectory>${distribution.directory}</outputDirectory>
-                            <overWriteReleases>true</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-bootstrap-core-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeArtifactIds>pinpoint-bootstrap-core</includeArtifactIds>
-                            <outputDirectory>${distribution.directory}/boot</outputDirectory>
-                            <overWriteReleases>true</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
                 <executions>
                     <execution>
-                        <id>copy-pinpoint-resources</id>
-                        <phase>validate</phase>
+                        <phase>package</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>run</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${distribution.directory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/src/main/resources-${env}</directory>
-                                </resource>
-                            </resources>
+                            <target>
+                                <delete>
+                                    <!-- Delete plugins group pom file -->
+                                    <fileset dir="${project.build.directory}/${project.build.finalName}/plugin" includes="*.pom" />
+                                </delete>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
+         </plugins>
     </build>
 </project>

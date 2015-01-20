@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.bloc4.interceptor;
+package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
@@ -11,6 +11,7 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.common.AnnotationKey;
 import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.bloc.BlocServiceTypes;
 import com.nhncorp.lucy.bloc.core.processor.BlocRequest;
 
 public class ProcessInterceptor implements SimpleAroundInterceptor, ByteCodeMethodDescriptorSupport, TraceContextSupport, TargetClassLoader {
@@ -59,8 +60,8 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, ByteCodeMeth
             
             if (args[0] != null) {
                 BlocRequest blocRequest = (BlocRequest)args[0];
-                trace.recordAttribute(AnnotationKey.CAll_URL, blocRequest.getPath());
-                trace.recordAttribute(AnnotationKey.PROTOCAL, blocRequest.getProtocol());
+                trace.recordAttribute(BlocServiceTypes.CALL_URL, blocRequest.getPath());
+                trace.recordAttribute(BlocServiceTypes.PROTOCOL, blocRequest.getProtocol());
             }
 
             trace.markAfterTime();

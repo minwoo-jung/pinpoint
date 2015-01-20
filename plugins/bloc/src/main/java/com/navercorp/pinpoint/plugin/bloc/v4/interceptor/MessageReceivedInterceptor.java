@@ -1,10 +1,10 @@
-package com.navercorp.pinpoint.profiler.modifier.bloc4.interceptor;
+package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.bloc.BlocServiceTypes;
 
 public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor implements TargetClassLoader {
 
@@ -17,7 +17,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
         trace.markBeforeTime();
         
         if (trace.canSampled()) {
-            trace.recordServiceType(ServiceType.BLOC);
+            trace.recordServiceType(BlocServiceTypes.BLOC);
             trace.recordRpcName("NPC Call");
 
             final external.org.apache.mina.common.IoSession ioSession = (external.org.apache.mina.common.IoSession)args[1];

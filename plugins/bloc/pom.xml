@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.navercorp.pinpoint</groupId>
+        <artifactId>pinpoint-naver</artifactId>
+        <version>1.0.4-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>pinpoint-bloc-plugin</artifactId>
+    <name>pinpoint-bloc-plugin</name>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- should be replaced with below dependencies after pinpoint-test project is completed -->
+         <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-profiler</artifactId>
+        </dependency>
+<!--         <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-bootstrap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-test</artifactId>
+            <scope>test</scope>
+        </dependency> -->
+        
+            
+        <dependency>
+            <groupId>com.nhncorp.lucy</groupId>
+            <artifactId>lucy-bloc-http11</artifactId>
+            <scope>provided</scope>
+<!-- I think exclusions are not necessary once we extracted this dependency as plugin. check if it's right then delete below. -->          
+<!--             <exclusions>
+                <exclusion>
+                    <groupId>commons-modeler</groupId>
+                    <artifactId>commons-modeler</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+ -->        </dependency>
+
+        <dependency>
+            <groupId>com.nhncorp.lucy</groupId>
+            <artifactId>bloc-server</artifactId>
+            <version>4.0.3</version>
+            <scope>provided</scope>
+<!--             <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>javax.servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+ -->        </dependency>
+    </dependencies>
+</project>

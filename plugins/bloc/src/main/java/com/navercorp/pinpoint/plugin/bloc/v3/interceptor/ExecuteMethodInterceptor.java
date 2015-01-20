@@ -1,15 +1,19 @@
-package com.navercorp.pinpoint.profiler.modifier.bloc.handler.interceptor;
+package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 
 import java.util.Enumeration;
 
-import com.navercorp.pinpoint.bootstrap.context.*;
-import com.navercorp.pinpoint.bootstrap.interceptor.*;
+import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.profiler.context.*;
+import com.navercorp.pinpoint.plugin.bloc.BlocServiceTypes;
+import com.navercorp.pinpoint.profiler.context.SpanId;
 
 /**
  * @author netspider
@@ -29,7 +33,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
         final external.org.apache.coyote.Request request = (external.org.apache.coyote.Request) args[0];
         trace.markBeforeTime();
         if (trace.canSampled()) {
-            trace.recordServiceType(ServiceType.BLOC);
+            trace.recordServiceType(BlocServiceTypes.BLOC);
 
             final String requestURL = request.requestURI().toString();
             trace.recordRpcName(requestURL);
