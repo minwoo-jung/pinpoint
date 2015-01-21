@@ -32,7 +32,6 @@ import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmArgument;
-import com.navercorp.pinpoint.test.plugin.OnChildClassLoader;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.Repository;
@@ -48,7 +47,6 @@ import com.nhncorp.lucy.bloc.http.HttpConfiguration;
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @JvmArgument({"-Dbloc.home=.", "-Dbloc.base=."})
-@OnChildClassLoader
 @Repository("http://repo.nhncorp.com/maven2")
 @Dependency("com.nhncorp.lucy:bloc-server:[4,4.0.3]")
 public class BlocTest {
@@ -58,7 +56,6 @@ public class BlocTest {
     private static final ServiceType BLOC = ServiceType.valueOf("BLOC");
     private static final AnnotationKey CALL_URL = AnnotationKey.valueOf("CALL_URL");
     private static final AnnotationKey PROTOCOL = AnnotationKey.valueOf("PROTOCOL");
-            
     
     @BeforeClass
     public static void startBloc() {
