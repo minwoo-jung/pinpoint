@@ -18,7 +18,7 @@ import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.navercorp.pinpoint.bootstrap.plugin.ObjectSnooper;
+import com.navercorp.pinpoint.bootstrap.plugin.FieldSnooper;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
@@ -128,7 +128,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
             if (HttpMethod.POST.name().equals(request.getMethod().name()) || HttpMethod.PUT.name().equals(request.getMethod().name())) {
                 // TODO record post body
             } else {
-                Charset uriEncoding = (Charset)((ObjectSnooper)target).__get_object__();
+                Charset uriEncoding = FieldSnooper.get(target);
                 String parameters = getRequestParameter(request, 64, 512, uriEncoding);
                 if (parameters != null && parameters.length() > 0) {
                     trace.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);

@@ -11,10 +11,9 @@ import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
 import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.plugin.arcus.ParameterUtils;
-import com.navercorp.pinpoint.plugin.arcus.accessor.OperationAccessor;
-import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
 
 /**
  * @author emeroad
@@ -61,7 +60,7 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor {
 
         // find the target node
         if (result instanceof Future) {
-            Operation op = ((OperationAccessor)result).__getOperation();
+            Operation op = MetadataHolder.get(result);
             
             if (op != null) {
                 MemcachedNode handlingNode = op.getHandlingNode();
@@ -77,7 +76,7 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor {
         }
 
         // determine the service type
-        String serviceCode = ((ServiceCodeAccessor)target).__getServiceCode();
+        String serviceCode = MetadataHolder.get(target);
         
         if (serviceCode != null) {
             trace.recordDestinationId(serviceCode);

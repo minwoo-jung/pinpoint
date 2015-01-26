@@ -7,9 +7,8 @@ import java.util.List;
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationServerProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ClassEditor;
 import com.navercorp.pinpoint.bootstrap.plugin.ClassEditorBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.ClassEditorBuilder.FieldSnooperBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.ClassEditorBuilder.InterceptorBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.ObjectSnooper;
+import com.navercorp.pinpoint.bootstrap.plugin.FieldSnooper;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
 import com.navercorp.pinpoint.common.ServiceType;
 
@@ -49,10 +48,7 @@ public class BlocPlugin implements ApplicationServerProfilerPlugin {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
         
         builder.edit("com.nhncorp.lucy.bloc.http.NettyInboundHandler");
-        
-        FieldSnooperBuilder fb = builder.newFieldAccessorBuilder();
-        fb.inject(ObjectSnooper.class);
-        fb.toAccess("uriEncoding");
+        builder.inject(FieldSnooper.OBJECT, "uriEncoding");
         
         InterceptorBuilder ib = builder.newInterceptorBuilder();
         ib.intercept("channelRead0", "io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest");

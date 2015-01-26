@@ -6,8 +6,8 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
 import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.plugin.arcus.accessor.CacheNameAccessor;
 
 /**
  * @author harebox
@@ -59,7 +59,7 @@ public class FrontCacheGetFutureGetInterceptor implements SimpleAroundIntercepto
 //                // annotate it.
 //            }
 
-            String cacheName = ((CacheNameAccessor)target).__getCacheName();
+            String cacheName = MetadataHolder.get(target);
             if (cacheName != null) {
                 trace.recordDestinationId(cacheName);
             }

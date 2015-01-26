@@ -35,6 +35,7 @@ import com.navercorp.pinpoint.test.plugin.JvmArgument;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.Repository;
+import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
 import com.nhncorp.lucy.bloc.core.Container;
 import com.nhncorp.lucy.bloc.core.conf.Configuration;
 import com.nhncorp.lucy.bloc.core.test.TestContainer;
@@ -49,6 +50,7 @@ import com.nhncorp.lucy.bloc.http.HttpConfiguration;
 @JvmArgument({"-Dbloc.home=.", "-Dbloc.base=."})
 @Repository("http://repo.nhncorp.com/maven2")
 @Dependency("com.nhncorp.lucy:bloc-server:[4,4.0.3]")
+@TraceObjectManagable
 public class BlocTest {
     private static final int HTTP_PORT = 5111;
     private static Container container;

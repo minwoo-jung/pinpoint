@@ -1,11 +1,9 @@
 package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
-import net.spy.memcached.ops.Operation;
-
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.plugin.arcus.accessor.OperationAccessor;
+import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
 
 
 /**
@@ -23,7 +21,7 @@ public class FutureSetOperationInterceptor implements SimpleAroundInterceptor {
             logger.beforeInterceptor(target, args);
         }
 
-        ((OperationAccessor)target).__setOperation((Operation) args[0]);
+        MetadataHolder.set(target, args[0]);
     }
 
     @Override

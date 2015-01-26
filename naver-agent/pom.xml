@@ -75,6 +75,13 @@
             <version>4.0.3</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>arcus</groupId>
+            <artifactId>arcus-client</artifactId>
+            <version>1.5.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

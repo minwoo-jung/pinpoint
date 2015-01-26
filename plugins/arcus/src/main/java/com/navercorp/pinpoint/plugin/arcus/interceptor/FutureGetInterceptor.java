@@ -12,9 +12,8 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
 import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.plugin.arcus.accessor.OperationAccessor;
-import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
 
 /**
  * @author emeroad
@@ -65,7 +64,7 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
 //            trace.recordAttribute(AnnotationKey.ARCUS_COMMAND, annotation);
 
             // find the target node
-            final Operation op = ((OperationAccessor)target).__getOperation();
+            final Operation op = MetadataHolder.get(target);
             if (op != null) {
                 MemcachedNode handlingNode = op.getHandlingNode();
                 if (handlingNode != null) {
@@ -82,7 +81,7 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
             }
 
             // determine the service type
-            String serviceCode = ((ServiceCodeAccessor)op).__getServiceCode();
+            String serviceCode = MetadataHolder.get(op);
             if (serviceCode != null) {
                 trace.recordDestinationId(serviceCode);
                 trace.recordServiceType(ServiceType.ARCUS_FUTURE_GET);
