@@ -4,8 +4,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -18,6 +21,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -78,6 +82,83 @@ public class ApacheHttpClient4 {
             httpClient = getHttpClient(getHttpParams());
 
             return httpClient.execute(post, responseHandler);
+        } catch (Exception e) {
+            logger.warn("HttpClient.execute() error. Caused:{}", e.getMessage(), e);
+            return e.getMessage();
+        } finally {
+            if (null != httpClient && null != httpClient.getConnectionManager()) {
+                httpClient.getConnectionManager().shutdown();
+            }
+        }
+    }
+
+    public String execute2(String uri, Map<String, Object> paramMap) {
+        return execute2(uri, paramMap, null);
+    }
+    
+    public String execute2(String uri, Map<String, Object> paramMap, String cookie) {
+        if (null == uri) {
+            return null;
+        }
+
+        HttpClient httpClient = null;
+        httpClient = getHttpClient(getHttpParams());
+        try {
+            HttpPost post = new HttpPost(uri);
+            
+            if (cookie != null) {
+                post.setHeader("Cookie", cookie);
+            }
+            post.setEntity(getEntity(paramMap));
+            post.setParams(getHttpParams());
+            post.addHeader("Content-Type", "application/json;charset=UTF-8");
+
+            //case 1-1
+            httpClient = getHttpClient(getHttpParams());
+            HttpResponse response = httpClient.execute(post);
+            response.getStatusLine().getStatusCode();
+            
+            //case 1-2
+            //call back 함수
+            ResponseHandler<String> responseHandler = new BasicResponseHandler();
+            httpClient = getHttpClient(getHttpParams());
+            httpClient.execute(post, responseHandler);
+//            
+            //case 2-1
+            httpClient = getHttpClient(getHttpParams());
+            response = httpClient.execute(post, new BasicHttpContext());
+            System.out.println("status code : " + response.getStatusLine().getStatusCode());
+            
+            //case 2-2
+            //call back 함수
+            httpClient = getHttpClient(getHttpParams());
+            httpClient.execute(post, responseHandler, new BasicHttpContext());
+            System.out.println("status code : " + response.getStatusLine().getStatusCode());
+
+            //case 3-1
+            httpClient = getHttpClient(getHttpParams());
+            HttpHost target = new HttpHost("cafe.naver.com", 80, "http");
+            HttpGet request = new HttpGet("/toto5kin/36557");
+            response = httpClient.execute(target, request);
+            response.getStatusLine().getStatusCode();
+            
+            //case 3-2
+            httpClient = getHttpClient(getHttpParams());
+            target = new HttpHost("cafe.naver.com", 80, "http");
+            request = new HttpGet("/toto5kin/36557");
+            httpClient.execute(target, request, responseHandler);
+            
+            //case 4-1
+            httpClient = getHttpClient(getHttpParams());
+            response = httpClient.execute(target, request, new BasicHttpContext());
+            response.getStatusLine().getStatusCode();
+            
+            //case 4-2
+            //call back 함수
+            httpClient = getHttpClient(getHttpParams());
+            httpClient.execute(target, request, responseHandler, new BasicHttpContext());
+            
+            return "OK";
         } catch (Exception e) {
             logger.warn("HttpClient.execute() error. Caused:{}", e.getMessage(), e);
             return e.getMessage();

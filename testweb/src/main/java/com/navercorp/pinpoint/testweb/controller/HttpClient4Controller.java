@@ -51,4 +51,17 @@ public class HttpClient4Controller {
 
         return "OK";
     }
+    
+    @RequestMapping(value = "/httpclient4/statusCode")
+    @ResponseBody
+    public String statusCode(HttpServletRequest request) {
+        logger.info("status clde");
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        HashMap<String, Object> post = new HashMap<String, Object>();
+        post.put("test", "1");
+        post.put("test2", "2");
+        client.execute2("http://www.naver.com", post);
+
+        return "OK";
+    }
 }
