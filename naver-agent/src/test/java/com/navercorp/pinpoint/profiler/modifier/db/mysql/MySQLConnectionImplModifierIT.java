@@ -64,7 +64,7 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         logger.info("Connection class name:{}", connection.getClass().getName());
         logger.info("Connection class cl:{}", connection.getClass().getClassLoader());
 
-        DatabaseInfo url = ((DatabaseInfoTraceValue) connection).__getTraceDatabaseInfo();
+        DatabaseInfo url = ((DatabaseInfoTraceValue) connection)._$PINPOINT$_getTraceDatabaseInfo();
         Assert.assertNotNull(url);
 
         statement(connection);
@@ -77,7 +77,7 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
 
         connection.close();
 
-        DatabaseInfo clearUrl = ((DatabaseInfoTraceValue) connection).__getTraceDatabaseInfo();
+        DatabaseInfo clearUrl = ((DatabaseInfoTraceValue) connection)._$PINPOINT$_getTraceDatabaseInfo();
         Assert.assertNull(clearUrl);
 
     }
@@ -113,7 +113,7 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         Object internalConnection = current.get(invocationHandler);
 
 
-        DatabaseInfo url = ((DatabaseInfoTraceValue) internalConnection).__getTraceDatabaseInfo();
+        DatabaseInfo url = ((DatabaseInfoTraceValue) internalConnection)._$PINPOINT$_getTraceDatabaseInfo();
         Assert.assertNotNull(url);
 
         statement(connection);
@@ -135,7 +135,7 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         preparedStatement8(connection);
 
         connection.close();
-        DatabaseInfo clearUrl = ((DatabaseInfoTraceValue) internalConnection).__getTraceDatabaseInfo();
+        DatabaseInfo clearUrl = ((DatabaseInfoTraceValue) internalConnection)._$PINPOINT$_getTraceDatabaseInfo();
         Assert.assertNull(clearUrl);
 
     }

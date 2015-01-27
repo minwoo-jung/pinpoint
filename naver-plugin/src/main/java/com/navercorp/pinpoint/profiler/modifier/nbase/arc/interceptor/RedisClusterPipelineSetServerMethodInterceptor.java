@@ -46,13 +46,13 @@ public class RedisClusterPipelineSetServerMethodInterceptor implements SimpleAro
         }
 
         if (args[0] instanceof MapTraceValue) {
-            final Map<String, Object> gatewayServerTraceValue = ((MapTraceValue) args[0]).__getTraceBindValue();
+            final Map<String, Object> gatewayServerTraceValue = ((MapTraceValue) args[0])._$PINPOINT$_getTraceBindValue();
             if (gatewayServerTraceValue != null) {
                 traceValue.put("destinationId", gatewayServerTraceValue.get("destinationId"));
             }
         }
 
-        ((MapTraceValue) target).__setTraceBindValue(traceValue);
+        ((MapTraceValue) target)._$PINPOINT$_setTraceBindValue(traceValue);
     }
 
     @Override

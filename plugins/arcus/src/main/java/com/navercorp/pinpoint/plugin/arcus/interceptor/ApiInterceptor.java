@@ -11,8 +11,9 @@ import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
 import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
+import com.navercorp.pinpoint.plugin.arcus.ArcusServiceTypes;
 import com.navercorp.pinpoint.plugin.arcus.ParameterUtils;
 
 /**
@@ -59,8 +60,8 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor {
         }
 
         // find the target node
-        if (result instanceof Future) {
-            Operation op = MetadataHolder.get(result);
+        if (result instanceof Future && ArcusMetadata.OPERATION.isInstance(result)) {
+            Operation op = ArcusMetadata.OPERATION.get(result);
             
             if (op != null) {
                 MemcachedNode handlingNode = op.getHandlingNode();
@@ -76,11 +77,11 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor {
         }
 
         // determine the service type
-        String serviceCode = MetadataHolder.get(target);
+        String serviceCode = ArcusMetadata.SERVICE_CODE.get(target);
         
         if (serviceCode != null) {
             trace.recordDestinationId(serviceCode);
-            trace.recordServiceType(ServiceType.ARCUS);
+            trace.recordServiceType(ArcusServiceTypes.ARCUS);
         } else {
             trace.recordDestinationId("MEMCACHED");
             trace.recordServiceType(ServiceType.MEMCACHED);

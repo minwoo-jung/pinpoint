@@ -34,9 +34,9 @@ public class GatewayServerMethodInterceptor implements SimpleAroundInterceptor, 
         }
 
         // result - RedisCluster
-        final Map<String, Object> gatewayServerTraceValue = ((MapTraceValue) target).__getTraceBindValue();
+        final Map<String, Object> gatewayServerTraceValue = ((MapTraceValue) target)._$PINPOINT$_getTraceBindValue();
         if (gatewayServerTraceValue != null) {
-            final Map<String, Object> traceValue = ((MapTraceValue) result).__getTraceBindValue();
+            final Map<String, Object> traceValue = ((MapTraceValue) result)._$PINPOINT$_getTraceBindValue();
             // copy to destinationId
             if (traceValue != null) {
                 traceValue.put("destinationId", gatewayServerTraceValue.get("destinationId"));

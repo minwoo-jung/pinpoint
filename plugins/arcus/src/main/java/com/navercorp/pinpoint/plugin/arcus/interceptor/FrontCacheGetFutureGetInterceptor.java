@@ -6,8 +6,9 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
-import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.bootstrap.plugin.CacheApi;
+import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
+import com.navercorp.pinpoint.plugin.arcus.ArcusServiceTypes;
 
 /**
  * @author harebox
@@ -20,7 +21,7 @@ public class FrontCacheGetFutureGetInterceptor implements SimpleAroundIntercepto
     private final MethodDescriptor methodDescriptor;
     private final TraceContext traceContext;
     
-    public FrontCacheGetFutureGetInterceptor(MethodDescriptor methodDescriptor, TraceContext traceContext) {
+    public FrontCacheGetFutureGetInterceptor(@CacheApi MethodDescriptor methodDescriptor, TraceContext traceContext) {
         this.methodDescriptor = methodDescriptor;
         this.traceContext = traceContext;
     }
@@ -59,12 +60,12 @@ public class FrontCacheGetFutureGetInterceptor implements SimpleAroundIntercepto
 //                // annotate it.
 //            }
 
-            String cacheName = MetadataHolder.get(target);
+            String cacheName = ArcusMetadata.CACHE_NAME.get(target);
             if (cacheName != null) {
                 trace.recordDestinationId(cacheName);
             }
 
-            trace.recordServiceType(ServiceType.ARCUS_EHCACHE_FUTURE_GET);
+            trace.recordServiceType(ArcusServiceTypes.ARCUS_EHCACHE_FUTURE_GET);
             trace.markAfterTime();
         } finally {
             trace.traceBlockEnd();

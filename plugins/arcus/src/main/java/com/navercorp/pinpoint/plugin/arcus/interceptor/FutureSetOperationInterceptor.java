@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.arcus.interceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
+import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
 
 
 /**
@@ -21,7 +21,7 @@ public class FutureSetOperationInterceptor implements SimpleAroundInterceptor {
             logger.beforeInterceptor(target, args);
         }
 
-        MetadataHolder.set(target, args[0]);
+        ArcusMetadata.OPERATION.set(target, args[0]);
     }
 
     @Override

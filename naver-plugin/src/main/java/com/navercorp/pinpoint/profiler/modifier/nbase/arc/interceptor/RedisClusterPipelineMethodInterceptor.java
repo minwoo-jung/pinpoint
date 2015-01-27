@@ -30,7 +30,7 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
         String destinationId = null;
         String endPoint = null;
         if (target instanceof MapTraceValue) {
-            final Map<String, Object> traceValue = ((MapTraceValue) target).__getTraceBindValue();
+            final Map<String, Object> traceValue = ((MapTraceValue) target)._$PINPOINT$_getTraceBindValue();
             if (traceValue != null) {
                 destinationId = (String) traceValue.get("destinationId");
                 endPoint = (String) traceValue.get("endPoint");

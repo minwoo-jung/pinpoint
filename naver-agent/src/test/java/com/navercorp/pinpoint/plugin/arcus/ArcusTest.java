@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.GetFuture;
 import net.spy.memcached.internal.OperationFuture;
+import net.spy.memcached.plugin.FrontCacheGetFuture;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,9 +44,13 @@ import com.navercorp.pinpoint.test.plugin.Repository;
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @JvmArgument({"-Dbloc.home=.", "-Dbloc.base=."})
 @Repository("http://repo.nhncorp.com/maven2")
-@Dependency({"arcus:arcus-client:1.5.3", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
+@Dependency({"arcus:arcus-client:[1.5.3,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class ArcusTest {
     private static HelloArcus helloArcus;
+    
+    private static final ServiceType ARCUS = ServiceType.valueOf("ARCUS");
+    private static final ServiceType ARCUS_FUTURE_GET = ServiceType.valueOf("ARCUS_FUTURE_GET");
+    private static final ServiceType ARCUS_EHCACHE_FUTURE_GET = ServiceType.valueOf("ARCUS_EHCACHE_FUTURE_GET");
 
     @BeforeClass
     public static void beforeClass() {
@@ -62,17 +67,21 @@ public class ArcusTest {
         Method operationFutureGet = OperationFuture.class.getMethod("get", long.class, TimeUnit.class);
         Method asyncGet = MemcachedClient.class.getMethod("asyncGet", String.class);
         Method getFutureGet = GetFuture.class.getMethod("get", long.class, TimeUnit.class);
+        Method frontCacheFutureGet = FrontCacheGetFuture.class.getMethod("get", long.class, TimeUnit.class);
         
         String key = "test:hello";
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
-        verifier.verifyApi(ServiceType.ARCUS, set, key);
-        verifier.verifyApi(ServiceType.ARCUS_FUTURE_GET, operationFutureGet);
-        verifier.verifyApi(ServiceType.ARCUS, asyncGet, key);
-        verifier.verifyApi(ServiceType.ARCUS_FUTURE_GET, getFutureGet);
-        verifier.verifyApi(ServiceType.ARCUS, asyncGet, key);
-        verifier.verifySpanCount(0);
         
         verifier.printApis(System.out);
+        verifier.printSpans(System.out);
+
+        verifier.verifyApi(ARCUS, set, key);
+        verifier.verifyApi(ARCUS_FUTURE_GET, operationFutureGet);
+        verifier.verifyApi(ARCUS, asyncGet, key);
+        verifier.verifyApi(ARCUS_FUTURE_GET, getFutureGet);
+        verifier.verifyApi(ARCUS, asyncGet, key);
+        verifier.verifyApi(ARCUS_EHCACHE_FUTURE_GET, frontCacheFutureGet);
+        verifier.verifySpanCount(0);
     }
 }

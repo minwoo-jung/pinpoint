@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.arcus.interceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
+import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
 
 /**
  * 
@@ -27,6 +27,6 @@ public class CacheManagerConstructInterceptor implements SimpleAroundInterceptor
         }
 
         // set serviceCode
-        MetadataHolder.set(target, args[1]);
+        ArcusMetadata.SERVICE_CODE.set(target, args[1]);
     }
 }

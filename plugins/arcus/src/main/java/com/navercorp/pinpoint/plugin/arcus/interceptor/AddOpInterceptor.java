@@ -4,7 +4,7 @@ package com.navercorp.pinpoint.plugin.arcus.interceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
+import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
 
 /**
  * 
@@ -22,8 +22,8 @@ public class AddOpInterceptor implements SimpleAroundInterceptor {
             logger.beforeInterceptor(target, args);
         }
 
-        String serviceCode = MetadataHolder.get(target);
-        MetadataHolder.set(args[1], serviceCode);
+        String serviceCode = ArcusMetadata.SERVICE_CODE.get(target);
+        ArcusMetadata.SERVICE_CODE.set(args[1], serviceCode);
     }
 
     @Override

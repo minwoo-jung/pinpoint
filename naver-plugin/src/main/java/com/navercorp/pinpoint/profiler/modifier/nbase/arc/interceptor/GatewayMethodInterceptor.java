@@ -35,12 +35,12 @@ public class GatewayMethodInterceptor implements SimpleAroundInterceptor, Target
         }
 
         // result - GatewayServer
-        final Map<String, Object> gatewayTraceValue = ((MapTraceValue) target).__getTraceBindValue();
+        final Map<String, Object> gatewayTraceValue = ((MapTraceValue) target)._$PINPOINT$_getTraceBindValue();
         if (gatewayTraceValue != null) {
             final Map<String, Object> traceValue = new HashMap<String, Object>();
             // copy to destinationId
             traceValue.put("destinationId", gatewayTraceValue.get("destinationId"));
-            ((MapTraceValue) result).__setTraceBindValue(traceValue);
+            ((MapTraceValue) result)._$PINPOINT$_setTraceBindValue(traceValue);
         }
     }
 }

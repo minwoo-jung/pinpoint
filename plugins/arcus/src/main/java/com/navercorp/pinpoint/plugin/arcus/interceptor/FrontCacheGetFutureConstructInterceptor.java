@@ -5,7 +5,7 @@ import net.sf.ehcache.Element;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
+import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
 
 /**
  * @author harebox
@@ -32,12 +32,12 @@ public class FrontCacheGetFutureConstructInterceptor implements SimpleAroundInte
 
         try {
             // set cacheName
-            MetadataHolder.set(target, DEFAULT_FRONTCACHE_NAME);
+            ArcusMetadata.CACHE_NAME.set(target, DEFAULT_FRONTCACHE_NAME);
             
             if (args[0] instanceof Element) {
                 Element element = (Element) args[0];
                 // set cacheKey
-                MetadataHolder.set2(target, element.getObjectKey());
+                ArcusMetadata.CACHE_KEY.set(target, element.getObjectKey());
             }
         } catch (Exception e) {
             logger.error("failed to add metadata: {}", e);

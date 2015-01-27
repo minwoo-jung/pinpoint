@@ -12,8 +12,10 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataHolder;
+import com.navercorp.pinpoint.bootstrap.plugin.CacheApi;
 import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
+import com.navercorp.pinpoint.plugin.arcus.ArcusServiceTypes;
 
 /**
  * @author emeroad
@@ -26,7 +28,7 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
     private final MethodDescriptor methodDescriptor;
     private final TraceContext traceContext;
     
-    public FutureGetInterceptor(MethodDescriptor methodDescriptor, TraceContext traceContext) {
+    public FutureGetInterceptor(@CacheApi MethodDescriptor methodDescriptor, TraceContext traceContext) {
         this.methodDescriptor = methodDescriptor;
         this.traceContext = traceContext;
     }
@@ -64,7 +66,8 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
 //            trace.recordAttribute(AnnotationKey.ARCUS_COMMAND, annotation);
 
             // find the target node
-            final Operation op = MetadataHolder.get(target);
+            final Operation op = ArcusMetadata.OPERATION.get(target);
+            
             if (op != null) {
                 MemcachedNode handlingNode = op.getHandlingNode();
                 if (handlingNode != null) {
@@ -81,10 +84,10 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
             }
 
             // determine the service type
-            String serviceCode = MetadataHolder.get(op);
+            String serviceCode = ArcusMetadata.SERVICE_CODE.get(op);
             if (serviceCode != null) {
                 trace.recordDestinationId(serviceCode);
-                trace.recordServiceType(ServiceType.ARCUS_FUTURE_GET);
+                trace.recordServiceType(ArcusServiceTypes.ARCUS_FUTURE_GET);
             } else {
                 trace.recordDestinationId("MEMCACHED");
                 trace.recordServiceType(ServiceType.MEMCACHED_FUTURE_GET);

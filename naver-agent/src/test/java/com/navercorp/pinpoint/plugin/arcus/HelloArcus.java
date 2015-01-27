@@ -96,7 +96,8 @@ public class HelloArcus {
     public static void main(String args[]) {
         HelloArcus helloArcus = new HelloArcus("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27");
         helloArcus.sayHello();
-        System.out.println(helloArcus.listenHello());
+        helloArcus.listenHello();
+        helloArcus.listenHello();
     }
  
 }
