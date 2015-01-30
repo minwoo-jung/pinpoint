@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationServerProfilerPlugin;
-import com.navercorp.pinpoint.bootstrap.plugin.ClassEditor;
-import com.navercorp.pinpoint.bootstrap.plugin.ClassEditorBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.ClassEditorBuilder.InterceptorBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.FieldSnooper;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.plugin.editor.ClassEditor;
+import com.navercorp.pinpoint.bootstrap.plugin.editor.ClassEditorBuilder;
+import com.navercorp.pinpoint.bootstrap.plugin.editor.ClassEditorBuilder.MethodEditorBuilder;
 import com.navercorp.pinpoint.common.ServiceType;
 
 public class BlocPlugin implements ApplicationServerProfilerPlugin {
@@ -34,25 +34,23 @@ public class BlocPlugin implements ApplicationServerProfilerPlugin {
     
     private ClassEditor getBlocAdapterEditor(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
+        builder.target("com.nhncorp.lucy.bloc.handler.HTTPHandler$BlocAdapter");
         
-        builder.edit("com.nhncorp.lucy.bloc.handler.HTTPHandler$BlocAdapter");
-        
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.intercept("execute", "external.org.apache.coyote.Request", "external.org.apache.coyote.Response");
-        ib.with("com.navercorp.pinpoint.plugin.bloc.v3.interceptor.ExecuteMethodInterceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetMethod("execute", "external.org.apache.coyote.Request", "external.org.apache.coyote.Response");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.bloc.v3.interceptor.ExecuteMethodInterceptor");
         
         return builder.build();
     }
     
     private ClassEditor getNettyInboundHandlerModifier(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-        
-        builder.edit("com.nhncorp.lucy.bloc.http.NettyInboundHandler");
+        builder.target("com.nhncorp.lucy.bloc.http.NettyInboundHandler");
         builder.inject(FieldSnooper.OBJECT, "uriEncoding");
         
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.intercept("channelRead0", "io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest");
-        ib.with("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ChannelRead0Interceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetMethod("channelRead0", "io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ChannelRead0Interceptor");
 
         return builder.build();
     }
@@ -60,24 +58,22 @@ public class BlocPlugin implements ApplicationServerProfilerPlugin {
     
     private ClassEditor getNpcHandlerModifier(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
+        builder.target("com.nhncorp.lucy.bloc.npc.handler.NpcHandler");
         
-        builder.edit("com.nhncorp.lucy.bloc.npc.handler.NpcHandler");
-        
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.intercept("messageReceived", "external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object");
-        ib.with("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.MessageReceivedInterceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetMethod("messageReceived", "external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.MessageReceivedInterceptor");
 
         return builder.build();
     }
 
     private ClassEditor getRequestProcessorModifier(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
+        builder.target("com.nhncorp.lucy.bloc.core.processor.RequestProcessor");
         
-        builder.edit("com.nhncorp.lucy.bloc.core.processor.RequestProcessor");
-        
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.intercept("process", "com.nhncorp.lucy.bloc.core.processor.BlocRequest");
-        ib.with("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ProcessInterceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetMethod("process", "com.nhncorp.lucy.bloc.core.processor.BlocRequest");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ProcessInterceptor");
 
         return builder.build();
     }

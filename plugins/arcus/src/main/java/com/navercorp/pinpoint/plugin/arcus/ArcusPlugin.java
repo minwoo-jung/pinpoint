@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.navercorp.pinpoint.bootstrap.plugin.ClassEditor;
-import com.navercorp.pinpoint.bootstrap.plugin.ClassEditorBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.ClassEditorBuilder.InterceptorBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.Condition;
+import com.navercorp.pinpoint.bootstrap.plugin.editor.ClassEditor;
+import com.navercorp.pinpoint.bootstrap.plugin.editor.ClassEditorBuilder;
+import com.navercorp.pinpoint.bootstrap.plugin.editor.ClassCondition;
+import com.navercorp.pinpoint.bootstrap.plugin.editor.ClassEditorBuilder.InterceptorBuilder;
+import com.navercorp.pinpoint.bootstrap.plugin.editor.ClassEditorBuilder.MethodEditorBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
 import com.navercorp.pinpoint.plugin.arcus.filter.ArcusMethodFilter;
@@ -48,38 +49,40 @@ public class ArcusPlugin implements ProfilerPlugin {
     
     private ClassEditor getArcusClientEditor(ProfilerPluginContext context, ArcusPluginConfig config) {
         boolean traceKey = config.isArcusKeyTrace();
+        
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-
-        builder.edit("net.spy.memcached.ArcusClient");
-        builder.when(new Condition() {
+        builder.target("net.spy.memcached.ArcusClient");
+        builder.condition(new ClassCondition() {
                 @Override
-                public boolean check(InstrumentClass target) {
+                public boolean check(ClassLoader classLoader, InstrumentClass target) {
                     return target.hasMethod("addOp", new String[] {"java.lang.String", "net.spy.memcached.ops.Operation"}, "net.spy.memcached.ops.Operation");
                 }
         });
         
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.intercept("setCacheManager", "net.spy.memcached.CacheManager");
-        ib.with("com.navercorp.pinpoint.plugin.arcus.interceptor.SetCacheManagerInterceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetMethod("setCacheManager", "net.spy.memcached.CacheManager");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.SetCacheManagerInterceptor");
         
-        InterceptorBuilder ib2 = builder.newInterceptorBuilder();
-        ib2.interceptMethodsFilteredBy(new ArcusMethodFilter());
-        ib2.with("com.navercorp.pinpoint.plugin.arcus.interceptor.ApiInterceptor");
-        ib2.constructedWith(traceKey);
-        ib2.in(Constants.ARCUS_SCOPE);
+        MethodEditorBuilder mb2 = builder.editMethod();
+        mb2.targetFilter(new ArcusMethodFilter());
+        mb2.cacheApi();
+        InterceptorBuilder ib2 = mb2.injectInterceptor();
+        ib2.interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.ApiInterceptor");
+        ib2.constructorArgs(traceKey);
+        ib2.scope(Constants.ARCUS_SCOPE);
         
         return builder.build();
     }
     
     private ClassEditor getCacheManagerEditor(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-
-        builder.edit("net.spy.memcached.CacheManager");
+        builder.target("net.spy.memcached.CacheManager");
+        
         builder.inject(ArcusMetadata.SERVICE_CODE);
         
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.interceptConstructor("java.lang.String", "java.lang.String", "net.spy.memcached.ConnectionFactoryBuilder", "java.util.concurrent.CountDownLatch", "int", "int");
-        ib.with("com.navercorp.pinpoint.plugin.arcus.interceptor.CacheManagerConstructInterceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetConstrucotor("java.lang.String", "java.lang.String", "net.spy.memcached.ConnectionFactoryBuilder", "java.util.concurrent.CountDownLatch", "int", "int");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.CacheManagerConstructInterceptor");
         
         return builder.build();
     }
@@ -87,8 +90,7 @@ public class ArcusPlugin implements ProfilerPlugin {
     
     private ClassEditor getBaseOperationImplEditor(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-        
-        builder.edit("net.spy.memcached.protocol.BaseOperationImpl");
+        builder.target("net.spy.memcached.protocol.BaseOperationImpl");
         builder.inject(ArcusMetadata.SERVICE_CODE);
 
         return builder.build();
@@ -96,47 +98,52 @@ public class ArcusPlugin implements ProfilerPlugin {
     
     private ClassEditor getFrontCacheGetFutureEditor(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-        
-        builder.edit("net.spy.memcached.plugin.FrontCacheGetFuture");
+        builder.target("net.spy.memcached.plugin.FrontCacheGetFuture");
         builder.inject(ArcusMetadata.CACHE_NAME);
         builder.inject(ArcusMetadata.CACHE_KEY);
         
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.interceptConstructor("net.sf.ehcache.Element");
-        ib.with("com.navercorp.pinpoint.plugin.arcus.interceptor.FrontCacheGetFutureConstructInterceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetConstrucotor("net.sf.ehcache.Element");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.FrontCacheGetFutureConstructInterceptor");
         
-        InterceptorBuilder ib2 = builder.newInterceptorBuilder();
-        ib2.intercept("get", "long", "java.util.concurrent.TimeUnit");
-        ib2.with("com.navercorp.pinpoint.plugin.arcus.interceptor.FrontCacheGetFutureGetInterceptor");
-        ib2.in(Constants.ARCUS_SCOPE);
+        MethodEditorBuilder mb2 = builder.editMethod();
+        mb2.targetMethod("get", "long", "java.util.concurrent.TimeUnit");
+        mb2.cacheApi();
+        InterceptorBuilder ib2 = mb2.injectInterceptor();
+        ib2.interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.FrontCacheGetFutureGetInterceptor");
+        ib2.scope(Constants.ARCUS_SCOPE);
         
-        InterceptorBuilder ib3 = builder.newInterceptorBuilder();
-        ib3.intercept("get");
-        ib3.with("com.navercorp.pinpoint.plugin.arcus.interceptor.FrontCacheGetFutureGetInterceptor");
-        ib3.in(Constants.ARCUS_SCOPE);
+        MethodEditorBuilder mb3 = builder.editMethod();
+        mb3.targetMethod("get");
+        mb3.cacheApi();
+        InterceptorBuilder ib3 = mb3.injectInterceptor();
+        ib3.interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.FrontCacheGetFutureGetInterceptor");
+        ib3.scope(Constants.ARCUS_SCOPE);
         
         return builder.build();
     }
     
     private ClassEditor getFrontCacheMemcachedClientEditor(ProfilerPluginContext context, ArcusPluginConfig config) {
         boolean traceKey = config.isMemcachedKeyTrace();
-        ClassEditorBuilder builder = context.newClassEditorBuilder();
         
-        builder.edit("net.spy.memcached.plugin.FrontCacheMemcachedClient");
-        builder.when(new Condition() {
+        ClassEditorBuilder builder = context.newClassEditorBuilder();
+        builder.target("net.spy.memcached.plugin.FrontCacheMemcachedClient");
+        builder.condition(new ClassCondition() {
 
             @Override
-            public boolean check(InstrumentClass target) {
+            public boolean check(ClassLoader classLoader, InstrumentClass target) {
                 return target.hasDeclaredMethod("putFrontCache", new String[] { "java.lang.String", "java.util.concurrent.Future", "long" });
             }
             
         });
         
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.interceptMethodsFilteredBy(new FrontCacheMemcachedMethodFilter());
-        ib.with("com.navercorp.pinpoint.plugin.arcus.interceptor.ApiInterceptor");
-        ib.in(Constants.ARCUS_SCOPE);
-        ib.constructedWith(traceKey);
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetFilter(new FrontCacheMemcachedMethodFilter());
+        mb.cacheApi();
+        InterceptorBuilder ib = mb.injectInterceptor();
+        ib.interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.ApiInterceptor");
+        ib.constructorArgs(traceKey);
+        ib.scope(Constants.ARCUS_SCOPE);
                         
         return builder.build();
     }
@@ -144,13 +151,13 @@ public class ArcusPlugin implements ProfilerPlugin {
 
     private ClassEditor getMemcachedClientEditor(ProfilerPluginContext context, ArcusPluginConfig config) {
         boolean traceKey = config.isMemcachedKeyTrace();
-        ClassEditorBuilder builder = context.newClassEditorBuilder();
         
-        builder.edit("net.spy.memcached.MemcachedClient");
-        builder.when(new Condition() {
+        ClassEditorBuilder builder = context.newClassEditorBuilder();
+        builder.target("net.spy.memcached.MemcachedClient");
+        builder.condition(new ClassCondition() {
 
             @Override
-            public boolean check(InstrumentClass target) {
+            public boolean check(ClassLoader classLoader, InstrumentClass target) {
                 return target.hasDeclaredMethod("addOp", new String[] { "java.lang.String", "net.spy.memcached.ops.Operation" });
             }
             
@@ -158,15 +165,17 @@ public class ArcusPlugin implements ProfilerPlugin {
         
         builder.inject(ArcusMetadata.SERVICE_CODE);
         
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.intercept("addOp", "java.lang.String", "net.spy.memcached.ops.Operation");
-        ib.with("com.navercorp.pinpoint.plugin.arcus.interceptor.AddOpInterceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetMethod("addOp", "java.lang.String", "net.spy.memcached.ops.Operation");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.AddOpInterceptor");
         
-        InterceptorBuilder ib2 = builder.newInterceptorBuilder();
-        ib2.interceptMethodsFilteredBy(new MemcachedMethodFilter());
-        ib2.with("com.navercorp.pinpoint.plugin.arcus.interceptor.ApiInterceptor");
-        ib2.in(Constants.ARCUS_SCOPE);
-        ib2.constructedWith(traceKey);
+        MethodEditorBuilder mb2 = builder.editMethod();
+        mb2.targetFilter(new MemcachedMethodFilter());
+        mb2.cacheApi();
+        InterceptorBuilder ib2 = mb2.injectInterceptor();
+        ib2.interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.ApiInterceptor");
+        ib2.scope(Constants.ARCUS_SCOPE);
+        ib2.constructorArgs(traceKey);
                         
         return builder.build();
     }
@@ -174,39 +183,41 @@ public class ArcusPlugin implements ProfilerPlugin {
     private ClassEditor getFutureEditor(ClassEditorBuilder builder) {
         builder.inject(ArcusMetadata.OPERATION);
         
-        InterceptorBuilder ib = builder.newInterceptorBuilder();
-        ib.intercept("setOperation", "net.spy.memcached.ops.Operation");
-        ib.with("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureSetOperationInterceptor");
+        MethodEditorBuilder mb = builder.editMethod();
+        mb.targetMethod("setOperation", "net.spy.memcached.ops.Operation");
+        mb.injectInterceptor().interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureSetOperationInterceptor");
         
-        InterceptorBuilder ib2 = builder.newInterceptorBuilder();
-        ib2.intercept("get", "long", "java.util.concurrent.TimeUnit");
-        ib2.with("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureGetInterceptor");
-        ib2.in(Constants.ARCUS_SCOPE);
+        MethodEditorBuilder mb2 = builder.editMethod();
+        mb2.targetMethod("get", "long", "java.util.concurrent.TimeUnit");
+        mb2.cacheApi();
+        InterceptorBuilder ib2 = mb2.injectInterceptor();
+        ib2.interceptorClass("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureGetInterceptor");
+        ib2.scope(Constants.ARCUS_SCOPE);
         
         return builder.build();
     }
         
     private ClassEditor getCollectionFutureEditor(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-        builder.edit("net.spy.memcached.internal.CollectionFuture");
+        builder.target("net.spy.memcached.internal.CollectionFuture");
         return getFutureEditor(builder);
     }
     
     private ClassEditor getGetFutureEditor(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-        builder.edit("net.spy.memcached.internal.GetFuture");
+        builder.target("net.spy.memcached.internal.GetFuture");
         return getFutureEditor(builder);
     }
 
     private ClassEditor getOperationFutureEditor(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-        builder.edit("net.spy.memcached.internal.OperationFuture");
+        builder.target("net.spy.memcached.internal.OperationFuture");
         return getFutureEditor(builder);
     }
 
     private ClassEditor getImmediateFutureEditor(ProfilerPluginContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
-        builder.edit("net.spy.memcached.internal.ImmediateFuture");
+        builder.target("net.spy.memcached.internal.ImmediateFuture");
         return getFutureEditor(builder);
     }
 

@@ -9,11 +9,14 @@
 
     <artifactId>pinpoint-naver-agent</artifactId>
     <name>naver-pinpoint-agent-distribution</name>
-    <!-- this module contains integration tests. if we set packaging to pom, tests are not run. so we set it to jar even though the project will not be packaged as a jar.  -->
+    <!-- this module contains integration tests. if we set packaging to pom, 
+        tests are not run. so we set it to jar even though the project will not be 
+        packaged as a jar. -->
     <packaging>jar</packaging>
 
     <properties>
         <jdk.version>1.7</jdk.version>
+        <jdk.home>${env.JAVA_7_HOME}</jdk.home>
         <distribution.directory>${project.build.directory}/pinpoint-agent</distribution.directory>
     </properties>
 
@@ -31,14 +34,14 @@
             <artifactId>pinpoint-naver-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <!-- plug-ins -->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-plugins</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
-        </dependency>        
+        </dependency>
 
         <!-- for tests -->
         <dependency>
@@ -46,7 +49,7 @@
             <artifactId>pinpoint-test</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>com.nhncorp</groupId>
             <artifactId>triples-redis-client</artifactId>
@@ -68,14 +71,14 @@
             <artifactId>jtds</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>com.nhncorp.lucy</groupId>
             <artifactId>bloc-server</artifactId>
             <version>4.0.3</version>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>arcus</groupId>
             <artifactId>arcus-client</artifactId>
@@ -104,22 +107,25 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <fork>true</fork>
-                    <compilerVersion>${jdk.version}</compilerVersion>
-                    <executable>${env.JAVA_7_HOME}/bin/javac</executable>
-                </configuration>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.18.1</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <jvm>${env.JAVA_7_HOME}/bin/java</jvm>
-                    <forkMode>once</forkMode>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
@@ -153,13 +159,15 @@
                             <target>
                                 <delete>
                                     <!-- Delete plugins group pom file -->
-                                    <fileset dir="${project.build.directory}/${project.build.finalName}/plugin" includes="*.pom" />
+                                    <fileset
+                                        dir="${project.build.directory}/${project.build.finalName}/plugin"
+                                        includes="*.pom" />
                                 </delete>
                             </target>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-         </plugins>
+        </plugins>
     </build>
 </project>

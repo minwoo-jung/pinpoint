@@ -14,7 +14,7 @@
  */
 package com.navercorp.pinpoint.plugin.bloc.v4;
 
-import static com.navercorp.pinpoint.bootstrap.plugin.PluginTestVerifier.ExpectedAnnotation.*;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.ExpectedAnnotation.*;
 import static org.junit.Assert.*;
 
 import java.net.HttpURLConnection;
@@ -25,8 +25,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.navercorp.pinpoint.bootstrap.plugin.PluginTestVerifier;
-import com.navercorp.pinpoint.bootstrap.plugin.PluginTestVerifierHolder;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.AnnotationKey;
 import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.Version;
@@ -51,7 +51,7 @@ import com.nhncorp.lucy.bloc.http.HttpConfiguration;
 @Repository("http://repo.nhncorp.com/maven2")
 @Dependency("com.nhncorp.lucy:bloc-server:[4,4.0.3]")
 @TraceObjectManagable
-public class BlocTest {
+public class BlocIT {
     private static final int HTTP_PORT = 5111;
     private static Container container;
     

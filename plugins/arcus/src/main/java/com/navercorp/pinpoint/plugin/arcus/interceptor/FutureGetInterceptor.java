@@ -12,7 +12,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.CacheApi;
 import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
 import com.navercorp.pinpoint.plugin.arcus.ArcusServiceTypes;
@@ -28,7 +27,7 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
     private final MethodDescriptor methodDescriptor;
     private final TraceContext traceContext;
     
-    public FutureGetInterceptor(@CacheApi MethodDescriptor methodDescriptor, TraceContext traceContext) {
+    public FutureGetInterceptor(MethodDescriptor methodDescriptor, TraceContext traceContext) {
         this.methodDescriptor = methodDescriptor;
         this.traceContext = traceContext;
     }
