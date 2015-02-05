@@ -3,10 +3,13 @@ package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.navercorp.pinpoint.plugin.bloc.BlocServiceTypes;
+import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;
+import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
-public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor implements TargetClassLoader {
+import external.org.apache.mina.common.IoSession;
+
+@TargetMethod(name="messageReceived", paramTypes={"external.org.apache.mina.common.IoFilter.NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
+public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
 
     public MessageReceivedInterceptor() {
         super(MessageReceivedInterceptor.class);
@@ -17,10 +20,10 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
         trace.markBeforeTime();
         
         if (trace.canSampled()) {
-            trace.recordServiceType(BlocServiceTypes.BLOC);
+            trace.recordServiceType(BLOC);
             trace.recordRpcName("NPC Call");
 
-            final external.org.apache.mina.common.IoSession ioSession = (external.org.apache.mina.common.IoSession)args[1];
+            final IoSession ioSession = (IoSession)args[1];
             trace.recordEndPoint(ioSession.getLocalAddress().toString());
             trace.recordRemoteAddress(ioSession.getRemoteAddress().toString());
         }
@@ -32,7 +35,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
         final Trace trace = getTraceContext().newTraceObject();
         
         if (isDebug) {
-            final external.org.apache.mina.common.IoSession ioSession = (external.org.apache.mina.common.IoSession)args[1];
+            final IoSession ioSession = (IoSession)args[1];
             
             if (trace.canSampled()) {
                 logger.debug("TraceID not exist. start new trace. requestUrl:{}, remoteAddr:{}", new Object[] {ioSession.getRemoteAddress().toString()});

@@ -49,9 +49,6 @@ import com.navercorp.pinpoint.test.plugin.Repository;
 @Repository("http://repo.nhncorp.com/maven2")
 @Dependency({"arcus:arcus-client:[1.5.3,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class ArcusIT {
-    /**
-     * 
-     */
     private static final String KEY = "test:hello";
 
     private static ArcusClient arcusClient;
@@ -115,8 +112,8 @@ public class ArcusIT {
         
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         
-//        verifier.printApis(System.out);
-//        verifier.printSpans(System.out);
+        verifier.printApis(System.out);
+        verifier.printSpans(System.out);
 
         verifier.verifyApi(ARCUS, set, KEY);
         verifier.verifyApi(ARCUS_FUTURE_GET, operationFutureGet);

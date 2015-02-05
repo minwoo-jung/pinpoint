@@ -3,17 +3,26 @@ package com.navercorp.pinpoint.plugin.arcus.interceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
+import com.navercorp.pinpoint.bootstrap.plugin.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;
+import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 
 /**
  * 
  * @author netspider
  * @author emeroad
  */
-public class SetCacheManagerInterceptor implements SimpleAroundInterceptor {
+@TargetMethod(name="setCacheManager", paramTypes="net.spy.memcached.CacheManager")
+public class SetCacheManagerInterceptor implements SimpleAroundInterceptor, ArcusConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
+    private final MetadataAccessor serviceCodeAccessor;
+    
+    public SetCacheManagerInterceptor(@Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor) {
+        this.serviceCodeAccessor = serviceCodeAccessor;
+    }
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
@@ -26,7 +35,7 @@ public class SetCacheManagerInterceptor implements SimpleAroundInterceptor {
             logger.beforeInterceptor(target, args);
         }
 
-        String serviceCode = ArcusMetadata.SERVICE_CODE.get(args[0]);
-        ArcusMetadata.SERVICE_CODE.set(target, serviceCode);
+        String serviceCode = serviceCodeAccessor.get(args[0]);
+        serviceCodeAccessor.set(target, serviceCode);
     }
 }

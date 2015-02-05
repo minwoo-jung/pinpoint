@@ -3,17 +3,27 @@ package com.navercorp.pinpoint.plugin.arcus.interceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
+import com.navercorp.pinpoint.bootstrap.plugin.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.TargetConstructor;
+import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 
 /**
  * 
  * @author netspider
  * @author emeroad
  */
-public class CacheManagerConstructInterceptor implements SimpleAroundInterceptor {
+@TargetConstructor({"java.lang.String", "java.lang.String", "net.spy.memcached.ConnectionFactoryBuilder", "java.util.concurrent.CountDownLatch", "int", "int"})
+public class CacheManagerConstructInterceptor implements SimpleAroundInterceptor, ArcusConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
+    
+    private final MetadataAccessor serviceCodeAccessor;
+    
+    public CacheManagerConstructInterceptor(@Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor) {
+        this.serviceCodeAccessor = serviceCodeAccessor;
+    }
 
     @Override
     public void before(Object target, Object[] args) {
@@ -26,7 +36,6 @@ public class CacheManagerConstructInterceptor implements SimpleAroundInterceptor
             logger.afterInterceptor(target, args, result, throwable);
         }
 
-        // set serviceCode
-        ArcusMetadata.SERVICE_CODE.set(target, args[1]);
+        serviceCodeAccessor.set(target, args[1]);
     }
 }

@@ -12,14 +12,20 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.plugin.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.Scope;
+import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;
 import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.plugin.arcus.ArcusMetadata;
-import com.navercorp.pinpoint.plugin.arcus.ArcusServiceTypes;
+import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 
 /**
  * @author emeroad
  */
-public class FutureGetInterceptor implements SimpleAroundInterceptor {
+@TargetMethod(name="get", paramTypes={"long", "java.util.concurrent.TimeUnit"})
+@Scope(ArcusConstants.ARCUS_SCOPE)
+public class FutureGetInterceptor implements SimpleAroundInterceptor, ArcusConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -27,9 +33,15 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
     private final MethodDescriptor methodDescriptor;
     private final TraceContext traceContext;
     
-    public FutureGetInterceptor(MethodDescriptor methodDescriptor, TraceContext traceContext) {
+    private final MetadataAccessor operationAccessor;
+    private final MetadataAccessor serviceCodeAccessor;
+    
+    public FutureGetInterceptor(@Cached MethodDescriptor methodDescriptor, TraceContext traceContext,
+            @Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor, @Name(METADATA_OPERATION) MetadataAccessor operationAccessor) {
         this.methodDescriptor = methodDescriptor;
         this.traceContext = traceContext;
+        this.serviceCodeAccessor = serviceCodeAccessor;
+        this.operationAccessor = operationAccessor;
     }
 
     @Override
@@ -65,7 +77,7 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
 //            trace.recordAttribute(AnnotationKey.ARCUS_COMMAND, annotation);
 
             // find the target node
-            final Operation op = ArcusMetadata.OPERATION.get(target);
+            final Operation op = operationAccessor.get(target);
             
             if (op != null) {
                 MemcachedNode handlingNode = op.getHandlingNode();
@@ -83,10 +95,10 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor {
             }
 
             // determine the service type
-            String serviceCode = ArcusMetadata.SERVICE_CODE.get(op);
+            String serviceCode = serviceCodeAccessor.get(op);
             if (serviceCode != null) {
                 trace.recordDestinationId(serviceCode);
-                trace.recordServiceType(ArcusServiceTypes.ARCUS_FUTURE_GET);
+                trace.recordServiceType(ARCUS_FUTURE_GET);
             } else {
                 trace.recordDestinationId("MEMCACHED");
                 trace.recordServiceType(ServiceType.MEMCACHED_FUTURE_GET);
