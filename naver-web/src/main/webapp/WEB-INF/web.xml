@@ -11,7 +11,7 @@
 
     <!-- ServiceTypeLoader must be defined before Spring's ContextLoaderListener because ServiceType has to be initialized first.-->
     <listener>
-        <listener-class >com.navercorp.pinpoint.collector.servlet.ServiceTypeLoader</listener-class>
+        <listener-class >com.navercorp.pinpoint.web.servlet.ServiceTypeLoader</listener-class>
     </listener>
     <!-- root application context -->
     <listener>

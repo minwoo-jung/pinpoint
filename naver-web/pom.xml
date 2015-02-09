@@ -46,6 +46,13 @@
             <classifier>classes</classifier>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-plugins</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>com.nhncorp.lucy</groupId>
@@ -57,7 +64,6 @@
         <dependency>
             <groupId>com.nhncorp.lucy</groupId>
             <artifactId>lucy-npc</artifactId>
-            <version>1.5.19</version>
         </dependency>
 
 

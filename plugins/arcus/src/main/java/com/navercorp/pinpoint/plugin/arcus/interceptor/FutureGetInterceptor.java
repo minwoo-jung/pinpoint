@@ -6,6 +6,7 @@ import java.net.SocketAddress;
 import net.spy.memcached.MemcachedNode;
 import net.spy.memcached.ops.Operation;
 
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
@@ -13,7 +14,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.Cached;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.plugin.Name;
 import com.navercorp.pinpoint.bootstrap.plugin.Scope;
 import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;

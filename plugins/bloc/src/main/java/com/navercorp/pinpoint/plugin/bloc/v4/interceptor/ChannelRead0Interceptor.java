@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.navercorp.pinpoint.bootstrap.FieldSnooper;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.FieldSnooper;
 import com.navercorp.pinpoint.bootstrap.plugin.Name;
 import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;

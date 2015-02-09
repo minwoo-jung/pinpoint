@@ -7,12 +7,12 @@ import java.util.concurrent.Future;
 import net.spy.memcached.MemcachedNode;
 import net.spy.memcached.ops.Operation;
 
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.Cached;
-import com.navercorp.pinpoint.bootstrap.plugin.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.plugin.Name;
 import com.navercorp.pinpoint.bootstrap.plugin.Scope;
 import com.navercorp.pinpoint.common.ServiceType;
