@@ -15,6 +15,19 @@
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss}[%-5p](%-35c{1.}:%-3L) %m%n" />
 		</layout>
 	</appender>
+    
+    <appender name="async" class="org.apache.log4j.AsyncAppender">
+        <param name="BufferSize" value="500"/>
+        <appender-ref ref="consoleForLoggingController"/>
+    </appender>
+    
+    <appender name="consoleForLoggingController" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.EnhancedPatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35c{1.}:%-3L) [TransactionId : %X{TransactionID}] [ProjectName : %X{ProjectName}] %m%n" />
+            <!-- %L 옵션은 라인넘버가 출력되나 속도저하가 심하다. -->
+            <!--<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-30c{1}) %m%n" />-->
+        </layout>
+    </appender>
 
 
     <logger name="com.navercorp.pinpoint" additivity="false">
@@ -25,6 +38,11 @@
     <logger name="com.navercorp.pinpoint.testweb" additivity="false">
         <level value="DEBUG" />
         <appender-ref ref="console" />
+    </logger>
+
+    <logger name="com.navercorp.pinpoint.testweb.controller.LoggingController" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="async" />
     </logger>
 
     <logger name="com.ibatis" additivity="false">
