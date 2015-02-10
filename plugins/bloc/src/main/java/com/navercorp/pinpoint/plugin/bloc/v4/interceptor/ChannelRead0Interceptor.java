@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.profiler.modifier.bloc4.interceptor;
+package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -7,33 +7,38 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.navercorp.pinpoint.bootstrap.FieldSnooper;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
+import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
-import com.navercorp.pinpoint.bootstrap.util.MetaObject;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.AnnotationKey;
 import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
+import com.navercorp.pinpoint.plugin.bloc.BlocPlugin;
 import com.navercorp.pinpoint.profiler.context.SpanId;
 
 /**
  * @author netspider
  */
-public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor implements TargetClassLoader {
+@TargetMethod(name="channelRead0", paramTypes={"io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest"})
+public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
+    private final FieldSnooper uriEncodingSnooper;
 
-    private MetaObject<java.nio.charset.Charset> getUriEncoding = new MetaObject<java.nio.charset.Charset>("__getUriEncoding");
-
-    public ChannelRead0Interceptor() {
+    public ChannelRead0Interceptor(@Name(BlocPlugin.FIELD_URI_ENCODING) FieldSnooper snooper) {
         super(ChannelRead0Interceptor.class);
+        this.uriEncodingSnooper = snooper;
     }
 
     @Override
@@ -43,7 +48,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
 
         trace.markBeforeTime();
         if (trace.canSampled()) {
-            trace.recordServiceType(ServiceType.BLOC);
+            trace.recordServiceType(BLOC);
             final String requestURL = request.getUri();
             trace.recordRpcName(requestURL);
 
@@ -128,7 +133,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
             if (HttpMethod.POST.name().equals(request.getMethod().name()) || HttpMethod.PUT.name().equals(request.getMethod().name())) {
                 // TODO record post body
             } else {
-                java.nio.charset.Charset uriEncoding = getUriEncoding.invoke(target);
+                Charset uriEncoding = uriEncodingSnooper.get(target);
                 String parameters = getRequestParameter(request, 64, 512, uriEncoding);
                 if (parameters != null && parameters.length() > 0) {
                     trace.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);

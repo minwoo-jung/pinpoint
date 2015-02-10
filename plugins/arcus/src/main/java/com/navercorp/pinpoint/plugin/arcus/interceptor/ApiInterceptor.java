@@ -7,23 +7,31 @@ import java.util.concurrent.Future;
 import net.spy.memcached.MemcachedNode;
 import net.spy.memcached.ops.Operation;
 
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.plugin.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.Scope;
 import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 import com.navercorp.pinpoint.plugin.arcus.ParameterUtils;
-import com.navercorp.pinpoint.plugin.arcus.accessor.OperationAccessor;
-import com.navercorp.pinpoint.plugin.arcus.accessor.ServiceCodeAccessor;
 
 /**
  * @author emeroad
  */
-public class ApiInterceptor extends SpanEventSimpleAroundInterceptor {
+@Scope(ArcusConstants.ARCUS_SCOPE)
+public class ApiInterceptor extends SpanEventSimpleAroundInterceptor implements ArcusConstants {
     private final boolean traceKey;
     private final int keyIndex;
     
-    public ApiInterceptor(TraceContext context, MethodInfo targetMethod, boolean traceKey) {
+    private final MetadataAccessor serviceCodeAccessor;
+    private final MetadataAccessor operationAccessor;
+    
+    public ApiInterceptor(TraceContext context, @Cached MethodInfo targetMethod,
+            @Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor, @Name(METADATA_OPERATION) MetadataAccessor operationAccessor, boolean traceKey) {
         super(ApiInterceptor.class);
         
         if (traceKey) {
@@ -40,6 +48,9 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor {
             this.traceKey = false;
             this.keyIndex = -1;
         }
+        
+        this.serviceCodeAccessor = serviceCodeAccessor;
+        this.operationAccessor = operationAccessor;
         
         this.setTraceContext(context);
         this.setMethodDescriptor(targetMethod.getDescriptor());
@@ -60,8 +71,8 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor {
         }
 
         // find the target node
-        if (result instanceof Future) {
-            Operation op = ((OperationAccessor)result).__getOperation();
+        if (result instanceof Future && operationAccessor.isApplicable(result)) {
+            Operation op = operationAccessor.get(result);
             
             if (op != null) {
                 MemcachedNode handlingNode = op.getHandlingNode();
@@ -77,11 +88,11 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor {
         }
 
         // determine the service type
-        String serviceCode = ((ServiceCodeAccessor)target).__getServiceCode();
+        String serviceCode = serviceCodeAccessor.get(target);
         
         if (serviceCode != null) {
             trace.recordDestinationId(serviceCode);
-            trace.recordServiceType(ServiceType.ARCUS);
+            trace.recordServiceType(ARCUS);
         } else {
             trace.recordDestinationId("MEMCACHED");
             trace.recordServiceType(ServiceType.MEMCACHED);
