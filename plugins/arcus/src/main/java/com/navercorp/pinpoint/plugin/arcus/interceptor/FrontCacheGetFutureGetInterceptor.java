@@ -1,28 +1,34 @@
 package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.plugin.arcus.accessor.CacheNameAccessor;
+import com.navercorp.pinpoint.bootstrap.plugin.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.Scope;
+import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 
 /**
  * @author harebox
  */
-public class FrontCacheGetFutureGetInterceptor implements SimpleAroundInterceptor {
+@Scope(ArcusConstants.ARCUS_SCOPE)
+public class FrontCacheGetFutureGetInterceptor implements SimpleAroundInterceptor, ArcusConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
     private final MethodDescriptor methodDescriptor;
     private final TraceContext traceContext;
+    private final MetadataAccessor cacheNameAccessor;
     
-    public FrontCacheGetFutureGetInterceptor(MethodDescriptor methodDescriptor, TraceContext traceContext) {
+    public FrontCacheGetFutureGetInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(MEATDATA_CACHE_NAME) MetadataAccessor cacheNameAccessor) {
         this.methodDescriptor = methodDescriptor;
         this.traceContext = traceContext;
+        this.cacheNameAccessor = cacheNameAccessor;
     }
 
     @Override
@@ -59,12 +65,12 @@ public class FrontCacheGetFutureGetInterceptor implements SimpleAroundIntercepto
 //                // annotate it.
 //            }
 
-            String cacheName = ((CacheNameAccessor)target).__getCacheName();
+            String cacheName = cacheNameAccessor.get(target);
             if (cacheName != null) {
                 trace.recordDestinationId(cacheName);
             }
 
-            trace.recordServiceType(ServiceType.ARCUS_EHCACHE_FUTURE_GET);
+            trace.recordServiceType(ARCUS_EHCACHE_FUTURE_GET);
             trace.markAfterTime();
         } finally {
             trace.traceBlockEnd();

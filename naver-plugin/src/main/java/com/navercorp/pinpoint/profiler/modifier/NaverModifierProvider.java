@@ -6,10 +6,6 @@ import java.util.List;
 import com.navercorp.pinpoint.bootstrap.Agent;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.bootstrap.instrument.ByteCodeInstrumentor;
-import com.navercorp.pinpoint.profiler.modifier.bloc.handler.HTTPHandlerModifier;
-import com.navercorp.pinpoint.profiler.modifier.bloc4.NettyInboundHandlerModifier;
-import com.navercorp.pinpoint.profiler.modifier.bloc4.NpcHandlerModifier;
-import com.navercorp.pinpoint.profiler.modifier.bloc4.RequestProcessorModifier;
 import com.navercorp.pinpoint.profiler.modifier.connector.lucynet.CompositeInvocationFutureModifier;
 import com.navercorp.pinpoint.profiler.modifier.connector.lucynet.DefaultInvocationFutureModifier;
 import com.navercorp.pinpoint.profiler.modifier.connector.nimm.NimmInvokerModifier;
@@ -33,8 +29,6 @@ public class NaverModifierProvider implements ModifierProvider {
     public List<Modifier> getModifiers(ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         List<Modifier> modifiers = new ArrayList<Modifier>();
 
-        addBLOC3Modifier(modifiers, byteCodeInstrumentor, agent);
-        addBLOC4Modifier(modifiers, byteCodeInstrumentor, agent);
         addNpcModifier(modifiers, byteCodeInstrumentor, agent);
         addNimmModifier(modifiers, byteCodeInstrumentor, agent);
         addLucyNetModifier(modifiers, byteCodeInstrumentor, agent);
@@ -42,28 +36,6 @@ public class NaverModifierProvider implements ModifierProvider {
         addNbaseArcSupport(modifiers, byteCodeInstrumentor, agent);
 
         return modifiers;
-    }
-
-    /**
-     * BLOC 3.x
-     */
-    public void addBLOC3Modifier(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
-        HTTPHandlerModifier httpHandlerModifier = new HTTPHandlerModifier(byteCodeInstrumentor, agent);
-        modifiers.add(httpHandlerModifier);
-    }
-
-    /**
-     * BLOC 4.x
-     */
-    private void addBLOC4Modifier(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
-        NettyInboundHandlerModifier nettyInboundHandlerModifier = new NettyInboundHandlerModifier(byteCodeInstrumentor, agent);
-        modifiers.add(nettyInboundHandlerModifier);
-
-        NpcHandlerModifier npcHandlerModifier = new NpcHandlerModifier(byteCodeInstrumentor, agent);
-        modifiers.add(npcHandlerModifier);
-
-        RequestProcessorModifier requestProcessorModifier = new RequestProcessorModifier(byteCodeInstrumentor, agent);
-        modifiers.add(requestProcessorModifier);
     }
 
     private void addNpcModifier(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {

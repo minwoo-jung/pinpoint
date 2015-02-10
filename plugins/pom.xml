@@ -12,23 +12,20 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>bloc</module>
         <module>arcus</module>
     </modules>
 
     <dependencies>
-        <!-- should be replaced with below dependencies after pinpoint-test project is completed -->
-         <dependency>
+        <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-profiler</artifactId>
-        </dependency>
-<!--         <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-bootstrap</artifactId>
+            <artifactId>pinpoint-bloc-plugin</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-test</artifactId>
-            <scope>test</scope>
-        </dependency> -->
+            <artifactId>pinpoint-arcus-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

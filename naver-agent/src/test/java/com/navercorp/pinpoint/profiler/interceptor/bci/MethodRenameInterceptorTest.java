@@ -89,7 +89,7 @@ public class MethodRenameInterceptorTest {
         mnew.setBody(body.toString());
         clas.addMethod(mnew);
         //  print the generated code block just to show what was done
-        logger.debug("Interceptor method body:");
+        logger.debug("TargetMethod method body:");
         logger.debug("body:{}", body.toString());
     }
 

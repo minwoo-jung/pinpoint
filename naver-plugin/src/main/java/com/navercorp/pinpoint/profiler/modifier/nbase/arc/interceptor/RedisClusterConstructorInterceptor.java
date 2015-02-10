@@ -46,7 +46,7 @@ public class RedisClusterConstructorInterceptor implements SimpleAroundIntercept
 
         final Map<String, Object> traceValue = new HashMap<String, Object>();
         traceValue.put("endPoint", endPoint.toString());
-        ((MapTraceValue) target).__setTraceBindValue(traceValue);
+        ((MapTraceValue) target)._$PINPOINT$_setTraceBindValue(traceValue);
     }
 
     @Override

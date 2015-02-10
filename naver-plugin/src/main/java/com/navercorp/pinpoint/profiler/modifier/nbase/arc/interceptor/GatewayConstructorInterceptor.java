@@ -49,7 +49,7 @@ public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, T
             }
         }
 
-        ((MapTraceValue) target).__setTraceBindValue(traceValue);
+        ((MapTraceValue) target)._$PINPOINT$_setTraceBindValue(traceValue);
     }
 
     @Override

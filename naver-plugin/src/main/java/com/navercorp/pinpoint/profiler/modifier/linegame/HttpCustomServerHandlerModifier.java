@@ -46,10 +46,10 @@ public class HttpCustomServerHandlerModifier extends AbstractModifier {
 //            iClass.addTraceVariable("__messageEvent", "__setMessageEvent", "__getMessageEvent", "org.jboss.netty.channel.MessageEvent");
 //
 //            // non static inner class는 constructor argument의 첫번째가 parent class임.
-//            Interceptor constInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskConstructorInterceptor");
+//            TargetMethod constInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskConstructorInterceptor");
 //            iClass.addConstructorInterceptor(new String[] { "com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent" }, constInterceptor);
 //
-//            Interceptor runInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskRunInterceptor");
+//            TargetMethod runInterceptor = byteCodeInstrumentor.newInterceptor(classLoader, protectedDomain, "com.navercorp.pinpoint.profiler.modifier.linegame.interceptor.InvokeTaskRunInterceptor");
 //            iClass.addInterceptor("run", null, runInterceptor);
 //
 //            return aClass.toBytecode();

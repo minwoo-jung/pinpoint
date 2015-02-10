@@ -1,21 +1,30 @@
 package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
-import net.spy.memcached.ops.Operation;
-
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.plugin.arcus.accessor.OperationAccessor;
+import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;
+import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 
 
 /**
  * @author harebox
  * @author emeroad
  */
-public class FutureSetOperationInterceptor implements SimpleAroundInterceptor {
+@TargetMethod(name="setOperation", paramTypes="net.spy.memcached.ops.Operation")
+public class FutureSetOperationInterceptor implements SimpleAroundInterceptor, ArcusConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
+    
+    private final MetadataAccessor operationAccessor;
+    
+    public FutureSetOperationInterceptor(@Name(METADATA_OPERATION) MetadataAccessor operationAccessor) {
+        this.operationAccessor = operationAccessor;
+    }
+
 
     @Override
     public void before(Object target, Object[] args) {
@@ -23,7 +32,7 @@ public class FutureSetOperationInterceptor implements SimpleAroundInterceptor {
             logger.beforeInterceptor(target, args);
         }
 
-        ((OperationAccessor)target).__setOperation((Operation) args[0]);
+        operationAccessor.set(target, args[0]);
     }
 
     @Override

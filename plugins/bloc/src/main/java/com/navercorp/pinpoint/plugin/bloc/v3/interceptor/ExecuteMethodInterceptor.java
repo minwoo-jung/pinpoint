@@ -1,23 +1,28 @@
-package com.navercorp.pinpoint.profiler.modifier.bloc.handler.interceptor;
+package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 
 import java.util.Enumeration;
 
-import com.navercorp.pinpoint.bootstrap.context.*;
-import com.navercorp.pinpoint.bootstrap.interceptor.*;
+import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.profiler.context.*;
+import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
+import com.navercorp.pinpoint.profiler.context.SpanId;
+
+import external.org.apache.coyote.Request;
 
 /**
  * @author netspider
  * @author emeroad
  */
-public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implements TargetClassLoader {
-
-
+@TargetMethod(name="execute", paramTypes={"external.org.apache.coyote.Request", "external.org.apache.coyote.Response"})
+public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
 
     public ExecuteMethodInterceptor() {
         super(ExecuteMethodInterceptor.class);
@@ -26,10 +31,10 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
     @Override
     public void doInBeforeTrace(RecordableTrace trace, Object target, Object[] args) {
 
-        final external.org.apache.coyote.Request request = (external.org.apache.coyote.Request) args[0];
+        final Request request = (Request) args[0];
         trace.markBeforeTime();
         if (trace.canSampled()) {
-            trace.recordServiceType(ServiceType.BLOC);
+            trace.recordServiceType(BLOC);
 
             final String requestURL = request.requestURI().toString();
             trace.recordRpcName(requestURL);
@@ -50,7 +55,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
-        final external.org.apache.coyote.Request request = (external.org.apache.coyote.Request) args[0];
+        final Request request = (Request) args[0];
         final boolean sampling = samplingEnable(request);
         if (!sampling) {
             // 샘플링 대상이 아닐 경우도 TraceObject를 생성하여, sampling 대상이 아니라는것을 명시해야 한다.
@@ -98,7 +103,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
     public void doInAfterTrace(RecordableTrace trace, Object target, Object[] args, Object result, Throwable throwable) {
 
         if (trace.canSampled()) {
-            external.org.apache.coyote.Request request = (external.org.apache.coyote.Request) args[0];
+            Request request = (Request) args[0];
             String parameters = getRequestParameter(request, 64, 512);
             if (parameters != null && parameters.length() > 0) {
                 trace.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
@@ -110,7 +115,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
         trace.markAfterTime();
     }
 
-    private boolean samplingEnable(external.org.apache.coyote.Request request) {
+    private boolean samplingEnable(Request request) {
         // optional 값.
         String samplingFlag = request.getHeader(Header.HTTP_SAMPLED.toString());
         return SamplingFlagUtils.isSamplingFlag(samplingFlag);
@@ -122,7 +127,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
      * @param request
      * @return
      */
-    private TraceId populateTraceIdFromRequest(external.org.apache.coyote.Request request) {
+    private TraceId populateTraceIdFromRequest(Request request) {
         String transactionId = request.getHeader(Header.HTTP_TRACE_ID.toString());
         if (transactionId != null) {
             long parentSpanId = NumberUtils.parseLong(request.getHeader(Header.HTTP_PARENT_SPAN_ID.toString()), SpanId.NULL);
@@ -140,7 +145,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
         }
     }
 
-    private String getRequestParameter(external.org.apache.coyote.Request request, int eachLimit, int totalLimit) {
+    private String getRequestParameter(Request request, int eachLimit, int totalLimit) {
         Enumeration<?> attrs = request.getParameters().getParameterNames();
         final StringBuilder params = new StringBuilder(64);
         while (attrs.hasMoreElements()) {
