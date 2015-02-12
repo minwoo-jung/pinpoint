@@ -13,7 +13,7 @@
 
     <appender name="nelo" class="com.nhncorp.nelo2.log4j.NeloAppender">
         <param name="Threshold" value="WARN"/>
-        <param name="projectName" value="PINPOINT"/>
+        <param name="projectName" value="PINPOINT_WEB"/>
         <param name="collectorUrl" value="nelo2-col.nhncorp.com"/>
         <param name="port" value="10006"/>
         <param name="encoding" value="utf-8"/>
@@ -37,64 +37,77 @@
     <logger name="com.navercorp.pinpoint" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.applicationmap" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.calltree.server" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="com.navercorp.pinpoint.web.mapper" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.service" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
     
     <logger name="com.navercorp.pinpoint.web.dao" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="com.navercorp.pinpoint.web.mapper.ApiMetaDataMapper" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="com.ibatis" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="org.springframework" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="org.apache.zookeeper.ZooKeeper" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
     <logger name="org.apache.zookeeper.ClientCnxn" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="org.apache.hadoop.hbase" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <root>
         <level value="INFO"/>
+        <appender-ref ref="console"/>
         <appender-ref ref="nelo-async"/>
     </root>
 </log4j:configuration>
