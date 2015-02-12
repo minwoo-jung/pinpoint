@@ -50,6 +50,16 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- nelo logging -->        
+        <dependency>
+            <groupId>com.nhncorp.nelo2</groupId>
+            <artifactId>nelo2-java-sdk-log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.nhncorp</groupId>
             <artifactId>triples-redis-client</artifactId>
