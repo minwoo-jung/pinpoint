@@ -1,10 +1,9 @@
 package com.navercorp.pinpoint.testweb.controller;
 
-import com.navercorp.pinpoint.testweb.nimm.mockupserver.NimmInvokerTest;
+import com.navercorp.pinpoint.testweb.service.NimmService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,31 +13,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author netspider
  */
 @Controller
-public class NIMMController implements DisposableBean {
+public class NIMMController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private NimmInvokerTest nimm;
+    private NimmService nimmService;
 
-    @RequestMapping(value = "/nimm/1")
+    @RequestMapping(value = "/nimm/invokeAndReturnValue")
     @ResponseBody
-    public String npc() {
-        try {
-            nimm.testInvoke();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public String invokeAndReturnValue() {
+        nimmService.get(null);
         return "OK";
     }
 
-    @Override
-    public void destroy() throws Exception {
-        try {
-            nimm.tearDown();
-        } catch (Exception e) {
-            logger.warn("tearDown() error Caused:" + e.getMessage(), e);
-        }
-        nimm.dispose();
+    @RequestMapping(value = "/nimm/invokeAndCallback")
+    @ResponseBody
+    public String invokeAndCallabck() {
+        Runnable callback = new Runnable() {
+            public void run() {
+                logger.info("Completed nimm listen");
+            }
+        };
+
+        nimmService.get(callback);
+        return "OK";
     }
 }
