@@ -21,14 +21,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterManager;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.rpc.PinpointSocketException;
 import com.navercorp.pinpoint.rpc.client.MessageListener;
 import com.navercorp.pinpoint.rpc.client.PinpointSocket;
 import com.navercorp.pinpoint.rpc.client.PinpointSocketFactory;
-import com.navercorp.pinpoint.rpc.server.PinpointServerSocket;
+import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -61,7 +59,7 @@ public class ZookeeperProfilerClusterStressTest {
     public void simpleTest1() throws Exception {
         List<TestSocket> socketList = new ArrayList<ZookeeperProfilerClusterStressTest.TestSocket>();
 
-        PinpointServerSocket pinpointServerSocket = null;
+        PinpointServerAcceptor serverAcceptor = null;
 
         TestingServer ts = null;
         try {
@@ -72,9 +70,10 @@ public class ZookeeperProfilerClusterStressTest {
 
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
-            pinpointServerSocket = new PinpointServerSocket(service.getChannelStateChangeEventHandler());
-            pinpointServerSocket.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
-            pinpointServerSocket.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            serverAcceptor = new PinpointServerAcceptor();
+            serverAcceptor.setStateChangeEventHandler(service.getChannelStateChangeEventHandler());
+            serverAcceptor.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
+            serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
@@ -95,14 +94,14 @@ public class ZookeeperProfilerClusterStressTest {
             service.tearDown();
         } finally {
             closeZookeeperServer(ts);
-            pinpointServerSocket.close();
+            serverAcceptor.close();
         }
     }
 
     @Test
     public void simpleTest2() throws Exception {
 
-        PinpointServerSocket pinpointServerSocket = null;
+        PinpointServerAcceptor serverAcceptor = null;
 
         TestingServer ts = null;
         try {
@@ -113,9 +112,10 @@ public class ZookeeperProfilerClusterStressTest {
 
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
-            pinpointServerSocket = new PinpointServerSocket(service.getChannelStateChangeEventHandler());
-            pinpointServerSocket.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
-            pinpointServerSocket.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            serverAcceptor = new PinpointServerAcceptor();
+            serverAcceptor.setStateChangeEventHandler(service.getChannelStateChangeEventHandler());
+            serverAcceptor.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
+            serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
@@ -155,7 +155,7 @@ public class ZookeeperProfilerClusterStressTest {
             service.tearDown();
         } finally {
             closeZookeeperServer(ts);
-            pinpointServerSocket.close();
+            serverAcceptor.close();
         }
     }
 

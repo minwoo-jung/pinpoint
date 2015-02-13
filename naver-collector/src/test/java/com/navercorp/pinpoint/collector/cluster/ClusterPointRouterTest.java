@@ -1,15 +1,21 @@
 package com.navercorp.pinpoint.collector.cluster;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.util.Timer;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -18,22 +24,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.navercorp.pinpoint.collector.cluster.ChannelContextClusterPoint;
-import com.navercorp.pinpoint.collector.cluster.ClusterPoint;
-import com.navercorp.pinpoint.collector.cluster.ClusterPointRepository;
-import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.cluster.TargetClusterPoint;
-import com.navercorp.pinpoint.collector.cluster.WebCluster;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
 import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
-import com.navercorp.pinpoint.rpc.server.ChannelContext;
-import com.navercorp.pinpoint.rpc.server.PinpointServerSocket;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
+import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
-import com.navercorp.pinpoint.rpc.server.SocketChannel;
+import com.navercorp.pinpoint.rpc.server.WritablePinpointServer;
+import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
+import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
+import com.navercorp.pinpoint.rpc.util.TimerFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -48,14 +53,26 @@ public class ClusterPointRouterTest {
     @Autowired
     ClusterPointRouter clusterPointRouter;
 
+    private static Timer testTimer;
+
+    @BeforeClass
+    public static void setUp() {
+        testTimer = TimerFactory.createHashedWheelTimer(ClusterPointRouterTest.class.getSimpleName(), 50, TimeUnit.MILLISECONDS, 512);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        testTimer.stop();
+    }
+
     @Test
     public void webClusterPointtest() {
         WebCluster webClusterPoint = new WebCluster(CollectorUtils.getServerIdentifier(), clusterPointRouter);
 
         try {
-            PinpointServerSocket pinpointServerSocket = new PinpointServerSocket();
-            pinpointServerSocket.setMessageListener(new PinpointSocketManagerHandler());
-            pinpointServerSocket.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
+            serverAcceptor.setMessageListener(new PinpointSocketManagerHandler());
+            serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
@@ -69,6 +86,8 @@ public class ClusterPointRouterTest {
             Assert.assertEquals(0, webClusterPoint.getWebClusterList().size());
             webClusterPoint.disconnectPoint(address);
             Assert.assertEquals(0, webClusterPoint.getWebClusterList().size());
+            
+            serverAcceptor.close();
         } finally {
             webClusterPoint.close();
         }
@@ -78,12 +97,10 @@ public class ClusterPointRouterTest {
     public void profilerClusterPointtest() {
         ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
 
-        SocketChannel socketChannel = mock(SocketChannel.class);
+        PinpointServer pinpointServer = createPinpointServer();
+        pinpointServer.setChannelProperties(getParams());
 
-        ChannelContext channelContext = new ChannelContext(socketChannel, null);
-        channelContext.setChannelProperties(getParams());
-
-        ClusterPoint clusterPoint = new ChannelContextClusterPoint(channelContext);
+        ClusterPoint clusterPoint = new PinpointServerClusterPoint(pinpointServer);
 
         clusterPointRepository.addClusterPoint(clusterPoint);
         List<TargetClusterPoint> clusterPointList = clusterPointRepository.getClusterPointList();
@@ -93,10 +110,10 @@ public class ClusterPointRouterTest {
         Assert.assertNull(findClusterPoint("application", "a", -1L, clusterPointList));
         Assert.assertEquals(clusterPoint, findClusterPoint("application", "agent", currentTime, clusterPointList));
 
-        boolean isAdd = clusterPointRepository.addClusterPoint(new ChannelContextClusterPoint(channelContext));
+        boolean isAdd = clusterPointRepository.addClusterPoint(new PinpointServerClusterPoint(pinpointServer));
         Assert.assertFalse(isAdd);
 
-        clusterPointRepository.removeClusterPoint(new ChannelContextClusterPoint(channelContext));
+        clusterPointRepository.removeClusterPoint(new PinpointServerClusterPoint(pinpointServer));
         clusterPointList = clusterPointRepository.getClusterPointList();
 
         Assert.assertEquals(0, clusterPointList.size());
@@ -105,13 +122,13 @@ public class ClusterPointRouterTest {
 
     private class PinpointSocketManagerHandler implements ServerMessageListener {
         @Override
-        public void handleSend(SendPacket sendPacket, SocketChannel channel) {
-            logger.warn("Unsupport send received {} {}", sendPacket, channel);
+        public void handleSend(SendPacket sendPacket, WritablePinpointServer writablePinpointServer) {
+            logger.warn("Unsupport send received {} {}", sendPacket, writablePinpointServer);
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, SocketChannel channel) {
-            logger.warn("Unsupport request received {} {}", requestPacket, channel);
+        public void handleRequest(RequestPacket requestPacket, WritablePinpointServer writablePinpointServer) {
+            logger.warn("Unsupport request received {} {}", requestPacket, writablePinpointServer);
         }
 
         @Override
@@ -168,4 +185,23 @@ public class ClusterPointRouterTest {
         return null;
     }
 
+    private PinpointServer createPinpointServer() {
+        Channel channel = mock(Channel.class);
+        PinpointServerConfig config = createPinpointServerConfig();
+        
+        return new PinpointServer(channel, config);
+    }
+
+    private PinpointServerConfig createPinpointServerConfig() {
+        PinpointServerConfig config = mock(PinpointServerConfig.class);
+        when(config.getStateChangeEventHandler()).thenReturn(DoNothingChannelStateEventHandler.INSTANCE);
+        when(config.getStreamMessageListener()).thenReturn(DisabledServerStreamChannelMessageListener.INSTANCE);
+        when(config.getRequestManagerTimer()).thenReturn(testTimer);
+        when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
+        when(config.getMessageListener()).thenReturn(new EchoServerListener());
+
+        return config;
+    }
+
+    
 }
