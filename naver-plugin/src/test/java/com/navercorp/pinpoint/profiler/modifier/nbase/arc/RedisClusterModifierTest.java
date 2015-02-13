@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.navercorp.pinpoint.common.bo.SpanEventBo;
@@ -13,6 +14,7 @@ import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
 import com.nhncorp.redis.cluster.RedisCluster;
 import com.nhncorp.redis.cluster.RedisClusterClient;
 
+@Ignore
 public class RedisClusterModifierTest extends BasePinpointTest {
     private static final String HOST = "localhost";
     private static final int PORT = 6379;
