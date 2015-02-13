@@ -16,12 +16,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClient;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperEventWatcher;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.rpc.server.ChannelContext;
-import com.navercorp.pinpoint.rpc.server.PinpointServerSocket;
+import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
+import com.navercorp.pinpoint.rpc.server.WritablePinpointServer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -58,9 +55,9 @@ public class ZookeeperWebClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            PinpointServerSocket pinpointServerSocket = new PinpointServerSocket();
-            pinpointServerSocket.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
-            pinpointServerSocket.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
+            serverAcceptor.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
+            serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             ZookeeperClient client = new ZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
 
@@ -79,14 +76,14 @@ public class ZookeeperWebClusterServiceTest {
 
             Thread.sleep(5000);
 
-            List<ChannelContext> channelContextList = pinpointServerSocket.getDuplexCommunicationChannelContext();
-            Assert.assertEquals(1, channelContextList.size());
+            List<WritablePinpointServer> writablePinpointServerList = serverAcceptor.getWritableServerList();
+            Assert.assertEquals(1, writablePinpointServerList.size());
 
             client.close();
 
             Thread.sleep(5000);
-            channelContextList = pinpointServerSocket.getDuplexCommunicationChannelContext();
-            Assert.assertEquals(0, channelContextList.size());
+            writablePinpointServerList = serverAcceptor.getWritableServerList();
+            Assert.assertEquals(0, writablePinpointServerList.size());
 
             service.tearDown();
         } finally {

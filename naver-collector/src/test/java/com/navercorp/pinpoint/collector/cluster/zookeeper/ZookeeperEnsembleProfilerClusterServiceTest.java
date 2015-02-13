@@ -1,17 +1,23 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
 import org.apache.curator.test.InstanceSpec;
 import org.apache.curator.test.TestingCluster;
 import org.apache.curator.test.TestingZooKeeperServer;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.util.Timer;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +25,36 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterManager;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
-import com.navercorp.pinpoint.rpc.server.ChannelContext;
-import com.navercorp.pinpoint.rpc.server.SocketChannel;
+import com.navercorp.pinpoint.rpc.packet.ControlHandshakePacket;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
+import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
+import com.navercorp.pinpoint.rpc.util.ControlMessageEncodingUtils;
+import com.navercorp.pinpoint.rpc.util.TimerFactory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class ZookeeperEnsembleProfilerClusterServiceTest {
 
+    private static Timer testTimer;
+
     @Autowired
     ClusterPointRouter clusterPointRouter;
 
+    @BeforeClass
+    public static void setUp() {
+        testTimer = TimerFactory.createHashedWheelTimer(ZookeeperEnsembleProfilerClusterServiceTest.class.getSimpleName(), 50, TimeUnit.MILLISECONDS, 512);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        testTimer.stop();
+    }
+
+    
     @Test
     public void simpleTest1() throws Exception {
         TestingCluster tcluster = null;
@@ -43,27 +65,27 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
 
             CollectorConfiguration collectorConfig = createConfig(connectString);
 
-
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventHandler());
-            channelContext.setChannelProperties(getParams());
-
+            PinpointServer pinpointServer = createPinpointServer(service);
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            channelContext.changeStateToRunWithoutHandshake();
+            pinpointServer.start();
             Thread.sleep(1000);
 
             List<String> result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
 
-            channelContext.changeStateToRunDuplex();
+            byte[] payload = ControlMessageEncodingUtils.encode(getParams());
+            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(payload);
+            pinpointServer.messageReceived(handshakePacket);
             Thread.sleep(1000);
+
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
 
-            channelContext.changeStateToShutdown();
+            pinpointServer.stop();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
@@ -89,18 +111,20 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventHandler());
-            channelContext.setChannelProperties(getParams());
+            PinpointServer pinpointServer = createPinpointServer(service);
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            channelContext.changeStateToRunWithoutHandshake();
+            pinpointServer.start();
             Thread.sleep(1000);
             List<String> result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
 
-            channelContext.changeStateToRunDuplex();
+            byte[] payload = ControlMessageEncodingUtils.encode(getParams());
+            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(payload);
+            pinpointServer.messageReceived(handshakePacket);
             Thread.sleep(1000);
+
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
 
@@ -109,7 +133,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
 
-            channelContext.changeStateToShutdown();
+            pinpointServer.stop();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
@@ -137,18 +161,19 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            ChannelContext channelContext = new ChannelContext(mock(SocketChannel.class), null, service.getChannelStateChangeEventHandler());
-            channelContext.setChannelProperties(getParams());
-
+            PinpointServer pinpointServer = createPinpointServer(service);
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            channelContext.changeStateToRunWithoutHandshake();
+            pinpointServer.start();
             Thread.sleep(1000);
             List<String> result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
 
-            channelContext.changeStateToRunDuplex();
+            byte[] payload = ControlMessageEncodingUtils.encode(getParams());
+            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(payload);
+            pinpointServer.messageReceived(handshakePacket);
             Thread.sleep(1000);
+
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
 
@@ -162,7 +187,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(1, result.size());
 
-            channelContext.changeStateToShutdown();
+            pinpointServer.stop();
             Thread.sleep(1000);
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
@@ -236,8 +261,8 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
         return connectString.toString();
     }
 
-    private Map<Object, Object> getParams() {
-        Map<Object, Object> properties = new HashMap<Object, Object>();
+    private Map<String, Object> getParams() {
+        Map<String, Object> properties = new HashMap<String, Object>();
 
         properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
         properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
@@ -250,6 +275,25 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
 
         return properties;
     }
+    
+    private PinpointServer createPinpointServer(ZookeeperClusterService service) {
+        Channel channel = mock(Channel.class);
+        PinpointServerConfig config = createPinpointServerConfig(service);
+        
+        return new PinpointServer(channel, config);
+    }
+
+    private PinpointServerConfig createPinpointServerConfig(ZookeeperClusterService service) {
+        PinpointServerConfig config = mock(PinpointServerConfig.class);
+        when(config.getStateChangeEventHandler()).thenReturn(service.getChannelStateChangeEventHandler());
+        when(config.getStreamMessageListener()).thenReturn(DisabledServerStreamChannelMessageListener.INSTANCE);
+        when(config.getRequestManagerTimer()).thenReturn(testTimer);
+        when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
+        when(config.getMessageListener()).thenReturn(new EchoServerListener());
+
+        return config;
+    }
+
 
     private CollectorConfiguration createConfig(String connectString) {
         CollectorConfiguration collectorConfig = new CollectorConfiguration();

@@ -15,7 +15,7 @@ import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
-import com.navercorp.pinpoint.rpc.server.SocketChannel;
+import com.navercorp.pinpoint.rpc.server.WritablePinpointServer;
 
 final class ZookeeperTestUtils {
 
@@ -76,13 +76,13 @@ final class ZookeeperTestUtils {
 
     private static class SimpleServerMessageListner implements ServerMessageListener {
         @Override
-        public void handleSend(SendPacket sendPacket, SocketChannel channel) {
-            LOGGER.warn("Unsupport send received {} {}", sendPacket, channel);
+        public void handleSend(SendPacket sendPacket, WritablePinpointServer writablePinpointServer) {
+            LOGGER.warn("Unsupport send received {} {}", sendPacket, writablePinpointServer);
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, SocketChannel channel) {
-            LOGGER.warn("Unsupport request received {} {}", requestPacket, channel);
+        public void handleRequest(RequestPacket requestPacket, WritablePinpointServer writablePinpointServer) {
+            LOGGER.warn("Unsupport request received {} {}", requestPacket, writablePinpointServer);
         }
 
         @Override
