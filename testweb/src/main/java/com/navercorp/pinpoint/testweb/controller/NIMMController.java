@@ -32,7 +32,7 @@ public class NIMMController {
     public String invokeAndCallabck() {
         Runnable callback = new Runnable() {
             public void run() {
-                // TODO
+                logger.info("Completed nimm listen");
             }
         };
 

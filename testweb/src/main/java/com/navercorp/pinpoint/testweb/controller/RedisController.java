@@ -19,11 +19,9 @@ import com.nhncorp.redis.cluster.spring.StringRedisClusterTemplate;
 public class RedisController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final String HOST = "10.99.116.91";
+    private static final String HOST = "10.113.160.166";
     private static final int PORT = 6390;
 
-    public static final String IBATIS_VIEW = "orm/ibatis";
-    public static final String MYBATIS_VIEW = "orm/mybatis";
 
     @Autowired
     private GatewayClient client;

@@ -42,15 +42,11 @@ import java.util.concurrent.TimeUnit;
 public class HelloWorldController implements DisposableBean {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final ArcusClient arcus;
-    private final MemcachedClient memcached;
     private final LevelManager levelManager;
 
     private static final Random RANDOM = new Random();
 
     public HelloWorldController() throws IOException {
-        arcus = ArcusClient.createArcusClient("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27", new ConnectionFactoryBuilder());
-        memcached = new MemcachedClient(AddrUtil.getAddresses("10.99.200.15:11316,10.99.200.16:11316,10.99.200.17:11316"));
         levelManager = new LevelManager();
     }
 
@@ -60,9 +56,6 @@ public class HelloWorldController implements DisposableBean {
 
     @Autowired
     private DummyService dummyService;
-
-    @Autowired
-    private CacheService cacheService;
 
     private void randomSlowMethod() {
         try {
@@ -83,20 +76,6 @@ public class HelloWorldController implements DisposableBean {
     @ResponseBody
     public String encoding(Model model, @RequestParam("name") String name) {
         logger.debug("name=" + name);
-        return "OK";
-    }
-
-    @RequestMapping(value = "/arcus")
-    @ResponseBody
-    public String arcus() {
-        cacheService.arcus();
-        return "OK";
-    }
-
-    @RequestMapping(value = "/memcached")
-    @ResponseBody
-    public String memcached() {
-        cacheService.memcached();
         return "OK";
     }
 
@@ -185,44 +164,6 @@ public class HelloWorldController implements DisposableBean {
         return "OK";
     }
 
-    @RequestMapping(value = "/remotearcus")
-    @ResponseBody
-    public String remotearcus() {
-        arcus();
-
-        String[] ports = new String[]{"9080", "10080", "11080"};
-        Random random = new Random();
-        String port = ports[random.nextInt(3)];
-        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-        client.execute("http://localhost:" + port + "/arcus.pinpoint", new HashMap<String, Object>());
-        return "OK";
-    }
-
-    @RequestMapping(value = "/combination")
-    @ResponseBody
-    public String combination() {
-
-        mysql();
-
-        arcus();
-
-        memcached();
-
-
-        randomSlowMethod();
-
-        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-        client.execute("http://www.naver.com/", new HashMap<String, Object>());
-        client.execute("http://www.naver.com/", new HashMap<String, Object>());
-
-        client.execute("http://section.cafe.naver.com/", new HashMap<String, Object>());
-        client.execute("http://section.cafe.naver.com/", new HashMap<String, Object>());
-
-        npc();
-
-        return "OK";
-    }
-
     @RequestMapping(value = "/httperror")
     @ResponseBody
     public String httperror() {
@@ -253,36 +194,6 @@ public class HelloWorldController implements DisposableBean {
     @ResponseBody
     public String exception() {
         throw new RuntimeException("Exception test");
-    }
-
-    @RequestMapping(value = "/arcustimeout")
-    @ResponseBody
-    public String arcustimeout() {
-        Future<Boolean> future = null;
-        try {
-            future = arcus.set("pinpoint:expect-timeout", 10, "Hello, Timeout.");
-            future.get(10L, TimeUnit.MICROSECONDS);
-        } catch (Exception e) {
-            if (future != null) {
-                future.cancel(true);
-            }
-            throw new RuntimeException(e);
-        }
-        return "OK";
-    }
-
-    @RequestMapping(value = "/remotesimple")
-    @ResponseBody
-    public String remotesimple() {
-        String[] ports = new String[]{"9080", "10080", "11080"};
-        Random random = new Random();
-        String port = ports[random.nextInt(3)];
-
-        arcus();
-
-        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-        client.execute("http://localhost:" + port + "/arcus.pinpoint", new HashMap<String, Object>());
-        return "OK";
     }
 
     @RequestMapping(value = "/remoteerror")
@@ -333,7 +244,5 @@ public class HelloWorldController implements DisposableBean {
 
     @Override
     public void destroy() throws Exception {
-        arcus.shutdown();
-        memcached.shutdown();
     }
 }
