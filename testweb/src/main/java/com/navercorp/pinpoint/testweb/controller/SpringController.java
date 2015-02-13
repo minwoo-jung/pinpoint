@@ -14,7 +14,7 @@ import org.springframework.web.context.request.async.DeferredResult;
  */
 @EnableAsync
 @Controller
-public class SpringWebController {
+public class SpringController {
 
     @RequestMapping(value = "/spring/mvc/async/callable")
     @ResponseBody
@@ -23,13 +23,7 @@ public class SpringWebController {
         Callable<String> callback = new Callable<String>() {
             @Override
             public String call() throws Exception {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < 3; i++) {
-                    TimeUnit.SECONDS.sleep(1);
-                    sb.append(" ").append(i);
-                }
-
-                return sb.toString();
+                return "OK";
             }
         };
         return callback;
@@ -42,24 +36,11 @@ public class SpringWebController {
 
         Runnable callback = new Runnable() {
             public void run() {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < 3; i++) {
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                    }
-                    sb.append(" ").append(i);
-                }
-                result.setResult(sb.toString());
+                result.setResult("OK");
             }
         };
 
         new Thread(callback).run();
-
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-        }
 
         return result;
     }
