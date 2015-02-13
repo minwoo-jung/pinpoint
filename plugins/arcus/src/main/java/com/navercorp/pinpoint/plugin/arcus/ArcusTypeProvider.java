@@ -14,17 +14,21 @@
  */
 package com.navercorp.pinpoint.plugin.arcus;
 
-import com.navercorp.pinpoint.common.plugin.ServiceTypeProvider;
-import com.navercorp.pinpoint.common.plugin.ServiceTypeSetupContext;
+import com.navercorp.pinpoint.common.plugin.TypeProvider;
+import com.navercorp.pinpoint.common.plugin.TypeSetupContext;
+
+import static com.navercorp.pinpoint.common.AnnotationKeyMatcher.ARGS_MATCHER;
 
 /**
  * @author Jongho Moon
  *
  */
-public class ArcusServiceTypeProvider implements ServiceTypeProvider, ArcusConstants {
+public class ArcusTypeProvider implements TypeProvider, ArcusConstants {
 
     @Override
-    public void setUp(ServiceTypeSetupContext context) {
-        context.addServiceType(ARCUS, ARCUS_FUTURE_GET, ARCUS_EHCACHE_FUTURE_GET);
+    public void setUp(TypeSetupContext context) {
+        context.addType(ARCUS, ARGS_MATCHER);
+        context.addType(ARCUS_FUTURE_GET);
+        context.addType(ARCUS_EHCACHE_FUTURE_GET);
     }
 }
