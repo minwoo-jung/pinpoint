@@ -19,6 +19,8 @@ import java.io.File;
 import com.navercorp.pinpoint.bootstrap.plugin.ServerTypeDetector;
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationServerProperty;
 import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.common.util.SimpleProperty;
+import com.navercorp.pinpoint.common.util.SystemProperty;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 /**
@@ -27,10 +29,11 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  */
 public class Bloc4Detector implements ServerTypeDetector, BlocConstants {
     private String blocHome;
+    private SimpleProperty systemProp = SystemProperty.INSTANCE;
     
     @Override
     public boolean detect() {
-        String blocHome = System.getProperty("bloc.home");
+        String blocHome = systemProp.getProperty("bloc.home");
         
         if (blocHome != null) {
             File home = new File(blocHome);
