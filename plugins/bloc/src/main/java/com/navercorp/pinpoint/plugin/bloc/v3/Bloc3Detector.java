@@ -15,10 +15,13 @@
 package com.navercorp.pinpoint.plugin.bloc.v3;
 
 import java.io.File;
+import java.util.Properties;
 
 import com.navercorp.pinpoint.bootstrap.plugin.ServerTypeDetector;
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationServerProperty;
 import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.common.util.SimpleProperty;
+import com.navercorp.pinpoint.common.util.SystemProperty;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 /**
@@ -28,9 +31,11 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 public class Bloc3Detector implements ServerTypeDetector, BlocConstants {
     private String bloc3Home = null;
 
+    private SimpleProperty systemProp = SystemProperty.INSTANCE;
+
     @Override
     public boolean detect() {
-        String catalinaHome = System.getProperty("catalina.home");
+        String catalinaHome = systemProp.getProperty("catalina.home");
         
         if (catalinaHome != null) {
             File bloc3CatalinaJar = new File(catalinaHome + "/server/lib/catalina.jar");

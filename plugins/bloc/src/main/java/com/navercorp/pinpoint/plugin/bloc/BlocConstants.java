@@ -33,6 +33,6 @@ public interface BlocConstants {
     public static final AnnotationKey PROTOCOL = new AnnotationKey(17, "PROTOCOL", VIEW_IN_RECORD_SET);
 
     public static final ServiceType BLOC = ServiceType.of(1020, "BLOC", NORMAL_SCHEMA, RECORD_STATISTICS);
-    public static final ServiceType BLOC_INTERNAL_METHOD = ServiceType.of(1021, "BLOC_INTERNAL_METHOD", "INTERNAL_METHOD", NORMAL_SCHEMA, CALL_URL);
+    public static final ServiceType BLOC_INTERNAL_METHOD = ServiceType.of(1021, "BLOC_INTERNAL_METHOD", "INTERNAL_METHOD", NORMAL_SCHEMA);
 
 }

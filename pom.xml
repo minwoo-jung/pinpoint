@@ -93,7 +93,7 @@
             <dependency>
                 <groupId>com.nhncorp.lucy</groupId>
                 <artifactId>lucy-nimmconnector</artifactId>
-                <version>2.1.4</version>
+                <version>2.2.11</version>
             </dependency>
 
             <dependency>
