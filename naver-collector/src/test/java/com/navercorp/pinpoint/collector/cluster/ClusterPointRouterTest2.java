@@ -27,10 +27,10 @@ import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.ResponsePacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
-import com.navercorp.pinpoint.rpc.server.WritablePinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.thrift.dto.command.TCommandEcho;
 import com.navercorp.pinpoint.thrift.dto.command.TCommandTransfer;
 import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
@@ -72,10 +72,10 @@ public class ClusterPointRouterTest2 {
             
             Thread.sleep(100);
             
-            List<WritablePinpointServer> writablePinpointServerList = collectorAcceptor.getWritableServerList();
+            List<PinpointServer> writablePinpointServerList = collectorAcceptor.getWritableServerList();
 
-            for (WritablePinpointServer writablePinpointServer : writablePinpointServerList) {
-                ClusterPoint clusterPoint = new PinpointServerClusterPoint((PinpointServer)writablePinpointServer);
+            for (PinpointServer writablePinpointServer : writablePinpointServerList) {
+                ClusterPoint clusterPoint = new PinpointServerClusterPoint((DefaultPinpointServer)writablePinpointServer);
                 
                 ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
                 clusterPointRepository.addClusterPoint(clusterPoint);
@@ -90,8 +90,8 @@ public class ClusterPointRouterTest2 {
             byte[] echoPayload = createEchoPayload("hello");
             byte[] commandDeliveryPayload = createDeliveryCommandPayload("application", "agent", currentTime, echoPayload);
 
-            List<WritablePinpointServer> contextList = webAcceptor.getWritableServerList();
-            WritablePinpointServer writablePinpointServer = contextList.get(0);
+            List<PinpointServer> contextList = webAcceptor.getWritableServerList();
+            PinpointServer writablePinpointServer = contextList.get(0);
             Future<ResponseMessage> future = writablePinpointServer.request(commandDeliveryPayload);
             future.await();
 
@@ -146,12 +146,12 @@ public class ClusterPointRouterTest2 {
 
     private class PinpointSocketManagerHandler implements ServerMessageListener {
         @Override
-        public void handleSend(SendPacket sendPacket, WritablePinpointServer writablePinpointServer) {
+        public void handleSend(SendPacket sendPacket, PinpointServer writablePinpointServer) {
             logger.warn("Unsupport send received {} {}", sendPacket, writablePinpointServer);
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, WritablePinpointServer writablePinpointServer) {
+        public void handleRequest(RequestPacket requestPacket, PinpointServer writablePinpointServer) {
             logger.warn("Unsupport request received {} {}", requestPacket, writablePinpointServer);
         }
 
