@@ -29,7 +29,7 @@ import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClust
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.rpc.packet.ControlHandshakePacket;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
 import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
 import com.navercorp.pinpoint.rpc.util.ControlMessageEncodingUtils;
@@ -68,7 +68,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            PinpointServer pinpointServer = createPinpointServer(service);
+            DefaultPinpointServer pinpointServer = createPinpointServer(service);
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             pinpointServer.start();
@@ -111,7 +111,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            PinpointServer pinpointServer = createPinpointServer(service);
+            DefaultPinpointServer pinpointServer = createPinpointServer(service);
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
@@ -161,7 +161,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            PinpointServer pinpointServer = createPinpointServer(service);
+            DefaultPinpointServer pinpointServer = createPinpointServer(service);
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             pinpointServer.start();
@@ -276,11 +276,11 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
         return properties;
     }
     
-    private PinpointServer createPinpointServer(ZookeeperClusterService service) {
+    private DefaultPinpointServer createPinpointServer(ZookeeperClusterService service) {
         Channel channel = mock(Channel.class);
         PinpointServerConfig config = createPinpointServerConfig(service);
         
-        return new PinpointServer(channel, config);
+        return new DefaultPinpointServer(channel, config);
     }
 
     private PinpointServerConfig createPinpointServerConfig(ZookeeperClusterService service) {

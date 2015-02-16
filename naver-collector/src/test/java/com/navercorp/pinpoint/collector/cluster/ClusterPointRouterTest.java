@@ -31,11 +31,11 @@ import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
-import com.navercorp.pinpoint.rpc.server.WritablePinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
 import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
@@ -97,7 +97,7 @@ public class ClusterPointRouterTest {
     public void profilerClusterPointtest() {
         ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
 
-        PinpointServer pinpointServer = createPinpointServer();
+        DefaultPinpointServer pinpointServer = createPinpointServer();
         pinpointServer.setChannelProperties(getParams());
 
         ClusterPoint clusterPoint = new PinpointServerClusterPoint(pinpointServer);
@@ -122,12 +122,12 @@ public class ClusterPointRouterTest {
 
     private class PinpointSocketManagerHandler implements ServerMessageListener {
         @Override
-        public void handleSend(SendPacket sendPacket, WritablePinpointServer writablePinpointServer) {
+        public void handleSend(SendPacket sendPacket, PinpointServer writablePinpointServer) {
             logger.warn("Unsupport send received {} {}", sendPacket, writablePinpointServer);
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, WritablePinpointServer writablePinpointServer) {
+        public void handleRequest(RequestPacket requestPacket, PinpointServer writablePinpointServer) {
             logger.warn("Unsupport request received {} {}", requestPacket, writablePinpointServer);
         }
 
@@ -185,11 +185,11 @@ public class ClusterPointRouterTest {
         return null;
     }
 
-    private PinpointServer createPinpointServer() {
+    private DefaultPinpointServer createPinpointServer() {
         Channel channel = mock(Channel.class);
         PinpointServerConfig config = createPinpointServerConfig();
         
-        return new PinpointServer(channel, config);
+        return new DefaultPinpointServer(channel, config);
     }
 
     private PinpointServerConfig createPinpointServerConfig() {

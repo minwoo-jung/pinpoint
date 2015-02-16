@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
-import com.navercorp.pinpoint.rpc.server.WritablePinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -76,7 +76,7 @@ public class ZookeeperWebClusterServiceTest {
 
             Thread.sleep(5000);
 
-            List<WritablePinpointServer> writablePinpointServerList = serverAcceptor.getWritableServerList();
+            List<PinpointServer> writablePinpointServerList = serverAcceptor.getWritableServerList();
             Assert.assertEquals(1, writablePinpointServerList.size());
 
             client.close();
