@@ -1,16 +1,16 @@
 'use strict';
 
 pinpointApp
-  .constant('helpContent', {
+  .constant('helpContent-ko', {
         "navbar": {
-            "applicationSelector": "<div style='width:400px;'>응용프로그램 목록<br/>핀포인트가 설치된 응용프로그램 목록 입니다.<br/><br/>" +
+            "applicationSelector": "<div style='width:400px;'><strong>응용프로그램 목록</strong><br/>핀포인트가 설치된 응용프로그램 목록 입니다.<br/><br/>" +
                     "[범례]<br/>" +
                     "<ul>" +
                     "<li>아이콘 : 응용프로그램의 종류</li>" +
                     "<li>텍스트 : 응용프로그램의 이름입니다. Pinpoint agent설정에서 applicationName에 지정한 값입니다.</li>" +
                     "</ul>" +
                     "</div>",
-                    "periodSelector": "조회 시간 설정<br/>데이터조회 시간을 선택합니다.<br/><br/>" +
+            "periodSelector": "<strong>조회 시간 설정</strong><br/>데이터조회 시간을 선택합니다.<br/><br/>" +
                     "[기능]<br/>" +
                     "<ul>" +
                     "<li><button type='button' class='btn btn-success btn-xs'><span class='glyphicon glyphicon-th-list'></span></button> : 현재 시간을 기준으로 선택한 시간 이전부터 현재시간 사이에 수집된 데이터를 조회합니다.<br/>최근 5m, 10m, 3h조회는 자동 새로고침 기능을 지원합니다.</li>" +
@@ -18,7 +18,7 @@ pinpointApp
                     "</ul>"
         },
         "servermap": {
-            "default": "<div style='width:300px;'>서버맵<br/>분산된 서버를 도식화한 지도 입니다.<br/><br/>" +
+            "default": "<div style='width:300px;'><strong>서버맵</strong><br/>분산된 서버를 도식화한 지도 입니다.<br/><br/>" +
                     "[박스]<br/>" +
                     "<ul>" +
                     "<li>박스는 응용프로그램 그룹을 나타냅니다.</li>" +
@@ -51,7 +51,7 @@ pinpointApp
                     "</div>"
         },
         "scatter": {
-            "default": "<div style='width:400px'>Scatter Chart<br/>수집된 트랜잭션의 응답시간 분포도입니다.<br/><br/>" +
+            "default": "<div style='width:400px'><strong>Response Time Scatter Chart</strong><br/>수집된 트랜잭션의 응답시간 분포도입니다.<br/><br/>" +
                     "[범례]<br/>" +
                     "<ul>" +
                     "<li><span class='glyphicon glyphicon-stop' style='color:#2ca02c'></span> : 에러가 없는 트랜잭션 (Success)</li>" +
@@ -68,7 +68,7 @@ pinpointApp
                     "</ul></div>"
         },
         "nodeInfoDetails": {
-            "responseSummary": "<div style='width:400px'>Response Summary Chart<br/>응답결과 요약 입니다.<br/><br/>" +
+            "responseSummary": "<div style='width:400px'><strong>Response Summary Chart</strong><br/>응답결과 요약 입니다.<br/><br/>" +
                     "[범례]<br/>" +
                     "<ul>" +
                     "<li>X축 : 트랜잭션 응답시간 요약 단위</li>" +
@@ -80,7 +80,7 @@ pinpointApp
                     "<li><span class='glyphicon glyphicon-stop' style='color:#f53034'></span> : 응답시관과 무관하게 실패한 트랜잭션의 수</li>" +
                     "</ul>" +
                     "</div>",
-                    "load": "<div style='width:400px'>Load Chart<br/>시간별 트랜잭션의 응답 결과입니다.<br/><br/>" +
+            "load": "<div style='width:400px'><strong>Load Chart</strong><br/>시간별 트랜잭션의 응답 결과입니다.<br/><br/>" +
                     "[범례]<br/>" +
                     "<ul>" +
                     "<li>X축 : 트랜잭션이 실행된 시간 (분단위)</li>" +
@@ -97,7 +97,7 @@ pinpointApp
                     "<li>마우스로 드래그하여 드래그 한 범위를 확대할 수 있습니다.</li>" +
                     "</ul>" +
                     "</div>",
-            "nodeServers": "Server Information<br/>물리서버와 해당 서버에서 동작중인 서버 인스턴스의 정보를 보여줍니다.<br/><br/>" +
+            "nodeServers": "<div style='width:350px'><strong>Server Information</strong><br/>물리서버와 해당 서버에서 동작중인 서버 인스턴스의 정보를 보여줍니다.<br/><br/>" +
                     "[범례]<br/>" +
                     "<ul>" +
                     "<li><span class='glyphicon glyphicon-home'></span> : 물리서버의 호스트이름입니다.</li>" +
@@ -109,12 +109,13 @@ pinpointApp
                     "<li><button type='button' class='btn btn-default btn-xs'>Inspector</button> : Pinpoint가 설치된 WAS의 상세한 정보를 보여줍니다.</li>" +
                     "<li><button type='button' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-plus'></span></button> : 해당 인스턴스에서 처리된 트랜잭션 통계를 조회할 수 있습니다.</li>" +
                     "<li><button type='button' class='btn btn-danger btn-xs'><span class='glyphicon glyphicon-plus'></span></button> : 에러를 발생시킨 트랜잭션이 포함되어있다는 의미입니다.</li>" +
-                    "</ul>",
-                    "unknownList": '차트 오른쪽 상단의 아이콘부터,<br>첫번째 : Response Summary / Load 차트 변환<br>두번째 : 해당 노드 상세보기',
-                    "searchAndOrder": '서버 이름과 Count로 검색이 가능합니다.<br>Name, Count 클릭시 오름/내림차순 정렬 됩니다.'
+                    "</ul>" +
+                    "</div>",
+            "unknownList": "<div style='width:400px'>차트 오른쪽 상단의 아이콘부터,<br>첫번째 : Response Summary / Load 차트 변환<br>두번째 : 해당 노드 상세보기</div>",
+            "searchAndOrder": "<div style='width:400px'>서버 이름과 Count로 검색이 가능합니다.<br>Name, Count 클릭시 오름/내림차순 정렬 됩니다.</div>"
         },
         "linkInfoDetails": {
-            "responseSummary": "<div style='width:400px'>Response Summary Chart<br/>응답결과 요약 입니다.<br/><br/>" +
+            "responseSummary": "<div style='width:400px'><strong>Response Summary Chart</strong><br/>응답결과 요약 입니다.<br/><br/>" +
                     "[범례]<br/>" +
                     "<ul>" +
                     "<li>X축 : 트랜잭션 응답시간 요약 단위</li>" +
@@ -130,7 +131,7 @@ pinpointApp
                     "<li>바(bar)를 클릭하면 해당 응답시간에 속한 트랜잭션의 목록을 조회합니다.</li>" +
                     "</ul>" +
                     "</div>",
-                    "load": "<div style='width:400px'>Load Chart<br/>시간별 트랜잭션의 응답 결과입니다.<br/><br/>" +
+            "load": "<div style='width:400px'><strong>Load Chart</strong><br/>시간별 트랜잭션의 응답 결과입니다.<br/><br/>" +
                     "[범례]<br/>" +
                     "<ul>" +
                     "<li>X축 : 트랜잭션이 실행된 시간 (분단위)</li>" +
@@ -147,7 +148,7 @@ pinpointApp
                     "<li>마우스로 드래그하여 드래그 한 범위를 확대할 수 있습니다.</li>" +
                     "</ul>" +
                     "</div>",
-                    "linkServers": "Server Instance<br/>해당 구간을 통과하는 트랜잭션을 호출한 서버 인스턴스의 정보입니다. (호출자)<br/><br/>" +
+            "linkServers": "<div style='width:400px'><strong>Server Instance</strong><br/>해당 구간을 통과하는 트랜잭션을 호출한 서버 인스턴스의 정보입니다. (호출자)<br/><br/>" +
                     "[범례]<br/>" +
                     "<ul>" +
                     "<li><span class='glyphicon glyphicon-hdd'></span> : 물리서버에 설치된 서버 인스턴스에서 동작중인 Pinpoint의 agentId입니다.</li>" +
@@ -157,8 +158,9 @@ pinpointApp
                     "<li><button type='button' class='btn btn-default btn-xs'>Inspector</button> : Pinpoint가 설치된 WAS의 상세한 정보를 보여줍니다.</li>" +
                     "<li><button type='button' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-plus'></span></button> : 해당 인스턴스에서 처리된 트랜잭션 통계를 조회할 수 있습니다.</li>" +
                     "<li><button type='button' class='btn btn-danger btn-xs'><span class='glyphicon glyphicon-plus'></span></button> : 에러를 발생시킨 트랜잭션이 포함되어있다는 의미입니다.</li>" +
-                    "</ul>",
-                    "unknownList": '차트 오른쪽 상단의 아이콘부터,<br>첫번째 : Response Summary / Load 차트 변환<br>두번째 : 해당 노드 상세보기',
-                    "searchAndOrder": '서버 이름과 Count로 검색이 가능합니다.<br>Name, Count 클릭시 오름/내림차순 정렬 됩니다.'
+                    "</ul>" +
+                    "</div>",
+            "unknownList": "<div style='width:400px'>차트 오른쪽 상단의 아이콘부터,<br>첫번째 : Response Summary / Load 차트 변환<br>두번째 : 해당 노드 상세보기</div>",
+            "searchAndOrder": "<div style='width:400px'>서버 이름과 Count로 검색이 가능합니다.<br>Name, Count 클릭시 오름/내림차순 정렬 됩니다.</div>"
         }
 });
