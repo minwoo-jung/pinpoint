@@ -18,6 +18,8 @@
         <jdk.version>1.7</jdk.version>
         <jdk.home>${env.JAVA_7_HOME}</jdk.home>
         <distribution.directory>${project.build.directory}/pinpoint-agent</distribution.directory>
+        
+        <tomcat.version>7.0.34</tomcat.version>
     </properties>
 
     <dependencies>
@@ -39,7 +41,11 @@
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-plugins</artifactId>
-            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-naver-plugins</artifactId>
             <type>pom</type>
         </dependency>
 
@@ -95,6 +101,18 @@
             <version>1.6.4.1</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>catalina</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>coyote</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -169,9 +187,7 @@
                             <target>
                                 <delete>
                                     <!-- Delete plugins group pom file -->
-                                    <fileset
-                                        dir="${project.build.directory}/${project.build.finalName}/plugin"
-                                        includes="*.pom" />
+                                    <fileset dir="${project.build.directory}/${project.build.finalName}/plugin" includes="*.pom" />
                                 </delete>
                             </target>
                         </configuration>

@@ -32,6 +32,7 @@
             <exclude>com.navercorp.pinpoint:pinpoint-bootstrap-core</exclude>
             <exclude>com.navercorp.pinpoint:pinpoint-bootstrap</exclude>
             <exclude>com.navercorp.pinpoint:pinpoint-plugins</exclude>
+            <exclude>com.navercorp.pinpoint:pinpoint-naver-plugins</exclude>
         </excludes>
         <outputDirectory>lib</outputDirectory>
         <useProjectArtifact>false</useProjectArtifact>
@@ -40,6 +41,7 @@
     <dependencySet>
         <includes>
             <include>com.navercorp.pinpoint:pinpoint-plugins</include>
+            <include>com.navercorp.pinpoint:pinpoint-naver-plugins</include>
         </includes>
         <outputDirectory>plugin</outputDirectory>
         <useTransitiveFiltering>true</useTransitiveFiltering>
