@@ -1,6 +1,5 @@
 package com.navercorp.pinpoint.web.alarm.collector;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class MapStatisticsCallerCollectorTest {
     
     @Test
     public void test() {
-        Application application = new Application("API.GATEWAY.DEV", ServiceType.TOMCAT);
+        Application application = new Application("API.GATEWAY.DEV", ServiceType.STAND_ALONE);
         long current = System.currentTimeMillis();
         Range range = new Range(current - 300000, current);
         LinkDataMap map = callerDao.selectCaller(application, range);

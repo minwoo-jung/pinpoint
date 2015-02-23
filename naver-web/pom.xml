@@ -49,8 +49,7 @@
         
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-plugins</artifactId>
-            <version>${project.version}</version>
+            <artifactId>pinpoint-naver-plugins</artifactId>
             <type>pom</type>
         </dependency>
 

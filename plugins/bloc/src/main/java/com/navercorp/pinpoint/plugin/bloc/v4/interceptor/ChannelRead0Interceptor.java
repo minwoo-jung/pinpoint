@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.navercorp.pinpoint.bootstrap.FieldSnooper;
+import com.navercorp.pinpoint.bootstrap.FieldAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
@@ -34,9 +34,9 @@ import com.navercorp.pinpoint.profiler.context.SpanId;
  */
 @TargetMethod(name="channelRead0", paramTypes={"io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest"})
 public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
-    private final FieldSnooper uriEncodingSnooper;
+    private final FieldAccessor uriEncodingSnooper;
 
-    public ChannelRead0Interceptor(@Name(BlocPlugin.FIELD_URI_ENCODING) FieldSnooper snooper) {
+    public ChannelRead0Interceptor(@Name(BlocPlugin.FIELD_URI_ENCODING) FieldAccessor snooper) {
         super(ChannelRead0Interceptor.class);
         this.uriEncodingSnooper = snooper;
     }

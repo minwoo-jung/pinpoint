@@ -15,12 +15,8 @@
 package com.navercorp.pinpoint.plugin.bloc.v3;
 
 import java.io.File;
-import java.util.Properties;
 
 import com.navercorp.pinpoint.bootstrap.plugin.ServerTypeDetector;
-import com.navercorp.pinpoint.bootstrap.plugin.ApplicationServerProperty;
-import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.common.util.SimpleProperty;
 import com.navercorp.pinpoint.common.util.SystemProperty;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
@@ -29,20 +25,21 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  *
  */
 public class Bloc3Detector implements ServerTypeDetector, BlocConstants {
-    private String bloc3Home = null;
 
-    private SimpleProperty systemProp = SystemProperty.INSTANCE;
+    @Override
+    public String getServerTypeName() {
+        return SERVER_TYPE_BLOC;
+    }
 
     @Override
     public boolean detect() {
-        String catalinaHome = systemProp.getProperty("catalina.home");
+        String catalinaHome = SystemProperty.INSTANCE.getProperty("catalina.home");
         
         if (catalinaHome != null) {
             File bloc3CatalinaJar = new File(catalinaHome + "/server/lib/catalina.jar");
             File bloc3ServletApiJar = new File(catalinaHome + "/common/lib/servlet-api.jar");
             
             if (bloc3CatalinaJar.exists() && bloc3ServletApiJar.exists()) {
-                bloc3Home = catalinaHome;
                 return true;
             }
         }
@@ -51,23 +48,7 @@ public class Bloc3Detector implements ServerTypeDetector, BlocConstants {
     }
 
     @Override
-    public ServiceType getServerType() {
-        return BLOC;
+    public boolean canOverride(String serverType) {
+        return SERVER_TYPE_TOMCAT.equals(serverType);
     }
-
-    @Override
-    public String[] getServerClassPath() {
-        return new String[] { bloc3Home + "/server/lib/catalina.jar", bloc3Home + "/common/lib/servlet-api.jar" };
-    }
-
-    @Override
-    public boolean hasServerProperty(ApplicationServerProperty property) {
-        switch (property) {
-        case MANAGE_PINPOINT_AGENT_LIFECYCLE:
-            return true;
-        }
-
-        return false;
-    }
-
 }

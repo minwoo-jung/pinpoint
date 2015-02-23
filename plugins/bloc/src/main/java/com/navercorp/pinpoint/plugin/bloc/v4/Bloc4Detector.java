@@ -17,9 +17,6 @@ package com.navercorp.pinpoint.plugin.bloc.v4;
 import java.io.File;
 
 import com.navercorp.pinpoint.bootstrap.plugin.ServerTypeDetector;
-import com.navercorp.pinpoint.bootstrap.plugin.ApplicationServerProperty;
-import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.common.util.SimpleProperty;
 import com.navercorp.pinpoint.common.util.SystemProperty;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
@@ -28,18 +25,20 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  *
  */
 public class Bloc4Detector implements ServerTypeDetector, BlocConstants {
-    private String blocHome;
-    private SimpleProperty systemProp = SystemProperty.INSTANCE;
     
     @Override
+    public String getServerTypeName() {
+        return SERVER_TYPE_BLOC;
+    }
+
+    @Override
     public boolean detect() {
-        String blocHome = systemProp.getProperty("bloc.home");
+        String blocHome = SystemProperty.INSTANCE.getProperty("bloc.home");
         
         if (blocHome != null) {
             File home = new File(blocHome);
             
             if (home.exists() && home.isDirectory()) {
-                this.blocHome = blocHome;
                 return true;
             }
         }
@@ -48,23 +47,7 @@ public class Bloc4Detector implements ServerTypeDetector, BlocConstants {
     }
 
     @Override
-    public ServiceType getServerType() {
-        return BLOC;
-    }
-
-    @Override
-    public String[] getServerClassPath() {
-        return new String[] { blocHome + "/libs" };
-    }
-
-    @Override
-    public boolean hasServerProperty(ApplicationServerProperty property) {
-        switch (property) {
-        case MANAGE_PINPOINT_AGENT_LIFECYCLE:
-            return false;
-        }
-
+    public boolean canOverride(String serverType) {
         return false;
     }
-
 }
