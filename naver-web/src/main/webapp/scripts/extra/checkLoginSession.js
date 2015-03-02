@@ -29,7 +29,7 @@ pinpointApp.run([ '$rootScope', '$timeout', '$modal', '$location', '$cookies', '
             return angular.isDefined($cookies.SMSESSION);
         };
 
-        oLoginModal = $modal({template: 'views/login.modal.html', backdrop: 'static', placement: 'center', show: false});
+        oLoginModal = $modal({template: 'scripts/views/login.modal.html', backdrop: 'static', placement: 'center', show: false});
 
     }
 ]);
