@@ -39,8 +39,8 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
 
         trace.recordApi(getMethodDescriptor());
         trace.recordEndPoint(endPoint != null ? endPoint : "Unknown");
-        trace.recordDestinationId(destinationId != null ? destinationId : ServiceType.NBASE_ARC.toString());
-        trace.recordServiceType(ServiceType.NBASE_ARC);
+//        trace.recordDestinationId(destinationId != null ? destinationId : ServiceType.NBASE_ARC.toString());
+//        trace.recordServiceType(ServiceType.NBASE_ARC);
         trace.recordException(throwable);
         trace.markAfterTime();
     }
