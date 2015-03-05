@@ -299,6 +299,15 @@
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.nhncorp.nelo2</groupId>
+            <artifactId>nelo2-java-sdk-log4j</artifactId>
+            <version>1.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -123,7 +123,7 @@ public class ApacheHttpClient4 {
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             httpClient = getHttpClient(getHttpParams());
             httpClient.execute(post, responseHandler);
-//            
+            
             //case 2-1
             httpClient = getHttpClient(getHttpParams());
             response = httpClient.execute(post, new BasicHttpContext());
@@ -133,7 +133,6 @@ public class ApacheHttpClient4 {
             //call back 함수
             httpClient = getHttpClient(getHttpParams());
             httpClient.execute(post, responseHandler, new BasicHttpContext());
-            System.out.println("status code : " + response.getStatusLine().getStatusCode());
 
             //case 3-1
             httpClient = getHttpClient(getHttpParams());

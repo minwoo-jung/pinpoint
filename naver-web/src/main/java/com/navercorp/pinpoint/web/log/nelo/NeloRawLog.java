@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.web.applicationmap.link;
+package com.navercorp.pinpoint.web.log.nelo;
+
+import java.util.Map;
 
 /**
- * @author emeroad
+ * @author minwoo.jung
  */
-public class DefaultNSightMatcher implements ServerMatcher {
-
-    public static final String URL = "http://nsight.nhncorp.com/dashboard_server/";
+public class NeloRawLog {
     
-    @Override
-    public boolean isMatched(String value) {
-        return true;
+    private Map<String, String> _source;
+
+    public Map<String, String> get_source() {
+        return _source;
     }
 
-    @Override
-    public String getLinkName() {
-        return "NSight";
+    public void set_source(Map<String, String> _source) {
+        this._source = _source;
     }
 
-    @Override
-    public String getLink(String value) {
-        return URL + value;
-    }
+
 }
