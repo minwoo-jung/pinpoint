@@ -49,17 +49,17 @@ public class GatewayMethodInterceptor implements SimpleAroundInterceptor, NbaseA
 
     private boolean validate(final Object target, final Object result) {
         if (result == null) {
-            logger.debug("Skip result. 'null'");
+            logger.debug("Skip event, result=null.");
             return false;
         }
 
         if (!destinationIdAccessor.isApplicable(target)) {
-            logger.debug("Invalid target. 'not apply metadata accessor, name={}'", METADATA_DESTINATION_ID);
+            logger.debug("Invalid target object, not apply metadata accessor={}.", METADATA_DESTINATION_ID);
             return false;
         }
 
         if (!destinationIdAccessor.isApplicable(result)) {
-            logger.debug("Invalid result. 'not apply metadata accessor, name={}'", METADATA_DESTINATION_ID);
+            logger.debug("Invalid result object, not apply metadata accessor={}.", METADATA_DESTINATION_ID);
             return false;
         }
 

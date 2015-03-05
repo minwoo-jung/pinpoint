@@ -7,7 +7,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.Name;
-import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**

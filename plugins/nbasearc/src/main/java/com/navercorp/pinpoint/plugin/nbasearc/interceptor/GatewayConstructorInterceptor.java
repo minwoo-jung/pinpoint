@@ -12,8 +12,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 import com.nhncorp.redis.cluster.gateway.GatewayConfig;
 
 /**
- * Gateway(nBase-ARC client) constructor interceptor 
- * - trace destinationId
+ * Gateway(nBase-ARC client) constructor interceptor - trace destinationId
  * 
  * @author jaehong.kim
  *
@@ -35,7 +34,7 @@ public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, N
             logger.beforeInterceptor(target, args);
         }
 
-        if(!validate(target, args)) {
+        if (!validate(target, args)) {
             return;
         }
 
@@ -50,34 +49,33 @@ public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, N
                 destinationIdAccessor.set(target, config.getClusterName());
             }
         } catch (Exception e) {
-            // backward compatibility error or expect 'class not found exception - GatewayConfig'
-            if (logger.isWarnEnabled()) {
-                logger.warn("Failed to trace destinationId('not found getClusterName' is compatibility error). caused={}", e.getMessage(), e);
-            }
+            logger.debug("Unsupported backward compatibility.", e);
         }
     }
-    
+
     private boolean validate(final Object target, final Object[] args) {
-        if(args == null || args.length == 0 || args[0] == null) {
-            logger.debug("Invalid arguments. 'null or not found args={}'", args);
+        if (args == null || args.length == 0 || args[0] == null) {
+            logger.debug("Invalid arguments, null or not found args={}.", args);
             return false;
         }
-        
-        if(!(args[0] instanceof GatewayConfig)) {
-            logger.debug("Invalid arguments. 'expect GatewayConfig, args[0]={}'", args[0]);
+
+        try {
+            if (!(args[0] instanceof GatewayConfig)) {
+                logger.debug("Invalid arguments, expected GatewayConfig args[0]={}.", args[0]);
+                return false;
+            }
+        } catch (Exception e) {
+            // backward compatibility error or expect 'class not found exception - GatewayConfig'
+            logger.debug("Unsupported backward compatibility.", e);
+        }
+
+        if (!destinationIdAccessor.isApplicable(target)) {
+            logger.debug("Invalid target object, not apply metadata-accessor={}.", METADATA_DESTINATION_ID);
             return false;
         }
-        
-        if(!destinationIdAccessor.isApplicable(target)) {
-            logger.debug("Invalid target. 'not apply metadata accessor, name={}'", METADATA_DESTINATION_ID);
-            return false;
-        }
-        
+
         return true;
     }
-    
-    
-    
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {

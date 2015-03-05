@@ -12,8 +12,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 import com.nhncorp.redis.cluster.gateway.GatewayServer;
 
 /**
- * RedisCluster pipeline(nBase-ARC client) constructor interceptor 
- * - trace destinationId & endPoint
+ * RedisCluster pipeline(nBase-ARC client) constructor interceptor - trace destinationId & endPoint
  * 
  * @author jaehong.kim
  *
@@ -25,9 +24,12 @@ public class RedisClusterPipelineSetServerMethodInterceptor implements SimpleAro
 
     private MetadataAccessor destinationIdAccessor;
     private MetadataAccessor endPointAccessor;
+    private MethodDescriptor methodDescriptor;
 
     public RedisClusterPipelineSetServerMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor,
             @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
+        
+        this.methodDescriptor = methodDescriptor;
         this.destinationIdAccessor = destinationIdAccessor;
         this.endPointAccessor = endPointAccessor;
     }
@@ -35,7 +37,9 @@ public class RedisClusterPipelineSetServerMethodInterceptor implements SimpleAro
     @Override
     public void before(Object target, Object[] args) {
         if (isDebug) {
-            logger.beforeInterceptor(target, args);
+//            logger.beforeInterceptor(target, args);
+            logger.beforeInterceptor(target, target.getClass().getName(), methodDescriptor.getMethodName(), methodDescriptor.getParameterDescriptor(), args);
+
         }
 
         if (!validate(target, args)) {
@@ -57,21 +61,21 @@ public class RedisClusterPipelineSetServerMethodInterceptor implements SimpleAro
     private boolean validate(final Object target, final Object[] args) {
         if (!destinationIdAccessor.isApplicable(target)) {
             if (isDebug) {
-                logger.debug("Invalid target. 'not apply metadata accessor, name={}'", METADATA_DESTINATION_ID);
+                logger.debug("Invalid target object, need metadata accessor({}).", METADATA_DESTINATION_ID);
             }
             return false;
         }
 
         if (!endPointAccessor.isApplicable(target)) {
             if (isDebug) {
-                logger.debug("Invalid target. 'not apply metadata accessor, name={}'", METADATA_END_POINT);
+                logger.debug("Invalid target object, need metadata accessor({}).", METADATA_END_POINT);
             }
             return false;
         }
 
         if (args == null || args.length == 0 || args[0] == null) {
             if (isDebug) {
-                logger.debug("Invalid arguments. 'null or not found args={}'", args);
+                logger.debug("Invalid arguments, null or not found args({}).", args);
             }
             return false;
         }
@@ -79,23 +83,22 @@ public class RedisClusterPipelineSetServerMethodInterceptor implements SimpleAro
         try {
             if (!(args[0] instanceof GatewayServer)) {
                 if (isDebug) {
-                    logger.debug("Invalid arguments. 'expect GatewayConfig, args[0]={}'", args[0]);
+                    logger.debug("Invalid arguments, expect GatewayConfig but args[0]({}).", args[0]);
                 }
                 return false;
             }
         } catch (Exception e) {
             // expect 'class not found exception - GatewayServer'
             if (isDebug) {
-                logger.debug("It does not support backward compatibility.", e);
+                logger.debug("Unsupported backward compatibility.", e);
             }
             return false;
         }
 
         if (!destinationIdAccessor.isApplicable(args[0])) {
             if (isDebug) {
-                logger.debug("Invalid args[0]. 'not apply metadata accessor, name={}'", METADATA_DESTINATION_ID);
+                logger.debug("Invalid args[0]({}) need metadata accessor({}).", METADATA_DESTINATION_ID);
             }
-
             return false;
         }
 

@@ -38,30 +38,29 @@ public class RedisClusterConstructorInterceptor implements SimpleAroundIntercept
         }
 
         // trace endPoint
-        // first arg - host
         final StringBuilder endPoint = new StringBuilder();
         if (args[0] instanceof String) {
+            // first arg - host
             endPoint.append(args[0]);
-            // second arg - port
             if (args.length >= 2 && args[1] != null && args[1] instanceof Integer) {
+                // second argument is port
                 endPoint.append(":").append(args[1]);
             } else {
-                // default port
+                // if not found second argument, set default port
                 endPoint.append(":").append(6379);
             }
         }
-
         endPointAccessor.set(target, endPoint.toString());
     }
 
     private boolean validate(final Object target, final Object[] args) {
         if(args == null || args.length == 0 || args[0] == null) {
-            logger.debug("Invalid arguments. 'null or not found args={}'", args);
+            logger.debug("Invalid arguments, null or not found args={}.", args);
             return false;
         }
         
         if(!endPointAccessor.isApplicable(target)) {
-            logger.debug("Invalid target. 'not apply metadata accessor, name={}'", METADATA_END_POINT);
+            logger.debug("Invalid target object, not apply metadata accessor={}.", METADATA_END_POINT);
             return false;
         }
         
