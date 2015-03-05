@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.curator.test.TestingServer;
 import org.junit.BeforeClass;
