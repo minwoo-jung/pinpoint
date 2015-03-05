@@ -136,5 +136,26 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+			<id>m2e</id>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<dependencies>
+				<!-- add workspace deps here -->
+				<dependency>
+					<groupId>com.navercorp.pinpoint</groupId>
+					<artifactId>pinpoint-servlet-plugin</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.navercorp.pinpoint</groupId>
+					<artifactId>pinpoint-tomcat-plugin</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
     </profiles>
 </project>
