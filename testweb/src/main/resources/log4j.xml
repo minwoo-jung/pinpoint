@@ -23,11 +23,33 @@
     
     <appender name="consoleForLoggingController" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.EnhancedPatternLayout">
-            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35c{1.}:%-3L) [TransactionId : %X{TransactionID}] [ProjectName : %X{ProjectName}] %m%n" />
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35c{1.}:%-3L) [TransactionId : %X{TransactionID}] [ProjectName : %X{time}] %m%n" />
             <!-- %L 옵션은 라인넘버가 출력되나 속도저하가 심하다. -->
             <!--<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-30c{1}) %m%n" />-->
         </layout>
     </appender>
+    
+<!--     <appender name="nelo" class="com.nhncorp.nelo2.log4j.NeloAppender"> -->
+<!--         <param name="Threshold" value="DEBUG"/> -->
+<!--         <param name="projectName" value="PINPOINT"/> -->
+<!--         <param name="collectorUrl" value="nelo2-col.nhncorp.com"/> -->
+<!--         <param name="port" value="10006"/> -->
+<!--         <param name="encoding" value="utf-8"/> -->
+<!--         <param name="timeout" value="1200"/> -->
+<!--         <param name="enable" value="true"/> -->
+<!--         <param name="logType" value="testtest"/> -->
+<!--         <param name="logSource" value="test"/> -->
+<!--         <param name="errorCodeTYpe" value="default"/> -->
+<!--         <param name="debug" value="true"/> -->
+<!--     </appender> -->
+
+<!--     <appender name="nelo-async" class="com.nhncorp.nelo2.log4j.Nelo2AsyncAppender"> -->
+<!--         <param name="Threshold" value="DEBUG"/> -->
+<!--         <param name="blocking" value="false"/> -->
+<!--         <param name="locationInfo" value="false"/> -->
+<!--         <param name="bufferSize" value="1024"/> -->
+<!--         <appender-ref ref="nelo"/> -->
+<!--     </appender> -->
 
 
     <logger name="com.navercorp.pinpoint" additivity="false">
