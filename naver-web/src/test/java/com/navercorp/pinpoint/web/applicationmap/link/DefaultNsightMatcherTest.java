@@ -1,6 +1,6 @@
 package com.navercorp.pinpoint.web.applicationmap.link;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

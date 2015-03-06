@@ -2,7 +2,7 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.WatchedEvent;
