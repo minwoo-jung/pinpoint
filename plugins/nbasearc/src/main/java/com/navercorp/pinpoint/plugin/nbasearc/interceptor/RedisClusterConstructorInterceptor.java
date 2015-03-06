@@ -22,52 +22,59 @@ public class RedisClusterConstructorInterceptor implements SimpleAroundIntercept
     private final boolean isDebug = logger.isDebugEnabled();
 
     private MetadataAccessor endPointAccessor;
-    
+
     public RedisClusterConstructorInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
         this.endPointAccessor = endPointAccessor;
     }
-    
+
     @Override
     public void before(Object target, Object[] args) {
         if (isDebug) {
             logger.beforeInterceptor(target, args);
         }
 
-        if (!validate(target, args)) {
-            return;
-        }
-
-        // trace endPoint
-        final StringBuilder endPoint = new StringBuilder();
-        if (args[0] instanceof String) {
-            // first arg - host
-            endPoint.append(args[0]);
-            if (args.length >= 2 && args[1] != null && args[1] instanceof Integer) {
-                // second argument is port
-                endPoint.append(":").append(args[1]);
-            } else {
-                // if not found second argument, set default port
-                endPoint.append(":").append(6379);
+        try {
+            if (!validate(target, args)) {
+                return;
             }
+
+            // trace endPoint
+            final StringBuilder endPoint = new StringBuilder();
+            if (args[0] instanceof String) {
+                // first arg - host
+                endPoint.append(args[0]);
+                if (args.length >= 2 && args[1] != null && args[1] instanceof Integer) {
+                    // second argument is port
+                    endPoint.append(":").append(args[1]);
+                } else {
+                    // if not found second argument, set default port
+                    endPoint.append(":").append(6379);
+                }
+            }
+            endPointAccessor.set(target, endPoint.toString());
+        } catch (Throwable t) {
+            logger.warn("Failed to before process. {}", t.getMessage(), t);
         }
-        endPointAccessor.set(target, endPoint.toString());
     }
 
     private boolean validate(final Object target, final Object[] args) {
-        if(args == null || args.length == 0 || args[0] == null) {
-            logger.debug("Invalid arguments, null or not found args={}.", args);
+        if (args == null || args.length == 0 || args[0] == null) {
+            if (isDebug) {
+                logger.debug("Invalid arguments. Null or not found args({}).", args);
+            }
             return false;
         }
-        
-        if(!endPointAccessor.isApplicable(target)) {
-            logger.debug("Invalid target object, not apply metadata accessor={}.", METADATA_END_POINT);
+
+        if (!endPointAccessor.isApplicable(target)) {
+            if (isDebug) {
+                logger.debug("Invalid target object. Need metadata accessor({}).", METADATA_END_POINT);
+            }
             return false;
         }
-        
+
         return true;
     }
-    
-    
+
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
     }

@@ -24,12 +24,12 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     private static final String T_REDIS_CLUSTER_PIPELINE = "com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline";
     
     private static final String I_GATEWAY_CONSTRUCTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayConstructorInterceptor";
-    private static final String I_GATEWAY_METHOD = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayMethodInterceptor";
-    private static final String I_GATEWAY_SERVER_METHOD = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayServerMethodInterceptor";
+    private static final String I_GATEWAY_METHOD = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayGetServerMethodInterceptor";
+    private static final String I_GATEWAY_SERVER_METHOD = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayServerGetResourceMethodInterceptor";
     private static final String I_REDIS_CLUSTER_CONSTRUCTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor";
     private static final String I_REDIS_CLUSTER_METHOD = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterMethodInterceptor";
     private static final String I_REDIS_CLUSTER_PIPELINE_CONSTRUCTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineConstructorInterceptor";
-    private static final String I_REDIS_CLUSTER_PIPELINE_SET_SERVER_METHOD = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineSetServerMethodInterceptor";
+    private static final String I_REDIS_CLUSTER_PIPELINE_SET_SERVER = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineSetServerInterceptor";
     private static final String I_REDIS_CLUSTER_PIPELINE_METHOD = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor";
     
     private static final String ARG_GATEWAY_SERVER = "com.nhncorp.redis.cluster.gateway.GatewayServer";
@@ -65,10 +65,18 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         final ConstructorEditorBuilder constructorEditorBuilder = classEditorBuilder.editConstructor(ARG_GATEWAY_CONFIG);
         constructorEditorBuilder.injectInterceptor(I_GATEWAY_CONSTRUCTOR);
 
-        final MethodEditorBuilder methodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
+//        final MethodEditorBuilder methodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
+//            @Override
+//            public boolean filter(MethodInfo method) {
+//                return !method.getName().equals("getServer");
+//            }
+//        });
+        final MethodEditorBuilder methodEditorBuilder = classEditorBuilder.editMethod("UNDEFINED_METHOD$$");
+        methodEditorBuilder.condition(new ClassCondition() {
+            
             @Override
-            public boolean filter(MethodInfo method) {
-                return !method.getName().equals("getServer");
+            public boolean check(ClassLoader classLoader, InstrumentClass target) {
+                return target.hasDeclaredMethod("UNDEFINED_METHOD$$", new String[] {});
             }
         });
         methodEditorBuilder.injectInterceptor(I_GATEWAY_METHOD);
@@ -125,23 +133,33 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
         classEditorBuilder.injectMetadata(METADATA_END_POINT);
 
-        final ConstructorEditorBuilder constructorEditorBuilder = classEditorBuilder.editConstructor(ARG_GATEWAY_SERVER);
-        constructorEditorBuilder.condition(new ClassCondition() {
-            @Override
-            public boolean check(ClassLoader classLoader, InstrumentClass target) {
-                return target.getConstructor(new String[] { ARG_GATEWAY_SERVER }) != null;
-            }
-        });
+//        final ConstructorEditorBuilder constructorEditorBuilder = classEditorBuilder.editConstructor(ARG_GATEWAY_SERVER);
+//        constructorEditorBuilder.condition(new ClassCondition() {
+//            @Override
+//            public boolean check(ClassLoader classLoader, InstrumentClass target) {
+//                return target.getConstructor(new String[] { ARG_GATEWAY_SERVER }) != null;
+//            }
+//        });
         // constructorEditorBuilder.setProperty(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
-        constructorEditorBuilder.injectInterceptor(I_REDIS_CLUSTER_PIPELINE_CONSTRUCTOR);
+//        constructorEditorBuilder.injectInterceptor(I_REDIS_CLUSTER_PIPELINE_GATEWAY_SERVER);
 
-        final MethodEditorBuilder setServerMethodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
-            @Override
-            public boolean filter(MethodInfo method) {
-                return !method.getName().equals("setServer");
-            }
-        });
-        setServerMethodEditorBuilder.injectInterceptor(I_REDIS_CLUSTER_PIPELINE_SET_SERVER_METHOD);
+//        final MethodEditorBuilder setServerMethodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
+//            @Override
+//            public boolean filter(MethodInfo method) {
+//                if(!method.getName().equals("setServer")) {
+//                    return true;
+//                }
+//                
+//                final String[] types = method.getParameterTypes();
+//                if(types == null || types.length != 1 || !types[0].equals(ARG_GATEWAY_SERVER)) {
+//                    return true;
+//                }
+//                
+//                return false;
+//            }
+//        });
+//        final MethodEditorBuilder setServerMethodEditorBuilder = classEditorBuilder.editMethod("setServer", ARG_GATEWAY_SERVER);
+//        setServerMethodEditorBuilder.injectInterceptor(I_REDIS_CLUSTER_PIPELINE_GATEWAY_SERVER);
 
         final MethodEditorBuilder methodEditorBuilder = classEditorBuilder.editMethods(new NameBasedMethodFilter(RedisClusterPipelineMethodNames.get()));
         methodEditorBuilder.injectInterceptor(I_REDIS_CLUSTER_PIPELINE_METHOD);    

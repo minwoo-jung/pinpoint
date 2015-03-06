@@ -34,11 +34,11 @@ public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, N
             logger.beforeInterceptor(target, args);
         }
 
-        if (!validate(target, args)) {
-            return;
-        }
-
         try {
+            if (!validate(target, args)) {
+                return;
+            }
+
             final GatewayConfig config = (GatewayConfig) args[0];
             if (config.getDomainAddress() != null) {
                 destinationIdAccessor.set(target, config.getDomainAddress());
@@ -48,29 +48,24 @@ public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, N
                 // over 1.1.x
                 destinationIdAccessor.set(target, config.getClusterName());
             }
-        } catch (Exception e) {
-            logger.debug("Unsupported backward compatibility.", e);
+        } catch (Throwable t) {
+            logger.warn("Failed to before process. {}", t.getMessage(), t);
         }
     }
 
     private boolean validate(final Object target, final Object[] args) {
         if (args == null || args.length == 0 || args[0] == null) {
-            logger.debug("Invalid arguments, null or not found args={}.", args);
+            logger.debug("Invalid arguments. Null or not found args({}).", args);
             return false;
         }
 
-        try {
-            if (!(args[0] instanceof GatewayConfig)) {
-                logger.debug("Invalid arguments, expected GatewayConfig args[0]={}.", args[0]);
-                return false;
-            }
-        } catch (Exception e) {
-            // backward compatibility error or expect 'class not found exception - GatewayConfig'
-            logger.debug("Unsupported backward compatibility.", e);
+        if (!(args[0] instanceof GatewayConfig)) {
+            logger.debug("Invalid arguments. Expect GatewayConfig but args[0]({}).", args[0]);
+            return false;
         }
 
         if (!destinationIdAccessor.isApplicable(target)) {
-            logger.debug("Invalid target object, not apply metadata-accessor={}.", METADATA_DESTINATION_ID);
+            logger.debug("Invalid target object. Need metadata accessor({}).", METADATA_DESTINATION_ID);
             return false;
         }
 
