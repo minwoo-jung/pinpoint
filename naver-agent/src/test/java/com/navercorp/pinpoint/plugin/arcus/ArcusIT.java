@@ -34,9 +34,8 @@ import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.Dependency;
-import com.navercorp.pinpoint.test.plugin.JvmArgument;
-import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.Repository;
 
 /**
@@ -45,7 +44,6 @@ import com.navercorp.pinpoint.test.plugin.Repository;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@JvmArgument({"-Dbloc.home=.", "-Dbloc.base=."})
 @Repository("http://repo.nhncorp.com/maven2")
 @Dependency({"arcus:arcus-client:[1.5.3,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class ArcusIT {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+    id="pinpoint-web" version="2.5">
+
+    <servlet>
+        <servlet-name>test</servlet-name>
+        <servlet-class>com.navercorp.pinpoint.plugin.tomcat.webapp.TestServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>test</servlet-name>
+        <url-pattern>/doTest</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getHeaderNames</servlet-name>
+        <servlet-class>com.navercorp.pinpoint.plugin.tomcat.webapp.GetHeaderNamesServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>getHeaderNames</servlet-name>
+        <url-pattern>/getHeaderNames</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getHeader</servlet-name>
+        <servlet-class>com.navercorp.pinpoint.plugin.tomcat.webapp.GetHeaderServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>getHeader</servlet-name>
+        <url-pattern>/getHeader</url-pattern>
+    </servlet-mapping>
+    
+    <welcome-file-list>
+        <welcome-file>/index.html</welcome-file>
+    </welcome-file-list>
+</web-app>

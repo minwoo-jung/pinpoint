@@ -18,7 +18,7 @@
         <jdk.version>1.7</jdk.version>
         <jdk.home>${env.JAVA_7_HOME}</jdk.home>
         <distribution.directory>${project.build.directory}/pinpoint-agent</distribution.directory>
-        
+
         <tomcat.version>7.0.34</tomcat.version>
     </properties>
 
@@ -56,7 +56,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- nelo logging -->        
+        <!-- nelo logging -->
         <dependency>
             <groupId>com.nhncorp.nelo2</groupId>
             <artifactId>nelo2-java-sdk-log4j</artifactId>
@@ -134,6 +134,28 @@
 
         <plugins>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-tomcat-webapp</id>
+                        <!-- here the phase you need -->
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/test/tomcat/base/webapps/test/WEB-INF/classes/com/navercorp/pinpoint/plugin/tomcat/webapp</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.testOutputDirectory}/com/navercorp/pinpoint/plugin/tomcat/webapp</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.18.1</version>
@@ -151,6 +173,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <!-- AbstractPinpointPluginTestSuite needs this to resolve path of required jars -->
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -187,7 +213,9 @@
                             <target>
                                 <delete>
                                     <!-- Delete plugins group pom file -->
-                                    <fileset dir="${project.build.directory}/${project.build.finalName}/plugin" includes="*.pom" />
+                                    <fileset
+                                        dir="${project.build.directory}/${project.build.finalName}/plugin"
+                                        includes="*.pom" />
                                 </delete>
                             </target>
                         </configuration>
