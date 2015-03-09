@@ -13,6 +13,7 @@ import redis.clients.jedis.Pipeline;
 
 import com.nhncorp.redis.cluster.gateway.GatewayClient;
 import com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline;
+//import com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline;
 import com.nhncorp.redis.cluster.spring.StringRedisClusterTemplate;
 
 @Controller
@@ -26,8 +27,8 @@ public class RedisController {
     @Autowired
     private GatewayClient client;
 
-    @Autowired
-    private StringRedisClusterTemplate redisTemplate;
+    //@Autowired
+    //private StringRedisClusterTemplate redisTemplate;
 
     @RequestMapping(value = "/redis/jedis")
     @ResponseBody
@@ -37,7 +38,7 @@ public class RedisController {
         final Jedis jedis = new Jedis(HOST, PORT);
 
         jedis.get("foo");
-        jedis.close();
+//        jedis.close();
 
         return "OK";
     }
@@ -55,7 +56,7 @@ public class RedisController {
         pipeline.expire("foo", 1);
         pipeline.syncAndReturnAll();
 
-        jedis.close();
+//        jedis.close();
 
         return "OK";
     }
