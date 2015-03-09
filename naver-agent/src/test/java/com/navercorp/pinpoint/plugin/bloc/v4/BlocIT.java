@@ -32,8 +32,9 @@ import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmArgument;
-import com.navercorp.pinpoint.test.plugin.PinpointAgent;
+import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.Repository;
 import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
 import com.nhncorp.lucy.bloc.core.Container;
@@ -47,6 +48,7 @@ import com.nhncorp.lucy.bloc.http.HttpConfiguration;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
+@JvmVersion(7)
 @JvmArgument({"-Dbloc.home=.", "-Dbloc.base=."})
 @Repository("http://repo.nhncorp.com/maven2")
 @Dependency("com.nhncorp.lucy:bloc-server:[4,4.0.3]")
