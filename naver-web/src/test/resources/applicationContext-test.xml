@@ -81,4 +81,13 @@
     </bean>
 
     <bean id="jobLauncherTestUtils" class="org.springframework.batch.test.JobLauncherTestUtils"/>
+
+
+    <bean id="typeLoaderService" class="com.navercorp.pinpoint.common.service.DefaultTypeLoaderService"/>
+    <bean id="serviceTypeRegistryService" class="com.navercorp.pinpoint.common.service.DefaultServiceTypeRegistryService">
+        <constructor-arg ref="typeLoaderService"/>
+    </bean>
+
+    <bean id="annotationKeyMatcherService" class="com.navercorp.pinpoint.web.service.DefaultAnnotationKeyMatcherService"></bean>
+
 </beans>
