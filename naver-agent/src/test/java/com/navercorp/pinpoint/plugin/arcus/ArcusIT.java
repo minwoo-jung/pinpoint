@@ -18,6 +18,8 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.navercorp.pinpoint.common.service.DefaultServiceTypeRegistryService;
+import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import net.spy.memcached.ArcusClient;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
@@ -51,12 +53,17 @@ public class ArcusIT {
 
     private static ArcusClient arcusClient;
     
-    private static final ServiceType ARCUS = ServiceType.valueOf("ARCUS");
-    private static final ServiceType ARCUS_FUTURE_GET = ServiceType.valueOf("ARCUS_FUTURE_GET");
-    private static final ServiceType ARCUS_EHCACHE_FUTURE_GET = ServiceType.valueOf("ARCUS_EHCACHE_FUTURE_GET");
+    private static ServiceType ARCUS;
+    private static ServiceType ARCUS_FUTURE_GET;
+    private static ServiceType ARCUS_EHCACHE_FUTURE_GET;
 
     @BeforeClass
     public static void beforeClass() {
+        ServiceTypeRegistryService registry = new DefaultServiceTypeRegistryService();
+        ARCUS = registry.findServiceTypeByName("ARCUS");
+        ARCUS_FUTURE_GET = registry.findServiceTypeByName("ARCUS_FUTURE_GET");
+        ARCUS_EHCACHE_FUTURE_GET = registry.findServiceTypeByName("ARCUS_EHCACHE_FUTURE_GET");
+
         System.setProperty("net.spy.log.LoggerImpl", "net.spy.memcached.compat.log.Log4JLogger");
 
         ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
