@@ -15,35 +15,30 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.filter;
 
-import java.util.Arrays;
+import static org.junit.Assert.*;
+
 import java.util.Set;
 
+import org.junit.Test;
+
 /**
- * RedisClusterPipeline method names
- *   - RedisCluster method names + pipeline method names
  * 
  * @author jaehong.kim
  *
  */
-public class RedisClusterPipelineMethodNames {
+public class RedisClusterMethodNamesTest {
 
-    private static Set<String> names = null;
-    
-    public static Set<String> get() {
-        if(names != null) {
-            return names;
-        }
-        
-        final String[] methodNames = { 
-                "sync",
-                "syncAndReturnAll",
-                "close"
-        };
-        
-        final Set<String> redisClusterMethodNames = RedisClusterMethodNames.get();
-        redisClusterMethodNames.addAll(Arrays.asList(methodNames));
-        names = redisClusterMethodNames;
-        
-        return names;
+    @Test
+    public void test() {
+        Set<String> names = RedisClusterMethodNames.get();
+
+        assertTrue(names.contains("get"));
+        assertTrue(names.contains("sinterstore"));
+        assertTrue(names.contains("info"));
+
+        assertTrue(names.contains("zadd2"));
+        assertTrue(names.contains("slexpire"));
+        assertTrue(names.contains("ssttl"));
     }
+
 }

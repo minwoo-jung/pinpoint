@@ -15,13 +15,6 @@ import com.navercorp.pinpoint.profiler.modifier.connector.npc.NioNpcHessianConne
 import com.navercorp.pinpoint.profiler.modifier.connector.npc.NpcHessianConnectorModifier;
 import com.navercorp.pinpoint.profiler.modifier.linegame.HandlerInvokeTaskModifier;
 import com.navercorp.pinpoint.profiler.modifier.linegame.HttpCustomServerHandlerModifier;
-import com.navercorp.pinpoint.profiler.modifier.nbase.arc.BinaryRedisClusterModifier;
-import com.navercorp.pinpoint.profiler.modifier.nbase.arc.BinaryTriplesRedisClusterModifier;
-import com.navercorp.pinpoint.profiler.modifier.nbase.arc.GatewayModifier;
-import com.navercorp.pinpoint.profiler.modifier.nbase.arc.GatewayServerModifier;
-import com.navercorp.pinpoint.profiler.modifier.nbase.arc.RedisClusterModifier;
-import com.navercorp.pinpoint.profiler.modifier.nbase.arc.RedisClusterPipelineModifier;
-import com.navercorp.pinpoint.profiler.modifier.nbase.arc.TriplesRedisClusterModifier;
 
 public class NaverModifierProvider implements ModifierProvider {
 
@@ -33,7 +26,6 @@ public class NaverModifierProvider implements ModifierProvider {
         addNimmModifier(modifiers, byteCodeInstrumentor, agent);
         addLucyNetModifier(modifiers, byteCodeInstrumentor, agent);
         addLineGameBaseFrameworkModifier(modifiers, byteCodeInstrumentor, agent);
-        addNbaseArcSupport(modifiers, byteCodeInstrumentor, agent);
 
         return modifiers;
     }
@@ -62,27 +54,5 @@ public class NaverModifierProvider implements ModifierProvider {
     private void addLineGameBaseFrameworkModifier(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
         modifiers.add(new HandlerInvokeTaskModifier(byteCodeInstrumentor, agent));
         modifiers.add(new HttpCustomServerHandlerModifier(byteCodeInstrumentor, agent));
-    }
-
-    private void addNbaseArcSupport(List<Modifier> modifiers, ByteCodeInstrumentor byteCodeInstrumentor, Agent agent) {
-        ProfilerConfig profilerConfig = agent.getProfilerConfig();
-        final boolean enabled = profilerConfig.readBoolean("profiler.nbase_arc", true);
-        final boolean pipelineEnabled = profilerConfig.readBoolean("profiler.nbase_arc.pipeline", true);
-        
-        if(enabled || pipelineEnabled) {
-            modifiers.add(new GatewayModifier(byteCodeInstrumentor, agent));
-            modifiers.add(new GatewayServerModifier(byteCodeInstrumentor, agent));
-            
-            if(enabled) {
-                modifiers.add(new RedisClusterModifier(byteCodeInstrumentor, agent));
-                modifiers.add(new BinaryRedisClusterModifier(byteCodeInstrumentor, agent));
-                modifiers.add(new TriplesRedisClusterModifier(byteCodeInstrumentor, agent));
-                modifiers.add(new BinaryTriplesRedisClusterModifier(byteCodeInstrumentor, agent));
-            }
-            
-            if(pipelineEnabled) {
-                modifiers.add(new RedisClusterPipelineModifier(byteCodeInstrumentor, agent));
-            }
-        }
     }
 }
