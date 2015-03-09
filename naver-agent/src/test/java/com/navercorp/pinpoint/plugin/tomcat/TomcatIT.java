@@ -25,6 +25,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import com.navercorp.pinpoint.common.service.DefaultServiceTypeRegistryService;
+import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import org.apache.catalina.util.ServerInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,11 +50,14 @@ import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
 @JvmVersion({7})
 @TraceObjectManagable
 public class TomcatIT {
-    private static final ServiceType TOMCAT = ServiceType.valueOf("TOMCAT");
+    private static ServiceType TOMCAT;
     private static final AnnotationKey HTTP_PARAM = AnnotationKey.valueOf("http.param");
 
     @Test
     public void testServerType() throws Exception {
+        ServiceTypeRegistryService registry = new DefaultServiceTypeRegistryService();
+        TOMCAT = registry.findServiceTypeByName("TOMCAT");
+
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.verifyServerType(TOMCAT);
         verifier.verifyServerInfo(ServerInfo.getServerInfo());
