@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.web.dao.hbase;
 
+import com.navercorp.pinpoint.common.ServiceType;
 import org.junit.Assert;
 
 import org.junit.Ignore;
@@ -55,6 +56,7 @@ public class HbaseAgentInfoDaoTest {
         agentInfo.setHostname("testcaseHostName");
         agentInfo.setPorts("9995");
         agentInfo.setStartTimestamp(startTime);
+        agentInfo.setServiceType(ServiceType.TEST_STAND_ALONE.getCode());
 
         return agentInfo;
     }
