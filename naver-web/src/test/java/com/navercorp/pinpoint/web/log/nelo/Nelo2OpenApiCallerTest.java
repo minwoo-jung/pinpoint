@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author minwoo.jung
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextHierarchy({@ContextConfiguration({"/applicationContext-web-nelo.xml"})})
 // 아무것도 test메소드가 없으면 ci에서 실패남.
