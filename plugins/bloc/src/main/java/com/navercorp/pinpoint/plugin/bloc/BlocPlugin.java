@@ -23,6 +23,7 @@ public class BlocPlugin implements ProfilerPlugin, BlocConstants {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
         builder.target("com.nhncorp.lucy.bloc.handler.HTTPHandler$BlocAdapter");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v3.interceptor.ExecuteMethodInterceptor");
+        context.addClassEditor(builder.build());
     }
     
     private void addNettyInboundHandlerModifier(ProfilerPluginSetupContext context) {
@@ -30,18 +31,21 @@ public class BlocPlugin implements ProfilerPlugin, BlocConstants {
         builder.target("com.nhncorp.lucy.bloc.http.NettyInboundHandler");
         builder.injectFieldSnooper(FIELD_URI_ENCODING);
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ChannelRead0Interceptor");
+        context.addClassEditor(builder.build());
     }    
     
     private void addNpcHandlerModifier(ProfilerPluginSetupContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
         builder.target("com.nhncorp.lucy.bloc.npc.handler.NpcHandler");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.MessageReceivedInterceptor");
+        context.addClassEditor(builder.build());
     }
 
     private void addRequestProcessorModifier(ProfilerPluginSetupContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
         builder.target("com.nhncorp.lucy.bloc.core.processor.RequestProcessor");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ProcessInterceptor");
+        context.addClassEditor(builder.build());
     }
     
     private void addModuleClassLoaderFactoryInterceptor(ProfilerPluginSetupContext context) {
