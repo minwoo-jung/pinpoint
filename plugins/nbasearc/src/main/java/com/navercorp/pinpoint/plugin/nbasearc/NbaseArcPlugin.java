@@ -91,6 +91,8 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         final MethodEditorBuilder methodEditorBuilder = classEditorBuilder.editMethod("getResource");
         methodEditorBuilder.property(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
         methodEditorBuilder.injectInterceptor(GATEWAY_SERVER_GET_RESOURCE_METHOD_INTERCEPTOR);
+        
+        context.addClassEditor(classEditorBuilder.build());
     }
 
     private void addGatewayClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
@@ -109,6 +111,8 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
             }
         });
         methodEditorBuilder.injectInterceptor(GATEWAY_GET_SERVER_METHOD_INTERCEPTOR);
+        
+        context.addClassEditor(classEditorBuilder.build());
     }
 
     private void addRedisClusterClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
@@ -116,13 +120,14 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         final ClassEditorBuilder classEditorBuilder = addRedisClusterExtendedClassEditor(context, config, BINARY_TRIPLES_REDIS_CLUSTER);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
         classEditorBuilder.injectMetadata(METADATA_END_POINT);
+        context.addClassEditor(classEditorBuilder.build());
 
         // extends BinaryTriplesRedisCluster
-        addRedisClusterExtendedClassEditor(context, config, TRIPLES_REDIS_CLUSTER);
+        context.addClassEditor(addRedisClusterExtendedClassEditor(context, config, TRIPLES_REDIS_CLUSTER).build());
         // extends TriplesRedisCluster
-        addRedisClusterExtendedClassEditor(context, config, BINARY_REDIS_CLUSTER);
+        context.addClassEditor(addRedisClusterExtendedClassEditor(context, config, BINARY_REDIS_CLUSTER).build());
         // extends BinaryRedisCluster
-        addRedisClusterExtendedClassEditor(context, config, REDIS_CLUSTER);
+        context.addClassEditor(addRedisClusterExtendedClassEditor(context, config, REDIS_CLUSTER).build());
     }
 
     private ClassEditorBuilder addRedisClusterExtendedClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config, final String targetClassName) {
@@ -183,5 +188,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
             }
         });
         methodEditorBuilder.injectInterceptor(REDIS_CLUSTER_PIPELINE_METHOD_INTERCEPTOR);
+        
+        context.addClassEditor(classEditorBuilder.build());
     }
 }

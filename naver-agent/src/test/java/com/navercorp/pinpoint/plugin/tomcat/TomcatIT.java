@@ -25,8 +25,6 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
-import com.navercorp.pinpoint.common.service.DefaultServiceTypeRegistryService;
-import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import org.apache.catalina.util.ServerInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +33,6 @@ import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
@@ -50,14 +47,11 @@ import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
 @JvmVersion({7})
 @TraceObjectManagable
 public class TomcatIT {
-    private static ServiceType TOMCAT;
-    private static final AnnotationKey HTTP_PARAM = AnnotationKey.valueOf("http.param");
+    private static final String TOMCAT = "TOMCAT";
+    private static final String HTTP_PARAM = "http.param";
 
     @Test
     public void testServerType() throws Exception {
-        ServiceTypeRegistryService registry = new DefaultServiceTypeRegistryService();
-        TOMCAT = registry.findServiceTypeByName("TOMCAT");
-
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.verifyServerType(TOMCAT);
         verifier.verifyServerInfo(ServerInfo.getServerInfo());
