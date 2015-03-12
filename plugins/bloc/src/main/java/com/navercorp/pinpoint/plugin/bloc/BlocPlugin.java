@@ -16,8 +16,9 @@ public class BlocPlugin implements ProfilerPlugin, BlocConstants {
         addNettyInboundHandlerModifier(context);
         addNpcHandlerModifier(context);
         addRequestProcessorModifier(context);
+        addModuleClassLoaderFactoryInterceptor(context);
     }
-    
+
     private void addBlocAdapterEditor(ProfilerPluginSetupContext context) {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
         builder.target("com.nhncorp.lucy.bloc.handler.HTTPHandler$BlocAdapter");
@@ -41,5 +42,11 @@ public class BlocPlugin implements ProfilerPlugin, BlocConstants {
         ClassEditorBuilder builder = context.newClassEditorBuilder();
         builder.target("com.nhncorp.lucy.bloc.core.processor.RequestProcessor");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ProcessInterceptor");
+    }
+    
+    private void addModuleClassLoaderFactoryInterceptor(ProfilerPluginSetupContext context) {
+        ClassEditorBuilder builder = context.newClassEditorBuilder();
+        builder.target("com.nhncorp.lucy.bloc.core.clazz.ModuleClassLoaderFactory");
+        builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ModuleClassLoaderFactoryInterceptor");
     }
 }
