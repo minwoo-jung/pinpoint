@@ -20,8 +20,7 @@ import static org.junit.Assert.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.navercorp.pinpoint.common.service.DefaultServiceTypeRegistryService;
-import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
+import com.navercorp.pinpoint.common.service.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -60,13 +59,18 @@ public class BlocIT {
     private static Container container;
     
     private static ServiceType BLOC;
-    private static final AnnotationKey CALL_URL = AnnotationKey.valueOf("CALL_URL");
-    private static final AnnotationKey PROTOCOL = AnnotationKey.valueOf("PROTOCOL");
+    private static AnnotationKey CALL_URL;
+    private static AnnotationKey PROTOCOL;
     
     @BeforeClass
     public static void startBloc() {
-        ServiceTypeRegistryService registry = new DefaultServiceTypeRegistryService();
+        TypeLoaderService typeLoaderService = new DefaultTypeLoaderService();
+        ServiceTypeRegistryService registry = new DefaultServiceTypeRegistryService(typeLoaderService);
+        AnnotationKeyRegistryService annotationKeyRegistryService = new DefaultAnnotationKeyRegistryService(typeLoaderService);
+
         BLOC = registry.findServiceTypeByName("BLOC");
+        CALL_URL = annotationKeyRegistryService.findAnnotationKeyByName("CALL_URL");
+        PROTOCOL = annotationKeyRegistryService.findAnnotationKeyByName("PROTOCOL");
 
         Configuration config = new Configuration();
         config.set(HttpConfiguration.ADDRESS, "*:" + HTTP_PORT);
