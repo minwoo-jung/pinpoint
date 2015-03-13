@@ -20,8 +20,7 @@ import static org.junit.Assert.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.navercorp.pinpoint.common.service.DefaultServiceTypeRegistryService;
-import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
+import com.navercorp.pinpoint.common.service.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
