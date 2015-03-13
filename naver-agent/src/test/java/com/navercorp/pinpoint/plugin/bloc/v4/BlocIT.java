@@ -58,20 +58,10 @@ public class BlocIT {
     private static final int HTTP_PORT = 5111;
     private static Container container;
     
-    private static ServiceType BLOC;
-    private static AnnotationKey CALL_URL;
-    private static AnnotationKey PROTOCOL;
+    private static final String BLOC = "BLOC";
     
     @BeforeClass
     public static void startBloc() {
-        TypeLoaderService typeLoaderService = new DefaultTypeLoaderService();
-        ServiceTypeRegistryService registry = new DefaultServiceTypeRegistryService(typeLoaderService);
-        AnnotationKeyRegistryService annotationKeyRegistryService = new DefaultAnnotationKeyRegistryService(typeLoaderService);
-
-        BLOC = registry.findServiceTypeByName("BLOC");
-        CALL_URL = annotationKeyRegistryService.findAnnotationKeyByName("CALL_URL");
-        PROTOCOL = annotationKeyRegistryService.findAnnotationKeyByName("PROTOCOL");
-
         Configuration config = new Configuration();
         config.set(HttpConfiguration.ADDRESS, "*:" + HTTP_PORT);
         
@@ -103,11 +93,11 @@ public class BlocIT {
         PluginTestVerifier agent = PluginTestVerifierHolder.getInstance();
         
         agent.verifySpanCount(2);
-        agent.verifySpanEvent(ServiceType.INTERNAL_METHOD,
-                annotation(CALL_URL, path),
-                annotation(PROTOCOL, "http"));
+        agent.verifySpanEvent(ServiceType.INTERNAL_METHOD.getName(),
+                annotation("CALL_URL", path),
+                annotation("PROTOCOL", "http"));
         agent.verifySpan(BLOC,
-                annotation(AnnotationKey.HTTP_URL, pathWithQueryString),
-                annotation(AnnotationKey.HTTP_PARAM, queryString));
+                annotation("http.url", pathWithQueryString),
+                annotation("http.param", queryString));
     }
 }
