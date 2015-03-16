@@ -87,6 +87,9 @@
     <bean id="serviceTypeRegistryService" class="com.navercorp.pinpoint.common.service.DefaultServiceTypeRegistryService">
         <constructor-arg ref="typeLoaderService"/>
     </bean>
+    <bean id="annotationKeyRegistryService" class="com.navercorp.pinpoint.common.service.DefaultAnnotationKeyRegistryService">
+        <constructor-arg ref="typeLoaderService"/>
+    </bean>
 
     <bean id="annotationKeyMatcherService" class="com.navercorp.pinpoint.web.service.DefaultAnnotationKeyMatcherService"></bean>
 
