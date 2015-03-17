@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.navercorp.pinpoint.web.log.nelo.Nelo2OpenApiCaller;
@@ -43,11 +44,13 @@ public class Nelo2LogController {
     @Autowired
     Nelo2OpenApiCaller nelo2OpenApiCaller;
     
-    @RequestMapping(value = "/NeloLogWithTransactionId", method = RequestMethod.GET)
+    @RequestMapping(value = "/neloLog", method = RequestMethod.GET)
     @ResponseBody
-    public String NeloLogForTransactionID(String transactionId) {
+    public String NeloLogForTransactionId(@RequestParam(value= "transactionId", required=true) String transactionId,
+                                            @RequestParam(value= "spanId", required=false) String spanId,
+                                            @RequestParam(value="time", required=true) long time) {
         try {
-            List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog(transactionId);
+            List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog(transactionId, spanId, time);
             StringBuilder sb = new StringBuilder();
             
             if (logs != null) {
