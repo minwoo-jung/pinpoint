@@ -152,7 +152,6 @@
                 </plugins>
             </build>
         </profile>
-<<<<<<< Upstream, based on master
         <profile>
 			<id>m2e</id>
 			<activation>
@@ -168,22 +167,5 @@
 				</dependency>
 			</dependencies>
 		</profile>
-=======
-         <profile>
-            <id>m2e</id>
-            <activation>
-                <property>
-                    <name>m2e.version</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.navercorp.pinpoint</groupId>
-                    <artifactId>pinpoint-plugins</artifactId>
-                    <type>pom</type>
-                </dependency>
-            </dependencies>
-        </profile>
->>>>>>> c0f194a [#143] add nelo open api controller
     </profiles>
 </project>
