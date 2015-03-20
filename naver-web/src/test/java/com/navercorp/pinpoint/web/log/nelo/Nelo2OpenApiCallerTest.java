@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author minwoo.jung
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextHierarchy({@ContextConfiguration({"/applicationContext-web-nelo.xml"})})
 // 아무것도 test메소드가 없으면 ci에서 실패남.
@@ -53,7 +53,7 @@ public class Nelo2OpenApiCallerTest {
 //    @Test
     public void testConnect() throws Exception {
         try {
-            List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog("minwoo_local_tomcat^1425368654938^10");
+            List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog("minwoo_local_tomcat^1425368654938^10", null, 0);
             
             if (logs != null) {
                 int i = 1;
@@ -90,6 +90,7 @@ public class Nelo2OpenApiCallerTest {
 //    @Test
     public void encodeTest() throws UnsupportedEncodingException {
         System.out.println(URLEncoder.encode("minwoo_local_tomcat^1425368654938^10", "UTF-8"));
+        System.out.println(URLEncoder.encode("transactionid=\"minwoo_local_tomcat^1425368654938^10\"", "UTF-8"));
 //        minwoo_local_tomcat%5E1425368654938%5E10
     }
 }

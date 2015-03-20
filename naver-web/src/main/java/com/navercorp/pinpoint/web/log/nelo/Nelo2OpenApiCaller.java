@@ -67,6 +67,7 @@ public class Nelo2OpenApiCaller {
 	private static final String RESPONSE_TYPE = "code";
 	private static final String SCOPE = "projects";
 	private static final String GRANT_TYPE = "authorization_code";
+	private static final long SEARCH_INTERVAL = 1000*60*60*12;
 	
 	private static final String AUTHENTICATION_CODE_RESPONSE_HEADER_NAME = "location";
 
@@ -76,18 +77,18 @@ public class Nelo2OpenApiCaller {
 	@Autowired
 	@Qualifier("objectMapperForNeloLog")
 	private ObjectMapper objectMapper;
-	
-	public List<NeloRawLog> requestNeloLog(String transactionId) throws Exception {
-	    logger.info("require Nelo2 server to Log.");
 
-	    String authenticationCode = callAuthenticationCodeApi();
-        String accessToken = callAccessTokenApi(authenticationCode);
-        String responseJsonTypeData = callLogOpenAPI(accessToken, transactionId);
-        
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        NeloRawData neloRawData = objectMapper.readValue(responseJsonTypeData, new TypeReference<NeloRawData>(){ });
-        
-        return neloRawData.getLogs();
+	public List<NeloRawLog> requestNeloLog(String transactionId, String spanId, long time) throws Exception {
+	        logger.info("require Nelo2 server to Log.");
+
+	        String authenticationCode = callAuthenticationCodeApi();
+	        String accessToken = callAccessTokenApi(authenticationCode);
+	        String responseJsonTypeData = callLogOpenAPI(accessToken, transactionId, spanId, time);
+	        
+	        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+	        NeloRawData neloRawData = objectMapper.readValue(responseJsonTypeData, new TypeReference<NeloRawData>(){ });
+	        
+	        return neloRawData.getLogs();
 	}
 	
 	private String callAuthenticationCodeApi() throws Exception {
@@ -154,12 +155,20 @@ public class Nelo2OpenApiCaller {
 		return URLDecoder.decode(code.split("code=")[1], "UTF-8");
 	}
 
-    private String callLogOpenAPI(String accessToken, String transactionId) throws Exception {
+    private String callLogOpenAPI(String accessToken, String transactionId, String spanId, long time) throws Exception {
+        String url = null;
+        long from  = time - SEARCH_INTERVAL;
+        long to = time + SEARCH_INTERVAL;
+        final String interval = "&from=" + from + "&to=" + to; 
+        
+        if (spanId == null) {
+            url = NELO_OPEN_API_DOMAIN + LOG_SEARCH_PATH + "?query=transactionId%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22" + interval;
+        } else {
+            url = NELO_OPEN_API_DOMAIN + LOG_SEARCH_PATH + "?query=transactionId%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22%20AND%20spanId%3A%22" + URLEncoder.encode(spanId, "UTF-8") +"%22" + interval;
+        }
+        
         CloseableHttpClient httpclient = HttpClients.createDefault();
-//        HttpGet httpGet = new HttpGet(NELO_OPEN_API_DOMAIN + LOG_SEARCH_PATH + "?query=projectName%3A%22PINPOINT%22%20AND%20logLevel%3A%22INFO%22&from=1423791332376&to=1424050532375");
-        
-        HttpGet httpGet = new HttpGet(NELO_OPEN_API_DOMAIN + LOG_SEARCH_PATH + "?query=TransactionID%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22&from=1425269097885&to=1425369897884");
-        
+        HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Authorization", "Bearer " + accessToken);
         CloseableHttpResponse response = null;
         

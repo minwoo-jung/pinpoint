@@ -18,6 +18,8 @@ package com.navercorp.pinpoint.web.controller;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.navercorp.pinpoint.web.log.nelo.Nelo2OpenApiCaller;
 import com.navercorp.pinpoint.web.log.nelo.NeloRawLog;
@@ -32,7 +36,7 @@ import com.navercorp.pinpoint.web.log.nelo.NeloRawLog;
 /**
  * @author minwoo.jung
  */
-//@Controller
+@Controller
 public class Nelo2LogController {
 
     private static Logger logger = LoggerFactory.getLogger(Nelo2LogController.class);
@@ -40,22 +44,34 @@ public class Nelo2LogController {
     @Autowired
     Nelo2OpenApiCaller nelo2OpenApiCaller;
     
-    @RequestMapping(value = "/NeloLogWithTransactionId", method = RequestMethod.GET)
-    public String NeloLogForTransactionID(String transactionId) {
+    @RequestMapping(value = "/neloLog", method = RequestMethod.GET)
+    @ResponseBody
+    public String NeloLogForTransactionId(@RequestParam(value= "transactionId", required=true) String transactionId,
+                                            @RequestParam(value= "spanId", required=false) String spanId,
+                                            @RequestParam(value="time", required=true) long time) {
         try {
-            List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog(transactionId);
+            List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog(transactionId, spanId, time);
+            StringBuilder sb = new StringBuilder();
             
             if (logs != null) {
                 int i = 1;
-                for (Iterator iterator = logs.iterator(); iterator.hasNext();) {
+                for (Iterator<NeloRawLog> iterator = logs.iterator(); iterator.hasNext();) {
                     NeloRawLog neloRawLog = (NeloRawLog) iterator.next();
-                    System.out.println(i++ + " : " + neloRawLog.get_source() + "\n");
+                    sb.append("<br/><br/>===============================================================<br/>");
+                    sb.append("==========================="+ i +"===============================<br/>");
+                    Map<String, String> log = neloRawLog.get_source();
+                    
+                    for(Entry<String, String> entry : log.entrySet()) {
+                        sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- " +  entry.getKey() + " : " + entry.getValue() + "<br/>");
+                    }
                 }
             }
+            
+            return sb.toString();
+            
         } catch (Exception e) {
             logger.error("fail to require Nelo2 server to Log.", e);
             return "FAIL";
         }
-        return "OK";
     }
 }
