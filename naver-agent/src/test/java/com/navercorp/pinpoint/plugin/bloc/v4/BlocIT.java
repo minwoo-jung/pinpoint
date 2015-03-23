@@ -20,22 +20,21 @@ import static org.junit.Assert.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.navercorp.pinpoint.common.service.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.AnnotationKey;
 import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmArgument;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
-import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
+import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.Repository;
 import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
 import com.nhncorp.lucy.bloc.core.Container;
@@ -75,6 +74,7 @@ public class BlocIT {
     }
     
     @Test
+    @Ignore("BLOC 프로세스를 직접 띄우는 형태로 변경할 때까지")
     public void testServerType() {
         PluginTestVerifier agent = PluginTestVerifierHolder.getInstance();
         agent.verifyServerType(BLOC);

@@ -88,10 +88,7 @@ public class ArcusIT {
     
     public String get() throws Exception {
         return (String)arcusClient.get(KEY);
-    }
-    
-    
-    
+    }    
     
     @Test
     public void doTest() throws Exception {
