@@ -64,7 +64,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void setUp(ProfilerPluginSetupContext context) {
+    public void setup(ProfilerPluginSetupContext context) {
         final NbaseArcPluginConfig config = new NbaseArcPluginConfig(context.getConfig());
         final boolean enabled = config.isEnabled();
         final boolean pipelineEnabled = config.isPipelineEnabled();
@@ -84,8 +84,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     }
 
     private void addGatewayServerClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
-        final ClassEditorBuilder classEditorBuilder = context.newClassEditorBuilder();
-        classEditorBuilder.target(GATEWAY_SERVER);
+        final ClassEditorBuilder classEditorBuilder = context.getClassEditorBuilder(GATEWAY_SERVER);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
 
         final MethodEditorBuilder methodEditorBuilder = classEditorBuilder.editMethod("getResource");
@@ -96,8 +95,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     }
 
     private void addGatewayClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
-        final ClassEditorBuilder classEditorBuilder = context.newClassEditorBuilder();
-        classEditorBuilder.target(GATEWAY);
+        final ClassEditorBuilder classEditorBuilder = context.getClassEditorBuilder(GATEWAY);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
 
         final ConstructorEditorBuilder constructorEditorBuilder = classEditorBuilder.editConstructor(GATEWAY_CONFIG);
@@ -131,8 +129,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     }
 
     private ClassEditorBuilder addRedisClusterExtendedClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config, final String targetClassName) {
-        final ClassEditorBuilder classEditorBuilder = context.newClassEditorBuilder();
-        classEditorBuilder.target(targetClassName);
+        final ClassEditorBuilder classEditorBuilder = context.getClassEditorBuilder(targetClassName);
 
         final ConstructorEditorBuilder constructorEditorBuilderArg1 = classEditorBuilder.editConstructor(STRING);
         constructorEditorBuilderArg1.property(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
@@ -161,8 +158,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     }
 
     private void addRedisClusterPipeline(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
-        final ClassEditorBuilder classEditorBuilder = context.newClassEditorBuilder();
-        classEditorBuilder.target(REDIS_CLUSTER_PIPELINE);
+        final ClassEditorBuilder classEditorBuilder = context.getClassEditorBuilder(REDIS_CLUSTER_PIPELINE);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
         classEditorBuilder.injectMetadata(METADATA_END_POINT);
 

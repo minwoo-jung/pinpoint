@@ -16,7 +16,7 @@ package com.navercorp.pinpoint.plugin.bloc.v3;
 
 import java.io.File;
 
-import com.navercorp.pinpoint.bootstrap.plugin.ServerTypeDetector;
+import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
 import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
 import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
@@ -26,7 +26,7 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  * @author HyunGil Jeong
  *
  */
-public class Bloc3Detector implements ServerTypeDetector, BlocConstants { 
+public class Bloc3Detector implements ApplicationTypeDetector, BlocConstants { 
     
     private static final String REQUIRED_MAIN_CLASS = "org.apache.catalina.startup.Bootstrap";
     

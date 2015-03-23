@@ -26,7 +26,7 @@ import com.navercorp.pinpoint.common.plugin.TypeSetupContext;
 public class NbaseArcTypeProvider implements TypeProvider, NbaseArcConstants{
 
     @Override
-    public void setUp(TypeSetupContext context) {
+    public void setup(TypeSetupContext context) {
         context.addType(NBASE_ARC);
     }
 }

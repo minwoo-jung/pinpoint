@@ -26,7 +26,7 @@ import static com.navercorp.pinpoint.common.AnnotationKeyMatcher.ARGS_MATCHER;
 public class ArcusTypeProvider implements TypeProvider, ArcusConstants {
 
     @Override
-    public void setUp(TypeSetupContext context) {
+    public void setup(TypeSetupContext context) {
         context.addType(ARCUS, ARGS_MATCHER);
         context.addType(ARCUS_FUTURE_GET);
         context.addType(ARCUS_EHCACHE_FUTURE_GET);
