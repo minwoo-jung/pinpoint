@@ -12,38 +12,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.plugin.tomcat;
+package com.navercorp.pinpoint.plugin.bloc.v4;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import com.navercorp.pinpoint.test.plugin.PinpointPluginTestInstance;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestContext;
+import com.navercorp.pinpoint.test.plugin.PinpointPluginTestInstance;
 import com.navercorp.pinpoint.test.plugin.StreamRedirecter;
 
 /**
  * @author Jongho Moon
  *
  */
-public class TomcatPluginTestCase implements PinpointPluginTestInstance {
+public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
     private static final String ENCODING = "UTF-8";
     
     private final PinpointPluginTestContext context;
-    private final File tomcatHome;
+    private final File blocDir;
     private final String testId;
-    private final File tomcatBase = new File("test/tomcat/base"); 
+    
+    private final File blocBase = new File("test/bloc4/base");
  
-    public TomcatPluginTestCase(PinpointPluginTestContext context, File tomcatDir) {
+    public Bloc4PluginTestCase(PinpointPluginTestContext context, File blocDir) {
         this.context = context;
-        this.tomcatHome = tomcatDir;
-        this.testId = tomcatDir.getName() + ":" + context.getJvmVersion();
+        this.blocDir = blocDir;
+        this.testId = blocDir.getName() + ":" + context.getJvmVersion();
     }
 
     @Override
@@ -53,36 +57,45 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
 
     @Override
     public List<String> getClassPath() {
-        List<String> libs = new ArrayList<String>();
+        List<String> classpath = new ArrayList<String>();
         
-        File bin = new File(tomcatHome, "bin");
-        libs.add(new File(bin, "bootstrap.jar").getAbsolutePath());
-        libs.add(new File(bin, "tomcat-juli.jar").getAbsolutePath());
+        File lib = new File(blocDir, "libs");
         
-        return libs;
+        for (File child : lib.listFiles()) {
+            if (child.getName().endsWith(".jar")) {
+                classpath.add(child.getAbsolutePath());
+            }
+        }
+        
+        File conf = new File(blocBase, "conf");
+        classpath.add(conf.getAbsolutePath());
+        
+        return classpath;
     }
 
     @Override
     public List<String> getVmArgs() {
-        return Arrays.asList("-Dcatalina.home=" + tomcatHome.getAbsolutePath(),
-                "-Dcatalina.base=" + tomcatBase.getAbsolutePath(),
-                "-Djava.endorsed.dirs=" + new File(tomcatHome, "endorsed").getAbsolutePath(),
-                "-Dfile.encoding=UTF-8");
+        return Arrays.asList("-Dbloc.home=" + blocDir.getAbsolutePath(),
+                "-Dbloc.base=" + blocBase.getAbsolutePath(),
+                "-Djava.io.tmpdir=" + new File(blocBase, "temp").getAbsolutePath());
     }
 
     @Override
     public String getMainClass() {
-        return "org.apache.catalina.startup.Bootstrap";
+        return "com.nhncorp.lucy.bloc.server.BlocServer";
     }
 
     @Override
     public List<String> getAppArgs() {
-        return Arrays.asList("start");
+        File conf = new File(blocBase, "conf");
+        File ini = new File(conf, "bloc.ini");
+        
+        return Arrays.asList(ini.getAbsolutePath());
     }
     
-    @Override
+     @Override
     public File getWorkingDirectory() {
-        return tomcatBase;
+        return blocBase;
     }
 
     @Override
@@ -92,7 +105,7 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
         String testClass = context.getTestClass().getName();
         String testClassLocation = context.getTestClassLocation();
         
-        String urlString = "http://localhost:8972/test/doTest?testId=" + testId + "&testClass=" + testClass + "&testClassPath=" + testClassLocation;
+        String urlString = "http://localhost:5098/test/test/doTest?testId=" + testId + "&testClass=" + testClass + "&testClassPath=" + testClassLocation;
         System.out.println("Try to call: " + urlString);
         
         URL url = new URL(urlString);
@@ -107,9 +120,9 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
                 int response = connection.getResponseCode();
                 System.out.println("response: " + response);
                 
-                if (response != HttpURLConnection.HTTP_OK) {
-                    throw new RuntimeException("Failed to invoke " + url + " [" + response + "]");
-                }
+//                if (response != HttpURLConnection.HTTP_OK) {
+//                    throw new RuntimeException("Failed to invoke " + url + " [" + response + "]");
+//                }
             } catch (IOException e) {
                 // connection failed. retry.
                 Thread.sleep(1000);
@@ -119,39 +132,39 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
             }
             
             InputStream is = connection.getInputStream();
-            
             String encoding = connection.getContentEncoding();
-            return new Scanner(is, encoding == null ? ENCODING : encoding);
+            Scanner scanner = new Scanner(is, encoding == null ? ENCODING : encoding);
+            String response = scanner.nextLine();
+            scanner.close();
+            
+            String modified = response.substring(1, response.length() - 1).replace("\\n", "\n");
+            
+            return new Scanner(modified);
         }
         
-        throw new RuntimeException("Failed to connect tomcat");
+        throw new RuntimeException("Failed to connect BLOC");
     }
     
     @Override
     public void endTest(Process process) throws Throwable {
-        List<String> command = new ArrayList<String>();
+        Socket socket = new Socket();
         
-        command.add(context.getJavaExecutable());
-        command.add("-cp");
-        
-        StringBuilder classPath = new StringBuilder();
-        
-        for (String lib : getClassPath()) {
-            classPath.append(lib);
-            classPath.append(File.pathSeparatorChar);
+        try {
+            socket.connect(new InetSocketAddress("127.0.0.1", 9984));
+            PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            writer.write("STOP!");
+            writer.close();
+            socket.close();
+        } catch (IOException e) {
+            System.err.println("Fail to send shutdown message");
+            e.printStackTrace();
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                System.err.println("Fail to close socket");
+                e.printStackTrace();
+            }
         }
-        
-        command.add(classPath.toString());
-        command.addAll(getVmArgs());
-        command.add(getMainClass());
-        command.add("stop");
-        
-        ProcessBuilder builder = new ProcessBuilder(command);
-        builder.redirectErrorStream(true);
-        
-        Process stopProcess = builder.start();
-        new Thread(new StreamRedirecter(stopProcess.getInputStream(), System.out)).start();
-        
-        stopProcess.waitFor();
     }
 }

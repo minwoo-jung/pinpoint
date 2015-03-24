@@ -1,0 +1,53 @@
+2015-01-26 17:14:00,307 [INFO  main c.n.lucy.bloc.server.BlocServer] Start BLOC Server 4.0.4
+2015-01-26 17:14:00,312 [INFO  main c.n.lucy.bloc.server.BlocServer] Load configuration from [/home/kyu/다운로드/lucy-bloc-4.0.4/temp/bloc.temp]
+2015-01-26 17:14:00,323 [INFO  main c.n.lucy.bloc.server.BlocServer] Add shutdown hook
+2015-01-26 17:14:00,324 [INFO  main c.n.lucy.bloc.server.BlocServer] Start shutdown listener on port 9999. shutdown message is STOP!
+2015-01-26 17:14:00,328 [INFO  main c.n.lucy.bloc.server.BlocServer] Start BLOC Conatiner
+2015-01-26 17:14:00,333 [INFO  main c.n.l.b.server.StandaloneContainer] Starting BLOC...
+2015-01-26 17:14:00,333 [INFO  main c.n.l.b.server.StandaloneContainer] Load configuration...
+2015-01-26 17:14:00,335 [INFO  main c.n.l.b.server.StandaloneContainer] Scan protocol providers...
+2015-01-26 17:14:00,349 [INFO  main c.n.l.b.server.StandaloneContainer] Found 4 protocol providers
+2015-01-26 17:14:00,349 [INFO  main c.n.l.b.server.StandaloneContainer]   - npc
+2015-01-26 17:14:00,349 [INFO  main c.n.l.b.server.StandaloneContainer]   - http
+2015-01-26 17:14:00,350 [INFO  main c.n.l.b.server.StandaloneContainer]   - thrift
+2015-01-26 17:14:00,350 [INFO  main c.n.l.b.server.StandaloneContainer]   - nimm
+2015-01-26 17:14:00,351 [INFO  main c.n.l.b.server.StandaloneContainer] Scan modules...
+2015-01-26 17:14:00,477 [INFO  main c.n.l.b.server.StandaloneContainer] Found modules: 
+2015-01-26 17:14:00,477 [INFO  main c.n.l.b.server.StandaloneContainer]   - Module [welcome]
+Resources:
+Resource [welcome/test, com.nhn.bloc.bo.TestBO, singleton]
+Procedures:
+Procedure [welcome/test/hello, hello
+2015-01-26 17:14:00,477 [INFO  main c.n.l.b.server.StandaloneContainer] Create monitor...
+2015-01-26 17:14:00,492 [INFO  main c.n.l.b.server.StandaloneContainer] Create request processor
+2015-01-26 17:14:00,549 [INFO  main c.n.l.b.server.StandaloneContainer] Initialize modules...
+2015-01-26 17:14:00,550 [INFO  main c.n.l.b.server.StandaloneContainer] Warm up modules...
+2015-01-26 17:14:00,550 [INFO  main c.n.l.b.server.StandaloneContainer] Generate protocolHandlers...
+2015-01-26 17:14:00,550 [INFO  main c.n.l.b.server.StandaloneContainer] Generating handler for protocol: npc
+2015-01-26 17:14:01,601 [INFO  main c.n.l.b.server.StandaloneContainer] Generating handler for protocol: http
+2015-01-26 17:14:01,641 [INFO  main c.n.l.b.server.StandaloneContainer] Start monitor...
+2015-01-26 17:14:01,662 [INFO  main c.n.l.b.server.StandaloneContainer] Start protocolHandlers...
+2015-01-26 17:14:01,687 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Start NPC acceptor (NpcHessianAcceptor(/fe80:0:0:0:cc3a:daff:fea3:6ffa%150:5000))
+2015-01-26 17:14:01,690 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Start NPC acceptor (NpcHessianAcceptor(/fe80:0:0:0:5484:7aff:fefe:9799%4:5000))
+2015-01-26 17:14:01,692 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Start NPC acceptor (NpcHessianAcceptor(/172.17.42.1:5000))
+2015-01-26 17:14:01,693 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Start NPC acceptor (NpcHessianAcceptor(/fe80:0:0:0:9eb6:54ff:fea2:30ed%2:5000))
+2015-01-26 17:14:01,694 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Start NPC acceptor (NpcHessianAcceptor(/10.64.51.185:5000))
+2015-01-26 17:14:01,695 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Start NPC acceptor (NpcHessianAcceptor(/0:0:0:0:0:0:0:1%1:5000))
+2015-01-26 17:14:01,697 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Start NPC acceptor (NpcHessianAcceptor(/127.0.0.1:5000))
+2015-01-26 17:14:01,701 [INFO  main c.n.lucy.bloc.http.NettyServer] Create HTTP handler: address[[/172.17.42.1:5001, /10.64.51.185:5001, /127.0.0.1:5001]] acceptorThread[1] selectorThread[4] workerThread[128] usedPooledCache[true]
+	maxInitialLineLength[4096] maxHeaderSize[8192] maxChunkSize[8192] maxContentLength[2097152]
+	backlog[100] soLinger[-1] tcpNoDelay[true]
+	ssl[false] keyStore[] keyStorePassword[] certificatePassword[]
+2015-01-26 17:14:01,864 [INFO  main c.n.l.b.server.StandaloneContainer] BLOC is running now.
+2015-01-26 17:14:15,466 [INFO  main c.n.lucy.bloc.server.BlocServer] Stop BLOC server
+2015-01-26 17:14:15,466 [INFO  main c.n.lucy.bloc.server.BlocServer] Stop shutdown listener
+2015-01-26 17:14:15,466 [INFO  main c.n.lucy.bloc.server.BlocServer] Stop BLOC container
+2015-01-26 17:14:15,469 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Stop NPC acceptor (NpcHessianAcceptor(/fe80:0:0:0:cc3a:daff:fea3:6ffa%150:5000))
+2015-01-26 17:14:15,470 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Stop NPC acceptor (NpcHessianAcceptor(/fe80:0:0:0:5484:7aff:fefe:9799%4:5000))
+2015-01-26 17:14:15,470 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Stop NPC acceptor (NpcHessianAcceptor(/172.17.42.1:5000))
+2015-01-26 17:14:15,471 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Stop NPC acceptor (NpcHessianAcceptor(/fe80:0:0:0:9eb6:54ff:fea2:30ed%2:5000))
+2015-01-26 17:14:15,472 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Stop NPC acceptor (NpcHessianAcceptor(/10.64.51.185:5000))
+2015-01-26 17:14:15,472 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Stop NPC acceptor (NpcHessianAcceptor(/0:0:0:0:0:0:0:1%1:5000))
+2015-01-26 17:14:15,473 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Stop NPC acceptor (NpcHessianAcceptor(/127.0.0.1:5000))
+2015-01-26 17:14:15,473 [INFO  main c.n.l.bloc.npc.handler.NpcHandler] Stop NPC thread-pool
+2015-01-26 17:14:15,667 [INFO  main c.n.lucy.bloc.server.BlocServer] Remove shutdow hook

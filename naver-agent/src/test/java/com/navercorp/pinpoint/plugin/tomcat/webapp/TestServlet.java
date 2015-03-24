@@ -50,7 +50,7 @@ public class TestServlet extends HttpServlet {
         System.out.println("testClass: " + testClassName);
         System.out.println("testClassPath: " + Arrays.deepToString(testClassPath));
         
-        ClassLoader loader = req.getClass().getClassLoader();
+        ClassLoader loader = getClass().getClassLoader();
         
         if (testClassPath != null) {
             URL[] urls = new URL[testClassPath.length];
