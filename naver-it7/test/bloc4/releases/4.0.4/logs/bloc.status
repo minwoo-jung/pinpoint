@@ -1,0 +1,8 @@
+
+[SYSTEM] CPU: 44.77%(1.51), MEM: 5.48GB/7.66GB (71.44%), SWAP: 325.79MB/7.87GB (4.05%)
+[  VM  ] Up 6seconds, CPU: 0%, HEAP: 159.77MB/990.75MB (16.13%), NON-HEAP: 15.96MB/176MB (9.07%), GC [ParNew(0 times, 0 ms) ConcurrentMarkSweep(0 times, 0 ms) ]
+[Active Requests] Total: 0, Long Running: 0, Protocol[ npc: 0(0)/128 http: 0(0)/128 ], Module[ welcome: 0(0) ]
+
+[SYSTEM] CPU: 35.78%(1.47), MEM: 5.48GB/7.66GB (71.45%), SWAP: 325.79MB/7.87GB (4.05%)
+[  VM  ] Up 11seconds, CPU: 0.05%, HEAP: 159.77MB/990.75MB (16.13%), NON-HEAP: 15.97MB/176MB (9.07%), GC [ParNew(0 times, 0 ms) ConcurrentMarkSweep(0 times, 0 ms) ]
+[Active Requests] Total: 0, Long Running: 0, Protocol[ npc: 0(0)/128 http: 0(0)/128 ], Module[ welcome: 0(0) ]

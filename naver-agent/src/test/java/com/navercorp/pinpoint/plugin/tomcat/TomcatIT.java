@@ -44,7 +44,7 @@ import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
  */
 @RunWith(TomcatPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@JvmVersion({7, 8})
+@JvmVersion(7)
 @TraceObjectManagable
 public class TomcatIT {
     private static final String TOMCAT = "TOMCAT";
@@ -56,7 +56,7 @@ public class TomcatIT {
         verifier.verifyServerType(TOMCAT);
         verifier.verifyServerInfo(ServerInfo.getServerInfo());
         verifier.verifyConnector("HTTP/1.1", 8972);
-        verifier.verifyService("Catalina/localhost/test", Arrays.asList("log4j-1.2.17.jar"));
+        verifier.verifyService("Catalina/localhost/test", Arrays.asList("hamcrest-core-1.3.jar", "junit-4.12.jar", "pinpoint-test-" + Version.VERSION + ".jar"));
     }
     
     @Test
