@@ -169,4 +169,8 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
         return params.toString();
     }
 
+    @Override
+    protected void deleteTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
+        trace.traceRootBlockEnd();
+    }
 }

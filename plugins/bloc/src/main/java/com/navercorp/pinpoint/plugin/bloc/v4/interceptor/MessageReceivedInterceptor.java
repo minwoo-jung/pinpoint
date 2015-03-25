@@ -53,4 +53,9 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
         trace.recordException(throwable);
         trace.markAfterTime();
     }
+
+    @Override
+    protected void deleteTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
+        trace.traceRootBlockEnd();
+    }
 }
