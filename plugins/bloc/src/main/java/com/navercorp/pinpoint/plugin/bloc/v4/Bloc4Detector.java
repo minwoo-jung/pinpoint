@@ -14,40 +14,34 @@
  */
 package com.navercorp.pinpoint.plugin.bloc.v4;
 
-import java.io.File;
-
-import com.navercorp.pinpoint.bootstrap.plugin.ServerTypeDetector;
-import com.navercorp.pinpoint.common.util.SystemProperty;
+import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
+import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
+import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 /**
  * @author Jongho Moon
+ * @author HyunGil Jeong
  *
  */
-public class Bloc4Detector implements ServerTypeDetector, BlocConstants {
+public class Bloc4Detector implements ApplicationTypeDetector, BlocConstants {
+    
+    private static final String REQUIRED_MAIN_CLASS = "com.nhncorp.lucy.bloc.server.BlocServer";
+    
+    private static final String REQUIRED_SYSTEM_PROPERTY = "bloc.home";
+    
+    private static final String REQUIRED_CLASS =  "com.nhncorp.lucy.bloc.server.Bootstrap";
     
     @Override
-    public String getServerTypeName() {
-        return SERVER_TYPE_BLOC;
+    public ServiceType getServerType() {
+        return BLOC;
     }
 
     @Override
-    public boolean detect() {
-        String blocHome = SystemProperty.INSTANCE.getProperty("bloc.home");
-        
-        if (blocHome != null) {
-            File home = new File(blocHome);
-            
-            if (home.exists() && home.isDirectory()) {
-                return true;
-            }
-        }
-        
-        return false;
+    public boolean detect(ConditionProvider provider) {
+        return provider.checkMainClass(REQUIRED_MAIN_CLASS) &&
+               provider.checkSystemProperty(REQUIRED_SYSTEM_PROPERTY) &&
+               provider.checkForClass(REQUIRED_CLASS);
     }
-
-    @Override
-    public boolean canOverride(String serverType) {
-        return false;
-    }
+    
 }

@@ -17,6 +17,7 @@ package com.navercorp.pinpoint.plugin.tomcat;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.ExpectedAnnotation.*;
 import static org.junit.Assert.*;
 
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -32,8 +33,6 @@ import org.junit.runner.RunWith;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
@@ -45,7 +44,7 @@ import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
  */
 @RunWith(TomcatPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@JvmVersion({7})
+@JvmVersion(7)
 @TraceObjectManagable
 public class TomcatIT {
     private static final String TOMCAT = "TOMCAT";
@@ -57,7 +56,7 @@ public class TomcatIT {
         verifier.verifyServerType(TOMCAT);
         verifier.verifyServerInfo(ServerInfo.getServerInfo());
         verifier.verifyConnector("HTTP/1.1", 8972);
-        verifier.verifyService("Catalina/localhost/test", Arrays.asList("log4j-1.2.17.jar"));
+        verifier.verifyService("Catalina/localhost/test", Arrays.asList("hamcrest-core-1.3.jar", "junit-4.12.jar", "pinpoint-test-" + Version.VERSION + ".jar"));
     }
     
     @Test
@@ -77,8 +76,24 @@ public class TomcatIT {
         Method invoke = standardHostValve.getMethod("invoke", request, response);
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
-        verifier.popSpan(); // pop span of HttpURLConnection 
-        verifier.verifySpan(TOMCAT, invoke, rpc, endPoint, "127.0.0.1", annotation(HTTP_PARAM, params));
+        verifier.printApis(System.out);
+        verifier.printSpans(System.out);
+
+        boolean removedHttpURLConnectionSpan = false;
+        
+        try {
+            verifier.verifySpan(TOMCAT, invoke, rpc, endPoint, "127.0.0.1", annotation(HTTP_PARAM, params));
+        } catch (AssertionError e) {
+            // SpanEvent caused by HttpURLConnection.getResponseCode() could come first.
+            verifier.verifySpan(TOMCAT, invoke, rpc, endPoint, "127.0.0.1", annotation(HTTP_PARAM, params));
+            removedHttpURLConnectionSpan = true;
+        }
+        
+        if (removedHttpURLConnectionSpan) {
+            verifier.verifySpanCount(0);
+        } else {
+            verifier.verifySpanCount(1);
+        }
     }
     
     @Test
@@ -89,7 +104,8 @@ public class TomcatIT {
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 
         try {
-            Scanner scanner = new Scanner(connection.getInputStream());
+            InputStream inputStream = connection.getInputStream();
+            Scanner scanner = new Scanner(inputStream);
             
             while (scanner.hasNextLine()) {
                 String name = scanner.nextLine();

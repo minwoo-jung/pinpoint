@@ -16,39 +16,46 @@ package com.navercorp.pinpoint.plugin.bloc.v3;
 
 import java.io.File;
 
-import com.navercorp.pinpoint.bootstrap.plugin.ServerTypeDetector;
-import com.navercorp.pinpoint.common.util.SystemProperty;
+import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
+import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
+import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 /**
  * @author Jongho Moon
+ * @author HyunGil Jeong
  *
  */
-public class Bloc3Detector implements ServerTypeDetector, BlocConstants {
-
+public class Bloc3Detector implements ApplicationTypeDetector, BlocConstants { 
+    
+    private static final String REQUIRED_MAIN_CLASS = "org.apache.catalina.startup.Bootstrap";
+    
+    private static final String REQUIRED_SYSTEM_PROPERTY = "catalina.home";
+    
+    private static final String REQUIRED_CLASS = "org.apache.catalina.startup.Bootstrap";
+    
     @Override
-    public String getServerTypeName() {
-        return SERVER_TYPE_BLOC;
+    public ServiceType getServerType() {
+        return BLOC;
     }
 
     @Override
-    public boolean detect() {
-        String catalinaHome = SystemProperty.INSTANCE.getProperty("catalina.home");
-        
-        if (catalinaHome != null) {
-            File bloc3CatalinaJar = new File(catalinaHome + "/server/lib/catalina.jar");
-            File bloc3ServletApiJar = new File(catalinaHome + "/common/lib/servlet-api.jar");
-            
-            if (bloc3CatalinaJar.exists() && bloc3ServletApiJar.exists()) {
-                return true;
-            }
+    public boolean detect(ConditionProvider provider) {
+        if (provider.checkMainClass(REQUIRED_MAIN_CLASS) &&
+            provider.checkForClass(REQUIRED_CLASS)) {
+            String catalinaHomePath = provider.getSystemPropertyValue(REQUIRED_SYSTEM_PROPERTY);
+            return testForBlocEnvironment(catalinaHomePath);
         }
-
+        return false;
+    }
+    
+    private boolean testForBlocEnvironment(String catalinaHome) {
+        File bloc3CatalinaJar = new File(catalinaHome + "/server/lib/catalina.jar");
+        File bloc3ServletApiJar = new File(catalinaHome + "/common/lib/servlet-api.jar");
+        if (bloc3CatalinaJar.exists() && bloc3ServletApiJar.exists()) {
+            return true;
+        }
         return false;
     }
 
-    @Override
-    public boolean canOverride(String serverType) {
-        return SERVER_TYPE_TOMCAT.equals(serverType);
-    }
 }

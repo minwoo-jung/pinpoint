@@ -15,10 +15,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <jdk.version>1.7</jdk.version>
-        <jdk.home>${env.JAVA_7_HOME}</jdk.home>
         <distribution.directory>${project.build.directory}/pinpoint-agent</distribution.directory>
-
         <tomcat.version>7.0.34</tomcat.version>
     </properties>
 
@@ -157,6 +154,24 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy-tomcat-test-dependencies</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/test/tomcat/base/webapps/test/WEB-INF/lib</outputDirectory>
+                           <includeArtifactIds>junit,hamcrest-core,pinpoint-test</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.18.1</version>
                 <executions>
@@ -174,6 +189,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <jvm>${jdk.home}/bin/java</jvm>
                     <!-- AbstractPinpointPluginTestSuite needs this to resolve path of required jars -->
                     <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>

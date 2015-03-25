@@ -36,12 +36,13 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
     private static final String ENCODING = "UTF-8";
     
     private final PinpointPluginTestContext context;
-    private final File tomcatDir;
+    private final File tomcatHome;
     private final String testId;
+    private final File tomcatBase = new File("test/tomcat/base"); 
  
     public TomcatPluginTestCase(PinpointPluginTestContext context, File tomcatDir) {
         this.context = context;
-        this.tomcatDir = tomcatDir;
+        this.tomcatHome = tomcatDir;
         this.testId = tomcatDir.getName() + ":" + context.getJvmVersion();
     }
 
@@ -54,20 +55,18 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
     public List<String> getClassPath() {
         List<String> libs = new ArrayList<String>();
         
-        File bin = new File(tomcatDir, "bin");
+        File bin = new File(tomcatHome, "bin");
         libs.add(new File(bin, "bootstrap.jar").getAbsolutePath());
         libs.add(new File(bin, "tomcat-juli.jar").getAbsolutePath());
-        
-        libs.addAll(context.getRequiredLibraries());
         
         return libs;
     }
 
     @Override
     public List<String> getVmArgs() {
-        return Arrays.asList("-Dcatalina.home=" + tomcatDir.getAbsolutePath(),
-                "-Dcatalina.base=" + new File("test/tomcat/base").getAbsolutePath(),
-                "-Djava.endorsed.dirs=" + new File(tomcatDir, "endorsed").getAbsolutePath(),
+        return Arrays.asList("-Dcatalina.home=" + tomcatHome.getAbsolutePath(),
+                "-Dcatalina.base=" + tomcatBase.getAbsolutePath(),
+                "-Djava.endorsed.dirs=" + new File(tomcatHome, "endorsed").getAbsolutePath(),
                 "-Dfile.encoding=UTF-8");
     }
 
@@ -79,6 +78,11 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
     @Override
     public List<String> getAppArgs() {
         return Arrays.asList("start");
+    }
+    
+    @Override
+    public File getWorkingDirectory() {
+        return tomcatBase;
     }
 
     @Override

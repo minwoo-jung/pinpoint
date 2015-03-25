@@ -8,7 +8,8 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 import external.org.apache.mina.common.IoSession;
 
-@TargetMethod(name="messageReceived", paramTypes={"external.org.apache.mina.common.IoFilter.NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
+
+@TargetMethod(name="messageReceived", paramTypes={"external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
 public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
 
     public MessageReceivedInterceptor() {
