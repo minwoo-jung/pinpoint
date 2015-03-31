@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.web.controller;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,19 +47,19 @@ public class Nelo2LogController {
     
     @RequestMapping(value = "/neloLog", method = RequestMethod.GET)
     @ResponseBody
-    public String NeloLogForTransactionId(@RequestParam(value= "transactionId", required=true) String transactionId,
+    public String neloLog(@RequestParam(value= "transactionId", required=true) String transactionId,
                                             @RequestParam(value= "spanId", required=false) String spanId,
                                             @RequestParam(value="time", required=true) long time) {
         try {
             List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog(transactionId, spanId, time);
             StringBuilder sb = new StringBuilder();
-            
+
             if (logs != null) {
                 int i = 1;
                 for (Iterator<NeloRawLog> iterator = logs.iterator(); iterator.hasNext();) {
                     NeloRawLog neloRawLog = (NeloRawLog) iterator.next();
                     sb.append("<br/><br/>===============================================================<br/>");
-                    sb.append("==========================="+ i +"===============================<br/>");
+                    sb.append("==========================="+ i++ +"===============================<br/>");
                     Map<String, String> log = neloRawLog.get_source();
                     
                     for(Entry<String, String> entry : log.entrySet()) {

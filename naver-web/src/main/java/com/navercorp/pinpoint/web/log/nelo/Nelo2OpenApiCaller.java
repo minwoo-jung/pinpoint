@@ -159,12 +159,13 @@ public class Nelo2OpenApiCaller {
         String url = null;
         long from  = time - SEARCH_INTERVAL;
         long to = time + SEARCH_INTERVAL;
-        final String interval = "&from=" + from + "&to=" + to; 
+        final String interval = "&from=" + from + "&to=" + to;
+        final String sort = "&sort=logTime:asc";
         
         if (spanId == null) {
-            url = NELO_OPEN_API_DOMAIN + LOG_SEARCH_PATH + "?query=transactionId%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22" + interval;
+            url = NELO_OPEN_API_DOMAIN + LOG_SEARCH_PATH + "?query=PxId%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22" + interval + sort;
         } else {
-            url = NELO_OPEN_API_DOMAIN + LOG_SEARCH_PATH + "?query=transactionId%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22%20AND%20spanId%3A%22" + URLEncoder.encode(spanId, "UTF-8") +"%22" + interval;
+            url = NELO_OPEN_API_DOMAIN + LOG_SEARCH_PATH + "?query=PxId%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22%20AND%20PspanId%3A%22" + URLEncoder.encode(spanId, "UTF-8") +"%22" + interval + sort;
         }
         
         CloseableHttpClient httpclient = HttpClients.createDefault();
