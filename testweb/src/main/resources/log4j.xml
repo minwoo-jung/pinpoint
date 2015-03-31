@@ -23,7 +23,7 @@
     
     <appender name="consoleForLoggingController" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.EnhancedPatternLayout">
-            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35c{1.}:%-3L) [TransactionId : %X{transactionId}] [SpanId : %X{spanId}] %m%n" />
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35c{1.}:%-3L) [TransactionId : %X{PtransactionId}] [SpanId : %X{PspanId}] %m%n" />
         </layout>
     </appender>
     
@@ -53,29 +53,35 @@
     <logger name="com.navercorp.pinpoint" additivity="false">
         <level value="INFO" />
         <appender-ref ref="console" />
+        <appender-ref ref="nelo-async"/>
     </logger>
     
     <logger name="com.navercorp.pinpoint.testweb" additivity="false">
         <level value="INFO" />
         <appender-ref ref="console" />
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="com.navercorp.pinpoint.testweb.controller.LoggingController" additivity="false">
         <level value="INFO" />
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="com.ibatis" additivity="false">
         <level value="INFO" />
         <appender-ref ref="console" />
+        <appender-ref ref="nelo-async"/>
     </logger>
 
     <logger name="org.springframework" additivity="false">
         <level value="INFO" />
         <appender-ref ref="console" />
+        <appender-ref ref="nelo-async"/>
     </logger>
 
 	<root>
 		<level value="INFO" />
 		<appender-ref ref="console" />
+        <appender-ref ref="nelo-async"/>
 	</root>
 </log4j:configuration>
