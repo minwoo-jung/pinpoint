@@ -12,7 +12,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<import resource="classpath:applicationContext-web.xml" />
-    <import resource="classpath:applicationContext-web-nelo.xml"/>
+<!--     <import resource="classpath:applicationContext-web-nelo.xml"/> -->
 	
 	<bean id="matcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NaverMatcherGroup">
         <constructor-arg index="0" value="#{matcherInfo}"/>       

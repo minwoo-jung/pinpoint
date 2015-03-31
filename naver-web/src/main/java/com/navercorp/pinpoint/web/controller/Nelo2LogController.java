@@ -16,6 +16,9 @@
 
 package com.navercorp.pinpoint.web.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.navercorp.pinpoint.web.log.nelo.Nelo2OpenApiCaller;
 import com.navercorp.pinpoint.web.log.nelo.NeloRawLog;
@@ -41,37 +46,66 @@ public class Nelo2LogController {
 
     private static Logger logger = LoggerFactory.getLogger(Nelo2LogController.class);
     
-    @Autowired
-    Nelo2OpenApiCaller nelo2OpenApiCaller;
+    private static final long SEARCH_INTERVAL = 1000*60*60*12;
+    
+    private String neloSightUrl = "http://nelo2.nhncorp.com";
+//    @Autowired
+//    Nelo2OpenApiCaller nelo2OpenApiCaller;
     
     @RequestMapping(value = "/neloLog", method = RequestMethod.GET)
-    @ResponseBody
-    public String NeloLogForTransactionId(@RequestParam(value= "transactionId", required=true) String transactionId,
+//    @ResponseBody
+    public RedirectView neloLog(@RequestParam(value= "transactionId", required=true) String transactionId,
                                             @RequestParam(value= "spanId", required=false) String spanId,
                                             @RequestParam(value="time", required=true) long time) {
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(neloSightUrl);
+        urlBuilder.append("/search?");
+        urlBuilder.append(makeParameter(transactionId, time));
+        RedirectView view = new RedirectView(urlBuilder.toString());
+        
+        return view;
+        
+//        try {
+//            List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog(transactionId, spanId, time);
+//            StringBuilder sb = new StringBuilder();
+//
+//            if (logs != null) {
+//                int i = 1;
+//                for (Iterator<NeloRawLog> iterator = logs.iterator(); iterator.hasNext();) {
+//                    NeloRawLog neloRawLog = (NeloRawLog) iterator.next();
+//                    sb.append("<br/><br/>===============================================================<br/>");
+//                    sb.append("==========================="+ i++ +"===============================<br/>");
+//                    Map<String, String> log = neloRawLog.get_source();
+//                    
+//                    for(Entry<String, String> entry : log.entrySet()) {
+//                        sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- " +  entry.getKey() + " : " + entry.getValue() + "<br/>");
+//                    }
+//                }
+//            }
+//            
+//            return sb.toString();
+//            
+//        } catch (Exception e) {
+//            logger.error("fail to require Nelo2 server to Log.", e);
+//            return "FAIL";
+//        }
+    }
+
+    private String makeParameter(String transactionId, long time) {
+        StringBuilder paramsBuilder = new StringBuilder();
+
         try {
-            List<NeloRawLog> logs = nelo2OpenApiCaller.requestNeloLog(transactionId, spanId, time);
-            StringBuilder sb = new StringBuilder();
-            
-            if (logs != null) {
-                int i = 1;
-                for (Iterator<NeloRawLog> iterator = logs.iterator(); iterator.hasNext();) {
-                    NeloRawLog neloRawLog = (NeloRawLog) iterator.next();
-                    sb.append("<br/><br/>===============================================================<br/>");
-                    sb.append("==========================="+ i +"===============================<br/>");
-                    Map<String, String> log = neloRawLog.get_source();
-                    
-                    for(Entry<String, String> entry : log.entrySet()) {
-                        sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- " +  entry.getKey() + " : " + entry.getValue() + "<br/>");
-                    }
-                }
-            }
-            
-            return sb.toString();
-            
-        } catch (Exception e) {
-            logger.error("fail to require Nelo2 server to Log.", e);
-            return "FAIL";
+            paramsBuilder.append("cmd=" + "PtxId%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22");
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Error while build nelo link url.", e);
+            return null;
         }
+        
+        long from  = time - SEARCH_INTERVAL;
+        long to = time + SEARCH_INTERVAL;
+        final String interval = "&st=" + from + "&et=" + to;
+        paramsBuilder.append(interval);
+
+        return paramsBuilder.toString();
     }
 }
