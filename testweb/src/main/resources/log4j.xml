@@ -53,35 +53,35 @@
     <logger name="com.navercorp.pinpoint" additivity="false">
         <level value="INFO" />
         <appender-ref ref="console" />
-        <appender-ref ref="nelo-async"/>
+<!--         <appender-ref ref="nelo-async"/> -->
     </logger>
     
     <logger name="com.navercorp.pinpoint.testweb" additivity="false">
         <level value="INFO" />
         <appender-ref ref="console" />
-        <appender-ref ref="nelo-async"/>
+<!--         <appender-ref ref="nelo-async"/> -->
     </logger>
 
     <logger name="com.navercorp.pinpoint.testweb.controller.LoggingController" additivity="false">
         <level value="INFO" />
-        <appender-ref ref="nelo-async"/>
+<!--         <appender-ref ref="nelo-async"/> -->
     </logger>
 
     <logger name="com.ibatis" additivity="false">
         <level value="INFO" />
         <appender-ref ref="console" />
-        <appender-ref ref="nelo-async"/>
+<!--         <appender-ref ref="nelo-async"/> -->
     </logger>
 
     <logger name="org.springframework" additivity="false">
         <level value="INFO" />
         <appender-ref ref="console" />
-        <appender-ref ref="nelo-async"/>
+<!--         <appender-ref ref="nelo-async"/> -->
     </logger>
 
 	<root>
 		<level value="INFO" />
 		<appender-ref ref="console" />
-        <appender-ref ref="nelo-async"/>
+<!--         <appender-ref ref="nelo-async"/> -->
 	</root>
 </log4j:configuration>
