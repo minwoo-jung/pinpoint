@@ -23,7 +23,7 @@
     
     <appender name="consoleForLoggingController" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.EnhancedPatternLayout">
-            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35c{1.}:%-3L) [TransactionId : %X{PtransactionId}] [SpanId : %X{PspanId}] %m%n" />
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35c{1.}:%-3L) [TransactionId : %X{PtxId}] [SpanId : %X{PspanId}] %m%n" />
         </layout>
     </appender>
     
