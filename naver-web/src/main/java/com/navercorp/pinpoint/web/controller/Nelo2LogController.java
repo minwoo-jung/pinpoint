@@ -18,25 +18,15 @@ package com.navercorp.pinpoint.web.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-
-import com.navercorp.pinpoint.web.log.nelo.Nelo2OpenApiCaller;
-import com.navercorp.pinpoint.web.log.nelo.NeloRawLog;
 
 /**
  * @author minwoo.jung
@@ -48,7 +38,9 @@ public class Nelo2LogController {
     
     private static final long SEARCH_INTERVAL = 1000*60*60*12;
     
-    private String neloSightUrl = "http://nelo2.nhncorp.com";
+    @Value("#{pinpointWebProps['log.nelo.url']}")
+    private String neloSightUrl;
+    
 //    @Autowired
 //    Nelo2OpenApiCaller nelo2OpenApiCaller;
     
