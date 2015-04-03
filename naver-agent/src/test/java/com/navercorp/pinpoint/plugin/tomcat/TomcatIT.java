@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.SpanType;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
@@ -48,6 +49,7 @@ import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
 @TraceObjectManagable
 public class TomcatIT {
     private static final String TOMCAT = "TOMCAT";
+    private static final String TOMCAT_METHOD = "TOMCAT_METHOD";
     private static final String HTTP_PARAM = "http.param";
 
     @Test
@@ -82,13 +84,15 @@ public class TomcatIT {
         boolean removedHttpURLConnectionSpan = false;
         
         try {
-            verifier.verifySpan(TOMCAT, invoke, rpc, endPoint, "127.0.0.1", annotation(HTTP_PARAM, params));
+            verifier.verifySpan(SpanType.SPAN_EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
         } catch (AssertionError e) {
             // SpanEvent caused by HttpURLConnection.getResponseCode() could come first.
-            verifier.verifySpan(TOMCAT, invoke, rpc, endPoint, "127.0.0.1", annotation(HTTP_PARAM, params));
+            verifier.verifySpan(SpanType.SPAN_EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
             removedHttpURLConnectionSpan = true;
         }
         
+        verifier.verifySpan(SpanType.SPAN, TOMCAT, "Servlet Process:0", rpc, endPoint, "127.0.0.1", null);        
+
         if (removedHttpURLConnectionSpan) {
             verifier.verifySpanCount(0);
         } else {
