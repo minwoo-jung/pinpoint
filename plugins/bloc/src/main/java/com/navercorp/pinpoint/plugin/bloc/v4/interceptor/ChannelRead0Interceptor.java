@@ -252,9 +252,4 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
             trace.recordParentApplication(parentApplicationName, parentApplicationType);
         }
     }
-
-    @Override
-    protected void deleteTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
-        trace.traceRootBlockEnd();
-    }
 }
