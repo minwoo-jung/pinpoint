@@ -447,11 +447,4 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
         this.paramDumpSize = profilerConfig.readInt("profiler.line.game.netty.param.dumpsize", 512);
         this.entityDumpSize = profilerConfig.readInt("profiler.line.game.netty.entity.dumpsize", 512);
     }
-
-
-
-    @Override
-    protected void deleteTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
-        trace.traceRootBlockEnd();
-    }
 }
