@@ -14,7 +14,7 @@ import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.Name;
-import com.navercorp.pinpoint.bootstrap.plugin.Scope;
+import com.navercorp.pinpoint.bootstrap.plugin.Group;
 import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 import com.navercorp.pinpoint.plugin.arcus.ParameterUtils;
@@ -22,7 +22,7 @@ import com.navercorp.pinpoint.plugin.arcus.ParameterUtils;
 /**
  * @author emeroad
  */
-@Scope(ArcusConstants.ARCUS_SCOPE)
+@Group(ArcusConstants.ARCUS_SCOPE)
 public class ApiInterceptor extends SpanEventSimpleAroundInterceptor implements ArcusConstants {
     private final boolean traceKey;
     private final int keyIndex;
