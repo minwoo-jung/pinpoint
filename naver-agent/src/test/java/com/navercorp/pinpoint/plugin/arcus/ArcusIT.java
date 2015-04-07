@@ -106,8 +106,8 @@ public class ArcusIT {
         
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         
-        verifier.printApis(System.out);
-        verifier.printSpans(System.out);
+        verifier.printCachedApis(System.out);
+        verifier.printBlocks(System.out);
 
         verifier.verifyApi(ARCUS, set, KEY);
         verifier.verifyApi(ARCUS_FUTURE_GET, operationFutureGet);
@@ -115,11 +115,11 @@ public class ArcusIT {
         verifier.verifyApi(ARCUS_FUTURE_GET, getFutureGet);
         verifier.verifyApi(ARCUS, asyncGet, KEY);
         verifier.verifyApi(ARCUS_EHCACHE_FUTURE_GET, frontCacheFutureGet);
-        verifier.verifySpanCount(0);
+        verifier.verifyTraceBlockCount(0);
         
         get();
         
         verifier.verifyApi(ARCUS, get, KEY);
-        verifier.verifySpanCount(0);
+        verifier.verifyTraceBlockCount(0);
     }
 }

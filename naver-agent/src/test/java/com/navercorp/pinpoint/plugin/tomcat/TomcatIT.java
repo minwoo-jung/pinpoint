@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.SpanType;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.BlockType;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
@@ -78,25 +78,25 @@ public class TomcatIT {
         Method invoke = standardHostValve.getMethod("invoke", request, response);
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
-        verifier.printApis(System.out);
-        verifier.printSpans(System.out);
+        verifier.printCachedApis(System.out);
+        verifier.printBlocks(System.out);
 
         boolean removedHttpURLConnectionSpan = false;
         
         try {
-            verifier.verifySpan(SpanType.SPAN_EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
+            verifier.verifyTraceBlock(BlockType.EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
         } catch (AssertionError e) {
             // SpanEvent caused by HttpURLConnection.getResponseCode() could come first.
-            verifier.verifySpan(SpanType.SPAN_EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
+            verifier.verifyTraceBlock(BlockType.EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
             removedHttpURLConnectionSpan = true;
         }
         
-        verifier.verifySpan(SpanType.SPAN, TOMCAT, "Servlet Process:0", rpc, endPoint, "127.0.0.1", null);        
+        verifier.verifyTraceBlock(BlockType.ROOT, TOMCAT, "Servlet Process:0", rpc, endPoint, "127.0.0.1", null);        
 
         if (removedHttpURLConnectionSpan) {
-            verifier.verifySpanCount(0);
+            verifier.verifyTraceBlockCount(0);
         } else {
-            verifier.verifySpanCount(1);
+            verifier.verifyTraceBlockCount(1);
         }
     }
     
