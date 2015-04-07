@@ -15,33 +15,23 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.Cached;
-import com.navercorp.pinpoint.bootstrap.plugin.Group;
-import com.navercorp.pinpoint.bootstrap.plugin.Name;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
- * RedisCluster(nBase-ARC client) method interceptor
+ * GatewayClient(nBase-ARC client) internal method interceptor
  * 
  * @author jaehong.kim
  *
  */
-@Group(NbaseArcConstants.NBASE_ARC_SCOPE)
-public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundInterceptor implements NbaseArcConstants {
+public class GatewayClientInternalMethodInterceptor extends SpanEventSimpleAroundInterceptor implements NbaseArcConstants {
 
-    private MetadataAccessor destinationIdAccessor;
-    private MetadataAccessor endPointAccessor;
-
-    public RedisClusterMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
-        super(RedisClusterMethodInterceptor.class);
-
-        this.destinationIdAccessor = destinationIdAccessor;
-        this.endPointAccessor = endPointAccessor;
+    public GatewayClientInternalMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor) {
+        super(GatewayClientInternalMethodInterceptor.class);
 
         setTraceContext(traceContext);
         setMethodDescriptor(methodDescriptor);
@@ -54,18 +44,8 @@ public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundIntercep
 
     @Override
     public void doInAfterTrace(RecordableTrace trace, Object target, Object[] args, Object result, Throwable throwable) {
-        String destinationId = null;
-        String endPoint = null;
-
-        if (destinationIdAccessor.isApplicable(target) && endPointAccessor.isApplicable(target)) {
-            destinationId = destinationIdAccessor.get(target);
-            endPoint = endPointAccessor.get(target);
-        }
-
         trace.recordApi(getMethodDescriptor());
-        trace.recordEndPoint(endPoint != null ? endPoint : "Unknown");
-        trace.recordDestinationId(destinationId != null ? destinationId : NBASE_ARC.toString());
-        trace.recordServiceType(NBASE_ARC);
+        trace.recordServiceType(NBASE_ARC_INTERNAL);
         trace.recordException(throwable);
         trace.markAfterTime();
     }

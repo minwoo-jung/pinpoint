@@ -28,5 +28,6 @@ public class NbaseArcTypeProvider implements TypeProvider, NbaseArcConstants{
     @Override
     public void setup(TypeSetupContext context) {
         context.addType(NBASE_ARC);
+        context.addType(NBASE_ARC_INTERNAL);
     }
 }

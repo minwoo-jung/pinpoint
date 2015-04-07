@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.Group;
 import com.navercorp.pinpoint.bootstrap.plugin.Name;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
@@ -30,6 +31,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
+@Group(NbaseArcConstants.NBASE_ARC_SCOPE)
 public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAroundInterceptor implements NbaseArcConstants {
 
     private MetadataAccessor destinationIdAccessor;

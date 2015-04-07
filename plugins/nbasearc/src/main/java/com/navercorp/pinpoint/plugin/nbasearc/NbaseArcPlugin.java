@@ -26,9 +26,11 @@ import com.navercorp.pinpoint.bootstrap.plugin.editor.ConstructorEditorBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.editor.MethodEditorBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.editor.MethodEditorExceptionHandler;
 import com.navercorp.pinpoint.bootstrap.plugin.editor.MethodEditorProperty;
+import com.navercorp.pinpoint.plugin.nbasearc.filter.GatewayClientMethodNames;
 import com.navercorp.pinpoint.plugin.nbasearc.filter.NameBasedMethodFilter;
 import com.navercorp.pinpoint.plugin.nbasearc.filter.RedisClusterMethodNames;
 import com.navercorp.pinpoint.plugin.nbasearc.filter.RedisClusterPipelineMethodNames;
+import com.navercorp.pinpoint.profiler.modifier.method.interceptor.MethodInterceptor;
 
 /**
  * 
@@ -48,6 +50,11 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
 
     private static final String GATEWAY_CONFIG = "com.nhncorp.redis.cluster.gateway.GatewayConfig";
 
+    private static final String GATEWAY_CLIENT = "com.nhncorp.redis.cluster.gateway.GatewayClient";
+    private static final String GATEWAY_CLIENT_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientConstructorInterceptor";
+    private static final String GATEWAY_CLIENT_METHOD_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientMethodInterceptor";
+    private static final String GATEWAY_CLIENT_INTERNAL_METHOD_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientInternalMethodInterceptor";
+    
     private static final String REDIS_CLUSTER = "com.nhncorp.redis.cluster.RedisCluster";
     private static final String REDIS_CLUSTER_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor";
     private static final String REDIS_CLUSTER_METHOD_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterMethodInterceptor";
@@ -61,6 +68,10 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     private static final String REDIS_CLUSTER_PIPELINE_SET_SERVER_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineSetServerInterceptor";
     private static final String REDIS_CLUSTER_PIPELINE_METHOD_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor";
 
+    private static final String REDIS_CONNECTION = "com.nhncorp.redis.cluster.connection.RedisConnection";
+    private static final String REDIS_CONNECTION_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionConstructorInterceptor";
+    private static final String REDIS_CONNECTION_SEND_COMMAND_METHOD_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionSendCommandMethodInterceptor";
+    
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -70,6 +81,8 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         final boolean pipelineEnabled = config.isPipelineEnabled();
 
         if (enabled || pipelineEnabled) {
+            addGatewayClientClassEditor(context);
+            addRedisConnectionClassEditor(context);
             addGatewayServerClassEditor(context, config);
             addGatewayClassEditor(context, config);
 
@@ -83,6 +96,63 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         }
     }
 
+    
+    private void addGatewayClientClassEditor(ProfilerPluginSetupContext context) {
+        final ClassEditorBuilder classEditorBuilder = context.getClassEditorBuilder(GATEWAY_CLIENT);
+        classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
+        
+        final ConstructorEditorBuilder constructorEditorBuilder = classEditorBuilder.editConstructor(GATEWAY_CONFIG);
+        constructorEditorBuilder.property(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
+        constructorEditorBuilder.injectInterceptor(GATEWAY_CLIENT_CONSTRUCTOR_INTERCEPTOR);
+
+        final MethodEditorBuilder methodEditorBuilder = classEditorBuilder.editMethods(new NameBasedMethodFilter(RedisClusterMethodNames.get()));
+        methodEditorBuilder.exceptionHandler(new MethodEditorExceptionHandler() {
+            @Override
+            public void handle(String targetClassName, String targetMethodName, String[] targetMethodParameterTypes, Throwable exception) throws Exception {
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Unsupported method " + targetClassName + "." + targetMethodName, exception);
+                }
+            }
+        });
+        methodEditorBuilder.property(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
+        methodEditorBuilder.injectInterceptor(GATEWAY_CLIENT_METHOD_INTERCEPTOR);
+        context.addClassEditor(classEditorBuilder.build());
+        
+        final MethodEditorBuilder internalMethodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
+            @Override
+            public boolean filter(MethodInfo method) {
+                return !(method.getName().equals("pipeline") || method.getName().equals("pipelineCallback"));
+            }
+        });
+        internalMethodEditorBuilder.injectInterceptor(GATEWAY_CLIENT_INTERNAL_METHOD_INTERCEPTOR);
+        internalMethodEditorBuilder.property(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
+        context.addClassEditor(classEditorBuilder.build());
+    }
+    
+    private void addRedisConnectionClassEditor(ProfilerPluginSetupContext context) {
+        final ClassEditorBuilder classEditorBuilder = context.getClassEditorBuilder(REDIS_CONNECTION);
+        classEditorBuilder.injectMetadata(METADATA_END_POINT);
+
+        final ConstructorEditorBuilder constructorEditorBuilderArg1 = classEditorBuilder.editConstructor(STRING);
+        constructorEditorBuilderArg1.property(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
+        constructorEditorBuilderArg1.injectInterceptor(REDIS_CONNECTION_CONSTRUCTOR_INTERCEPTOR);
+
+        final ConstructorEditorBuilder constructorEditorBuilderArg2 = classEditorBuilder.editConstructor(STRING, INT);
+        constructorEditorBuilderArg2.property(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
+        constructorEditorBuilderArg2.injectInterceptor(REDIS_CONNECTION_CONSTRUCTOR_INTERCEPTOR);
+
+        final MethodEditorBuilder sendCommandMethodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
+            @Override
+            public boolean filter(MethodInfo method) {
+                return !method.getName().equals("sendCommand");
+            }
+        });
+        sendCommandMethodEditorBuilder.injectInterceptor(REDIS_CONNECTION_SEND_COMMAND_METHOD_INTERCEPTOR);
+        sendCommandMethodEditorBuilder.property(MethodEditorProperty.IGNORE_IF_NOT_EXIST);
+        
+        context.addClassEditor(classEditorBuilder.build());
+    }
+    
     private void addGatewayServerClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
         final ClassEditorBuilder classEditorBuilder = context.getClassEditorBuilder(GATEWAY_SERVER);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);

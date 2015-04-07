@@ -18,8 +18,10 @@ package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
 import com.navercorp.pinpoint.bootstrap.plugin.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.Group;
 import com.navercorp.pinpoint.bootstrap.plugin.Name;
@@ -32,16 +34,16 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  *
  */
 @Group(NbaseArcConstants.NBASE_ARC_SCOPE)
-public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundInterceptor implements NbaseArcConstants {
+public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterceptor implements NbaseArcConstants {
 
     private MetadataAccessor destinationIdAccessor;
-    private MetadataAccessor endPointAccessor;
+    private InterceptorGroup interceptorGroup;
 
-    public RedisClusterMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
-        super(RedisClusterMethodInterceptor.class);
+    public GatewayClientMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, InterceptorGroup interceptorGroup) {
+        super(GatewayClientMethodInterceptor.class);
 
         this.destinationIdAccessor = destinationIdAccessor;
-        this.endPointAccessor = endPointAccessor;
+        this.interceptorGroup = interceptorGroup;
 
         setTraceContext(traceContext);
         setMethodDescriptor(methodDescriptor);
@@ -57,9 +59,13 @@ public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundIntercep
         String destinationId = null;
         String endPoint = null;
 
-        if (destinationIdAccessor.isApplicable(target) && endPointAccessor.isApplicable(target)) {
+        if (destinationIdAccessor.isApplicable(target)) {
             destinationId = destinationIdAccessor.get(target);
-            endPoint = endPointAccessor.get(target);
+        }
+        
+        Scope scope = interceptorGroup.getCurrentTransaction();
+        if(scope != null) {
+            endPoint = (String) scope.getAttachment();
         }
 
         trace.recordApi(getMethodDescriptor());
