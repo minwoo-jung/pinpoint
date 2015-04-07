@@ -63,7 +63,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
 
     private static final String REDIS_CLUSTER_PIPELINE = "com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline";
     private static final String REDIS_CLUSTER_PIPELINE_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineConstructorInterceptor";
-    private static final String REDIS_CLUSTER_PIPELINE_SET_SERVER_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineSetServerInterceptor";
+    private static final String REDIS_CLUSTER_PIPELINE_SET_SERVER_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineSetServerMethodInterceptor";
     private static final String REDIS_CLUSTER_PIPELINE_METHOD_INTERCEPTOR = "com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor";
 
     private static final String REDIS_CONNECTION = "com.nhncorp.redis.cluster.connection.RedisConnection";

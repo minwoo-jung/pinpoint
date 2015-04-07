@@ -1,5 +1,8 @@
 package com.navercorp.pinpoint.testweb.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +26,11 @@ public class RedisController {
     private static final String HOST = "10.113.160.166";
     private static final int PORT = 6390;
 
-
     @Autowired
     private GatewayClient client;
 
-    //@Autowired
-    //private StringRedisClusterTemplate redisTemplate;
+    // @Autowired
+    // private StringRedisClusterTemplate redisTemplate;
 
     @RequestMapping(value = "/redis/jedis")
     @ResponseBody
@@ -38,7 +40,7 @@ public class RedisController {
         final Jedis jedis = new Jedis(HOST, PORT);
 
         jedis.get("foo");
-//        jedis.close();
+        // jedis.close();
 
         return "OK";
     }
@@ -56,7 +58,7 @@ public class RedisController {
         pipeline.expire("foo", 1);
         pipeline.syncAndReturnAll();
 
-//        jedis.close();
+        // jedis.close();
 
         return "OK";
     }
@@ -85,6 +87,26 @@ public class RedisController {
             pipeline.syncAndReturnAll();
         } finally {
             if (pipeline != null) {
+                pipeline.close();
+            }
+        }
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/redis/nBaseArc/timeoutWaitingForIdle")
+    @ResponseBody
+    public String nBaseArcTimeoutWaitingForIdle(Model model) {
+        logger.info("/redis/nBaseArc/timeoutWaitingForIdle");
+
+        List<RedisClusterPipeline> pipelines = new ArrayList<RedisClusterPipeline>();
+        try {
+            for (int i = 0; i < 16; i++) {
+                pipelines.add(client.pipeline());
+            }
+            client.get("foo");
+        } finally {
+            for (RedisClusterPipeline pipeline : pipelines) {
                 pipeline.close();
             }
         }

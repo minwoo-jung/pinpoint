@@ -28,7 +28,7 @@ public class HttpAsyncClientController {
     @ResponseBody
     public String httpClient4Get(final HttpServletRequest request) {
         final String localAddress = getLocalAddress(request);
-        httpService.get("http://" + localAddress + HTTP_CLIENT3_GET_URL);
+        httpService.get("http://naver.com");
         return "OK";
     }
 
