@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.SpanType;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.BlockType;
 import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
@@ -62,20 +62,20 @@ public class BlocIT {
         connection.disconnect();
         
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
-        verifier.printApis(System.out);
-        verifier.printSpans(System.out);
+        verifier.printCachedApis(System.out);
+        verifier.printBlocks(System.out);
         
         int remaining = 1;
         
         try {
-            verifier.verifySpan(SpanType.SPAN_EVENT, ServiceType.INTERNAL_METHOD.getName(), annotation("CALL_URL", path), annotation("PROTOCOL", "http"));
+            verifier.verifyTraceBlock(BlockType.EVENT, ServiceType.INTERNAL_METHOD.getName(), annotation("CALL_URL", path), annotation("PROTOCOL", "http"));
         } catch (AssertionError e) {
             // HttpURLConnection's span
-            verifier.verifySpan(SpanType.SPAN_EVENT, ServiceType.INTERNAL_METHOD.getName(), annotation("CALL_URL", path), annotation("PROTOCOL", "http"));
+            verifier.verifyTraceBlock(BlockType.EVENT, ServiceType.INTERNAL_METHOD.getName(), annotation("CALL_URL", path), annotation("PROTOCOL", "http"));
             remaining -= 1;
         }
-        verifier.verifySpan(SpanType.SPAN, BLOC, annotation("http.url", pathWithQueryString), annotation("http.param", queryString));
+        verifier.verifyTraceBlock(BlockType.ROOT, BLOC, annotation("http.url", pathWithQueryString), annotation("http.param", queryString));
         
-        verifier.verifySpanCount(remaining);
+        verifier.verifyTraceBlockCount(remaining);
     }
 }
