@@ -96,14 +96,14 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
 
     
     private void addGatewayClientClassEditor(ProfilerPluginSetupContext context) {
-        final ClassFileTransformerBuilder classEditorBuilder = context.getClassEditorBuilder(GATEWAY_CLIENT);
+        final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder(GATEWAY_CLIENT);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
         
-        final ConstructorEditorBuilder constructorEditorBuilder = classEditorBuilder.editConstructor(GATEWAY_CONFIG);
+        final ConstructorTransformerBuilder constructorEditorBuilder = classEditorBuilder.editConstructor(GATEWAY_CONFIG);
         constructorEditorBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         constructorEditorBuilder.injectInterceptor(GATEWAY_CLIENT_CONSTRUCTOR_INTERCEPTOR);
 
-        final MethodEditorBuilder methodEditorBuilder = classEditorBuilder.editMethods(new NameBasedMethodFilter(RedisClusterMethodNames.get()));
+        final MethodTransformerBuilder methodEditorBuilder = classEditorBuilder.editMethods(new NameBasedMethodFilter(RedisClusterMethodNames.get()));
         methodEditorBuilder.exceptionHandler(new MethodTransformerExceptionHandler() {
             @Override
             public void handle(String targetClassName, String targetMethodName, String[] targetMethodParameterTypes, Throwable exception) throws Exception {
@@ -115,37 +115,37 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         methodEditorBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         methodEditorBuilder.injectInterceptor(GATEWAY_CLIENT_METHOD_INTERCEPTOR);
         
-        final MethodEditorBuilder internalMethodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
+        final MethodTransformerBuilder internalMethodTransformerBuilder = classEditorBuilder.editMethods(new MethodFilter() {
             @Override
             public boolean filter(MethodInfo method) {
                 return !(method.getName().equals("pipeline") || method.getName().equals("pipelineCallback"));
             }
         });
-        internalMethodEditorBuilder.injectInterceptor(GATEWAY_CLIENT_INTERNAL_METHOD_INTERCEPTOR);
-        internalMethodEditorBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
+        internalMethodTransformerBuilder.injectInterceptor(GATEWAY_CLIENT_INTERNAL_METHOD_INTERCEPTOR);
+        internalMethodTransformerBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         context.addClassFileTransformer(classEditorBuilder.build());
     }
     
     private void addRedisConnectionClassEditor(ProfilerPluginSetupContext context) {
-        final ClassFileTransformerBuilder classEditorBuilder = context.getClassEditorBuilder(REDIS_CONNECTION);
+        final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder(REDIS_CONNECTION);
         classEditorBuilder.injectMetadata(METADATA_END_POINT);
 
-        final ConstructorEditorBuilder constructorEditorBuilderArg1 = classEditorBuilder.editConstructor(STRING);
+        final ConstructorTransformerBuilder constructorEditorBuilderArg1 = classEditorBuilder.editConstructor(STRING);
         constructorEditorBuilderArg1.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         constructorEditorBuilderArg1.injectInterceptor(REDIS_CONNECTION_CONSTRUCTOR_INTERCEPTOR);
 
-        final ConstructorEditorBuilder constructorEditorBuilderArg2 = classEditorBuilder.editConstructor(STRING, INT);
+        final ConstructorTransformerBuilder constructorEditorBuilderArg2 = classEditorBuilder.editConstructor(STRING, INT);
         constructorEditorBuilderArg2.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         constructorEditorBuilderArg2.injectInterceptor(REDIS_CONNECTION_CONSTRUCTOR_INTERCEPTOR);
 
-        final MethodEditorBuilder sendCommandMethodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
+        final MethodTransformerBuilder sendCommandMethodTransformerBuilder = classEditorBuilder.editMethods(new MethodFilter() {
             @Override
             public boolean filter(MethodInfo method) {
                 return !method.getName().equals("sendCommand");
             }
         });
-        sendCommandMethodEditorBuilder.injectInterceptor(REDIS_CONNECTION_SEND_COMMAND_METHOD_INTERCEPTOR);
-        sendCommandMethodEditorBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
+        sendCommandMethodTransformerBuilder.injectInterceptor(REDIS_CONNECTION_SEND_COMMAND_METHOD_INTERCEPTOR);
+        sendCommandMethodTransformerBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         
         context.addClassFileTransformer(classEditorBuilder.build());
     }
@@ -233,13 +233,13 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         constructorEditorBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         constructorEditorBuilder.injectInterceptor(REDIS_CLUSTER_PIPELINE_CONSTRUCTOR_INTERCEPTOR);
 
-        final MethodTransformerBuilder setServerMethodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
+        final MethodTransformerBuilder setServerMethodTransformerBuilder = classEditorBuilder.editMethods(new MethodFilter() {
             @Override
             public boolean filter(MethodInfo method) {
                 return !method.getName().equals("setServer");
             }
         });
-        setServerMethodEditorBuilder.injectInterceptor(REDIS_CLUSTER_PIPELINE_SET_SERVER_INTERCEPTOR);
+        setServerMethodTransformerBuilder.injectInterceptor(REDIS_CLUSTER_PIPELINE_SET_SERVER_INTERCEPTOR);
 
         final MethodTransformerBuilder methodEditorBuilder = classEditorBuilder.editMethods(new NameBasedMethodFilter(RedisClusterPipelineMethodNames.get()));
         methodEditorBuilder.exceptionHandler(new MethodTransformerExceptionHandler() {

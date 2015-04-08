@@ -19,7 +19,7 @@ import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**

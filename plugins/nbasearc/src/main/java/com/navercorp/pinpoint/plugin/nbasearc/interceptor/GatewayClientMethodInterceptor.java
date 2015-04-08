@@ -18,13 +18,13 @@ package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
-import com.navercorp.pinpoint.bootstrap.plugin.Cached;
-import com.navercorp.pinpoint.bootstrap.plugin.Group;
-import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupTransaction;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
@@ -63,7 +63,7 @@ public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterce
             destinationId = destinationIdAccessor.get(target);
         }
         
-        Scope scope = interceptorGroup.getCurrentTransaction();
+        InterceptorGroupTransaction scope = interceptorGroup.getCurrentTransaction();
         if(scope != null) {
             endPoint = (String) scope.getAttachment();
         }

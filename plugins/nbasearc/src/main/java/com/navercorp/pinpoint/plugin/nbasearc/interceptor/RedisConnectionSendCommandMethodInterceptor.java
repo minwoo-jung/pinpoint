@@ -17,16 +17,16 @@ package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.instrument.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.group.ExecutionPoint;
+import com.navercorp.pinpoint.bootstrap.interceptor.group.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
+import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupTransaction;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.Cached;
-import com.navercorp.pinpoint.bootstrap.plugin.Group;
-import com.navercorp.pinpoint.bootstrap.plugin.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
@@ -35,7 +35,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
-@Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPoint = ExecutionPoint.INTERNAL)
+@Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPoint = ExecutionPolicy.INTERNAL)
 public class RedisConnectionSendCommandMethodInterceptor implements SimpleAroundInterceptor, NbaseArcConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
@@ -61,7 +61,7 @@ public class RedisConnectionSendCommandMethodInterceptor implements SimpleAround
             }
 
             final String endPoint = endPointAccessor.get(target);
-            final Scope scope = interceptorGroup.getCurrentTransaction();
+            final InterceptorGroupTransaction scope = interceptorGroup.getCurrentTransaction();
             scope.setAttachment(endPoint);
         } catch (Throwable t) {
             logger.warn("Failed to before process. {}", t.getMessage(), t);
