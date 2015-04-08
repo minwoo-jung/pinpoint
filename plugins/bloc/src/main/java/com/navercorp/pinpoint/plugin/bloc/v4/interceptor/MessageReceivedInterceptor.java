@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.TargetMethod;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 import external.org.apache.mina.common.IoSession;
