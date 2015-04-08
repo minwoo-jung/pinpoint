@@ -20,32 +20,32 @@ public class BlocPlugin implements ProfilerPlugin, BlocConstants {
     }
 
     private void addBlocAdapterEditor(ProfilerPluginSetupContext context) {
-        ClassFileTransformerBuilder builder = context.getClassEditorBuilder("com.nhncorp.lucy.bloc.handler.HTTPHandler$BlocAdapter");
+        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.bloc.handler.HTTPHandler$BlocAdapter");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v3.interceptor.ExecuteMethodInterceptor");
         context.addClassFileTransformer(builder.build());
     }
     
     private void addNettyInboundHandlerModifier(ProfilerPluginSetupContext context) {
-        ClassFileTransformerBuilder builder = context.getClassEditorBuilder("com.nhncorp.lucy.bloc.http.NettyInboundHandler");
+        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.bloc.http.NettyInboundHandler");
         builder.injectFieldAccessor(FIELD_URI_ENCODING);
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ChannelRead0Interceptor");
         context.addClassFileTransformer(builder.build());
     }    
     
     private void addNpcHandlerModifier(ProfilerPluginSetupContext context) {
-        ClassFileTransformerBuilder builder = context.getClassEditorBuilder("com.nhncorp.lucy.bloc.npc.handler.NpcHandler");
+        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.bloc.npc.handler.NpcHandler");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.MessageReceivedInterceptor");
         context.addClassFileTransformer(builder.build());
     }
 
     private void addRequestProcessorModifier(ProfilerPluginSetupContext context) {
-        ClassFileTransformerBuilder builder = context.getClassEditorBuilder("com.nhncorp.lucy.bloc.core.processor.RequestProcessor");
+        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.bloc.core.processor.RequestProcessor");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ProcessInterceptor");
         context.addClassFileTransformer(builder.build());
     }
     
     private void addModuleClassLoaderFactoryInterceptor(ProfilerPluginSetupContext context) {
-        ClassFileTransformerBuilder builder = context.getClassEditorBuilder("com.nhncorp.lucy.bloc.core.clazz.ModuleClassLoaderFactory");
+        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.bloc.core.clazz.ModuleClassLoaderFactory");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ModuleClassLoaderFactoryInterceptor");
         context.addClassFileTransformer(builder.build());
     }

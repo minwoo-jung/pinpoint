@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.TargetConstructor;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetConstructor;
 import com.nhncorp.lucy.bloc.core.clazz.ModuleClassLoaderFactory;
 
 @TargetConstructor
