@@ -29,7 +29,7 @@ public class HttpClient4Controller {
         logger.info("Cookie:{}", cookie);
 
         ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-        client.execute("http://localhost:" + request.getLocalPort() + "/combination.pinpoint", new HashMap<String, Object>(), cookie);
+        client.execute("http://localhost:" + request.getLocalPort(), new HashMap<String, Object>(), cookie);
 
         return "OK";
     }
@@ -47,7 +47,7 @@ public class HttpClient4Controller {
         HashMap<String, Object> post = new HashMap<String, Object>();
         post.put("test", "1");
         post.put("test2", "2");
-        client.execute("http://localhost:" + request.getLocalPort() + "/combination.pinpoint", post);
+        client.execute("http://localhost:" + request.getLocalPort(), post);
 
         return "OK";
     }
@@ -55,7 +55,7 @@ public class HttpClient4Controller {
     @RequestMapping(value = "/httpclient4/statusCode")
     @ResponseBody
     public String statusCode(HttpServletRequest request) {
-        logger.info("status clde");
+        logger.info("status code");
         ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
         HashMap<String, Object> post = new HashMap<String, Object>();
         post.put("test", "1");
@@ -64,4 +64,17 @@ public class HttpClient4Controller {
 
         return "OK";
     }
+    
+    @RequestMapping(value = "/httpclient4/failed")
+    @ResponseBody
+    public String failed(HttpServletRequest request) {
+        logger.info("failed");
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        HashMap<String, Object> post = new HashMap<String, Object>();
+        post.put("foo", "bar");
+        client.execute("http://127.0.0.1:9999", post);
+
+        return "OK";
+    }
+
 }
