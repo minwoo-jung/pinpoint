@@ -1,30 +1,34 @@
-package com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor;
+package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.ByteCodeMethodDescriptorSupport;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.TraceContextSupport;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.util.MetaObject;
-import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 
-public class InvokeInterceptor implements SimpleAroundInterceptor, ByteCodeMethodDescriptorSupport, TraceContextSupport {
+public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
-    private final MetaObject<InetSocketAddress> getServerAddress = new MetaObject<InetSocketAddress>("__getServerAddress");
-
-    private MethodDescriptor descriptor;
-    private TraceContext traceContext;
+    private final TraceContext traceContext;
+    private final MethodDescriptor descriptor;
+    private final MetadataAccessor serverAddressAccessor;
+    
+    public InvokeInterceptor(TraceContext traceContext, @Cached MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+        this.traceContext = traceContext;
+        this.descriptor = descriptor;
+        this.serverAddressAccessor = serverAddressAccessor;
+    }
 
     @Override
     public void before(Object target, Object[] args) {
@@ -71,16 +75,16 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, ByteCodeMetho
         // TODO add pinpoint headers to the request message here.
         //
 
-        trace.recordServiceType(ServiceType.NPC_CLIENT);
+        trace.recordServiceType(NPC_CLIENT);
 
-        InetSocketAddress serverAddress = getServerAddress.invoke(target);
+        InetSocketAddress serverAddress = serverAddressAccessor.get(target);
         int port = serverAddress.getPort();
         String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
 //      DestinationId와 동일하므로 없는게 맞음.
 //        trace.recordEndPoint(endPoint);
         trace.recordDestinationId(endPoint);
 
-        trace.recordAttribute(AnnotationKey.NPC_URL, serverAddress.toString());
+        trace.recordAttribute(NPC_URL, serverAddress.toString());
     }
 
     @Override
@@ -102,16 +106,5 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, ByteCodeMetho
         } finally {
             trace.traceBlockEnd();
         }
-    }
-
-    @Override
-    public void setMethodDescriptor(MethodDescriptor descriptor) {
-        this.descriptor = descriptor;
-        traceContext.cacheApi(descriptor);
-    }
-
-    @Override
-    public void setTraceContext(TraceContext traceContext) {
-        this.traceContext = traceContext;
     }
 }
