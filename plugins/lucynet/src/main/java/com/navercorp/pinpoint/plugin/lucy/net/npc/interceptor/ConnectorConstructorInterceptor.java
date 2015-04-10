@@ -1,14 +1,17 @@
-package com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor;
+package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
 import java.net.InetSocketAddress;
 
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.interceptor.*;
+import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.util.MetaObject;
-import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector;
 import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
 
@@ -18,15 +21,20 @@ import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
  * @author netspider
  * 
  */
-public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor, ByteCodeMethodDescriptorSupport, TraceContextSupport, TargetClassLoader {
+public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
-    private MethodDescriptor descriptor;
-    private TraceContext traceContext;
-
-    private final MetaObject<InetSocketAddress> setServerAddress = new MetaObject<InetSocketAddress>("__setServerAddress", InetSocketAddress.class);
+    private final TraceContext traceContext;
+    private final MethodDescriptor descriptor;
+    private final MetadataAccessor serverAddressAccessor;
+    
+    public ConnectorConstructorInterceptor(TraceContext traceContext, @Cached MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+        this.traceContext = traceContext;
+        this.descriptor = descriptor;
+        this.serverAddressAccessor = serverAddressAccessor;
+    }
 
     @Override
     public void before(Object target, Object[] args) {
@@ -59,7 +67,7 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
             }
         }
 
-        setServerAddress.invoke(target, serverAddress);
+        serverAddressAccessor.set(target, serverAddress);
 
         Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
@@ -68,7 +76,7 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
 
         trace.traceBlockBegin();
         trace.markBeforeTime();
-        trace.recordServiceType(ServiceType.NPC_CLIENT);
+        trace.recordServiceType(NPC_CLIENT);
 
         if (serverAddress != null) {
             int port = serverAddress.getPort();
@@ -98,16 +106,5 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
         } finally {
             trace.traceBlockEnd();
         }
-    }
-
-    @Override
-    public void setMethodDescriptor(MethodDescriptor descriptor) {
-        this.descriptor = descriptor;
-        traceContext.cacheApi(descriptor);
-    }
-
-    @Override
-    public void setTraceContext(TraceContext traceContext) {
-        this.traceContext = traceContext;
     }
 }

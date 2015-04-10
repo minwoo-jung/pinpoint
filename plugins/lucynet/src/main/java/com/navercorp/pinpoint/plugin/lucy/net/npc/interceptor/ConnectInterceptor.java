@@ -1,18 +1,15 @@
-package com.navercorp.pinpoint.profiler.modifier.connector.npc.interceptor;
+package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
 import java.net.InetSocketAddress;
 
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.ByteCodeMethodDescriptorSupport;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.TraceContextSupport;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 
 /**
  * based on NPC client 1.5.18
@@ -20,15 +17,18 @@ import com.navercorp.pinpoint.common.ServiceType;
  * @author netspider
  * 
  */
-public class ConnectInterceptor implements SimpleAroundInterceptor, ByteCodeMethodDescriptorSupport, TraceContextSupport {
+public class ConnectInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
-    private MethodDescriptor descriptor;
-    private TraceContext traceContext;
+    private final MethodDescriptor descriptor;
+    private final TraceContext traceContext;
 
-    // private int apiId;
+    public ConnectInterceptor(MethodDescriptor descriptor, TraceContext traceContext) {
+        this.descriptor = descriptor;
+        this.traceContext = traceContext;
+    }
 
     @Override
     public void before(Object target, Object[] args) {
@@ -51,7 +51,7 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, ByteCodeMeth
         TraceId nextId = trace.getTraceId().getNextTraceId();
         trace.recordNextSpanId(nextId.getSpanId());
 
-        trace.recordServiceType(ServiceType.NPC_CLIENT);
+        trace.recordServiceType(NPC_CLIENT);
 
         InetSocketAddress serverAddress = connectorOption.getAddress();
         int port = serverAddress.getPort();
@@ -60,8 +60,8 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, ByteCodeMeth
 //        trace.recordEndPoint(endpiont);
         trace.recordDestinationId(endpiont);
 
-        trace.recordAttribute(AnnotationKey.NPC_URL, serverAddress.toString());
-        trace.recordAttribute(AnnotationKey.NPC_CONNECT_OPTION, connectorOption.toString());
+        trace.recordAttribute(NPC_URL, serverAddress.toString());
+        trace.recordAttribute(NPC_CONNECT_OPTION, connectorOption.toString());
     }
 
     @Override
@@ -84,16 +84,5 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, ByteCodeMeth
         } finally {
             trace.traceBlockEnd();
         }
-    }
-
-    @Override
-    public void setMethodDescriptor(MethodDescriptor descriptor) {
-        this.descriptor = descriptor;
-        traceContext.cacheApi(descriptor);
-    }
-
-    @Override
-    public void setTraceContext(TraceContext traceContext) {
-        this.traceContext = traceContext;
     }
 }

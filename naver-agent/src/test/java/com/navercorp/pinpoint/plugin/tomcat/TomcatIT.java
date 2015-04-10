@@ -50,6 +50,7 @@ import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
 public class TomcatIT {
     private static final String TOMCAT = "TOMCAT";
     private static final String TOMCAT_METHOD = "TOMCAT_METHOD";
+    private static final String JDK_HTTPURLCONNECTOR = "JDK_HTTPURLCONNECTOR";
     private static final String HTTP_PARAM = "http.param";
 
     @Test
@@ -80,24 +81,11 @@ public class TomcatIT {
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.printCachedApis(System.out);
         verifier.printBlocks(System.out);
-
-        boolean removedHttpURLConnectionSpan = false;
         
-        try {
-            verifier.verifyTraceBlock(BlockType.EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
-        } catch (AssertionError e) {
-            // SpanEvent caused by HttpURLConnection.getResponseCode() could come first.
-            verifier.verifyTraceBlock(BlockType.EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
-            removedHttpURLConnectionSpan = true;
-        }
-        
+        verifier.ignoreServiceType(JDK_HTTPURLCONNECTOR);
+        verifier.verifyTraceBlock(BlockType.EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
         verifier.verifyTraceBlock(BlockType.ROOT, TOMCAT, "Servlet Process:0", rpc, endPoint, "127.0.0.1", null);        
-
-        if (removedHttpURLConnectionSpan) {
-            verifier.verifyTraceBlockCount(0);
-        } else {
-            verifier.verifyTraceBlockCount(1);
-        }
+        verifier.verifyTraceBlockCount(0);
     }
     
     @Test

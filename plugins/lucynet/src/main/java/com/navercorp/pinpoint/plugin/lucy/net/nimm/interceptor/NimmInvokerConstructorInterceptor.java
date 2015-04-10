@@ -1,10 +1,12 @@
-package com.navercorp.pinpoint.profiler.modifier.connector.nimm.interceptor;
+package com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor;
 
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.util.MetaObject;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetConstructor;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
 
 /**
@@ -13,17 +15,18 @@ import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
  * @author netspider
  * 
  */
-public class NimmInvokerConstructorInterceptor implements SimpleAroundInterceptor, TargetClassLoader {
+@TargetConstructor({"com.nhncorp.lucy.nimm.connector.address.NimmAddress", "com.nhncorp.lucy.nimm.connector.NimmSocket", "long"})
+public class NimmInvokerConstructorInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
-//    private MethodDescriptor descriptor;
-//    private TraceContext traceContext;
-
-    // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고
-    // 있음.
-    private MetaObject<String> setNimmAddress = new MetaObject<String>("__setNimmAddress", String.class);
+    // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고 있음.
+    private final MetadataAccessor nimmAddressAccessor;
+    
+    public NimmInvokerConstructorInterceptor(@Name(METADATA_NIMM_ADDRESS) MetadataAccessor nimmAddressAccessor) {
+        this.nimmAddressAccessor = nimmAddressAccessor;
+    }
 
     @Override
     public void before(Object target, Object[] args) {
@@ -48,7 +51,7 @@ public class NimmInvokerConstructorInterceptor implements SimpleAroundIntercepto
             address.append(nimmAddress.getServerId()).append(":");
             address.append(nimmAddress.getSocketId());
 
-            setNimmAddress.invoke(target, address.toString());
+            nimmAddressAccessor.set(target, address.toString());
         }
     }
 
@@ -56,15 +59,4 @@ public class NimmInvokerConstructorInterceptor implements SimpleAroundIntercepto
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
 
     }
-
-//    @Override
-//    public void setMethodDescriptor(MethodDescriptor descriptor) {
-//        this.descriptor = descriptor;
-//        traceContext.cacheApi(descriptor);
-//    }
-
-//    @Override
-//    public void setTraceContext(TraceContext traceContext) {
-//        this.traceContext = traceContext;
-//    }
 }
