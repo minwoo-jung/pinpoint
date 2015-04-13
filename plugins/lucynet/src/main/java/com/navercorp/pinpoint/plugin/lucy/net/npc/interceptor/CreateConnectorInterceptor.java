@@ -9,7 +9,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
 
@@ -21,7 +20,7 @@ public class CreateConnectorInterceptor implements SimpleAroundInterceptor, Lucy
     private final MethodDescriptor descriptor;
     private final TraceContext traceContext;
 
-    public CreateConnectorInterceptor(@Cached MethodDescriptor descriptor, TraceContext traceContext) {
+    public CreateConnectorInterceptor(MethodDescriptor descriptor, TraceContext traceContext) {
         this.descriptor = descriptor;
         this.traceContext = traceContext;
     }

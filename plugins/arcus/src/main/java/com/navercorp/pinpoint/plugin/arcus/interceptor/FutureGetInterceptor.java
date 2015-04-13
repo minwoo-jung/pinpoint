@@ -13,7 +13,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
@@ -36,7 +35,7 @@ public class FutureGetInterceptor implements SimpleAroundInterceptor, ArcusConst
     private final MetadataAccessor operationAccessor;
     private final MetadataAccessor serviceCodeAccessor;
     
-    public FutureGetInterceptor(@Cached MethodDescriptor methodDescriptor, TraceContext traceContext,
+    public FutureGetInterceptor(MethodDescriptor methodDescriptor, TraceContext traceContext,
             @Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor, @Name(METADATA_OPERATION) MetadataAccessor operationAccessor) {
         this.methodDescriptor = methodDescriptor;
         this.traceContext = traceContext;

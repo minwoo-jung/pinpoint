@@ -21,7 +21,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
@@ -37,7 +36,7 @@ public class GatewayServerMetadataAttachInterceptor implements SimpleAroundInter
 
     protected final MetadataAccessor destinationIdAccessor;
 
-    public GatewayServerMetadataAttachInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor) {
+    public GatewayServerMetadataAttachInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor) {
         this.destinationIdAccessor = destinationIdAccessor;
     }
 
