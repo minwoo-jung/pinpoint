@@ -1,21 +1,10 @@
-package com.navercorp.pinpoint.profiler.modifier.linegame.interceptor;
+package com.navercorp.pinpoint.plugin.line.games.interceptor;
 
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
-import com.navercorp.pinpoint.bootstrap.context.*;
-import com.navercorp.pinpoint.bootstrap.interceptor.*;
-import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
-import com.navercorp.pinpoint.bootstrap.util.MetaObject;
-import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
-import com.navercorp.pinpoint.bootstrap.util.StringUtils;
-import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
-import com.navercorp.pinpoint.profiler.context.SpanId;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -24,6 +13,26 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.util.CharsetUtil;
+
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
+import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
+import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
+import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
+import com.navercorp.pinpoint.bootstrap.util.StringUtils;
+import com.navercorp.pinpoint.common.AnnotationKey;
+import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.plugin.line.LineConstants;
+import com.navercorp.pinpoint.profiler.context.SpanId;
 
 /**
  * <pre>
@@ -34,16 +43,24 @@ import org.jboss.netty.util.CharsetUtil;
  * @author netspider
  * @author emeroad
  */
-public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implements TargetClassLoader {
+@TargetMethod(name="run")
+public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implements TargetClassLoader, LineConstants {
 
     private static final String DEFAULT_CHARSET = "UTF-8";
 
-    public InvokeTaskRunInterceptor() {
+    public InvokeTaskRunInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(CHANNEL_HANDLER_CONTEXT) MetadataAccessor channelHandlerContextAccessor, @Name(MESSAGE_EVENT) MetadataAccessor messageEvent) {
         super(InvokeTaskRunInterceptor.class);
+        
+        this.channelHandlerContextAccessor = channelHandlerContextAccessor;
+        this.messageEventAccessor = messageEvent;
+        
+        setTraceContext(traceContext);
+        setMethodDescriptor(descriptor);
     }
 
-    private MetaObject<org.jboss.netty.channel.ChannelHandlerContext> getChannelHandlerContext = new MetaObject<org.jboss.netty.channel.ChannelHandlerContext>("__getChannelHandlerContext");
-    private MetaObject<org.jboss.netty.channel.MessageEvent> getMessageEvent = new MetaObject<org.jboss.netty.channel.MessageEvent>("__getMessageEvent");
+    
+    private final MetadataAccessor channelHandlerContextAccessor;
+    private final MetadataAccessor messageEventAccessor;
 
     private int paramDumpSize = 512;
     private int entityDumpSize = 512;
@@ -51,8 +68,8 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     @Override
     public void doInBeforeTrace(RecordableTrace trace, Object target, Object[] args) {
 
-        org.jboss.netty.channel.ChannelHandlerContext channelHandlerContext = getChannelHandlerContext.invoke(target);
-        org.jboss.netty.channel.MessageEvent e = getMessageEvent.invoke(target);
+        org.jboss.netty.channel.ChannelHandlerContext channelHandlerContext = channelHandlerContextAccessor.get(target);
+        org.jboss.netty.channel.MessageEvent e = messageEventAccessor.get(target);
 
         if (channelHandlerContext == null) {
             logger.debug("ChannelHandlerContext is null.");
@@ -113,7 +130,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
-        org.jboss.netty.channel.MessageEvent messageEvent = getMessageEvent.invoke(target);
+        org.jboss.netty.channel.MessageEvent messageEvent = messageEventAccessor.get(target);
         org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) messageEvent.getMessage();
 
         Channel channel = messageEvent.getChannel();
@@ -198,7 +215,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     public void doInAfterTrace(RecordableTrace trace, Object target, Object[] args, Object result, Throwable throwable) {
 
         if (trace.canSampled()) {
-            org.jboss.netty.channel.MessageEvent e = getMessageEvent.invoke(target);
+            org.jboss.netty.channel.MessageEvent e = messageEventAccessor.get(target);
 
             if (e != null) {
                 recordHttpParameter2(trace, e);

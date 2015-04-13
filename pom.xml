@@ -55,7 +55,6 @@
     <modules>
         <module>naver-agent</module>
         <module>naver-collector</module>
-        <module>naver-plugin</module>
         <module>naver-web</module>
         <module>naver-it7</module>
         <module>plugins</module>
