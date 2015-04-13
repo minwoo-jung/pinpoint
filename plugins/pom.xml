@@ -14,6 +14,7 @@
     <modules>
         <module>arcus</module>
         <module>bloc</module>
+        <module>line</module>
         <module>lucynet</module>
         <module>nbasearc</module>
     </modules>
@@ -27,6 +28,11 @@
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-bloc-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-line-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

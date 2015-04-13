@@ -1,23 +1,30 @@
-package com.navercorp.pinpoint.profiler.modifier.linegame.interceptor;
+package com.navercorp.pinpoint.plugin.line.games.interceptor;
 
+import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.navercorp.pinpoint.bootstrap.util.MetaObject;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetConstructor;
+import com.navercorp.pinpoint.plugin.line.LineConstants;
 
 /**
  * 
  * @author netspider
  * 
  */
-public class InvokeTaskConstructorInterceptor implements SimpleAroundInterceptor, TargetClassLoader {
+@TargetConstructor({"com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent"})
+public class InvokeTaskConstructorInterceptor implements SimpleAroundInterceptor, LineConstants {
+    
+    private final MetadataAccessor channelHandlerContextAccessor;
+    private final MetadataAccessor messageEventAccessor;
 
-    private MetaObject<org.jboss.netty.channel.ChannelHandlerContext> setChannelHandlerContext = new MetaObject<org.jboss.netty.channel.ChannelHandlerContext>("__setChannelHandlerContext", org.jboss.netty.channel.ChannelHandlerContext.class);
-    private MetaObject<org.jboss.netty.channel.MessageEvent> setMessageEvent = new MetaObject<org.jboss.netty.channel.MessageEvent>("__setMessageEvent", org.jboss.netty.channel.MessageEvent.class);
+    public InvokeTaskConstructorInterceptor(@Name(CHANNEL_HANDLER_CONTEXT) MetadataAccessor channelHandlerContextAccessor, @Name(MESSAGE_EVENT) MetadataAccessor messageEvent) {
+        this.channelHandlerContextAccessor = channelHandlerContextAccessor;
+        this.messageEventAccessor = messageEvent;
+    }
 
     @Override
     public void before(Object target, Object[] args) {
-        // 대상 class가 non-static이기 때문에 코드상의 argument length는 2이지만 byte code상으로는
-        // 3이다.
+        // 대상 class가 non-static이기 때문에 코드상의 argument length는 2이지만 byte code상으로는 3이다.
         if (args.length != 3) {
             return;
         }
@@ -30,8 +37,8 @@ public class InvokeTaskConstructorInterceptor implements SimpleAroundInterceptor
             return;
         }
 
-        setChannelHandlerContext.invoke(target, (org.jboss.netty.channel.ChannelHandlerContext) args[1]);
-        setMessageEvent.invoke(target, (org.jboss.netty.channel.MessageEvent) args[2]);
+        channelHandlerContextAccessor.set(target, args[1]);
+        messageEventAccessor.set(target, args[2]);
     }
 
     @Override
