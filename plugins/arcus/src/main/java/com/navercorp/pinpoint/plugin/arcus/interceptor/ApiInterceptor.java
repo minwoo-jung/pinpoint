@@ -12,7 +12,6 @@ import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.common.ServiceType;
@@ -30,7 +29,7 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor implements 
     private final MetadataAccessor serviceCodeAccessor;
     private final MetadataAccessor operationAccessor;
     
-    public ApiInterceptor(TraceContext context, @Cached MethodInfo targetMethod,
+    public ApiInterceptor(TraceContext context, MethodInfo targetMethod,
             @Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor, @Name(METADATA_OPERATION) MetadataAccessor operationAccessor, boolean traceKey) {
         super(ApiInterceptor.class);
         

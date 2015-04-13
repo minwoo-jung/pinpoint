@@ -19,7 +19,6 @@ import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
@@ -30,7 +29,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  */
 public class GatewayClientInternalMethodInterceptor extends SpanEventSimpleAroundInterceptor implements NbaseArcConstants {
 
-    public GatewayClientInternalMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor) {
+    public GatewayClientInternalMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
         super(GatewayClientInternalMethodInterceptor.class);
 
         setTraceContext(traceContext);

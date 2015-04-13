@@ -22,7 +22,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupTransaction;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
@@ -39,7 +38,7 @@ public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterce
     private MetadataAccessor destinationIdAccessor;
     private InterceptorGroup interceptorGroup;
 
-    public GatewayClientMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, InterceptorGroup interceptorGroup) {
+    public GatewayClientMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, InterceptorGroup interceptorGroup) {
         super(GatewayClientMethodInterceptor.class);
 
         this.destinationIdAccessor = destinationIdAccessor;

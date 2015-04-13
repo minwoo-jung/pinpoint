@@ -10,11 +10,8 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
-import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 
 /**
@@ -33,7 +30,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
     private final MetadataAccessor nimmAddressAccessor;
     // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고 있음.
     
-    public InvokeMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor descriptor, @Name(METADATA_NIMM_ADDRESS) MetadataAccessor nimmAddressAccessor) {
+    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NIMM_ADDRESS) MetadataAccessor nimmAddressAccessor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
         this.nimmAddressAccessor = nimmAddressAccessor;

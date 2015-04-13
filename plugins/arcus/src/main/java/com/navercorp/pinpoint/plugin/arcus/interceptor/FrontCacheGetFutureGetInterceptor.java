@@ -7,7 +7,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
@@ -25,7 +24,7 @@ public class FrontCacheGetFutureGetInterceptor implements SimpleAroundIntercepto
     private final TraceContext traceContext;
     private final MetadataAccessor cacheNameAccessor;
     
-    public FrontCacheGetFutureGetInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(MEATDATA_CACHE_NAME) MetadataAccessor cacheNameAccessor) {
+    public FrontCacheGetFutureGetInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(MEATDATA_CACHE_NAME) MetadataAccessor cacheNameAccessor) {
         this.methodDescriptor = methodDescriptor;
         this.traceContext = traceContext;
         this.cacheNameAccessor = cacheNameAccessor;

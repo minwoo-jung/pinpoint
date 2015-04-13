@@ -9,7 +9,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
+import com.navercorp.pinpoint.bootstrap.plugin.annotation.NoCache;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector;
@@ -30,7 +30,7 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
     private final MethodDescriptor descriptor;
     private final MetadataAccessor serverAddressAccessor;
     
-    public ConnectorConstructorInterceptor(TraceContext traceContext, @Cached MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+    public ConnectorConstructorInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
         this.serverAddressAccessor = serverAddressAccessor;

@@ -24,7 +24,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupTransaction;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
@@ -44,7 +43,7 @@ public class RedisConnectionSendCommandMethodInterceptor implements SimpleAround
     private MetadataAccessor endPointAccessor;
     private InterceptorGroup interceptorGroup;
 
-    public RedisConnectionSendCommandMethodInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor, InterceptorGroup interceptorGroup) {
+    public RedisConnectionSendCommandMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor, InterceptorGroup interceptorGroup) {
         this.endPointAccessor = endPointAccessor;
         this.interceptorGroup = interceptorGroup;
     }

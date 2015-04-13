@@ -18,7 +18,6 @@ package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 
 /**
@@ -30,7 +29,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
  */
 public class RedisClusterPipelineConstructorInterceptor extends GatewayServerMetadataReadInterceptor {
 
-    public RedisClusterPipelineConstructorInterceptor(TraceContext traceContext, @Cached MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
+    public RedisClusterPipelineConstructorInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
         super(traceContext, methodDescriptor, destinationIdAccessor, endPointAccessor);
     }
 }

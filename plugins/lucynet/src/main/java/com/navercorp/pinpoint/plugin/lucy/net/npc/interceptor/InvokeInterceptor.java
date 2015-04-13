@@ -11,7 +11,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Cached;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 
@@ -24,7 +23,7 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
     private final MethodDescriptor descriptor;
     private final MetadataAccessor serverAddressAccessor;
     
-    public InvokeInterceptor(TraceContext traceContext, @Cached MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+    public InvokeInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
         this.serverAddressAccessor = serverAddressAccessor;
