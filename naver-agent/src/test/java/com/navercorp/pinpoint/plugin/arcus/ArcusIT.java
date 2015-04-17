@@ -106,7 +106,7 @@ public class ArcusIT {
         
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         
-        verifier.printCachedApis(System.out);
+        verifier.printCache(System.out);
         verifier.printBlocks(System.out);
 
         verifier.verifyApi(ARCUS, set, KEY);
