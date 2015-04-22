@@ -43,7 +43,7 @@ import com.navercorp.pinpoint.test.plugin.Repository;
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @Repository("http://maven.cubrid.org")
-@Dependency({"cubrid:cubrid-jdbc:8.4.4.0227"})
+@Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.0.0.0478],[9.1.0.0212],[9.2.19.0003],[9.3.2,)"})
 public class CubridIT {
     private static final String CUBRID = "CUBRID";
     private static final String CUBRID_EXECUTE_QUERY = "CUBRID_EXECUTE_QUERY";
@@ -64,6 +64,8 @@ public class CubridIT {
     public void test() throws Exception {
         Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
         
+        conn.setAutoCommit(false);
+        
         String insertQuery = "INSERT INTO test (name, age) VALUES (?, ?)";
         String selectQuery = "SELECT * FROM test";
         String deleteQuery = "DELETE FROM test";
@@ -83,6 +85,8 @@ public class CubridIT {
         Statement delete = conn.createStatement();
         delete.executeUpdate(deleteQuery);
         
+        conn.commit();
+        
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         
         verifier.printCache(System.out);
@@ -91,8 +95,12 @@ public class CubridIT {
         Class<?> driverClass = Class.forName("cubrid.jdbc.driver.CUBRIDDriver");
         Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
         verifier.verifyTraceBlock(BlockType.EVENT, CUBRID, connect, null, DB_ADDRESS, null, DB_NAME, ExpectedAnnotation.cachedArgs(JDBC_URL));
-
+        
         Class<?> connectionClass = Class.forName("cubrid.jdbc.driver.CUBRIDConnection");
+        Method setAutoCommit = connectionClass.getDeclaredMethod("setAutoCommit", boolean.class);
+        verifier.verifyTraceBlock(BlockType.EVENT, CUBRID, setAutoCommit, null, DB_ADDRESS, null, DB_NAME, ExpectedAnnotation.args(false));
+        
+
         Method prepareStatement = connectionClass.getDeclaredMethod("prepareStatement", String.class);
         verifier.verifyTraceBlock(BlockType.EVENT, CUBRID, prepareStatement, null, DB_ADDRESS, null, DB_NAME, ExpectedAnnotation.sql(insertQuery, null));
         
@@ -106,5 +114,8 @@ public class CubridIT {
         
         Method executeUpdate = statement.getDeclaredMethod("executeUpdate", String.class);
         verifier.verifyTraceBlock(BlockType.EVENT, CUBRID_EXECUTE_QUERY, executeUpdate, null, DB_ADDRESS, null, DB_NAME, ExpectedAnnotation.sql(deleteQuery, null));
+        
+        Method commit = connectionClass.getDeclaredMethod("commit");
+        verifier.verifyTraceBlock(BlockType.EVENT, CUBRID, commit, null, DB_ADDRESS, null, DB_NAME);
     }
 }

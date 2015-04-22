@@ -44,7 +44,7 @@ import com.navercorp.pinpoint.test.plugin.Repository;
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @Repository("http://repo.nhncorp.com/maven2")
-@Dependency({"arcus:arcus-client:[1.5.3,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
+@Dependency({"arcus:arcus-client:[1.5.4],[1.6.0],[1.6.4,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class ArcusIT {
     private static final String KEY = "test:hello";
 
