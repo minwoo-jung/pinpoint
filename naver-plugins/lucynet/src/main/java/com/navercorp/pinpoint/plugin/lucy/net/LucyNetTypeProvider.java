@@ -1,6 +1,6 @@
 package com.navercorp.pinpoint.plugin.lucy.net;
-import com.navercorp.pinpoint.common.plugin.TypeProvider;
-import com.navercorp.pinpoint.common.plugin.TypeSetupContext;
+import com.navercorp.pinpoint.common.trace.TraceMetadataProvider;
+import com.navercorp.pinpoint.common.trace.TraceMetadataSetupContext;
 
 /**
  * Copyright 2014 NAVER Corp.
@@ -21,13 +21,13 @@ import com.navercorp.pinpoint.common.plugin.TypeSetupContext;
  * @author Jongho Moon
  *
  */
-public class LucyNetTypeProvider implements TypeProvider, LucyNetConstants {
+public class LucyNetTypeProvider implements TraceMetadataProvider, LucyNetConstants {
 
     /* (non-Javadoc)
-     * @see com.navercorp.pinpoint.common.plugin.TypeProvider#setup(com.navercorp.pinpoint.common.plugin.TypeSetupContext)
+     * @see com.navercorp.pinpoint.common.plugin.TraceMetadataProvider#setup(com.navercorp.pinpoint.common.plugin.TraceMetadataSetupContext)
      */
     @Override
-    public void setup(TypeSetupContext context) {
+    public void setup(TraceMetadataSetupContext context) {
 //        context.addType(NPC_CLIENT);
 //        context.addAnnotationKey(NPC_CONNECT_OPTION);
 //        context.addAnnotationKey(NPC_PARAM);
