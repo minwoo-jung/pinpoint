@@ -79,7 +79,7 @@ public class TomcatIT {
         Method invoke = standardHostValve.getMethod("invoke", request, response);
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
-        verifier.printCachedApis(System.out);
+        verifier.printCache(System.out);
         verifier.printBlocks(System.out);
         
         verifier.ignoreServiceType(JDK_HTTPURLCONNECTOR);

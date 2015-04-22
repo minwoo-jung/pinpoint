@@ -11,7 +11,7 @@ import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
-import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptorForPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.common.ServiceType;
@@ -22,7 +22,7 @@ import com.navercorp.pinpoint.plugin.arcus.ParameterUtils;
  * @author emeroad
  */
 @Group(ArcusConstants.ARCUS_SCOPE)
-public class ApiInterceptor extends SpanEventSimpleAroundInterceptor implements ArcusConstants {
+public class ApiInterceptor extends SpanEventSimpleAroundInterceptorForPlugin implements ArcusConstants {
     private final boolean traceKey;
     private final int keyIndex;
     
@@ -31,7 +31,7 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor implements 
     
     public ApiInterceptor(TraceContext context, MethodInfo targetMethod,
             @Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor, @Name(METADATA_OPERATION) MetadataAccessor operationAccessor, boolean traceKey) {
-        super(ApiInterceptor.class);
+        super(context, targetMethod.getDescriptor());
         
         if (traceKey) {
             int index = ParameterUtils.findFirstString(targetMethod, 3);
@@ -50,9 +50,6 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptor implements 
         
         this.serviceCodeAccessor = serviceCodeAccessor;
         this.operationAccessor = operationAccessor;
-        
-        this.setTraceContext(context);
-        this.setMethodDescriptor(targetMethod.getDescriptor());
     }
 
     @Override
