@@ -21,7 +21,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
-import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupTransaction;
+import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupInvocation;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
@@ -60,7 +60,7 @@ public class RedisConnectionSendCommandMethodInterceptor implements SimpleAround
             }
 
             final String endPoint = endPointAccessor.get(target);
-            final InterceptorGroupTransaction scope = interceptorGroup.getCurrentTransaction();
+            final InterceptorGroupInvocation scope = interceptorGroup.getCurrentInvocation();
             scope.setAttachment(endPoint);
         } catch (Throwable t) {
             logger.warn("Failed to before process. {}", t.getMessage(), t);
