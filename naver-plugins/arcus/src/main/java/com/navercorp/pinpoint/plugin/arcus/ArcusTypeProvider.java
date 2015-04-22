@@ -14,21 +14,21 @@
  */
 package com.navercorp.pinpoint.plugin.arcus;
 
-import com.navercorp.pinpoint.common.plugin.TypeProvider;
-import com.navercorp.pinpoint.common.plugin.TypeSetupContext;
+import com.navercorp.pinpoint.common.trace.TraceMetadataProvider;
+import com.navercorp.pinpoint.common.trace.TraceMetadataSetupContext;
 
-import static com.navercorp.pinpoint.common.AnnotationKeyMatcher.ARGS_MATCHER;
+import static com.navercorp.pinpoint.common.trace.AnnotationKeyMatcher.*;
 
 /**
  * @author Jongho Moon
  *
  */
-public class ArcusTypeProvider implements TypeProvider, ArcusConstants {
+public class ArcusTypeProvider implements TraceMetadataProvider, ArcusConstants {
 
     @Override
-    public void setup(TypeSetupContext context) {
-        context.addType(ARCUS, ARGS_MATCHER);
-        context.addType(ARCUS_FUTURE_GET);
-        context.addType(ARCUS_EHCACHE_FUTURE_GET);
+    public void setup(TraceMetadataSetupContext context) {
+        context.addServiceType(ARCUS, ARGS_MATCHER);
+        context.addServiceType(ARCUS_FUTURE_GET);
+        context.addServiceType(ARCUS_EHCACHE_FUTURE_GET);
     }
 }

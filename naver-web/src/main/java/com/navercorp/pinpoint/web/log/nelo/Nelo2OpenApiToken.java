@@ -27,7 +27,7 @@ public class Nelo2OpenApiToken {
 	/** Refresh Token */
 	private String refresh_token;
 
-	/** Token Type */
+	/** Token ServiceTypeInfo */
 	private String token_type;
 
 	/** Expires In */
@@ -65,14 +65,14 @@ public class Nelo2OpenApiToken {
 	}
 
 	/**
-	 * @return Token Type
+	 * @return Token ServiceTypeInfo
 	 */
 	public String getToken_type() {
 		return token_type;
 	}
 
 	/**
-	 * @param token_type Token Type
+	 * @param token_type Token ServiceTypeInfo
 	 */
 	public void setToken_type(String token_type) {
 		this.token_type = token_type;
