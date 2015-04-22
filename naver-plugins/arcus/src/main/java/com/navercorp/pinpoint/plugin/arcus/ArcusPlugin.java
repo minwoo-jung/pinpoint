@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.arcus;
 import static com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassConditions.*;
 
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.BaseClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
@@ -16,7 +16,7 @@ import com.navercorp.pinpoint.plugin.arcus.filter.MemcachedMethodFilter;
 public class ArcusPlugin implements ProfilerPlugin, ArcusConstants {
 
     @Override
-    public void setup(ProfilerPluginSetupContext context) {
+    public void setup(ProfilerPluginContext context) {
         ArcusPluginConfig config = new ArcusPluginConfig(context.getConfig());
         context.setAttribute(ArcusConstants.ATTRIBUTE_CONFIG, config);
 
@@ -43,7 +43,7 @@ public class ArcusPlugin implements ProfilerPlugin, ArcusConstants {
         }
     }
 
-    private void addArcusClientEditor(ProfilerPluginSetupContext context, final ArcusPluginConfig config) {
+    private void addArcusClientEditor(ProfilerPluginContext context, final ArcusPluginConfig config) {
 
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.ArcusClient");
 
@@ -65,7 +65,7 @@ public class ArcusPlugin implements ProfilerPlugin, ArcusConstants {
         context.addClassFileTransformer(builder.build());
     }
 
-    private void addCacheManagerEditor(ProfilerPluginSetupContext context) {
+    private void addCacheManagerEditor(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.CacheManager");
         builder.injectMetadata(METADATA_SERVICE_CODE);
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.arcus.interceptor.CacheManagerConstructInterceptor");
@@ -73,14 +73,14 @@ public class ArcusPlugin implements ProfilerPlugin, ArcusConstants {
         context.addClassFileTransformer(builder.build());
     }
 
-    private void addBaseOperationImplEditor(ProfilerPluginSetupContext context) {
+    private void addBaseOperationImplEditor(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.protocol.BaseOperationImpl");
         builder.injectMetadata(METADATA_SERVICE_CODE);
 
         context.addClassFileTransformer(builder.build());
     }
 
-    private void addFrontCacheGetFutureEditor(ProfilerPluginSetupContext context) {
+    private void addFrontCacheGetFutureEditor(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.plugin.FrontCacheGetFuture");
         builder.injectMetadata(MEATDATA_CACHE_NAME);
         builder.injectMetadata(METADATA_CACHE_KEY);
@@ -96,7 +96,7 @@ public class ArcusPlugin implements ProfilerPlugin, ArcusConstants {
         context.addClassFileTransformer(builder.build());
     }
 
-    private void addFrontCacheMemcachedClientEditor(ProfilerPluginSetupContext context, final ArcusPluginConfig config) {
+    private void addFrontCacheMemcachedClientEditor(ProfilerPluginContext context, final ArcusPluginConfig config) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.plugin.FrontCacheMemcachedClient");
 
         builder.conditional(hasDeclaredMethod("putFrontCache", "java.lang.String", "java.util.concurrent.Future", "long"),
@@ -114,7 +114,7 @@ public class ArcusPlugin implements ProfilerPlugin, ArcusConstants {
         context.addClassFileTransformer(builder.build());
     }
 
-    private void addMemcachedClientEditor(ProfilerPluginSetupContext context, final ArcusPluginConfig config) {
+    private void addMemcachedClientEditor(ProfilerPluginContext context, final ArcusPluginConfig config) {
 
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.MemcachedClient");
         builder.conditional(hasDeclaredMethod("addOp", "java.lang.String", "net.spy.memcached.ops.Operation"),
@@ -137,34 +137,34 @@ public class ArcusPlugin implements ProfilerPlugin, ArcusConstants {
         context.addClassFileTransformer(builder.build());
     }
 
-    private void getFutureEditor(ProfilerPluginSetupContext context, BaseClassFileTransformerBuilder builder) {
+    private void getFutureEditor(ProfilerPluginContext context, BaseClassFileTransformerBuilder builder) {
         builder.injectMetadata(ArcusConstants.METADATA_OPERATION);
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureSetOperationInterceptor");
         builder.injectInterceptor("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureGetInterceptor");
     }
 
-    private void addCollectionFutureEditor(ProfilerPluginSetupContext context) {
+    private void addCollectionFutureEditor(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.internal.CollectionFuture");
         getFutureEditor(context, builder);
 
         context.addClassFileTransformer(builder.build());
     }
 
-    private void addGetFutureEditor(ProfilerPluginSetupContext context) {
+    private void addGetFutureEditor(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.internal.GetFuture");
         getFutureEditor(context, builder);
 
         context.addClassFileTransformer(builder.build());
     }
 
-    private void addOperationFutureEditor(ProfilerPluginSetupContext context) {
+    private void addOperationFutureEditor(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.internal.OperationFuture");
         getFutureEditor(context, builder);
 
         context.addClassFileTransformer(builder.build());
     }
 
-    private void getImmediateFutureEditor(ProfilerPluginSetupContext context) {
+    private void getImmediateFutureEditor(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("net.spy.memcached.internal.ImmediateFuture");
         getFutureEditor(context, builder);
 

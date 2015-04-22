@@ -1,6 +1,6 @@
 package com.navercorp.pinpoint.plugin.lucy.net;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassConditions;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
@@ -28,7 +28,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileT
 public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
 
     @Override
-    public void setup(ProfilerPluginSetupContext context) {
+    public void setup(ProfilerPluginContext context) {
         // lucy-net
         addCompositeInvocationFutureTransformer(context);
         addDefaultInvocationFutureTransformer(context);
@@ -45,7 +45,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         addNpcHessianConnectorTransformer(context);
     }
 
-    private void addCompositeInvocationFutureTransformer(ProfilerPluginSetupContext context) {
+    private void addCompositeInvocationFutureTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.net.invoker.CompositeInvocationFuture");
 
         // FIXME 이렇게 하면 api type이 internal method로 보이는데 사실 NPC_CLIENT, NIMM_CLIENT로 보여야함. servicetype으로 넣기에 애매해서. 어떻게 수정할 것인지는 나중에 고민.
@@ -53,7 +53,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         context.addClassFileTransformer(builder.build());
     }
     
-    private void addDefaultInvocationFutureTransformer(ProfilerPluginSetupContext context) {
+    private void addDefaultInvocationFutureTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.net.invoker.DefaultInvocationFuture");
         
         // FIXME 이렇게 하면 api type이 internal method로 보이는데 사실 NPC_CLIENT, NIMM_CLIENT로 보여야함. servicetype으로 넣기에 애매해서. 어떻게 수정할 것인지는 나중에 고민.
@@ -62,7 +62,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         context.addClassFileTransformer(builder.build());
     }
     
-    private void addNimmInvokerTransformer(ProfilerPluginSetupContext context) {
+    private void addNimmInvokerTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.nimm.connector.bloc.NimmInvoker");
         
         builder.injectMetadata(METADATA_NIMM_ADDRESS);
@@ -76,7 +76,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         context.addClassFileTransformer(builder.build());
     }
     
-    private void addKeepAliveNpcHessianConnectorTransformer(ProfilerPluginSetupContext context) {
+    private void addKeepAliveNpcHessianConnectorTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector");
         buildCommonConnectorTransformer(builder);
 
@@ -94,32 +94,32 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         builder.editMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]").injectInterceptor("com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InvokeInterceptor");
     }
     
-    private void addLightWeightConnectorTransformer(ProfilerPluginSetupContext context) {
+    private void addLightWeightConnectorTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.LightWeightConnector");
         buildCommonConnectorTransformer(builder);
         context.addClassFileTransformer(builder.build());
     }
 
     
-    private void addLightWeightNbfpConnectorTransformer(ProfilerPluginSetupContext context) {
+    private void addLightWeightNbfpConnectorTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.LightWeightNbfpConnector");
         buildCommonConnectorTransformer(builder);
         context.addClassFileTransformer(builder.build());
     }
 
-    private void addLightWeightNpcHessianConnectorTransformer(ProfilerPluginSetupContext context) {
+    private void addLightWeightNpcHessianConnectorTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.LightWeightNpcHessianConnector");
         buildCommonConnectorTransformer(builder);
         context.addClassFileTransformer(builder.build());
     }
     
-    private void addNioNpcHessianConnectorTransformer(ProfilerPluginSetupContext context) {
+    private void addNioNpcHessianConnectorTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.NioNpcHessianConnector");
         buildCommonConnectorTransformer(builder);
         context.addClassFileTransformer(builder.build());
     }
     
-    private void addNpcHessianConnectorTransformer(ProfilerPluginSetupContext context) {
+    private void addNpcHessianConnectorTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.NpcHessianConnector");
 
         builder.conditional(ClassConditions.hasDeclaredMethod("createConnecor", "com.nhncorp.lucy.npc.connector.NpcConnectorOption"), new ConditionalClassFileTransformerSetup() {
