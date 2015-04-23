@@ -8,10 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.navercorp.pinpoint.collector.dao.TracesDao;
 import com.navercorp.pinpoint.collector.util.AcceptedTimeService;
-import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
+import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.SpanUtils;
 import com.navercorp.pinpoint.common.util.TransactionIdUtils;
 import com.navercorp.pinpoint.thrift.dto.TAnnotation;
