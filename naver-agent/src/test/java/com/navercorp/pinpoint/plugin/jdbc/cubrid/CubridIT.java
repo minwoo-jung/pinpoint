@@ -31,6 +31,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.BlockType
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.ExpectedAnnotation;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
+import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
@@ -38,26 +39,38 @@ import com.navercorp.pinpoint.test.plugin.Repository;
 
 /**
  * @author Jongho Moon
- *
+ * 
+ * Cannot test cubrid-jdbc 9.0.0 because it is not compatible with test db version 8.4.3.1025
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @Repository("http://maven.cubrid.org")
-@Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.0.0.0478],[9.1.0.0212],[9.2.19.0003],[9.3.2,)"})
+@Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.1.0.0212],[9.2.19.0003],[9.3.2,)"})
 public class CubridIT {
     private static final String CUBRID = "CUBRID";
     private static final String CUBRID_EXECUTE_QUERY = "CUBRID_EXECUTE_QUERY";
     
     
-    private static final String DB_ID = "pinpoint";
-    private static final String DB_PASSWORD = "pinpoint";
-    private static final String DB_ADDRESS = "10.101.63.160:30102";
-    private static final String DB_NAME = "pinpoint-test";
-    private static final String JDBC_URL = "jdbc:cubrid:" + DB_ADDRESS + ":" + DB_NAME + ":::";
+    private static String DB_ID;
+    private static String DB_PASSWORD;
+    private static String DB_ADDRESS;
+    private static String DB_NAME;
+    private static String JDBC_URL;
 
     @BeforeClass
     public static void setup() throws Exception {
         Class.forName("cubrid.jdbc.driver.CUBRIDDriver");
+        
+        Properties db = PropertyUtils.loadPropertyFromClassPath("database.properties");
+        
+        JDBC_URL = db.getProperty("cubrid.url");
+        String[] tokens = JDBC_URL.split(":");
+        
+        DB_ADDRESS = tokens[2] + ":" + tokens[3];
+        DB_NAME = tokens[4];
+        
+        DB_ID = db.getProperty("cubrid.user");
+        DB_PASSWORD = db.getProperty("cubrid.password");
     }
     
     @Test
