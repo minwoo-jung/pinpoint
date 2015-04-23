@@ -29,8 +29,8 @@ import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
-import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.line.LineConstants;
 import com.navercorp.pinpoint.profiler.context.SpanId;
 
@@ -302,7 +302,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
         // http 스펙상으로는 아래가 맞긴한데. 강제 설정 변경수가 있어서. 아래 처럼할 경우 문제가 생길수 있는것 같음.
         // 코드에 utf8로 박혀 있으면 그냥 UTF-8로 하는게 더 안전할듯함.
 //        // netty 3.9 면 getHeader가 deprecated 되었다. 추후 없어질수는 있기는 한데 일단 동작에 문제가 없는듯 함.
-//        final String contentTypeValue = request.getHeader("Content-Type");
+//        final String contentTypeValue = request.getHeader("Content-ServiceTypeInfo");
 //        // charset.forName을 부르는게 그렇게 좋지는 않은것 같음.
 //        return Charset.forName(HttpUtils.parseContentTypeCharset(contentTypeValue, DEFAULT_CHARSET));
     }

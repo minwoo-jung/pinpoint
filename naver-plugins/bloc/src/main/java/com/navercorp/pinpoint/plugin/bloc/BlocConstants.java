@@ -14,12 +14,12 @@
  */
 package com.navercorp.pinpoint.plugin.bloc;
 
-import static com.navercorp.pinpoint.common.AnnotationKeyProperty.*;
-import static com.navercorp.pinpoint.common.HistogramSchema.*;
-import static com.navercorp.pinpoint.common.ServiceTypeProperty.*;
+import static com.navercorp.pinpoint.common.trace.AnnotationKeyProperty.*;
+import static com.navercorp.pinpoint.common.trace.HistogramSchema.*;
+import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.*;
 
-import com.navercorp.pinpoint.common.AnnotationKey;
-import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 
 /**
  * @author Jongho Moon

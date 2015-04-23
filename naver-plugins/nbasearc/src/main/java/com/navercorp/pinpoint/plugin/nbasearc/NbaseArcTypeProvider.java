@@ -15,19 +15,19 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc;
 
-import com.navercorp.pinpoint.common.plugin.TypeProvider;
-import com.navercorp.pinpoint.common.plugin.TypeSetupContext;
+import com.navercorp.pinpoint.common.trace.TraceMetadataProvider;
+import com.navercorp.pinpoint.common.trace.TraceMetadataSetupContext;
 
 /**
  * 
  * @author jaehong.kim
  *
  */
-public class NbaseArcTypeProvider implements TypeProvider, NbaseArcConstants{
+public class NbaseArcTypeProvider implements TraceMetadataProvider, NbaseArcConstants{
 
     @Override
-    public void setup(TypeSetupContext context) {
-        context.addType(NBASE_ARC);
-        context.addType(NBASE_ARC_INTERNAL);
+    public void setup(TraceMetadataSetupContext context) {
+        context.addServiceType(NBASE_ARC);
+        context.addServiceType(NBASE_ARC_INTERNAL);
     }
 }

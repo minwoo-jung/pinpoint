@@ -1,10 +1,10 @@
 package com.navercorp.pinpoint.plugin.arcus;
 
-import static com.navercorp.pinpoint.common.AnnotationKeyMatcher.*;
-import static com.navercorp.pinpoint.common.HistogramSchema.*;
-import static com.navercorp.pinpoint.common.ServiceTypeProperty.*;
+import static com.navercorp.pinpoint.common.trace.AnnotationKeyMatcher.*;
+import static com.navercorp.pinpoint.common.trace.HistogramSchema.*;
+import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.*;
 
-import com.navercorp.pinpoint.common.ServiceType;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 
 
 
