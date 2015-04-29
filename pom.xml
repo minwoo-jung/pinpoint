@@ -176,6 +176,14 @@
                 <env>dev</env>
             </properties>
         </profile>
+        
+        <!-- Development server -->
+        <profile>
+            <id>alpha</id>
+            <properties>
+                <env>alpha</env>
+            </properties>
+        </profile>
 
         <!-- real server -->
         <profile>
