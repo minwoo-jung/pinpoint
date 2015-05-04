@@ -28,8 +28,9 @@
 
     <import resource="classpath:applicationContext-hbase.xml" />
 
+    <bean class="com.navercorp.pinpoint.ngrinder.NGrinderTestVerifier"/>
     <bean class="com.navercorp.pinpoint.web.dao.hbase.HbaseApplicationTraceIndexDao"/>
     <bean id="transactionIdMapper" class="com.navercorp.pinpoint.web.mapper.TransactionIdMapper"/>
     <bean id="traceIndexScatterMapper" class="com.navercorp.pinpoint.web.mapper.TraceIndexScatterMapper"/>
-
+    
 </beans>

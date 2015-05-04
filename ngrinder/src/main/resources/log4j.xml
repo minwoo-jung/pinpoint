@@ -88,6 +88,11 @@
         <level value="INFO"/>
         <appender-ref ref="console"/>
     </logger>
+    
+    <logger name="org.apache.http">
+        <level value="INFO"/>
+        <appender-ref ref="console"/>
+    </logger>
 
     <root>
         <level value="DEBUG"/>
