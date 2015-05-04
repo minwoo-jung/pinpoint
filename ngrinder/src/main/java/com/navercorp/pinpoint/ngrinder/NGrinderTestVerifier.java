@@ -17,11 +17,7 @@ package com.navercorp.pinpoint.ngrinder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.navercorp.pinpoint.profiler.util.NameValueList;
 import com.navercorp.pinpoint.web.dao.hbase.HbaseApplicationTraceIndexDao;
@@ -33,8 +29,6 @@ import com.navercorp.pinpoint.web.vo.TransactionId;
  * @author Jongho Moon
  *
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext-test.xml")
 public class NGrinderTestVerifier {
     private final List<String> agents = new ArrayList<String>();
     private final NameValueList<MissingSequenceChecker> checkers = new NameValueList<MissingSequenceChecker>();
@@ -42,22 +36,20 @@ public class NGrinderTestVerifier {
     @Autowired
     private HbaseApplicationTraceIndexDao dao;
     
-    private static final int FETCH_SIZE = 10000;
-    private static final String APPLICATION_NAME = "TEST_4"; 
-
-    @Test
-    public void test() throws Exception {
+    private static final int FETCH_SIZE = 50000;
+    
+    public void verify(String testId) {
         Range range = new Range(0, Long.MAX_VALUE);
         
         while (true) { 
-            LimitedScanResult<List<TransactionId>> result = dao.scanTraceIndex(APPLICATION_NAME, range, FETCH_SIZE);
+            LimitedScanResult<List<TransactionId>> result = dao.scanTraceIndex(testId, range, FETCH_SIZE);
             List<TransactionId> list = result.getScanData();
             
             System.out.println("TRACES[" + list.size() + "]");
             
             for (TransactionId id : list) {
+                
                 String agentId = id.getAgentId() + ":" + id.getAgentStartTime();
-    
                 MissingSequenceChecker checker = checkers.get(agentId);
                 
                 if (checker == null) {
