@@ -80,7 +80,13 @@ public class NGrinder {
 
     private void login() throws IOException {
         System.out.println("Login to SSO system...");
-        HttpUriRequest post = RequestBuilder.post().setUri("https://sso.navercorp.com/siteminderagent/forms/login.fcc").addParameter("target", "http://ngrinder.navercorp.com").addParameter("smauthreason", "0").addParameter("smagentname", "ngrinder.nhncorp.com").addParameter("USER", userId).addParameter("PASSWORD", password).build();
+        HttpUriRequest post = RequestBuilder.post()
+                .setUri("https://sso.navercorp.com/siteminderagent/forms/login.fcc")
+                .addParameter("target", "http://ngrinder.navercorp.com")
+                .addParameter("smauthreason", "0")
+                .addParameter("smagentname", "ngrinder.nhncorp.com")
+                .addParameter("USER", userId)
+                .addParameter("PASSWORD", password).build();
 
         CloseableHttpResponse response = client.execute(post);
         EntityUtils.consume(response.getEntity());
@@ -92,7 +98,10 @@ public class NGrinder {
         int page = 1;
 
         while (true) {
-            HttpUriRequest get = RequestBuilder.get().setUri(BASE_URL).addParameter("size", "10").addParameter("page", String.valueOf(page)).build();
+            HttpUriRequest get = RequestBuilder.get()
+                    .setUri(BASE_URL)
+                    .addParameter("size", "10")
+                    .addParameter("page", String.valueOf(page)).build();
             CloseableHttpResponse response = client.execute(get);
 
             try {
@@ -138,7 +147,7 @@ public class NGrinder {
         map.put("useRampUp", false);
         map.put("rampUpType", "PROCESS");
         map.put("threshold", "D");
-        map.put("scriptName", "pinpoint/collector.groovy");
+        map.put("scriptName", "collector/collector.groovy");
         map.put("duration", duration);
         map.put("runCount", 0);
         map.put("region", "chuncheon");

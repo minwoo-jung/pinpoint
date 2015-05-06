@@ -37,7 +37,6 @@ public class CollectorPerfTestRunner {
     }
     
     public static void main(String args[]) {
-        new CollectorPerfTestRunner("id", "pw").run(2, 1, 10, 30 * 1000);
+        new CollectorPerfTestRunner("kr99020", "pinpoint1!2@3#").run(2, 1, 10, 30 * 1000);
     }
-
 }
