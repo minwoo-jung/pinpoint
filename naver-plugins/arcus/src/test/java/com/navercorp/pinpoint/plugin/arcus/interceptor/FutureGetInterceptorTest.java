@@ -1,34 +1,5 @@
 package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import net.spy.memcached.MemcachedNode;
-import net.spy.memcached.internal.OperationFuture;
-import net.spy.memcached.ops.Operation;
-import net.spy.memcached.ops.OperationCallback;
-import net.spy.memcached.ops.OperationErrorType;
-import net.spy.memcached.ops.OperationException;
-import net.spy.memcached.ops.OperationState;
-import net.spy.memcached.protocol.ascii.AsciiMemcachedNodeImpl;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.navercorp.pinpoint.plugin.arcus.interceptor.FutureGetInterceptor;
-import com.navercorp.pinpoint.test.BaseInterceptorTest;
-import com.navercorp.pinpoint.test.MockTraceContextFactory;
 
 public class FutureGetInterceptorTest /*extends BaseInterceptorTest*/ {
 
