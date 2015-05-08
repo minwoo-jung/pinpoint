@@ -17,6 +17,7 @@ import com.navercorp.pinpoint.common.util.TransactionIdUtils;
 import com.navercorp.pinpoint.thrift.dto.TAnnotation;
 import com.navercorp.pinpoint.thrift.dto.TAnnotationValue;
 import com.navercorp.pinpoint.thrift.dto.TSpan;
+import com.navercorp.pinpoint.web.calltree.span.CallTreeIterator;
 import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
 import com.navercorp.pinpoint.web.service.SpanResult;
 import com.navercorp.pinpoint.web.service.SpanService;
@@ -116,8 +117,8 @@ public class SpanServiceTest {
         TransactionId traceId = new TransactionId(id.getAgentId(), id.getAgentStartTime(), id.getTransactionSequence());
         // selectedHint를 좀더 정확히 수정할것.
         SpanResult spanResult = spanService.selectSpan(traceId, spanAcceptTime);
-        List<SpanAlign> sort = spanResult.getSpanAlignList();
-        for (SpanAlign spanAlign : sort) {
+        CallTreeIterator iterator = spanResult.getCallTree();
+        for (SpanAlign spanAlign : iterator.values()) {
             logger.info("depth:{} {}", spanAlign.getDepth(), spanAlign.getSpanBo());
         }
         // reorder(spans);
