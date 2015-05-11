@@ -26,7 +26,7 @@ import java.util.Scanner;
 
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestInstance;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestContext;
-import com.navercorp.pinpoint.test.plugin.StreamRedirecter;
+import com.navercorp.pinpoint.test.plugin.StreamRedirector;
 
 /**
  * @author Jongho Moon
@@ -87,7 +87,7 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
 
     @Override
     public Scanner startTest(Process process) throws Throwable {
-        new Thread(new StreamRedirecter(process.getInputStream(), System.out)).start();
+        new Thread(new StreamRedirector(process.getInputStream(), System.out)).start();
 
         String testClass = context.getTestClass().getName();
         String testClassLocation = context.getTestClassLocation();
@@ -150,7 +150,7 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
         builder.redirectErrorStream(true);
         
         Process stopProcess = builder.start();
-        new Thread(new StreamRedirecter(stopProcess.getInputStream(), System.out)).start();
+        new Thread(new StreamRedirector(stopProcess.getInputStream(), System.out)).start();
         
         stopProcess.waitFor();
     }
