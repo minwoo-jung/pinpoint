@@ -84,7 +84,7 @@ public class TomcatIT {
         
         verifier.ignoreServiceType(JDK_HTTPURLCONNECTOR);
         verifier.verifyTraceBlock(BlockType.EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
-        verifier.verifyTraceBlock(BlockType.ROOT, TOMCAT, "Servlet Process:0", rpc, endPoint, "127.0.0.1", null);        
+        verifier.verifyTraceBlock(BlockType.ROOT, TOMCAT, "Tomcat Servlet Process", rpc, endPoint, "127.0.0.1", null);        
         verifier.verifyTraceBlockCount(0);
     }
     
