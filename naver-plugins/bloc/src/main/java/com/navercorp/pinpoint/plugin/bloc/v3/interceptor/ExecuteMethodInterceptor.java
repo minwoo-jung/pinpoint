@@ -10,9 +10,11 @@ import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
+import com.navercorp.pinpoint.bootstrap.util.NetworkUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 import external.org.apache.coyote.Request;
@@ -45,12 +47,10 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
             trace.recordEndPoint(request.protocol().toString() + ":" + request.serverName().toString() + ":" + request.getServerPort());
             trace.recordAttribute(AnnotationKey.HTTP_URL, request.requestURI().toString());
         }
-//      부모 정보를 샘플링여부를 따지면 안됨.
-//      TODO 부모정보 레코딩로직이 없음.
-//      if (!trace.isRoot()) {
-//          recordParentInfo(trace, request);
-//      }
 
+        if (!trace.isRoot()) {
+          recordParentInfo(trace, request);
+        }
     }
 
     @Override
@@ -167,5 +167,15 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
         }
 
         return params.toString();
+    }
+    
+    private void recordParentInfo(RecordableTrace trace, Request request) {
+        String parentApplicationName = request.getHeader(Header.HTTP_PARENT_APPLICATION_NAME.toString());
+        if (parentApplicationName != null) {
+            trace.recordAcceptorHost(request.getHeader(Header.HTTP_HOST.toString()));
+            final String type = request.getHeader(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
+            final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
+            trace.recordParentApplication(parentApplicationName, parentApplicationType);
+        }
     }
 }
