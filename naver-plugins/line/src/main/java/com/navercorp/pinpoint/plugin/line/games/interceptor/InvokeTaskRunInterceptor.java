@@ -118,7 +118,12 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
             short parentApplicationType = populateParentApplicationTypeFromRequest(request);
             if (parentApplicationName != null) {
                 trace.recordParentApplication(parentApplicationName, parentApplicationType);
-                trace.recordAcceptorHost(endPoint);
+                final String host = request.getHeader(Header.HTTP_HOST.toString());
+                if(host != null) {
+                    trace.recordAcceptorHost(host);
+                } else {
+                    trace.recordAcceptorHost(endPoint);
+                }
             }
         } else {
             // TODO 여기에서 client 정보를 수집할 수 있다.

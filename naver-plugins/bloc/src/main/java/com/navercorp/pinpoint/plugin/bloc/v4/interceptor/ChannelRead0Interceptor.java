@@ -243,10 +243,14 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
         String parentApplicationName = headers.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
 
         if (parentApplicationName != null) {
-            // FIXME record Acceptor Host는 URL상의 host를 가져와야한다. 일단 가져올 수 있는 방법이 없어보여 IP라도 추가해둠.
-            String acceptorHost = getIpPort(ctx.channel().localAddress());
-            trace.recordAcceptorHost(acceptorHost);
-
+            final String host = headers.get(Header.HTTP_HOST.toString());
+            if(host != null) {
+                trace.recordAcceptorHost(headers.get(Header.HTTP_HOST.toString()));
+            } else {
+                // FIXME record Acceptor Host는 URL상의 host를 가져와야한다. 일단 가져올 수 있는 방법이 없어보여 IP라도 추가해둠.
+                String acceptorHost = getIpPort(ctx.channel().localAddress());
+                trace.recordAcceptorHost(acceptorHost);
+            }
             final String type = headers.get(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
             final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
             trace.recordParentApplication(parentApplicationName, parentApplicationType);
