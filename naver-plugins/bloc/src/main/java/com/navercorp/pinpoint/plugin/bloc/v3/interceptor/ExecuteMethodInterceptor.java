@@ -172,7 +172,12 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
     private void recordParentInfo(RecordableTrace trace, Request request) {
         String parentApplicationName = request.getHeader(Header.HTTP_PARENT_APPLICATION_NAME.toString());
         if (parentApplicationName != null) {
-            trace.recordAcceptorHost(request.getHeader(Header.HTTP_HOST.toString()));
+            final String host = request.getHeader(Header.HTTP_HOST.toString());
+            if(host != null) {
+                trace.recordAcceptorHost(host);
+            } else {
+                trace.recordAcceptorHost(request.serverName().toString());
+            }
             final String type = request.getHeader(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
             final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
             trace.recordParentApplication(parentApplicationName, parentApplicationType);
