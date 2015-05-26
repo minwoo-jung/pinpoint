@@ -61,6 +61,7 @@ pinpointApp
                     "</ul>" +
                     "[기능]<br/>" +
                     "<ul>" +
+                    "<li><img src='/images/help/scatter_01.png' width='350px' height='205px'></li>" +
                     "<li><span class='glyphicon glyphicon-plus'></span> : 마우스로 영역을 드래그하여 드래그 된 영역에 속한 트랜잭션의 상세정보를 조회할 수 있습니다.</li>" +
                     "<li><span class='glyphicon glyphicon-cog'></span> : 응답시간(Y축)의 최대 또는 최소값을 변경할 수 있습니다.</li>" +
                     "<li><span class='glyphicon glyphicon-download-alt'></span> : 차트를 이미지파일로 다운로드합니다.</li>" +
