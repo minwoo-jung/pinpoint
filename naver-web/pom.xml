@@ -12,6 +12,8 @@
     <packaging>war</packaging>
 
     <properties>
+        <jdk.version>1.7</jdk.version>
+        <jdk.home>${env.JAVA_7_HOME}</jdk.home>
     </properties>
 
     <dependencies>
@@ -32,6 +34,11 @@
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-web</artifactId>
             <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>12.0.1</version>
         </dependency>
 
         <dependency>
@@ -74,6 +81,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-test</artifactId>
+            <version>${spring-batch-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
