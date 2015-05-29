@@ -23,6 +23,8 @@
                                         com.navercorp.pinpoint.testweb.service,
                                         com.navercorp.pinpoint.testweb.repository,
                                         com.navercorp.pinpoint.testweb.nimm" />
+                                        
+    <util:properties id="thriftServerProps" location="classpath:thrift.properties"/>
 
     <bean id="jdbcTemplateMysql" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
         <constructor-arg name="dataSource" ref="mysqlDataSource"/>
