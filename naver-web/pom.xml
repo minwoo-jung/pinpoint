@@ -137,7 +137,7 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.tomcat.maven</groupId>
-                        <artifactId>tomcat6-maven-plugin</artifactId>
+                        <artifactId>tomcat7-maven-plugin</artifactId>
                         <version>2.2</version>
                         <configuration>
                             <path>/</path>
@@ -166,19 +166,19 @@
             </build>
         </profile>
         <profile>
-			<id>m2e</id>
-			<activation>
-				<property>
-					<name>m2e.version</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.navercorp.pinpoint</groupId>
-					<artifactId>pinpoint-plugins</artifactId>
-					<type>pom</type>
-				</dependency>
-			</dependencies>
-		</profile>
+            <id>m2e</id>
+            <activation>
+                <property>
+                    <name>m2e.version</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.navercorp.pinpoint</groupId>
+                    <artifactId>pinpoint-plugins</artifactId>
+                    <type>pom</type>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>
