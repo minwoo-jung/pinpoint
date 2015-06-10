@@ -2,6 +2,8 @@ package com.navercorp.pinpoint.plugin.arcus;
 
 import static com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassConditions.*;
 
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.BaseClassFileTransformerBuilder;
@@ -9,6 +11,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerB
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerSetup;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerBuilder;
+import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerProperty;
 import com.navercorp.pinpoint.plugin.arcus.filter.ArcusMethodFilter;
 import com.navercorp.pinpoint.plugin.arcus.filter.FrontCacheMemcachedMethodFilter;
 import com.navercorp.pinpoint.plugin.arcus.filter.MemcachedMethodFilter;
@@ -139,8 +142,20 @@ public class ArcusPlugin implements ProfilerPlugin, ArcusConstants {
 
     private void getFutureEditor(ProfilerPluginContext context, BaseClassFileTransformerBuilder builder) {
         builder.injectMetadata(ArcusConstants.METADATA_OPERATION);
-        builder.injectInterceptor("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureSetOperationInterceptor");
-        builder.injectInterceptor("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureGetInterceptor");
+        builder.injectMetadata(ArcusConstants.METADATA_ASYNC_TRACE_ID);
+        
+        MethodTransformerBuilder setOperationMethodBuilder = builder.editMethod("setOperation", "net.spy.memcached.ops.Operation");
+        setOperationMethodBuilder.injectInterceptor("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureSetOperationInterceptor");
+        
+        MethodTransformerBuilder methodBuilder = builder.editMethods(new MethodFilter() {
+            @Override
+            public boolean filter(MethodInfo method) {
+                final String name = method.getName();
+                return !(name.equals("cancel") || name.equals("get") || name.equals("set"));
+            }
+        });
+        methodBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
+        methodBuilder.injectInterceptor("com.navercorp.pinpoint.plugin.arcus.interceptor.FutureGetInterceptor");
     }
 
     private void addCollectionFutureEditor(ProfilerPluginContext context) {
