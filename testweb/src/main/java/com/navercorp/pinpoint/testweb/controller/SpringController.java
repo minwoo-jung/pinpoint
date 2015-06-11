@@ -23,6 +23,9 @@ public class SpringController {
         Callable<String> callback = new Callable<String>() {
             @Override
             public String call() throws Exception {
+                
+                TimeUnit.SECONDS.sleep(3);
+                
                 return "OK";
             }
         };
@@ -36,11 +39,15 @@ public class SpringController {
 
         Runnable callback = new Runnable() {
             public void run() {
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                }
                 result.setResult("OK");
             }
         };
 
-        new Thread(callback).run();
+        new Thread(callback).start();
 
         return result;
     }

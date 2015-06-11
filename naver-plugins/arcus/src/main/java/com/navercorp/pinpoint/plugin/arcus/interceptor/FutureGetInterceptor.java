@@ -22,6 +22,7 @@ import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 
 /**
  * @author emeroad
+ * @author jaehong.kim
  */
 @Group(ArcusConstants.ARCUS_FUTURE_SCOPE)
 public class FutureGetInterceptor extends SpanAsyncEventSimpleAroundInterceptor implements ArcusConstants {

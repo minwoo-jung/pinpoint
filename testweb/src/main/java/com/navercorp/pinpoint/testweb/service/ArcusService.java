@@ -9,4 +9,6 @@ public interface ArcusService {
     void delete();
 
     void timeout();
+    
+    void getAndAsyncCallback();
 }
