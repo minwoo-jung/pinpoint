@@ -5,13 +5,13 @@ import static org.mockito.Mockito.when;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.util.Timer;
 import org.junit.AfterClass;
@@ -194,7 +194,7 @@ public class ClusterPointRouterTest {
 
     private PinpointServerConfig createPinpointServerConfig() {
         PinpointServerConfig config = mock(PinpointServerConfig.class);
-        when(config.getStateChangeEventHandler()).thenReturn(DoNothingChannelStateEventHandler.INSTANCE);
+        when(config.getStateChangeEventHandlers()).thenReturn(Arrays.asList(DoNothingChannelStateEventHandler.INSTANCE));
         when(config.getStreamMessageListener()).thenReturn(DisabledServerStreamChannelMessageListener.INSTANCE);
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
