@@ -3,6 +3,7 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
-
 import org.apache.curator.test.InstanceSpec;
 import org.apache.curator.test.TestingCluster;
 import org.apache.curator.test.TestingZooKeeperServer;
@@ -285,7 +285,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
 
     private PinpointServerConfig createPinpointServerConfig(ZookeeperClusterService service) {
         PinpointServerConfig config = mock(PinpointServerConfig.class);
-        when(config.getStateChangeEventHandler()).thenReturn(service.getChannelStateChangeEventHandler());
+        when(config.getStateChangeEventHandlers()).thenReturn(Arrays.asList(service.getChannelStateChangeEventHandler()));
         when(config.getStreamMessageListener()).thenReturn(DisabledServerStreamChannelMessageListener.INSTANCE);
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
