@@ -85,17 +85,20 @@
                     <artifactId>arcus-client</artifactId>
                     <groupId>arcus</groupId>
                 </exclusion> -->
-                <exclusion>
+                 <exclusion>
                     <artifactId>spring-context</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
+        
 <!--         <dependency>
             <groupId>com.navercorp.arcus</groupId>
             <artifactId>arcus-java-client</artifactId>
         </dependency>
  -->
+
+
 
         <dependency>
             <groupId>org.apache.tomcat</groupId>
@@ -231,7 +234,7 @@
         <dependency>
             <groupId>com.nhncorp</groupId>
             <artifactId>triples-redis-client</artifactId>
-            <version>1.2.3</version>
+            <version>1.4.2</version>
         </dependency>
 
         <!-- Jedis -->

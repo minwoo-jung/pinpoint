@@ -1,10 +1,14 @@
 package com.navercorp.pinpoint.plugin.lucy.net;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassConditions;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerSetup;
+import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerBuilder;
+import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerProperty;
 
 /**
  * Copyright 2014 NAVER Corp.
@@ -55,10 +59,22 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
     
     private void addDefaultInvocationFutureTransformer(ProfilerPluginContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.net.invoker.DefaultInvocationFuture");
+        builder.injectMetadata(METADATA_ASYNC_TRACE_ID);
         
         // FIXME 이렇게 하면 api type이 internal method로 보이는데 사실 NPC_CLIENT, NIMM_CLIENT로 보여야함. servicetype으로 넣기에 애매해서. 어떻게 수정할 것인지는 나중에 고민.
-        builder.editMethod("getReturnValue").injectInterceptor("com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor");
-        builder.editMethod("get").injectInterceptor("com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor");
+        // builder.editMethod("getReturnValue").injectInterceptor("com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor");
+        // builder.editMethod("get").injectInterceptor("com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor");
+
+        MethodTransformerBuilder methodBuilder = builder.editMethods(new MethodFilter() {
+            @Override
+            public boolean filter(MethodInfo method) {
+                final String name = method.getName();
+                return !(name.equals("getReturnValue") || name.equals("get") || name.equals("isReadyAndSet"));
+            }
+        });
+        methodBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
+        methodBuilder.injectInterceptor("com.navercorp.pinpoint.plugin.lucy.net.interceptor.DefaultInvocationFutureMethodInterceptor");
+
         context.addClassFileTransformer(builder.build());
     }
     

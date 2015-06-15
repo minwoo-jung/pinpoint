@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -22,11 +23,13 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
     private final MetadataAccessor serverAddressAccessor;
+    private final MetadataAccessor asyncTraceIdAccessor;
     
-    public InvokeInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+    public InvokeInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_ASYNC_TRACE_ID) MetadataAccessor asyncTraceIdAccessor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
         this.serverAddressAccessor = serverAddressAccessor;
+        this.asyncTraceIdAccessor = asyncTraceIdAccessor;
     }
 
     @Override
@@ -98,12 +101,40 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
             return;
         }
         try {
+            
             trace.recordApi(descriptor);
             trace.recordException(throwable);
 
+            
+            
             trace.markAfterTime();
+            if (isAsynchronousInvocation(target, args, result, throwable)) {
+                // set asynchronous trace
+                final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();
+                trace.recordNextAsyncId(asyncTraceId.getAsyncId());
+                asyncTraceIdAccessor.set(result, asyncTraceId);
+                if (isDebug) {
+                    logger.debug("Set asyncTraceId metadata {}", asyncTraceId);
+                }
+            }
+
+            
         } finally {
             trace.traceBlockEnd();
         }
     }
+    
+    private boolean isAsynchronousInvocation(final Object target, final Object[] args, Object result, Throwable throwable) {
+        if(throwable != null || result == null) {
+            return false;
+        }
+
+        if (!asyncTraceIdAccessor.isApplicable(result)) {
+            logger.debug("Invalid result object. Need metadata accessor({}).", METADATA_ASYNC_TRACE_ID);
+            return false;
+        }
+
+        return true;
+    }
+
 }

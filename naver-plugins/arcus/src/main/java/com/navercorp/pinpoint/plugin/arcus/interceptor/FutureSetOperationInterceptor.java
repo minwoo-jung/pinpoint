@@ -13,7 +13,6 @@ import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
  * @author harebox
  * @author emeroad
  */
-@TargetMethod(name="setOperation", paramTypes="net.spy.memcached.ops.Operation")
 public class FutureSetOperationInterceptor implements SimpleAroundInterceptor, ArcusConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
@@ -37,6 +36,8 @@ public class FutureSetOperationInterceptor implements SimpleAroundInterceptor, A
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
-        // do nothing
+        if (isDebug) {
+            logger.afterInterceptor(target, args);
+        }
     }
 }

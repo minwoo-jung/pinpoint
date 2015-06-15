@@ -1,8 +1,11 @@
 package com.navercorp.pinpoint.testweb.service;
 
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -71,6 +74,31 @@ public class ArcusServiceImpl implements ArcusService {
         } catch (Exception e) {
             if (setFuture != null)
                 setFuture.cancel(true);
+        }
+    }
+
+    @Override
+    public void getAndAsyncCallback() {
+        Future<Object> getFuture = null;
+        try {
+            getFuture = arcus.asyncGet(KEY);
+            final Future<Object> future = getFuture;
+            final CountDownLatch latch = new CountDownLatch(1);
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        future.get(1000L, TimeUnit.MILLISECONDS);
+                    } catch (Exception e) {
+                    }
+                    latch.countDown();
+                }
+            });
+            thread.start();
+            latch.await(2000L, TimeUnit.MICROSECONDS);
+        } catch (Exception e) {
+            if (getFuture != null)
+                getFuture.cancel(true);
         }
     }
 }

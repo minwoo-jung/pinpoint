@@ -40,4 +40,11 @@ public class ArcusController {
         arcusService.timeout();
         return "OK";
     }
+    
+    @RequestMapping(value = "/arcus/getAndAsyncCallback")
+    @ResponseBody
+    public String getAndAsyncCallback() {
+        arcusService.getAndAsyncCallback();
+        return "OK";
+    }
 }

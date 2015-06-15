@@ -27,6 +27,8 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
 public interface LucyNetConstants {
     // NPC
     public static final String METADATA_NPC_SERVER_ADDRESS = "npcServerAddress";
+
+    public static final String METADATA_ASYNC_TRACE_ID = "asyncTraceId";
     
     public static final ServiceType NPC_CLIENT = ServiceType.of(9060, "NPC_CLIENT", NORMAL_SCHEMA, RECORD_STATISTICS);
     

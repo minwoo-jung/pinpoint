@@ -8,6 +8,7 @@ import net.spy.memcached.MemcachedNode;
 import net.spy.memcached.ops.Operation;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
@@ -28,9 +29,10 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptorForPlugin im
     
     private final MetadataAccessor serviceCodeAccessor;
     private final MetadataAccessor operationAccessor;
+    private final MetadataAccessor asyncTraceIdAccessor;
     
     public ApiInterceptor(TraceContext context, MethodInfo targetMethod,
-            @Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor, @Name(METADATA_OPERATION) MetadataAccessor operationAccessor, boolean traceKey) {
+            @Name(METADATA_ASYNC_TRACE_ID) MetadataAccessor asyncTraceIdAccessor, @Name(METADATA_SERVICE_CODE) MetadataAccessor serviceCodeAccessor, @Name(METADATA_OPERATION) MetadataAccessor operationAccessor, boolean traceKey) {
         super(context, targetMethod.getDescriptor());
         
         if (traceKey) {
@@ -50,6 +52,7 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptorForPlugin im
         
         this.serviceCodeAccessor = serviceCodeAccessor;
         this.operationAccessor = operationAccessor;
+        this.asyncTraceIdAccessor = asyncTraceIdAccessor;
     }
 
     @Override
@@ -94,6 +97,33 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptorForPlugin im
             trace.recordServiceType(ServiceType.MEMCACHED);
         }
 
+        try {
+            if(isAsynchronousInvocation(target, args, result, throwable)) {
+                // set asynchronous trace
+                final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();
+                trace.recordNextAsyncId(asyncTraceId.getAsyncId());
+                asyncTraceIdAccessor.set(result, asyncTraceId);
+                if (isDebug) {
+                    logger.debug("Set asyncTraceId metadata {}", asyncTraceId);
+                }
+            }
+        } catch(Throwable t) {
+            logger.warn("Failed to before process. {}", t.getMessage(), t);
+        }
+        
         trace.markAfterTime();
+    }
+    
+    private boolean isAsynchronousInvocation(final Object target, final Object[] args, Object result, Throwable throwable) {
+        if(throwable != null || result == null) {
+            return false;
+        }
+
+        if (!asyncTraceIdAccessor.isApplicable(result)) {
+            logger.debug("Invalid result object. Need metadata accessor({}).", METADATA_ASYNC_TRACE_ID);
+            return false;
+        }
+
+        return true;
     }
 }
