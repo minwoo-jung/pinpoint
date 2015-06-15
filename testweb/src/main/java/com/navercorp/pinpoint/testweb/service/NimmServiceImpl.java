@@ -1,6 +1,7 @@
 package com.navercorp.pinpoint.testweb.service;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -49,6 +50,9 @@ public class NimmServiceImpl implements NimmService {
     public void get() {
         invoke(null);
     }
+    
+    
+    
 
     @Override
     public void get(Runnable callback) {
@@ -58,7 +62,7 @@ public class NimmServiceImpl implements NimmService {
     private void invoke(final Runnable callback) {
         try {
             logger.info("Invoke {}.{}", OBJECT_NAME, METHOD_NAME);
-            InvocationFuture future = invoker.invoke(OBJECT_NAME, METHOD_NAME, "foo");
+            final InvocationFuture future = invoker.invoke(OBJECT_NAME, METHOD_NAME, "foo");
             if (callback != null) {
                 final CountDownLatch latch = new CountDownLatch(1);
                 future.addListener(new InvocationFutureListener() {
@@ -71,9 +75,21 @@ public class NimmServiceImpl implements NimmService {
                 });
                 latch.await();
             } else {
-                future.await();
-                Object returnValue = future.getReturnValue();
-                logger.info("Return {}", returnValue);
+                final CountDownLatch latch = new CountDownLatch(1);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            future.await();
+                            Object returnValue = future.getReturnValue();
+                            logger.info("Return {}", returnValue);
+                        } catch (Exception e) {
+                        }
+                        latch.countDown();
+                    }
+                });
+                thread.start();
+                latch.await(2000L, TimeUnit.MICROSECONDS);
             }
         } catch (Exception e) {
             logger.warn("Failed to nimm invoke", e);

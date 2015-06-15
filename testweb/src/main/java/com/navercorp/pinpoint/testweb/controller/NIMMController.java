@@ -1,6 +1,7 @@
 package com.navercorp.pinpoint.testweb.controller;
 
 import com.navercorp.pinpoint.testweb.service.NimmService;
+import com.navercorp.pinpoint.testweb.util.Description;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ public class NIMMController {
     @Autowired
     private NimmService nimmService;
 
+    @Description("invoke and return value.")
     @RequestMapping(value = "/nimm/invokeAndReturnValue")
     @ResponseBody
     public String invokeAndReturnValue() {
@@ -27,6 +29,7 @@ public class NIMMController {
         return "OK";
     }
 
+    @Description("callback is InvocationFutureListener.")
     @RequestMapping(value = "/nimm/invokeAndCallback")
     @ResponseBody
     public String invokeAndCallabck() {
