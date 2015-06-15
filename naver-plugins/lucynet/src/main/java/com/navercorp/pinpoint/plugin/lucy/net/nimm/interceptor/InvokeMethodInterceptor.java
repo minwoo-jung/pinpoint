@@ -3,6 +3,7 @@ package com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor;
 import java.util.Arrays;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -19,7 +20,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
  * 
  * @author netspider
  */
-@TargetMethod(name="invoke", paramTypes={ "long", "java.lang.String", "java.lang.String", "java.lang.Object[]" })
+@TargetMethod(name = "invoke", paramTypes = { "long", "java.lang.String", "java.lang.String", "java.lang.Object[]" })
 public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
@@ -28,11 +29,14 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
     private final MetadataAccessor nimmAddressAccessor;
+    private final MetadataAccessor asyncTraceIdAccessor;
+
     // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고 있음.
-    
-    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NIMM_ADDRESS) MetadataAccessor nimmAddressAccessor) {
+
+    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_ASYNC_TRACE_ID) MetadataAccessor asyncTraceIdAccessor, @Name(METADATA_NIMM_ADDRESS) MetadataAccessor nimmAddressAccessor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
+        this.asyncTraceIdAccessor = asyncTraceIdAccessor;
         this.nimmAddressAccessor = nimmAddressAccessor;
     }
 
@@ -84,6 +88,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
         if (params != null) {
             trace.recordAttribute(NIMM_PARAM, Arrays.toString(params));
         }
+
     }
 
     @Override
@@ -102,8 +107,32 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
             trace.recordApi(descriptor);
             trace.recordException(throwable);
             trace.markAfterTime();
+
+            if (isAsynchronousInvocation(target, args, result, throwable)) {
+                // set asynchronous trace
+                final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();
+                trace.recordNextAsyncId(asyncTraceId.getAsyncId());
+                asyncTraceIdAccessor.set(result, asyncTraceId);
+                if (isDebug) {
+                    logger.debug("Set asyncTraceId metadata {}", asyncTraceId);
+                }
+            }
+
         } finally {
             trace.traceBlockEnd();
         }
+    }
+    
+    private boolean isAsynchronousInvocation(final Object target, final Object[] args, Object result, Throwable throwable) {
+        if(throwable != null || result == null) {
+            return false;
+        }
+
+        if (!asyncTraceIdAccessor.isApplicable(result)) {
+            logger.debug("Invalid result object. Need metadata accessor({}).", METADATA_ASYNC_TRACE_ID);
+            return false;
+        }
+
+        return true;
     }
 }
