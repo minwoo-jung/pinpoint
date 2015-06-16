@@ -25,6 +25,7 @@ public class MemcachedMethodFilter implements MethodFilter {
                 "asyncCAS",
                 "asyncDecr",
                 "asyncGet",
+                "asyncGetAndTouch",
                 "asyncGetBulk",
                 "asyncGets",
                 "asyncIncr",
@@ -32,12 +33,14 @@ public class MemcachedMethodFilter implements MethodFilter {
                 "decr",
                 "delete",
                 "get",
+                "getAndTouch",
                 "getBulk",
                 "gets",
                 "incr",
                 "prepend",
                 "replace",
-                "set"
+                "set",
+                "touch"
         };
         Map<String, Object> rule = new HashMap<String, Object>();
         for (String api : apiList) {

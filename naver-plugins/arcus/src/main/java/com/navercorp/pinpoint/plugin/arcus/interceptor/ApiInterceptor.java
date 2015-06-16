@@ -68,6 +68,7 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptorForPlugin im
         } else {
             trace.recordApi(getMethodDescriptor());
         }
+        trace.recordException(throwable);
 
         // find the target node
         if (result instanceof Future && operationAccessor.isApplicable(result)) {
@@ -86,16 +87,21 @@ public class ApiInterceptor extends SpanEventSimpleAroundInterceptorForPlugin im
             }
         }
 
-        // determine the service type
-        String serviceCode = serviceCodeAccessor.get(target);
-        
-        if (serviceCode != null) {
-            trace.recordDestinationId(serviceCode);
-            trace.recordServiceType(ARCUS);
+        if(serviceCodeAccessor.isApplicable(target)) {
+            // determine the service type
+            String serviceCode = serviceCodeAccessor.get(target);
+            if (serviceCode != null) {
+                trace.recordDestinationId(serviceCode);
+                trace.recordServiceType(ARCUS);
+            } else {
+                trace.recordDestinationId("MEMCACHED");
+                trace.recordServiceType(ServiceType.MEMCACHED);
+            }
         } else {
             trace.recordDestinationId("MEMCACHED");
             trace.recordServiceType(ServiceType.MEMCACHED);
         }
+        
 
         try {
             if(isAsynchronousInvocation(target, args, result, throwable)) {
