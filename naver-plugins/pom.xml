@@ -12,7 +12,6 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>arcus</module>
         <module>bloc</module>
         <module>line</module>
         <module>lucynet</module>
@@ -20,11 +19,6 @@
     </modules>
 
     <dependencies>
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-arcus-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-bloc-plugin</artifactId>
