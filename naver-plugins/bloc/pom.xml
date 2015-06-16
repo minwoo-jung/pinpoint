@@ -23,6 +23,12 @@
             <artifactId>lucy-bloc-http11</artifactId>
             <version>5.5.23</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.nhncorp.lucy</groupId>
