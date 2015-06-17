@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.testweb.service;
 
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -7,7 +8,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import net.spy.memcached.AddrUtil;
+import net.spy.memcached.CASResponse;
+import net.spy.memcached.CASValue;
 import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.internal.BulkFuture;
+import net.spy.memcached.internal.OperationFuture;
 
 import org.springframework.stereotype.Service;
 
@@ -26,7 +31,7 @@ public class MemcachedServiceImpl implements MemcachedService {
     public void destroy() {
         memcached.shutdown();
     }
-
+    
     public void set() {
         Future<Boolean> setFuture = null;
         try {
@@ -49,6 +54,8 @@ public class MemcachedServiceImpl implements MemcachedService {
         }
     }
 
+    
+    
     public void delete() {
         Future<Boolean> delFuture = null;
         try {
@@ -70,4 +77,39 @@ public class MemcachedServiceImpl implements MemcachedService {
                 setFuture.cancel(true);
         }
     }
+
+
+    public void asyncCAS() {
+//        OperationFuture<CASResponse> future = null;
+//        try {
+//            future = memcached.asyncCAS("test-asyncCAS", 1L, "foo");
+//            future.get(1000L, TimeUnit.MILLISECONDS);
+//        } catch (Exception e) {
+//            if (future != null)
+//                future.cancel();
+//        }
+    }
+    
+
+    public void asyncGetBulk() {
+//        BulkFuture<Map<String, Object>> future = null;
+//        try {
+//            future = memcached.asyncGetBulk("test-async-get-bulk");
+//            future.get(1000L, TimeUnit.MILLISECONDS);
+//        } catch (Exception e) {
+//            if (future != null)
+//                future.cancel(true);
+//        }
+    }
+
+    
+    public void getAndTouch() {
+//        CASValue<Object> future = null;
+//        try {
+//            future = memcached.getAndTouch("test-get-and-touch", 1);
+//            future.getValue();
+//        } catch (Exception e) {
+//        }
+    }
+
 }

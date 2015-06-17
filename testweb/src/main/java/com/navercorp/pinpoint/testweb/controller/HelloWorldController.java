@@ -11,7 +11,7 @@ import com.nhncorp.lucy.net.invoker.InvocationFuture;
 import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
 
 import net.spy.memcached.AddrUtil;
-import net.spy.memcached.ArcusClient;
+//import net.spy.memcached.ArcusClient;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.MemcachedClient;
 
