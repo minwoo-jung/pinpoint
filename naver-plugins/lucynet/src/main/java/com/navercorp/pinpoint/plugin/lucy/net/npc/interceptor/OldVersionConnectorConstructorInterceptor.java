@@ -12,25 +12,22 @@ import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
-import com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector;
-import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
 
 /**
- * based on NPC client 1.5.18
- * 
- * @author netspider
- * 
+ * @author Taejin Koo
  */
-public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
+public class OldVersionConnectorConstructorInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
+
     private final MetadataAccessor serverAddressAccessor;
-    
-    public ConnectorConstructorInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+
+    public OldVersionConnectorConstructorInterceptor(TraceContext traceContext, MethodDescriptor descriptor,
+            @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
         this.serverAddressAccessor = serverAddressAccessor;
@@ -38,32 +35,11 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
 
     @Override
     public void before(Object target, Object[] args) {
-        if (isDebug) {
-            logger.beforeInterceptor(target, args);
-        }
-
         InetSocketAddress serverAddress = null;
 
-        if (target instanceof KeepAliveNpcHessianConnector) {
-            /*
-             * com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector.
-             * KeepAliveNpcHessianConnector(InetSocketAddress, long, long,
-             * Charset)
-             */
-            if (args.length == 4) {
-                if (args[0] instanceof InetSocketAddress) {
-                    serverAddress = (InetSocketAddress) args[0];
-                }
-            } else if (args.length == 1) {
-                if (args[0] instanceof NpcConnectorOption) {
-                    NpcConnectorOption option = (NpcConnectorOption) args[0];
-                    serverAddress = option.getAddress();
-                }
-            }
-        } else {
-            if (args[0] instanceof NpcConnectorOption) {
-                NpcConnectorOption option = (NpcConnectorOption) args[0];
-                serverAddress = option.getAddress();
+        if (args.length > 0) {
+            if (args[0] instanceof InetSocketAddress) {
+                serverAddress = (InetSocketAddress) args[0];
             }
         }
 
@@ -83,7 +59,6 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
             trace.recordAttribute(AnnotationKey.NPC_URL, endPoint);
         } else {
-            // destination id가 없으면 안되기 때문에 unknown으로 지정.
             trace.recordAttribute(AnnotationKey.NPC_URL, "unknown");
         }
     }
@@ -107,4 +82,5 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
             trace.traceBlockEnd();
         }
     }
+
 }

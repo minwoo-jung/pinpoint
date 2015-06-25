@@ -3,12 +3,10 @@ import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
-import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassConditions;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerSetup;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerProperty;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcPluginHolder;
 
 /**
  * Copyright 2014 NAVER Corp.
@@ -41,12 +39,9 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         addNimmInvokerTransformer(context);
         
         // npc
-        addKeepAliveNpcHessianConnectorTransformer(context);
-        addLightWeightConnectorTransformer(context);
-//        addLightWeightNbfpConnectorTransformer(context);
-//        addLightWeightNpcHessianConnectorTransformer(context);
-        addNioNpcHessianConnectorTransformer(context);
-        addNpcHessianConnectorTransformer(context);
+        
+        NpcPluginHolder npcPlugin = new NpcPluginHolder(context);
+        npcPlugin.addPlugin();
     }
 
     private void addCompositeInvocationFutureTransformer(ProfilerPluginContext context) {
@@ -91,62 +86,5 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         
         context.addClassFileTransformer(builder.build());
     }
-    
-    private void addKeepAliveNpcHessianConnectorTransformer(ProfilerPluginContext context) {
-        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector");
-        buildCommonConnectorTransformer(builder);
 
-        builder.editConstructor("java.net.InetSocketAddress", "long", "long", "java.nio.charset.Charset").injectInterceptor("com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.ConnectorConstructorInterceptor");
-        builder.editMethod("initializeConnector").injectInterceptor("com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InitializeConnectorInterceptor");
-        builder.editMethod("invokeImpl", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]").injectInterceptor("com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor");
-
-        context.addClassFileTransformer(builder.build());
-    }
-    
-    private void buildCommonConnectorTransformer(ClassFileTransformerBuilder builder) {
-        builder.injectMetadata(METADATA_NPC_SERVER_ADDRESS);
-        
-        builder.editConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption").injectInterceptor("com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.ConnectorConstructorInterceptor");
-        builder.editMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]").injectInterceptor("com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InvokeInterceptor");
-    }
-    
-    private void addLightWeightConnectorTransformer(ProfilerPluginContext context) {
-        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.LightWeightConnector");
-        buildCommonConnectorTransformer(builder);
-        context.addClassFileTransformer(builder.build());
-    }
-
-    
-    private void addLightWeightNbfpConnectorTransformer(ProfilerPluginContext context) {
-        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.LightWeightNbfpConnector");
-        buildCommonConnectorTransformer(builder);
-        context.addClassFileTransformer(builder.build());
-    }
-
-    private void addLightWeightNpcHessianConnectorTransformer(ProfilerPluginContext context) {
-        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.LightWeightNpcHessianConnector");
-        buildCommonConnectorTransformer(builder);
-        context.addClassFileTransformer(builder.build());
-    }
-    
-    private void addNioNpcHessianConnectorTransformer(ProfilerPluginContext context) {
-        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.NioNpcHessianConnector");
-        buildCommonConnectorTransformer(builder);
-        context.addClassFileTransformer(builder.build());
-    }
-    
-    private void addNpcHessianConnectorTransformer(ProfilerPluginContext context) {
-        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.npc.connector.NpcHessianConnector");
-
-        builder.conditional(ClassConditions.hasDeclaredMethod("createConnecor", "com.nhncorp.lucy.npc.connector.NpcConnectorOption"), new ConditionalClassFileTransformerSetup() {
-            @Override
-            public void setup(ConditionalClassFileTransformerBuilder conditional) {
-                conditional.editMethod("createConnecor", "com.nhncorp.lucy.npc.connector.NpcConnectorOption").injectInterceptor("com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.CreateConnectorInterceptor");
-            }
-        });
-        
-        builder.editMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]").injectInterceptor("com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor");
-        
-        context.addClassFileTransformer(builder.build());
-    }
 }

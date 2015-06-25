@@ -31,6 +31,7 @@ public interface LucyNetConstants {
     public static final String METADATA_ASYNC_TRACE_ID = "asyncTraceId";
     
     public static final ServiceType NPC_CLIENT = ServiceType.of(9060, "NPC_CLIENT", NORMAL_SCHEMA, RECORD_STATISTICS);
+    public static final ServiceType NPC_CLIENT_INTERNAL = ServiceType.of(9061, "NPC_CLIENT_INTERNAL", "NPC_CLIENT", NORMAL_SCHEMA);
     
     public static final AnnotationKey NPC_URL = new AnnotationKey(60, "npc.url");
     public static final AnnotationKey NPC_PARAM = new AnnotationKey(61, "npc.param");
