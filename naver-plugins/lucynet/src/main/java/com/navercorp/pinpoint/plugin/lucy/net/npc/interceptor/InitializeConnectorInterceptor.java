@@ -11,6 +11,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 
 public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
@@ -44,17 +45,16 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
         trace.traceBlockBegin();
         trace.markBeforeTime();
 
-        TraceId nextId = trace.getTraceId().getNextTraceId();
-        trace.recordNextSpanId(nextId.getSpanId());
-
-        trace.recordServiceType(NPC_CLIENT);
+        trace.recordServiceType(NPC_CLIENT_INTERNAL);
 
         InetSocketAddress serverAddress = serverAddressAccessor.get(target);
-        int port = serverAddress.getPort();
-        String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-        trace.recordDestinationId(endPoint);
-
-        trace.recordAttribute(NPC_URL, serverAddress.toString());
+        if (serverAddress != null) {
+            int port = serverAddress.getPort();
+            String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
+            trace.recordAttribute(AnnotationKey.NPC_URL, endPoint);
+        } else {
+            trace.recordAttribute(AnnotationKey.NPC_URL, "unknown");
+        }
     }
 
     @Override
