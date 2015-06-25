@@ -28,8 +28,6 @@ public class Bloc4Detector implements ApplicationTypeDetector, BlocConstants {
     
     private static final String REQUIRED_MAIN_CLASS = "com.nhncorp.lucy.bloc.server.BlocServer";
     
-    private static final String REQUIRED_SYSTEM_PROPERTY = "bloc.home";
-    
     private static final String REQUIRED_CLASS =  "com.nhncorp.lucy.bloc.server.Bootstrap";
     
     @Override
@@ -40,7 +38,6 @@ public class Bloc4Detector implements ApplicationTypeDetector, BlocConstants {
     @Override
     public boolean detect(ConditionProvider provider) {
         return provider.checkMainClass(REQUIRED_MAIN_CLASS) &&
-               provider.checkSystemProperty(REQUIRED_SYSTEM_PROPERTY) &&
                provider.checkForClass(REQUIRED_CLASS);
     }
     

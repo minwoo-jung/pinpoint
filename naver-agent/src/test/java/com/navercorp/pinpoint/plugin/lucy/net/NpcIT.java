@@ -14,8 +14,8 @@
  */
 package com.navercorp.pinpoint.plugin.lucy.net;
 
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 import static org.junit.Assert.*;
-import static com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.ExpectedAnnotation.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.BlockType;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.common.trace.ServiceType;
@@ -88,24 +87,26 @@ public class NpcIT {
         future.await();
         String response = future.get();
         
+        
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+        verifier.printCache();
 
         Method createConnector = NpcHessianConnector.class.getDeclaredMethod("createConnecor", NpcConnectorOption.class);
-        verifier.verifyTraceBlock(BlockType.EVENT, NPC, createConnector, null, null, null, null, annotation("npc.url", SERVER_ADDRESS.toString()));
-        
         Class<?> nioNpcHessianConnector = Class.forName("com.nhncorp.lucy.npc.connector.NioNpcHessianConnector");
         Constructor<?> nioNpcHessianConnectorConstructor = nioNpcHessianConnector.getDeclaredConstructor(NpcConnectorOption.class);
-        verifier.verifyTraceBlock(BlockType.EVENT, NPC, nioNpcHessianConnectorConstructor, null, null, null, DESTINATION_ID);
-        
         Method invoke = nioNpcHessianConnector.getDeclaredMethod("invoke", String.class, String.class, Charset.class, Object[].class);
-        verifier.verifyTraceBlock(BlockType.EVENT, NPC, invoke, null, null, null, DESTINATION_ID, annotation("npc.url", SERVER_ADDRESS.toString()));
+        Method isReadAndSet = DefaultInvocationFuture.class.getMethod("isReadyAndSet", Object.class);
+        Method get = DefaultInvocationFuture.class.getDeclaredMethod("get");
+        Method getReturnValue = DefaultInvocationFuture.class.getDeclaredMethod("getReturnValue");
+
         
-        // unexpected asynchronous invocation
-        // Method get = DefaultInvocationFuture.class.getDeclaredMethod("get");
-        // verifier.verifyApi(ServiceType.INTERNAL_METHOD.getName(), get);
-        
-        // Method getReturnValue = DefaultInvocationFuture.class.getDeclaredMethod("getReturnValue");
-        // verifier.verifyApi(ServiceType.INTERNAL_METHOD.getName(), getReturnValue);
+        verifier.verifyTrace(event(NPC, createConnector, annotation("npc.url", SERVER_ADDRESS.toString())));
+        verifier.verifyTrace(event(NPC, nioNpcHessianConnectorConstructor, null, null, DESTINATION_ID));
+        verifier.verifyTrace(async(NPC, invoke, null, null, DESTINATION_ID, annotations(annotation("npc.url", SERVER_ADDRESS.toString())),
+                                            event("ASYNC", "Asynchronous Invocation"),
+                                            event(ServiceType.INTERNAL_METHOD.getName(), isReadAndSet)));
+        verifier.verifyTrace(event(ServiceType.INTERNAL_METHOD.getName(), get));
+        verifier.verifyTrace(event(ServiceType.INTERNAL_METHOD.getName(), getReturnValue));
         
         assertEquals("Hello", response);
     }
