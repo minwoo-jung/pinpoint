@@ -55,6 +55,7 @@ import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
 @Dependency({ "com.nhncorp.lucy:lucy-npc:[1.5.18,)" })
 public class NpcIT {
     private static final String NPC = "NPC_CLIENT";
+    private static final String NPC_CLIENT_INTERNAL = "NPC_CLIENT_INTERNAL";
     
     private static final String SERVER_IP = "0.0.0.0";
     private static final int SERVER_PORT = 5917;
@@ -92,6 +93,7 @@ public class NpcIT {
         verifier.printCache();
 
         Method createConnector = NpcHessianConnector.class.getDeclaredMethod("createConnecor", NpcConnectorOption.class);
+        Method npcHessianConnectorInvoke = NpcHessianConnector.class.getDeclaredMethod("invoke", String.class, String.class, Object[].class);
         Class<?> nioNpcHessianConnector = Class.forName("com.nhncorp.lucy.npc.connector.NioNpcHessianConnector");
         Constructor<?> nioNpcHessianConnectorConstructor = nioNpcHessianConnector.getDeclaredConstructor(NpcConnectorOption.class);
         Method invoke = nioNpcHessianConnector.getDeclaredMethod("invoke", String.class, String.class, Charset.class, Object[].class);
@@ -100,8 +102,9 @@ public class NpcIT {
         Method getReturnValue = DefaultInvocationFuture.class.getDeclaredMethod("getReturnValue");
 
         
-        verifier.verifyTrace(event(NPC, createConnector, annotation("npc.url", SERVER_ADDRESS.toString())));
-        verifier.verifyTrace(event(NPC, nioNpcHessianConnectorConstructor, null, null, DESTINATION_ID));
+        verifier.verifyTrace(event(NPC_CLIENT_INTERNAL, createConnector, annotation("npc.url", DESTINATION_ID)));
+        verifier.verifyTrace(event(NPC_CLIENT_INTERNAL, nioNpcHessianConnectorConstructor, annotation("npc.url", DESTINATION_ID)));
+        verifier.verifyTrace(event(NPC_CLIENT_INTERNAL, npcHessianConnectorInvoke));
         verifier.verifyTrace(async(NPC, invoke, null, null, DESTINATION_ID, annotations(annotation("npc.url", SERVER_ADDRESS.toString())),
                                             event("ASYNC", "Asynchronous Invocation"),
                                             event(ServiceType.INTERNAL_METHOD.getName(), isReadAndSet)));

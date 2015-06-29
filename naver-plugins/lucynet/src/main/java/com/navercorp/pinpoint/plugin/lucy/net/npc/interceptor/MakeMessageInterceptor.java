@@ -15,7 +15,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
-import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.NetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.DefaultNpcMessage;
@@ -68,7 +67,7 @@ public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetC
             Map<String, Object> options = createOption(id);
             putOption(defaultNpcMessage, options);
             
-            trace.recordServiceType(ServiceType.NPC_CLIENT);
+            trace.recordServiceType(NPC_CLIENT);
             
             InetSocketAddress serverAddress = serverAddressAccessor.get(target);
             int port = serverAddress.getPort();
