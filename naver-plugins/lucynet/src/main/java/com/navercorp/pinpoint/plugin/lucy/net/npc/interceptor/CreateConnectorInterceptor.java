@@ -8,7 +8,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
 
@@ -49,9 +48,9 @@ public class CreateConnectorInterceptor implements SimpleAroundInterceptor, Lucy
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            trace.recordAttribute(AnnotationKey.NPC_URL, endPoint);
+            trace.recordAttribute(NPC_URL, endPoint);
         } else {
-            trace.recordAttribute(AnnotationKey.NPC_URL, "unknown");
+            trace.recordAttribute(NPC_URL, "unknown");
         }
     }
 
