@@ -16,6 +16,7 @@
         <module>line</module>
         <module>lucynet</module>
         <module>nbasearc</module>
+        <module>nelo</module>
     </modules>
 
     <dependencies>
@@ -37,6 +38,11 @@
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-nbasearc-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-nelo-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
