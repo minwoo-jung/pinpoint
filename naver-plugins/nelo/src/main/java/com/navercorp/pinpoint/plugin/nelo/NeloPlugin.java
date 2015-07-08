@@ -23,13 +23,14 @@ import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileT
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerSetup;
 
 /**
- * nelo 서버에 로그 전달 여부를 수집한다.
+ * check up on sending nelo server a log. 
+ *  
+ * we don't consider that log was not send nelo server 
+ * because buffer of nelo appender is fulled or happen connection exception occured while communication with nelo server. 
+ * It need to many modified class, interceptor class to judge above sitiation. 
  * 
- * nelo에서 관리하는 log message를 담고있는 buffer가 차서 log를 전달 못하거나 nelo 서버와 통신 시 에러가 발생하는 경우 
- * 이런 경우를 pinpoint가 정확히 감지하는것은 불필요 연산과 클래스 변경이 너무 많이 개입되므로 이런 경우는 고려하지 않는다.
- * 
- * NeloAsyncAppender를 사용하면서 NeloAppender에 log level filter를 사용하는 경우는 고려하지 않는다. 
- * NeloAppender는 별도의 thread에 동작하므로 pinpoint에서 정보를 획득할수 없다.  
+ * We don't consider threshold config of NeloAppender for log level when using NeloAsyncAppender
+ * Pinpoint could not intercept NeloAppender class Because if NeloAsyncAppender is used NeloAppender is executed in separate thread.
  * 
  * @author minwoo.jung
  */

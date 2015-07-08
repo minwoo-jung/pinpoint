@@ -34,7 +34,6 @@ import com.navercorp.test.Empty;
 
 /**
  * @author minwoo.jung
- *
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
