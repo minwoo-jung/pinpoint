@@ -17,6 +17,7 @@ package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
+import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptorForPlugin;
@@ -44,12 +45,12 @@ public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundIntercep
     }
 
     @Override
-    public void doInBeforeTrace(RecordableTrace trace, Object target, Object[] args) {
-        trace.markBeforeTime();
+    public void doInBeforeTrace(CallStackFrame recorder, Object target, Object[] args) {
+        recorder.markBeforeTime();
     }
 
     @Override
-    public void doInAfterTrace(RecordableTrace trace, Object target, Object[] args, Object result, Throwable throwable) {
+    public void doInAfterTrace(CallStackFrame recorder, Object target, Object[] args, Object result, Throwable throwable) {
         String destinationId = null;
         String endPoint = null;
 
@@ -58,11 +59,11 @@ public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundIntercep
             endPoint = endPointAccessor.get(target);
         }
 
-        trace.recordApi(getMethodDescriptor());
-        trace.recordEndPoint(endPoint != null ? endPoint : "Unknown");
-        trace.recordDestinationId(destinationId != null ? destinationId : NBASE_ARC.toString());
-        trace.recordServiceType(NBASE_ARC);
-        trace.recordException(throwable);
-        trace.markAfterTime();
+        recorder.recordApi(getMethodDescriptor());
+        recorder.recordEndPoint(endPoint != null ? endPoint : "Unknown");
+        recorder.recordDestinationId(destinationId != null ? destinationId : NBASE_ARC.toString());
+        recorder.recordServiceType(NBASE_ARC);
+        recorder.recordException(throwable);
+        recorder.markAfterTime();
     }
 }

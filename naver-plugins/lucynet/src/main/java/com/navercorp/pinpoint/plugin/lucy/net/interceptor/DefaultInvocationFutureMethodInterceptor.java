@@ -2,6 +2,7 @@ package com.navercorp.pinpoint.plugin.lucy.net.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
+import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
@@ -20,15 +21,15 @@ public class DefaultInvocationFutureMethodInterceptor extends SpanAsyncEventSimp
     }
 
     @Override
-    protected void doInBeforeTrace(Trace trace, AsyncTraceId asyncTraceId, Object target, Object[] args) {
-        trace.markBeforeTime();
+    protected void doInBeforeTrace(CallStackFrame recorder, AsyncTraceId asyncTraceId, Object target, Object[] args) {
+        recorder.markBeforeTime();
     }
 
     @Override
-    protected void doInAfterTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
-        trace.recordServiceType(ServiceType.INTERNAL_METHOD);
-        trace.recordException(throwable);
-        trace.recordApi(methodDescriptor);
-        trace.markAfterTime();
+    protected void doInAfterTrace(CallStackFrame recorder, Object target, Object[] args, Object result, Throwable throwable) {
+        recorder.recordServiceType(ServiceType.INTERNAL_METHOD);
+        recorder.recordException(throwable);
+        recorder.recordApi(methodDescriptor);
+        recorder.markAfterTime();
     }
 }

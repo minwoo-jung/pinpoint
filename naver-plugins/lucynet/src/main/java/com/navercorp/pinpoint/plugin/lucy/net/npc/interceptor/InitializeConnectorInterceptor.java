@@ -3,6 +3,7 @@ package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 import java.net.InetSocketAddress;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -42,18 +43,18 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
             return;
         }
 
-        trace.traceBlockBegin();
-        trace.markBeforeTime();
+        CallStackFrame recorder = trace.traceBlockBegin();
+        recorder.markBeforeTime();
 
-        trace.recordServiceType(NPC_CLIENT_INTERNAL);
+        recorder.recordServiceType(NPC_CLIENT_INTERNAL);
 
         InetSocketAddress serverAddress = serverAddressAccessor.get(target);
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            trace.recordAttribute(AnnotationKey.NPC_URL, endPoint);
+            recorder.recordAttribute(AnnotationKey.NPC_URL, endPoint);
         } else {
-            trace.recordAttribute(AnnotationKey.NPC_URL, "unknown");
+            recorder.recordAttribute(AnnotationKey.NPC_URL, "unknown");
         }
     }
 
@@ -68,10 +69,11 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
             return;
         }
         try {
-            trace.recordApi(descriptor);
-            trace.recordException(throwable);
+            CallStackFrame recorder = trace.currentCallStackFrame();
+            recorder.recordApi(descriptor);
+            recorder.recordException(throwable);
 
-            trace.markAfterTime();
+            recorder.markAfterTime();
         } finally {
             trace.traceBlockEnd();
         }

@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
+import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
@@ -37,10 +38,10 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, BlocConstant
             return;
         }
 
-        trace.traceBlockBegin();
-        trace.markBeforeTime();
+        CallStackFrame recorder = trace.traceBlockBegin();
+        recorder.markBeforeTime();
 
-        trace.recordServiceType(ServiceType.INTERNAL_METHOD);
+        recorder.recordServiceType(ServiceType.INTERNAL_METHOD);
     }
 
     @Override
@@ -56,16 +57,17 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, BlocConstant
         }
 
         try {
-            trace.recordApi(descriptor);
-            trace.recordException(throwable);
+            CallStackFrame recorder = trace.currentCallStackFrame();
+            recorder.recordApi(descriptor);
+            recorder.recordException(throwable);
             
             if (args[0] != null) {
                 BlocRequest blocRequest = (BlocRequest)args[0];
-                trace.recordAttribute(CALL_URL, blocRequest.getPath());
-                trace.recordAttribute(PROTOCOL, blocRequest.getProtocol());
+                recorder.recordAttribute(CALL_URL, blocRequest.getPath());
+                recorder.recordAttribute(PROTOCOL, blocRequest.getProtocol());
             }
 
-            trace.markAfterTime();
+            recorder.markAfterTime();
         } finally {
             trace.traceBlockEnd();
         }
