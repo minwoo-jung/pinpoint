@@ -82,10 +82,10 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordAttribute(AnnotationKey.NPC_URL, endPoint);
+            recorder.recordAttribute(NPC_URL, endPoint);
         } else {
             // destination id가 없으면 안되기 때문에 unknown으로 지정.
-            recorder.recordAttribute(AnnotationKey.NPC_URL, "unknown");
+            recorder.recordAttribute(NPC_URL, "unknown");
         }
     }
 

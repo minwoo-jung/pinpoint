@@ -70,7 +70,7 @@ public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetC
             Map<String, Object> options = createOption(id);
             putOption(defaultNpcMessage, options);
             
-            recorder.recordServiceType(ServiceType.NPC_CLIENT);
+            recorder.recordServiceType(NPC_CLIENT);
             
             InetSocketAddress serverAddress = serverAddressAccessor.get(target);
             int port = serverAddress.getPort();

@@ -52,9 +52,9 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordAttribute(AnnotationKey.NPC_URL, endPoint);
+            recorder.recordAttribute(NPC_URL, endPoint);
         } else {
-            recorder.recordAttribute(AnnotationKey.NPC_URL, "unknown");
+            recorder.recordAttribute(NPC_URL, "unknown");
         }
     }
 
