@@ -67,7 +67,7 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
         // TODO add sampling logic here.
         //
 
-        CallStackFrame recorder = trace.traceBlockBegin();
+        CallStackFrame recorder = trace.pushCallStackFrame();
         recorder.markBeforeTime();
 
 //        TraceId nextId = trace.getTraceId().getNextTraceId();
@@ -101,7 +101,7 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
             return;
         }
         try {
-            CallStackFrame recorder = trace.currentCallStackFrame();
+            CallStackFrame recorder = trace.peekCallStackFrame();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
 
@@ -120,7 +120,7 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
 
             
         } finally {
-            trace.traceBlockEnd();
+            trace.popCallStackFrame();
         }
     }
     

@@ -43,7 +43,7 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
             return;
         }
 
-        CallStackFrame recorder = trace.traceBlockBegin();
+        CallStackFrame recorder = trace.pushCallStackFrame();
         recorder.markBeforeTime();
 
         recorder.recordServiceType(NPC_CLIENT_INTERNAL);
@@ -69,13 +69,13 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
             return;
         }
         try {
-            CallStackFrame recorder = trace.currentCallStackFrame();
+            CallStackFrame recorder = trace.peekCallStackFrame();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
 
             recorder.markAfterTime();
         } finally {
-            trace.traceBlockEnd();
+            trace.popCallStackFrame();
         }
     }
 }

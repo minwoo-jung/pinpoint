@@ -62,7 +62,7 @@ public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetC
             return;
         }
         
-        CallStackFrame recorder = trace.currentCallStackFrame();
+        CallStackFrame recorder = trace.peekCallStackFrame();
         TraceId id = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(id.getSpanId());
         if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {

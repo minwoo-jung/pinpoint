@@ -20,7 +20,7 @@ import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
-import com.navercorp.pinpoint.bootstrap.context.RootCallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.TraceHeader;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -68,7 +68,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     private int entityDumpSize = 512;
 
     @Override
-    public void doInBeforeTrace(RootCallStackFrame recorder, Object target, Object[] args) {
+    public void doInBeforeTrace(TraceHeader recorder, Object target, Object[] args) {
 
         org.jboss.netty.channel.ChannelHandlerContext channelHandlerContext = channelHandlerContextAccessor.get(target);
         org.jboss.netty.channel.MessageEvent e = messageEventAccessor.get(target);
@@ -219,7 +219,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     }
 
     @Override
-    public void doInAfterTrace(RootCallStackFrame recorder, Object target, Object[] args, Object result, Throwable throwable) {
+    public void doInAfterTrace(TraceHeader recorder, Object target, Object[] args, Object result, Throwable throwable) {
 
         if (recorder.canSampled()) {
             org.jboss.netty.channel.MessageEvent e = messageEventAccessor.get(target);
@@ -235,7 +235,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
 
     }
 
-    private void recordHttpParameter2(RootCallStackFrame recorder, MessageEvent e) {
+    private void recordHttpParameter2(TraceHeader recorder, MessageEvent e) {
         final Object message = e.getMessage();
         if (message instanceof org.jboss.netty.handler.codec.http.HttpRequest) {
             final org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) message;
@@ -269,7 +269,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     }
 
     // buffer index를 정확하게 계산하는 로직이나 before에서 데이터를 읽어야 함.
-    private void recordHttpParameter(RootCallStackFrame recorder, MessageEvent e) {
+    private void recordHttpParameter(TraceHeader recorder, MessageEvent e) {
         final Object message = e.getMessage();
         if (message instanceof org.jboss.netty.handler.codec.http.HttpRequest) {
             final org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) message;

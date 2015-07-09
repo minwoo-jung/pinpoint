@@ -38,7 +38,7 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, BlocConstant
             return;
         }
 
-        CallStackFrame recorder = trace.traceBlockBegin();
+        CallStackFrame recorder = trace.pushCallStackFrame();
         recorder.markBeforeTime();
 
         recorder.recordServiceType(ServiceType.INTERNAL_METHOD);
@@ -57,7 +57,7 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, BlocConstant
         }
 
         try {
-            CallStackFrame recorder = trace.currentCallStackFrame();
+            CallStackFrame recorder = trace.peekCallStackFrame();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
             
@@ -69,7 +69,7 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, BlocConstant
 
             recorder.markAfterTime();
         } finally {
-            trace.traceBlockEnd();
+            trace.popCallStackFrame();
         }
     }
 }

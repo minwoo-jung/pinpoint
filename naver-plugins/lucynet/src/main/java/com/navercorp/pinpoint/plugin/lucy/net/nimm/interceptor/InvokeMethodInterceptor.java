@@ -64,7 +64,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
             return;
         }
 
-        CallStackFrame recorder = trace.traceBlockBegin();
+        CallStackFrame recorder = trace.pushCallStackFrame();
         recorder.markBeforeTime();
 
         TraceId nextId = trace.getTraceId().getNextTraceId();
@@ -105,7 +105,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
         }
 
         try {
-            CallStackFrame recorder = trace.currentCallStackFrame();
+            CallStackFrame recorder = trace.peekCallStackFrame();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
             recorder.markAfterTime();
@@ -121,7 +121,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
             }
 
         } finally {
-            trace.traceBlockEnd();
+            trace.popCallStackFrame();
         }
     }
     

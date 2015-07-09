@@ -16,7 +16,7 @@ import com.navercorp.pinpoint.bootstrap.FieldAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
-import com.navercorp.pinpoint.bootstrap.context.RootCallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.TraceHeader;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
@@ -43,7 +43,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
     }
 
     @Override
-    public void doInBeforeTrace(RootCallStackFrame recorder, Object target, Object[] args) {
+    public void doInBeforeTrace(TraceHeader recorder, Object target, Object[] args) {
         io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
         io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
@@ -127,7 +127,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
     }
 
     @Override
-    public void doInAfterTrace(RootCallStackFrame recorder, Object target, Object[] args, Object result, Throwable throwable) {
+    public void doInAfterTrace(TraceHeader recorder, Object target, Object[] args, Object result, Throwable throwable) {
         if (recorder.canSampled()) {
             io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
@@ -239,7 +239,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
         }
     }
 
-    private void recordParentInfo(RootCallStackFrame recorder, io.netty.handler.codec.http.FullHttpRequest request, io.netty.channel.ChannelHandlerContext ctx) {
+    private void recordParentInfo(TraceHeader recorder, io.netty.handler.codec.http.FullHttpRequest request, io.netty.channel.ChannelHandlerContext ctx) {
         HttpHeaders headers = request.headers();
         String parentApplicationName = headers.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
 

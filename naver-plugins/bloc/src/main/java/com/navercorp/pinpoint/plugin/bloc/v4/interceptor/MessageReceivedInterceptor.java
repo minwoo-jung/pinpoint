@@ -10,7 +10,7 @@ import java.util.Map;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
-import com.navercorp.pinpoint.bootstrap.context.RootCallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.TraceHeader;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -92,7 +92,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
     }
 
     @Override
-    public void doInBeforeTrace(RootCallStackFrame recorder, Object target, Object[] args) {
+    public void doInBeforeTrace(TraceHeader recorder, Object target, Object[] args) {
         recorder.markBeforeTime();
         
         
@@ -131,7 +131,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
     }
 
     @Override
-    public void doInAfterTrace(RootCallStackFrame recorder, Object target, Object[] args, Object result, Throwable throwable) {
+    public void doInAfterTrace(TraceHeader recorder, Object target, Object[] args, Object result, Throwable throwable) {
         if (recorder.canSampled()) {
             recorder.recordApi(getMethodDescriptor());
         }

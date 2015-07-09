@@ -6,7 +6,7 @@ import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
-import com.navercorp.pinpoint.bootstrap.context.RootCallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.TraceHeader;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
@@ -33,7 +33,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
     }
 
     @Override
-    public void doInBeforeTrace(RootCallStackFrame recorder, Object target, Object[] args) {
+    public void doInBeforeTrace(TraceHeader recorder, Object target, Object[] args) {
 
         final Request request = (Request) args[0];
         recorder.markBeforeTime();
@@ -102,7 +102,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
 
 
     @Override
-    public void doInAfterTrace(RootCallStackFrame recorder, Object target, Object[] args, Object result, Throwable throwable) {
+    public void doInAfterTrace(TraceHeader recorder, Object target, Object[] args, Object result, Throwable throwable) {
         if (recorder.canSampled()) {
             Request request = (Request) args[0];
             String parameters = getRequestParameter(request, 64, 512);
@@ -170,7 +170,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
         return params.toString();
     }
     
-    private void recordParentInfo(RootCallStackFrame recorder, Request request) {
+    private void recordParentInfo(TraceHeader recorder, Request request) {
         String parentApplicationName = request.getHeader(Header.HTTP_PARENT_APPLICATION_NAME.toString());
         if (parentApplicationName != null) {
             final String host = request.getHeader(Header.HTTP_HOST.toString());

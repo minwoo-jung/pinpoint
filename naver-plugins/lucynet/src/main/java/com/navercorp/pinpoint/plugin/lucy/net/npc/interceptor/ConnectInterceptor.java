@@ -46,7 +46,7 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, LucyNetConst
 
         com.nhncorp.lucy.npc.connector.NpcConnectorOption connectorOption = (com.nhncorp.lucy.npc.connector.NpcConnectorOption) args[0];
 
-        CallStackFrame recorder = trace.traceBlockBegin();
+        CallStackFrame recorder = trace.pushCallStackFrame();
         recorder.markBeforeTime();
 
         TraceId nextId = trace.getTraceId().getNextTraceId();
@@ -78,13 +78,13 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, LucyNetConst
         }
 
         try {
-            CallStackFrame recorder = trace.currentCallStackFrame();
+            CallStackFrame recorder = trace.peekCallStackFrame();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
 
             recorder.markAfterTime();
         } finally {
-            trace.traceBlockEnd();
+            trace.popCallStackFrame();
         }
     }
 }
