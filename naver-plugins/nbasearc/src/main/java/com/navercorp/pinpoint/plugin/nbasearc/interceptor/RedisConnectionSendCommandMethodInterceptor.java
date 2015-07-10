@@ -34,7 +34,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
-@Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPoint = ExecutionPolicy.INTERNAL)
+@Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPolicy = ExecutionPolicy.INTERNAL)
 public class RedisConnectionSendCommandMethodInterceptor implements SimpleAroundInterceptor, NbaseArcConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
