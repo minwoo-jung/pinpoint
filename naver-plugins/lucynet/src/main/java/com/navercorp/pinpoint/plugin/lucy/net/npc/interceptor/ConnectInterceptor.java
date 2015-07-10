@@ -78,7 +78,7 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, LucyNetConst
         }
 
         try {
-            CallStackFrame recorder = trace.peekCallStackFrame();
+            CallStackFrame recorder = trace.currentCallStackFrame();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
 

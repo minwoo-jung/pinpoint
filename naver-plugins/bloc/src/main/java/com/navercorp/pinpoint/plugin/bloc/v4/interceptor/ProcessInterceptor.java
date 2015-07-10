@@ -57,7 +57,7 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, BlocConstant
         }
 
         try {
-            CallStackFrame recorder = trace.peekCallStackFrame();
+            CallStackFrame recorder = trace.currentCallStackFrame();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
             
