@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -15,6 +16,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.NetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.DefaultNpcMessage;
@@ -60,19 +62,20 @@ public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetC
             return;
         }
         
+        SpanEventRecorder recorder = trace.currentSpanEventRecorder();
         TraceId id = trace.getTraceId().getNextTraceId();
-        trace.recordNextSpanId(id.getSpanId());
+        recorder.recordNextSpanId(id.getSpanId());
         if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {
             com.nhncorp.lucy.npc.DefaultNpcMessage defaultNpcMessage = (com.nhncorp.lucy.npc.DefaultNpcMessage) result;
             Map<String, Object> options = createOption(id);
             putOption(defaultNpcMessage, options);
             
-            trace.recordServiceType(NPC_CLIENT);
+            recorder.recordServiceType(NPC_CLIENT);
             
             InetSocketAddress serverAddress = serverAddressAccessor.get(target);
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            trace.recordDestinationId(endPoint);
+            recorder.recordDestinationId(endPoint);
         } else {
         }
 

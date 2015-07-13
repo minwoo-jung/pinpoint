@@ -2,6 +2,7 @@ package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
 import java.net.InetSocketAddress;
 
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -45,23 +46,23 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, LucyNetConst
 
         com.nhncorp.lucy.npc.connector.NpcConnectorOption connectorOption = (com.nhncorp.lucy.npc.connector.NpcConnectorOption) args[0];
 
-        trace.traceBlockBegin();
-        trace.markBeforeTime();
+        SpanEventRecorder recorder = trace.traceBlockBegin();
+        recorder.markBeforeTime();
 
         TraceId nextId = trace.getTraceId().getNextTraceId();
-        trace.recordNextSpanId(nextId.getSpanId());
+        recorder.recordNextSpanId(nextId.getSpanId());
 
-        trace.recordServiceType(NPC_CLIENT);
+        recorder.recordServiceType(NPC_CLIENT);
 
         InetSocketAddress serverAddress = connectorOption.getAddress();
         int port = serverAddress.getPort();
         String endpiont = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
 //      DestinationId와 동일하므로 없는게 맞음.
 //        trace.recordEndPoint(endpiont);
-        trace.recordDestinationId(endpiont);
+        recorder.recordDestinationId(endpiont);
 
-        trace.recordAttribute(NPC_URL, serverAddress.toString());
-        trace.recordAttribute(NPC_CONNECT_OPTION, connectorOption.toString());
+        recorder.recordAttribute(NPC_URL, serverAddress.toString());
+        recorder.recordAttribute(NPC_CONNECT_OPTION, connectorOption.toString());
     }
 
     @Override
@@ -77,10 +78,11 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, LucyNetConst
         }
 
         try {
-            trace.recordApi(descriptor);
-            trace.recordException(throwable);
+            SpanEventRecorder recorder = trace.currentSpanEventRecorder();
+            recorder.recordApi(descriptor);
+            recorder.recordException(throwable);
 
-            trace.markAfterTime();
+            recorder.markAfterTime();
         } finally {
             trace.traceBlockEnd();
         }

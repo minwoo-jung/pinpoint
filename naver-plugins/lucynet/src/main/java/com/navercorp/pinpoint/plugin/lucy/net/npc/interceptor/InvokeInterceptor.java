@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
@@ -66,8 +67,8 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
         // TODO add sampling logic here.
         //
 
-        trace.traceBlockBegin();
-        trace.markBeforeTime();
+        SpanEventRecorder recorder = trace.traceBlockBegin();
+        recorder.markBeforeTime();
 
 //        TraceId nextId = trace.getTraceId().getNextTraceId();
 //        trace.recordNextSpanId(nextId.getSpanId());
@@ -76,16 +77,16 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
         // TODO add pinpoint headers to the request message here.
         //
 
-        trace.recordServiceType(NPC_CLIENT);
+        recorder.recordServiceType(NPC_CLIENT);
 
         InetSocketAddress serverAddress = serverAddressAccessor.get(target);
         int port = serverAddress.getPort();
         String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
 //      DestinationId와 동일하므로 없는게 맞음.
 //        trace.recordEndPoint(endPoint);
-        trace.recordDestinationId(endPoint);
+        recorder.recordDestinationId(endPoint);
 
-        trace.recordAttribute(NPC_URL, serverAddress.toString());
+        recorder.recordAttribute(NPC_URL, serverAddress.toString());
     }
 
     @Override
@@ -100,17 +101,17 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
             return;
         }
         try {
-            
-            trace.recordApi(descriptor);
-            trace.recordException(throwable);
+            SpanEventRecorder recorder = trace.currentSpanEventRecorder();
+            recorder.recordApi(descriptor);
+            recorder.recordException(throwable);
 
             
             
-            trace.markAfterTime();
+            recorder.markAfterTime();
             if (isAsynchronousInvocation(target, args, result, throwable)) {
                 // set asynchronous trace
                 final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();
-                trace.recordNextAsyncId(asyncTraceId.getAsyncId());
+                recorder.recordNextAsyncId(asyncTraceId.getAsyncId());
                 asyncTraceIdAccessor.set(result, asyncTraceId);
                 if (isDebug) {
                     logger.debug("Set asyncTraceId metadata {}", asyncTraceId);
