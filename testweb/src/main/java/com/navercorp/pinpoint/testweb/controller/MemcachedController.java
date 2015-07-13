@@ -41,4 +41,25 @@ public class MemcachedController {
         memcachedService.timeout();
         return "OK";
     }
+    
+    @RequestMapping(value = "/memcached/asyncCAS")
+    @ResponseBody
+    public String asyncCAS() {
+        memcachedService.asyncCAS();
+        return "OK";
+    }
+    
+    @RequestMapping(value = "/memcached/asyncGetBulk")
+    @ResponseBody
+    public String asyncGetBulk() {
+        memcachedService.asyncGetBulk();
+        return "OK";
+    }
+    
+    @RequestMapping(value = "/memcached/getAndTouch")
+    @ResponseBody
+    public String getAndTouch() {
+        memcachedService.getAndTouch();
+        return "OK";
+    }
 }

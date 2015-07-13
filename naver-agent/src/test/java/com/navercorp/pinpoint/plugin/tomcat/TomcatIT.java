@@ -14,7 +14,7 @@
  */
 package com.navercorp.pinpoint.plugin.tomcat;
 
-import static com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.ExpectedAnnotation.*;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 import static org.junit.Assert.*;
 
 import java.io.InputStream;
@@ -32,7 +32,6 @@ import org.junit.runner.RunWith;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier.BlockType;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
@@ -79,13 +78,12 @@ public class TomcatIT {
         Method invoke = standardHostValve.getMethod("invoke", request, response);
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
-        verifier.printCache(System.out);
-        verifier.printBlocks(System.out);
+        verifier.printCache();
         
         verifier.ignoreServiceType(JDK_HTTPURLCONNECTOR);
-        verifier.verifyTraceBlock(BlockType.EVENT, TOMCAT_METHOD, invoke, null, null, null, null, annotation(HTTP_PARAM, params));
-        verifier.verifyTraceBlock(BlockType.ROOT, TOMCAT, "Tomcat Servlet Process", rpc, endPoint, "127.0.0.1", null);        
-        verifier.verifyTraceBlockCount(0);
+        verifier.verifyTrace(event(TOMCAT_METHOD, invoke, annotation(HTTP_PARAM, params)));
+        verifier.verifyTrace(root(TOMCAT, "Tomcat Servlet Process", rpc, endPoint, "127.0.0.1"));        
+        verifier.verifyTraceCount(0);
     }
     
     @Test

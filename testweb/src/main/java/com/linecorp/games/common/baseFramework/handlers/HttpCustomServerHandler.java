@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import net.spy.memcached.ArcusClient;
+//import net.spy.memcached.ArcusClient;
 import net.spy.memcached.ConnectionFactoryBuilder;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -57,12 +57,12 @@ public class HttpCustomServerHandler extends SimpleChannelUpstreamHandler {
 
     private final ListeningExecutorService listeningExecutorService;
 
-    private final ArcusClient arcus;
+//    private final ArcusClient arcus;
     private final NingAsyncHttpClient asyncHttpInvoker = new NingAsyncHttpClient();
 
     public HttpCustomServerHandler() {
         this.listeningExecutorService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
-        this.arcus = ArcusClient.createArcusClient("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27", new ConnectionFactoryBuilder());
+//        this.arcus = ArcusClient.createArcusClient("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27", new ConnectionFactoryBuilder());
     }
 
     @Override
@@ -72,15 +72,15 @@ public class HttpCustomServerHandler extends SimpleChannelUpstreamHandler {
     }
 
     private void accessArcus() {
-        Future<Boolean> future = null;
-        try {
-            future = arcus.set("pinpoint:test", 10, "Hello, Arcus");
-            future.get(100L, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            if (future != null) {
-                future.cancel(true);
-            }
-        }
+//        Future<Boolean> future = null;
+//        try {
+//            future = arcus.set("pinpoint:test", 10, "Hello, Arcus");
+//            future.get(100L, TimeUnit.MILLISECONDS);
+//        } catch (Exception e) {
+//            if (future != null) {
+//                future.cancel(true);
+//            }
+//        }
     }
 
     private void accessNaver() {

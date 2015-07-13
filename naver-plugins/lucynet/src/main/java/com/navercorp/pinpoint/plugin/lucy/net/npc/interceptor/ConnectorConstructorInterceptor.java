@@ -9,7 +9,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.NoCache;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector;
@@ -76,15 +75,15 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
 
         trace.traceBlockBegin();
         trace.markBeforeTime();
-        trace.recordServiceType(NPC_CLIENT);
+        trace.recordServiceType(NPC_CLIENT_INTERNAL);
 
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            trace.recordDestinationId(endPoint);
+            trace.recordAttribute(NPC_URL, endPoint);
         } else {
             // destination id가 없으면 안되기 때문에 unknown으로 지정.
-            trace.recordDestinationId("unknown");
+            trace.recordAttribute(NPC_URL, "unknown");
         }
     }
 

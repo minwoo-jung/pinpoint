@@ -28,10 +28,11 @@ public class LucyNetTypeProvider implements TraceMetadataProvider, LucyNetConsta
      */
     @Override
     public void setup(TraceMetadataSetupContext context) {
-//        context.addType(NPC_CLIENT);
-//        context.addAnnotationKey(NPC_CONNECT_OPTION);
-//        context.addAnnotationKey(NPC_PARAM);
-//        context.addAnnotationKey(NPC_URL);
+        context.addServiceType(NPC_CLIENT);
+        context.addServiceType(NPC_CLIENT_INTERNAL);
+        context.addAnnotationKey(NPC_CONNECT_OPTION);
+        context.addAnnotationKey(NPC_PARAM);
+        context.addAnnotationKey(NPC_URL);
 //
 //        context.addType(NIMM_CLIENT);
 //        context.addAnnotationKey(NIMM_OBJECT_NAME);

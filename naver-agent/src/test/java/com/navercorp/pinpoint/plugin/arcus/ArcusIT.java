@@ -14,6 +14,8 @@
  */
 package com.navercorp.pinpoint.plugin.arcus;
 
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
+
 import java.lang.reflect.Method;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -97,6 +99,7 @@ public class ArcusIT {
         Method get = MemcachedClient.class.getMethod("get", String.class);
         Method operationFutureGet = OperationFuture.class.getMethod("get", long.class, TimeUnit.class);
         Method getFutureGet = GetFuture.class.getMethod("get", long.class, TimeUnit.class);
+        Method getFutureSet = GetFuture.class.getMethod("set", Future.class);
         Method frontCacheFutureGet = FrontCacheGetFuture.class.getMethod("get", long.class, TimeUnit.class);
         
         
@@ -104,22 +107,27 @@ public class ArcusIT {
         asyncGet();
         asyncGet();
         
+        
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         
-        verifier.printCache(System.out);
-        verifier.printBlocks(System.out);
+        verifier.printCache();
 
-        verifier.verifyApi(ARCUS, set, KEY);
-        verifier.verifyApi(ARCUS_FUTURE_GET, operationFutureGet);
-        verifier.verifyApi(ARCUS, asyncGet, KEY);
-        verifier.verifyApi(ARCUS_FUTURE_GET, getFutureGet);
-        verifier.verifyApi(ARCUS, asyncGet, KEY);
-        verifier.verifyApi(ARCUS_EHCACHE_FUTURE_GET, frontCacheFutureGet);
-        verifier.verifyTraceBlockCount(0);
+        verifier.verifyTrace(event(ARCUS, set, args(KEY)),
+                event(ARCUS_FUTURE_GET, operationFutureGet));
+        
+        verifier.verifyTrace(async(ARCUS, asyncGet, args(KEY), 
+                                            event("ASYNC", "Asynchronous Invocation"),
+                                            event(ARCUS_FUTURE_GET, getFutureSet)));
+        
+        
+        verifier.verifyTrace(event(ARCUS_FUTURE_GET, getFutureGet));
+        verifier.verifyTrace(event(ARCUS, asyncGet, args(KEY)));
+        verifier.verifyTrace(event(ARCUS_EHCACHE_FUTURE_GET, frontCacheFutureGet));
+        verifier.verifyTraceCount(0);
         
         get();
         
-        verifier.verifyApi(ARCUS, get, KEY);
-        verifier.verifyTraceBlockCount(0);
+        verifier.verifyTrace(event(ARCUS, get, args(KEY)));
+        verifier.verifyTraceCount(0);
     }
 }

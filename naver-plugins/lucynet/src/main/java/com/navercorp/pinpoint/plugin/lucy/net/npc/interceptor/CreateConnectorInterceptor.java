@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
@@ -40,20 +39,19 @@ public class CreateConnectorInterceptor implements SimpleAroundInterceptor, Lucy
         trace.traceBlockBegin();
         trace.markBeforeTime();
 
-        TraceId nextId = trace.getTraceId().getNextTraceId();
-        trace.recordNextSpanId(nextId.getSpanId());
-        trace.recordServiceType(NPC_CLIENT);
+        trace.recordServiceType(NPC_CLIENT_INTERNAL);
 
         NpcConnectorOption option = (NpcConnectorOption) args[0];
 
         InetSocketAddress serverAddress = option.getAddress();
-        int port = serverAddress.getPort();
-        String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-//      DestinationId와 동일하므로 없는게 맞음.
-//        trace.recordEndPoint(endpint);
-        trace.recordDestinationId(endPoint);
 
-        trace.recordAttribute(NPC_URL, serverAddress.toString());
+        if (serverAddress != null) {
+            int port = serverAddress.getPort();
+            String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
+            trace.recordAttribute(NPC_URL, endPoint);
+        } else {
+            trace.recordAttribute(NPC_URL, "unknown");
+        }
     }
 
     @Override
