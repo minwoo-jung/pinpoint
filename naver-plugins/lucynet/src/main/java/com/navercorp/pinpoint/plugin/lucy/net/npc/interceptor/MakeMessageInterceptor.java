@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Header;
-import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -62,7 +62,7 @@ public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetC
             return;
         }
         
-        CallStackFrame recorder = trace.currentCallStackFrame();
+        SpanEventRecorder recorder = trace.currentSpanEventRecorder();
         TraceId id = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(id.getSpanId());
         if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {

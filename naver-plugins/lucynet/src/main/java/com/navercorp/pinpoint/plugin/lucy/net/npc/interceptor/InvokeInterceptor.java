@@ -5,7 +5,7 @@ import java.nio.charset.Charset;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
-import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
@@ -67,7 +67,7 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
         // TODO add sampling logic here.
         //
 
-        CallStackFrame recorder = trace.pushCallStackFrame();
+        SpanEventRecorder recorder = trace.traceBlockBegin();
         recorder.markBeforeTime();
 
 //        TraceId nextId = trace.getTraceId().getNextTraceId();
@@ -101,7 +101,7 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
             return;
         }
         try {
-            CallStackFrame recorder = trace.currentCallStackFrame();
+            SpanEventRecorder recorder = trace.currentSpanEventRecorder();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
 
@@ -120,7 +120,7 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
 
             
         } finally {
-            trace.popCallStackFrame();
+            trace.traceBlockEnd();
         }
     }
     

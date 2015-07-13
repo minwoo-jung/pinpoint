@@ -17,7 +17,7 @@ package com.navercorp.pinpoint.plugin.nelo.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.context.TraceHeader;
+import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
 import com.navercorp.pinpoint.bootstrap.interceptor.TraceContextSupport;
@@ -35,8 +35,8 @@ public class AppenderInterceptor implements SimpleAroundInterceptor, TraceContex
         Trace trace = traceContext.currentTraceObject();
         
         if (trace != null) {
-            TraceHeader header = trace.getTraceHeader();
-            header.recordLogging(true);
+            SpanRecorder recorder = trace.getSpanRecorder();
+            recorder.recordLogging(true);
         }
     }
 

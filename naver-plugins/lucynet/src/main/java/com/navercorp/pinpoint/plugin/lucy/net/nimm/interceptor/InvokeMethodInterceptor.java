@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
-import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -64,7 +64,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
             return;
         }
 
-        CallStackFrame recorder = trace.pushCallStackFrame();
+        SpanEventRecorder recorder = trace.traceBlockBegin();
         recorder.markBeforeTime();
 
         TraceId nextId = trace.getTraceId().getNextTraceId();
@@ -105,7 +105,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
         }
 
         try {
-            CallStackFrame recorder = trace.currentCallStackFrame();
+            SpanEventRecorder recorder = trace.currentSpanEventRecorder();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
             recorder.markAfterTime();
@@ -121,7 +121,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
             }
 
         } finally {
-            trace.popCallStackFrame();
+            trace.traceBlockEnd();
         }
     }
     

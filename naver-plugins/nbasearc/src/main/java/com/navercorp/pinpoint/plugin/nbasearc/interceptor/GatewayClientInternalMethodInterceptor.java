@@ -16,7 +16,7 @@
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
-import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptorForPlugin;
@@ -35,12 +35,12 @@ public class GatewayClientInternalMethodInterceptor extends SpanEventSimpleAroun
     }
 
     @Override
-    public void doInBeforeTrace(CallStackFrame recorder, Object target, Object[] args) {
+    public void doInBeforeTrace(SpanEventRecorder recorder, Object target, Object[] args) {
         recorder.markBeforeTime();
     }
 
     @Override
-    public void doInAfterTrace(CallStackFrame recorder, Object target, Object[] args, Object result, Throwable throwable) {
+    public void doInAfterTrace(SpanEventRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
         recorder.recordApi(getMethodDescriptor());
         recorder.recordServiceType(NBASE_ARC_INTERNAL);
         recorder.recordException(throwable);

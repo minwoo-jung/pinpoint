@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 import java.net.InetSocketAddress;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
-import com.navercorp.pinpoint.bootstrap.context.CallStackFrame;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -43,7 +43,7 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
             return;
         }
 
-        CallStackFrame recorder = trace.pushCallStackFrame();
+        SpanEventRecorder recorder = trace.traceBlockBegin();
         recorder.markBeforeTime();
 
         recorder.recordServiceType(NPC_CLIENT_INTERNAL);
@@ -69,13 +69,13 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
             return;
         }
         try {
-            CallStackFrame recorder = trace.currentCallStackFrame();
+            SpanEventRecorder recorder = trace.currentSpanEventRecorder();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
 
             recorder.markAfterTime();
         } finally {
-            trace.popCallStackFrame();
+            trace.traceBlockEnd();
         }
     }
 }
