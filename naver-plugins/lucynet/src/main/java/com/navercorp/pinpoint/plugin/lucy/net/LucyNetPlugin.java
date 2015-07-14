@@ -1,6 +1,5 @@
 package com.navercorp.pinpoint.plugin.lucy.net;
-import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
-import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
@@ -60,13 +59,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         // builder.editMethod("getReturnValue").injectInterceptor("com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor");
         // builder.editMethod("get").injectInterceptor("com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor");
 
-        MethodTransformerBuilder methodBuilder = builder.editMethods(new MethodFilter() {
-            @Override
-            public boolean filter(MethodInfo method) {
-                final String name = method.getName();
-                return !(name.equals("getReturnValue") || name.equals("get") || name.equals("isReadyAndSet"));
-            }
-        });
+        MethodTransformerBuilder methodBuilder = builder.editMethods(MethodFilters.name("getReturnValue", "get", "isReadyAndSet"));
         methodBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         methodBuilder.injectInterceptor("com.navercorp.pinpoint.plugin.lucy.net.interceptor.DefaultInvocationFutureMethodInterceptor");
 
