@@ -81,8 +81,8 @@ public class TomcatIT {
         verifier.printCache();
         
         verifier.ignoreServiceType(JDK_HTTPURLCONNECTOR);
-        verifier.verifyTrace(event(TOMCAT_METHOD, invoke, annotation(HTTP_PARAM, params)));
         verifier.verifyTrace(root(TOMCAT, "Tomcat Servlet Process", rpc, endPoint, "127.0.0.1"));        
+        verifier.verifyTrace(event(TOMCAT_METHOD, invoke, annotation(HTTP_PARAM, params)));
         verifier.verifyTraceCount(0);
     }
     
