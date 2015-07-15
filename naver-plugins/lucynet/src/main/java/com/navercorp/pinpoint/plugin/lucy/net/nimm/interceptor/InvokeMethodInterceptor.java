@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -63,30 +64,30 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
             return;
         }
 
-        trace.traceBlockBegin();
-        trace.markBeforeTime();
+        SpanEventRecorder recorder = trace.traceBlockBegin();
+        recorder.markBeforeTime();
 
         TraceId nextId = trace.getTraceId().getNextTraceId();
-        trace.recordNextSpanId(nextId.getSpanId());
+        recorder.recordNextSpanId(nextId.getSpanId());
 
-        trace.recordServiceType(NIMM_CLIENT);
+        recorder.recordServiceType(NIMM_CLIENT);
 
         // TODO protocol은 어떻게 표기하지???
 
         String nimmAddress = nimmAddressAccessor.get(target);
-        trace.recordDestinationId(nimmAddress);
+        recorder.recordDestinationId(nimmAddress);
 
         // DestinationId와 동일하므로 없는게 맞음.
         // trace.recordEndPoint(nimmAddress);
 
         if (objectName != null) {
-            trace.recordAttribute(NIMM_OBJECT_NAME, objectName);
+            recorder.recordAttribute(NIMM_OBJECT_NAME, objectName);
         }
         if (methodName != null) {
-            trace.recordAttribute(NIMM_METHOD_NAME, methodName);
+            recorder.recordAttribute(NIMM_METHOD_NAME, methodName);
         }
         if (params != null) {
-            trace.recordAttribute(NIMM_PARAM, Arrays.toString(params));
+            recorder.recordAttribute(NIMM_PARAM, Arrays.toString(params));
         }
 
     }
@@ -104,14 +105,15 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
         }
 
         try {
-            trace.recordApi(descriptor);
-            trace.recordException(throwable);
-            trace.markAfterTime();
+            SpanEventRecorder recorder = trace.currentSpanEventRecorder();
+            recorder.recordApi(descriptor);
+            recorder.recordException(throwable);
+            recorder.markAfterTime();
 
             if (isAsynchronousInvocation(target, args, result, throwable)) {
                 // set asynchronous trace
                 final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();
-                trace.recordNextAsyncId(asyncTraceId.getAsyncId());
+                recorder.recordNextAsyncId(asyncTraceId.getAsyncId());
                 asyncTraceIdAccessor.set(result, asyncTraceId);
                 if (isDebug) {
                     logger.debug("Set asyncTraceId metadata {}", asyncTraceId);

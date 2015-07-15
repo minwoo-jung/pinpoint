@@ -18,7 +18,9 @@ import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
+import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -66,7 +68,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     private int entityDumpSize = 512;
 
     @Override
-    public void doInBeforeTrace(RecordableTrace trace, Object target, Object[] args) {
+    public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
 
         org.jboss.netty.channel.ChannelHandlerContext channelHandlerContext = channelHandlerContextAccessor.get(target);
         org.jboss.netty.channel.MessageEvent e = messageEventAccessor.get(target);
@@ -99,30 +101,30 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
 
         final String endPoint = getLocalAddress(channel);
 
-        trace.markBeforeTime();
-        if (trace.canSampled()) {
+        recorder.markBeforeTime();
+        if (recorder.canSampled()) {
 
-            trace.recordServiceType(ServiceType.STAND_ALONE);
-            trace.recordRpcName(requestURL);
+            recorder.recordServiceType(ServiceType.STAND_ALONE);
+            recorder.recordRpcName(requestURL);
 
-            trace.recordEndPoint(endPoint);
+            recorder.recordEndPoint(endPoint);
 
             final String remoteAddr = getRemoteAddress(channel);
-            trace.recordRemoteAddress(remoteAddr);
+            recorder.recordRemoteAddress(remoteAddr);
         }
 
         // 서버 맵을 통계정보에서 조회하려면 remote로 호출되는 WAS의 관계를 알아야해서 부모의 application
         // name을 전달받음.
-        if (!trace.isRoot()) {
+        if (!recorder.isRoot()) {
             String parentApplicationName = populateParentApplicationNameFromRequest(request);
             short parentApplicationType = populateParentApplicationTypeFromRequest(request);
             if (parentApplicationName != null) {
-                trace.recordParentApplication(parentApplicationName, parentApplicationType);
+                recorder.recordParentApplication(parentApplicationName, parentApplicationType);
                 final String host = request.getHeader(Header.HTTP_HOST.toString());
                 if(host != null) {
-                    trace.recordAcceptorHost(host);
+                    recorder.recordAcceptorHost(host);
                 } else {
-                    trace.recordAcceptorHost(endPoint);
+                    recorder.recordAcceptorHost(endPoint);
                 }
             }
         } else {
@@ -217,23 +219,23 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     }
 
     @Override
-    public void doInAfterTrace(RecordableTrace trace, Object target, Object[] args, Object result, Throwable throwable) {
+    public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
 
-        if (trace.canSampled()) {
+        if (recorder.canSampled()) {
             org.jboss.netty.channel.MessageEvent e = messageEventAccessor.get(target);
 
             if (e != null) {
-                recordHttpParameter2(trace, e);
+                recordHttpParameter2(recorder, e);
             }
 
-            trace.recordApi(getMethodDescriptor());
+            recorder.recordApi(getMethodDescriptor());
         }
-        trace.recordException(throwable);
-        trace.markAfterTime();
+        recorder.recordException(throwable);
+        recorder.markAfterTime();
 
     }
 
-    private void recordHttpParameter2(RecordableTrace trace, MessageEvent e) {
+    private void recordHttpParameter2(SpanRecorder recorder, MessageEvent e) {
         final Object message = e.getMessage();
         if (message instanceof org.jboss.netty.handler.codec.http.HttpRequest) {
             final org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) message;
@@ -252,7 +254,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
                     final Charset charset = getCharset(request);
                     String bodyStr = content.toString(0, contentSize, charset);
                     if (bodyStr != null && bodyStr.length() > 0) {
-                        trace.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
+                        recorder.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
                     }
                 }
             } else if (reqMethod.equals(HttpMethod.GET)) {
@@ -260,14 +262,14 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
                 // 512);
                 String parameters = getRequestParameter(request, paramDumpSize);
                 if (parameters != null && parameters.length() > 0) {
-                    trace.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                    recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                 }
             }
         }
     }
 
     // buffer index를 정확하게 계산하는 로직이나 before에서 데이터를 읽어야 함.
-    private void recordHttpParameter(Trace trace, MessageEvent e) {
+    private void recordHttpParameter(SpanRecorder recorder, MessageEvent e) {
         final Object message = e.getMessage();
         if (message instanceof org.jboss.netty.handler.codec.http.HttpRequest) {
             final org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) message;
@@ -288,7 +290,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
                     // 해당 메소드의 경우 readerIndex를 after에서 읽을경우 다음으로 갈수 있음.
                     String bodyStr = content.toString(content.readerIndex(), contentSize, charset);
                     if (bodyStr != null && bodyStr.length() > 0) {
-                        trace.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
+                        recorder.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
                     }
                 }
             } else if (equalMethod(HttpMethod.GET, reqMethod)) {
@@ -296,7 +298,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
                 // 512);
                 String parameters = getRequestParameter(request, paramDumpSize);
                 if (parameters != null && parameters.length() > 0) {
-                    trace.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                    recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                 }
             }
         }

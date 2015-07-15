@@ -16,6 +16,7 @@ import com.navercorp.pinpoint.bootstrap.FieldAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
+import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
@@ -42,26 +43,26 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
     }
 
     @Override
-    public void doInBeforeTrace(RecordableTrace trace, Object target, Object[] args) {
+    public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
         io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
         io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
-        trace.markBeforeTime();
-        if (trace.canSampled()) {
-            trace.recordServiceType(BLOC);
+        recorder.markBeforeTime();
+        if (recorder.canSampled()) {
+            recorder.recordServiceType(BLOC);
             final String requestURL = request.getUri();
-            trace.recordRpcName(requestURL);
+            recorder.recordRpcName(requestURL);
 
             String endPoint = getIpPort(ctx.channel().localAddress());
             String remoteAddress = getIp(ctx.channel().remoteAddress());
 
-            trace.recordEndPoint(endPoint);
-            trace.recordRemoteAddress(remoteAddress);
-            trace.recordAttribute(AnnotationKey.HTTP_URL, request.getUri());
+            recorder.recordEndPoint(endPoint);
+            recorder.recordRemoteAddress(remoteAddress);
+            recorder.recordAttribute(AnnotationKey.HTTP_URL, request.getUri());
         }
 
-        if (!trace.isRoot()) {
-            recordParentInfo(trace, request, ctx);
+        if (!recorder.isRoot()) {
+            recordParentInfo(recorder, request, ctx);
         }
     }
 
@@ -126,8 +127,8 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
     }
 
     @Override
-    public void doInAfterTrace(RecordableTrace trace, Object target, Object[] args, Object result, Throwable throwable) {
-        if (trace.canSampled()) {
+    public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
+        if (recorder.canSampled()) {
             io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
             if (HttpMethod.POST.name().equals(request.getMethod().name()) || HttpMethod.PUT.name().equals(request.getMethod().name())) {
@@ -136,14 +137,14 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
                 Charset uriEncoding = uriEncodingSnooper.get(target);
                 String parameters = getRequestParameter(request, 64, 512, uriEncoding);
                 if (parameters != null && parameters.length() > 0) {
-                    trace.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                    recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                 }
             }
 
-            trace.recordApi(getMethodDescriptor());
+            recorder.recordApi(getMethodDescriptor());
         }
-        trace.recordException(throwable);
-        trace.markAfterTime();
+        recorder.recordException(throwable);
+        recorder.markAfterTime();
     }
 
     private boolean samplingEnable(io.netty.handler.codec.http.FullHttpRequest request) {
@@ -238,22 +239,22 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
         }
     }
 
-    private void recordParentInfo(RecordableTrace trace, io.netty.handler.codec.http.FullHttpRequest request, io.netty.channel.ChannelHandlerContext ctx) {
+    private void recordParentInfo(SpanRecorder recorder, io.netty.handler.codec.http.FullHttpRequest request, io.netty.channel.ChannelHandlerContext ctx) {
         HttpHeaders headers = request.headers();
         String parentApplicationName = headers.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
 
         if (parentApplicationName != null) {
             final String host = headers.get(Header.HTTP_HOST.toString());
             if(host != null) {
-                trace.recordAcceptorHost(headers.get(Header.HTTP_HOST.toString()));
+                recorder.recordAcceptorHost(headers.get(Header.HTTP_HOST.toString()));
             } else {
                 // FIXME record Acceptor Host는 URL상의 host를 가져와야한다. 일단 가져올 수 있는 방법이 없어보여 IP라도 추가해둠.
                 String acceptorHost = getIpPort(ctx.channel().localAddress());
-                trace.recordAcceptorHost(acceptorHost);
+                recorder.recordAcceptorHost(acceptorHost);
             }
             final String type = headers.get(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
             final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
-            trace.recordParentApplication(parentApplicationName, parentApplicationType);
+            recorder.recordParentApplication(parentApplicationName, parentApplicationType);
         }
     }
 }

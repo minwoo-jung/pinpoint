@@ -10,6 +10,7 @@ import java.util.Map;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
+import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
@@ -91,22 +92,22 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
     }
 
     @Override
-    public void doInBeforeTrace(RecordableTrace trace, Object target, Object[] args) {
-        trace.markBeforeTime();
+    public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
+        recorder.markBeforeTime();
         
         
-        if (trace.canSampled()) {
+        if (recorder.canSampled()) {
             NpcMessage npcMessage = getNpcMessage(args);
 
-            trace.recordServiceType(BLOC);
-            trace.recordRpcName(createRpcName(npcMessage));
+            recorder.recordServiceType(BLOC);
+            recorder.recordRpcName(createRpcName(npcMessage));
 
             final IoSession ioSession = getIOSession(args);
-            trace.recordEndPoint(getLocalAddress(ioSession));
-            trace.recordRemoteAddress(getRemoteAddress(ioSession));
+            recorder.recordEndPoint(getLocalAddress(ioSession));
+            recorder.recordRemoteAddress(getRemoteAddress(ioSession));
         }
 
-        if (!trace.isRoot()) {
+        if (!recorder.isRoot()) {
             final IoSession ioSession = getIOSession(args);
             NpcMessage npcMessage = getNpcMessage(args);
 
@@ -115,28 +116,28 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
 
             String parentApplicationName = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
             if (parentApplicationName != null) {
-                trace.recordAcceptorHost(getLocalAddress(ioSession));
+                recorder.recordAcceptorHost(getLocalAddress(ioSession));
 
                 final String type = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
                 final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
-                trace.recordParentApplication(parentApplicationName, parentApplicationType);
+                recorder.recordParentApplication(parentApplicationName, parentApplicationType);
             }
             
             String remoteHost = pinpointOptions.get(Header.HTTP_HOST.toString());
             if (remoteHost != null && remoteHost.length() > 0) {
-                trace.recordRemoteAddress(remoteHost);
+                recorder.recordRemoteAddress(remoteHost);
             }
         }
     }
 
     @Override
-    public void doInAfterTrace(RecordableTrace trace, Object target, Object[] args, Object result, Throwable throwable) {
-        if (trace.canSampled()) {
-            trace.recordApi(getMethodDescriptor());
+    public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
+        if (recorder.canSampled()) {
+            recorder.recordApi(getMethodDescriptor());
         }
         
-        trace.recordException(throwable);
-        trace.markAfterTime();
+        recorder.recordException(throwable);
+        recorder.markAfterTime();
     }
     
     private IoSession getIOSession(Object[] args) {

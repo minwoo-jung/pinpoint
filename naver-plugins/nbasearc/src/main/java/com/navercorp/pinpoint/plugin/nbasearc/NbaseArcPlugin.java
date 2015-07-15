@@ -15,8 +15,7 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc;
 
-import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
-import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
@@ -115,12 +114,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         methodEditorBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         methodEditorBuilder.injectInterceptor(GATEWAY_CLIENT_METHOD_INTERCEPTOR);
         
-        final MethodTransformerBuilder internalMethodTransformerBuilder = classEditorBuilder.editMethods(new MethodFilter() {
-            @Override
-            public boolean filter(MethodInfo method) {
-                return !(method.getName().equals("pipeline") || method.getName().equals("pipelineCallback"));
-            }
-        });
+        final MethodTransformerBuilder internalMethodTransformerBuilder = classEditorBuilder.editMethods(MethodFilters.name("pipeline", "pipelineCallback"));
         internalMethodTransformerBuilder.injectInterceptor(GATEWAY_CLIENT_INTERNAL_METHOD_INTERCEPTOR);
         internalMethodTransformerBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         context.addClassFileTransformer(classEditorBuilder.build());
@@ -138,12 +132,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         constructorEditorBuilderArg2.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         constructorEditorBuilderArg2.injectInterceptor(REDIS_CONNECTION_CONSTRUCTOR_INTERCEPTOR);
 
-        final MethodTransformerBuilder sendCommandMethodTransformerBuilder = classEditorBuilder.editMethods(new MethodFilter() {
-            @Override
-            public boolean filter(MethodInfo method) {
-                return !method.getName().equals("sendCommand");
-            }
-        });
+        final MethodTransformerBuilder sendCommandMethodTransformerBuilder = classEditorBuilder.editMethods(MethodFilters.name("sendCommand"));
         sendCommandMethodTransformerBuilder.injectInterceptor(REDIS_CONNECTION_SEND_COMMAND_METHOD_INTERCEPTOR);
         sendCommandMethodTransformerBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         
@@ -169,12 +158,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         constructorEditorBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         constructorEditorBuilder.injectInterceptor(GATEWAY_CONSTRUCTOR_INTERCEPTOR);
 
-        final MethodTransformerBuilder methodEditorBuilder = classEditorBuilder.editMethods(new MethodFilter() {
-            @Override
-            public boolean filter(MethodInfo method) {
-                return !method.getName().equals("getServer");
-            }
-        });
+        final MethodTransformerBuilder methodEditorBuilder = classEditorBuilder.editMethods(MethodFilters.name("getServer"));
         methodEditorBuilder.injectInterceptor(GATEWAY_GET_SERVER_METHOD_INTERCEPTOR);
         
         context.addClassFileTransformer(classEditorBuilder.build());
@@ -233,12 +217,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         constructorEditorBuilder.property(MethodTransformerProperty.IGNORE_IF_NOT_EXIST);
         constructorEditorBuilder.injectInterceptor(REDIS_CLUSTER_PIPELINE_CONSTRUCTOR_INTERCEPTOR);
 
-        final MethodTransformerBuilder setServerMethodTransformerBuilder = classEditorBuilder.editMethods(new MethodFilter() {
-            @Override
-            public boolean filter(MethodInfo method) {
-                return !method.getName().equals("setServer");
-            }
-        });
+        final MethodTransformerBuilder setServerMethodTransformerBuilder = classEditorBuilder.editMethods(MethodFilters.name("setServer"));
         setServerMethodTransformerBuilder.injectInterceptor(REDIS_CLUSTER_PIPELINE_SET_SERVER_INTERCEPTOR);
 
         final MethodTransformerBuilder methodEditorBuilder = classEditorBuilder.editMethods(new NameBasedMethodFilter(RedisClusterPipelineMethodNames.get()));
