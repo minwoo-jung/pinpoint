@@ -16,7 +16,6 @@
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
-import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
@@ -46,7 +45,6 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
 
     @Override
     public void doInBeforeTrace(SpanEventRecorder recorder, Object target, Object[] args) {
-        recorder.markBeforeTime();
     }
 
     @Override
@@ -64,6 +62,5 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
         recorder.recordDestinationId(destinationId != null ? destinationId : NBASE_ARC.toString());
         recorder.recordServiceType(NBASE_ARC);
         recorder.recordException(throwable);
-        recorder.markAfterTime();
     }
 }

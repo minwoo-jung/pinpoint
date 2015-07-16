@@ -68,8 +68,6 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
         //
 
         SpanEventRecorder recorder = trace.traceBlockBegin();
-        recorder.markBeforeTime();
-
 //        TraceId nextId = trace.getTraceId().getNextTraceId();
 //        trace.recordNextSpanId(nextId.getSpanId());
 
@@ -104,10 +102,6 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
             SpanEventRecorder recorder = trace.currentSpanEventRecorder();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
-
-            
-            
-            recorder.markAfterTime();
             if (isAsynchronousInvocation(target, args, result, throwable)) {
                 // set asynchronous trace
                 final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();

@@ -6,13 +6,11 @@ import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
-import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 
 public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
@@ -44,8 +42,6 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
         }
 
         SpanEventRecorder recorder = trace.traceBlockBegin();
-        recorder.markBeforeTime();
-
         recorder.recordServiceType(NPC_CLIENT_INTERNAL);
 
         InetSocketAddress serverAddress = serverAddressAccessor.get(target);
@@ -72,8 +68,6 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
             SpanEventRecorder recorder = trace.currentSpanEventRecorder();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
-
-            recorder.markAfterTime();
         } finally {
             trace.traceBlockEnd();
         }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
-import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
@@ -93,9 +92,6 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
 
     @Override
     public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
-        recorder.markBeforeTime();
-        
-        
         if (recorder.canSampled()) {
             NpcMessage npcMessage = getNpcMessage(args);
 
@@ -137,7 +133,6 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
         }
         
         recorder.recordException(throwable);
-        recorder.markAfterTime();
     }
     
     private IoSession getIOSession(Object[] args) {

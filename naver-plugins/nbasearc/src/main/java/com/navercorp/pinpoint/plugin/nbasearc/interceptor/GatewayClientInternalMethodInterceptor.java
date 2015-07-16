@@ -36,7 +36,6 @@ public class GatewayClientInternalMethodInterceptor extends SpanEventSimpleAroun
 
     @Override
     public void doInBeforeTrace(SpanEventRecorder recorder, Object target, Object[] args) {
-        recorder.markBeforeTime();
     }
 
     @Override
@@ -44,6 +43,5 @@ public class GatewayClientInternalMethodInterceptor extends SpanEventSimpleAroun
         recorder.recordApi(getMethodDescriptor());
         recorder.recordServiceType(NBASE_ARC_INTERNAL);
         recorder.recordException(throwable);
-        recorder.markAfterTime();
     }
 }
