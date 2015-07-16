@@ -3,8 +3,6 @@ package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 import java.util.Enumeration;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
-import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
-import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
@@ -12,7 +10,6 @@ import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
-import com.navercorp.pinpoint.bootstrap.util.NetworkUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
@@ -36,7 +33,6 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
     public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
 
         final Request request = (Request) args[0];
-        recorder.markBeforeTime();
         if (recorder.canSampled()) {
             recorder.recordServiceType(BLOC);
 
@@ -113,7 +109,6 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
             recorder.recordApi(getMethodDescriptor());
         }
         recorder.recordException(throwable);
-        recorder.markAfterTime();
     }
 
     private boolean samplingEnable(Request request) {

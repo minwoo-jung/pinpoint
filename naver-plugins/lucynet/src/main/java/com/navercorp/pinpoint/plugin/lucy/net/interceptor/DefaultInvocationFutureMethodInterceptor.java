@@ -22,7 +22,6 @@ public class DefaultInvocationFutureMethodInterceptor extends SpanAsyncEventSimp
 
     @Override
     protected void doInBeforeTrace(SpanEventRecorder recorder, AsyncTraceId asyncTraceId, Object target, Object[] args) {
-        recorder.markBeforeTime();
     }
 
     @Override
@@ -30,6 +29,5 @@ public class DefaultInvocationFutureMethodInterceptor extends SpanAsyncEventSimp
         recorder.recordServiceType(ServiceType.INTERNAL_METHOD);
         recorder.recordException(throwable);
         recorder.recordApi(methodDescriptor);
-        recorder.markAfterTime();
     }
 }

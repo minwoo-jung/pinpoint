@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 
 import com.navercorp.pinpoint.bootstrap.FieldAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Header;
-import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
@@ -47,7 +46,6 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
         io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
         io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
-        recorder.markBeforeTime();
         if (recorder.canSampled()) {
             recorder.recordServiceType(BLOC);
             final String requestURL = request.getUri();
@@ -144,7 +142,6 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
             recorder.recordApi(getMethodDescriptor());
         }
         recorder.recordException(throwable);
-        recorder.markAfterTime();
     }
 
     private boolean samplingEnable(io.netty.handler.codec.http.FullHttpRequest request) {

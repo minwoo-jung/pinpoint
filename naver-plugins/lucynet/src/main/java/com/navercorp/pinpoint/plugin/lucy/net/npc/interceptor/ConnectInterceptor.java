@@ -47,8 +47,6 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, LucyNetConst
         com.nhncorp.lucy.npc.connector.NpcConnectorOption connectorOption = (com.nhncorp.lucy.npc.connector.NpcConnectorOption) args[0];
 
         SpanEventRecorder recorder = trace.traceBlockBegin();
-        recorder.markBeforeTime();
-
         TraceId nextId = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(nextId.getSpanId());
 
@@ -81,8 +79,6 @@ public class ConnectInterceptor implements SimpleAroundInterceptor, LucyNetConst
             SpanEventRecorder recorder = trace.currentSpanEventRecorder();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
-
-            recorder.markAfterTime();
         } finally {
             trace.traceBlockEnd();
         }

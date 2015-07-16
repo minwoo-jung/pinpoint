@@ -17,8 +17,6 @@ import org.jboss.netty.util.CharsetUtil;
 import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.bootstrap.context.Header;
-import com.navercorp.pinpoint.bootstrap.context.RecordableTrace;
-import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
@@ -101,7 +99,6 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
 
         final String endPoint = getLocalAddress(channel);
 
-        recorder.markBeforeTime();
         if (recorder.canSampled()) {
 
             recorder.recordServiceType(ServiceType.STAND_ALONE);
@@ -231,8 +228,6 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
             recorder.recordApi(getMethodDescriptor());
         }
         recorder.recordException(throwable);
-        recorder.markAfterTime();
-
     }
 
     private void recordHttpParameter2(SpanRecorder recorder, MessageEvent e) {

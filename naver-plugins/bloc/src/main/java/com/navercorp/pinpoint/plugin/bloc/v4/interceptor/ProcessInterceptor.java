@@ -39,8 +39,6 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, BlocConstant
         }
 
         SpanEventRecorder recorder = trace.traceBlockBegin();
-        recorder.markBeforeTime();
-
         recorder.recordServiceType(ServiceType.INTERNAL_METHOD);
     }
 
@@ -66,8 +64,6 @@ public class ProcessInterceptor implements SimpleAroundInterceptor, BlocConstant
                 recorder.recordAttribute(CALL_URL, blocRequest.getPath());
                 recorder.recordAttribute(PROTOCOL, blocRequest.getProtocol());
             }
-
-            recorder.markAfterTime();
         } finally {
             trace.traceBlockEnd();
         }
