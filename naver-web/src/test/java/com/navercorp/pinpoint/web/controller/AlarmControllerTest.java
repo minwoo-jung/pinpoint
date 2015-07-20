@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.navercorp.pinpoint.common.Version;
@@ -24,6 +25,7 @@ import com.navercorp.pinpoint.web.controller.AlarmController.RuleGroup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:servlet-context.xml", "classpath:applicationContext-test.xml"})
+@Transactional
 public class AlarmControllerTest {
 
     @Autowired

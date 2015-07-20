@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.web.alarm.CheckerCategory;
@@ -20,6 +21,7 @@ import com.navercorp.pinpoint.web.dao.mysql.MySqlAlarmResourceDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
+@Transactional
 public class MySqlAlarmResourceDaoTest {
 
     @Autowired
