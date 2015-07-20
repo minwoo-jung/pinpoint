@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.web.alarm.CheckerCategory;
 import com.navercorp.pinpoint.web.alarm.vo.AlarmEmp;
 import com.navercorp.pinpoint.web.alarm.vo.Rule;
@@ -39,7 +40,7 @@ public class MySqlAlarmResourceDaoTest {
     
     @Test
     public void crudAlarmRuleTest() {
-        final String applicationId = "test_app_id";
+        final String applicationId = "test_app_id" + Version.VERSION;
         List<Rule> rules = new LinkedList<Rule>();
         
         for(int i = 0; i < 3; i++) {
@@ -63,7 +64,7 @@ public class MySqlAlarmResourceDaoTest {
     @Test
     public void crudAlarmGroupMemberTest() {
         List<AlarmEmp> emps = new LinkedList<AlarmEmp>();
-        final String groupName = "s_mem_test";
+        final String groupName = "s_mem_test" + Version.VERSION;
         final String empName = "empName";
         
         for (int i = 0; i < 3; i++) {
