@@ -12,8 +12,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.web.alarm.CheckerCategory;
 import com.navercorp.pinpoint.web.alarm.vo.AlarmEmp;
 import com.navercorp.pinpoint.web.alarm.vo.Rule;
@@ -23,6 +25,7 @@ import com.navercorp.pinpoint.web.controller.AlarmController.RuleGroup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:servlet-context.xml", "classpath:applicationContext-test.xml"})
+@Transactional
 public class AlarmControllerTest {
 
     @Autowired
@@ -36,7 +39,7 @@ public class AlarmControllerTest {
     
     @Test
     public void insertAlarmEmpTest() {
-        final String groupName = "con_group";
+        final String groupName = "con_group" + Version.VERSION;
         List<AlarmEmp> emps = new LinkedList<AlarmEmp>();
         
         for (int i = 0; i < 3; i++) {
@@ -59,7 +62,7 @@ public class AlarmControllerTest {
     
     @Test
     public void updateAlarmEmpTest() {
-        final String groupName = "con_group";
+        final String groupName = "con_group" + Version.VERSION;
         List<AlarmEmp> emps = new LinkedList<AlarmEmp>();
         
         for (int i = 0; i < 3; i++) {
@@ -96,7 +99,7 @@ public class AlarmControllerTest {
     
     @Test
     public void insertRuleTest() {
-        final String ApplicationName = "test_app_name";
+        final String ApplicationName = "test_app_name" + Version.VERSION;
         List<Rule> rules = new LinkedList<Rule>();
         
         for (int i = 0; i < 3; i++) {
@@ -119,7 +122,7 @@ public class AlarmControllerTest {
     
     @Test
     public void updateRuleTest() {
-        final String applicationName = "test_app_name";
+        final String applicationName = "test_app_name" + Version.VERSION;
         List<Rule> rules = new LinkedList<Rule>();
         
         for (int i = 0; i < 3; i++) {

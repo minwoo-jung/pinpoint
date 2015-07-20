@@ -11,7 +11,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
-import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector;
 import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
@@ -76,7 +75,6 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
         }
 
         SpanEventRecorder recorder = trace.traceBlockBegin();
-        recorder.markBeforeTime();
         recorder.recordServiceType(NPC_CLIENT_INTERNAL);
 
         if (serverAddress != null) {
@@ -104,7 +102,6 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
             SpanEventRecorder recorder = trace.currentSpanEventRecorder();
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
-            recorder.markAfterTime();
         } finally {
             trace.traceBlockEnd();
         }
