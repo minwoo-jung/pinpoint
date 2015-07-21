@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
+import com.navercorp.pinpoint.common.trace.LoggingInfo;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
@@ -50,7 +51,7 @@ public class NeloWithLogBackIT {
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.printCache();
-        verifier.verifyIsLoggingTransactionInfo(true);
+        verifier.verifyIsLoggingTransactionInfo(LoggingInfo.LOGGED);
         verifier.verifyTraceCount(0);
 
     }
@@ -62,7 +63,7 @@ public class NeloWithLogBackIT {
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.printCache();
-        verifier.verifyIsLoggingTransactionInfo(false);
+        verifier.verifyIsLoggingTransactionInfo(LoggingInfo.NOT_LOGGED);
         verifier.verifyTraceCount(0);
     }
 }

@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
 import com.navercorp.pinpoint.bootstrap.interceptor.TraceContextSupport;
+import com.navercorp.pinpoint.common.trace.LoggingInfo;
 
 /**
  * @author minwoo.jung
@@ -36,7 +37,7 @@ public class AppenderInterceptor implements SimpleAroundInterceptor, TraceContex
         
         if (trace != null) {
             SpanRecorder recorder = trace.getSpanRecorder();
-            recorder.recordLogging(true);
+            recorder.recordLogging(LoggingInfo.LOGGED);
         }
     }
 
