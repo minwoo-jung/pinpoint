@@ -2,9 +2,9 @@ package com.navercorp.pinpoint.testweb.repository;
 
 import java.util.List;
 
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.testweb.domain.Member;
@@ -14,7 +14,7 @@ public class MemberDaoIbatis implements MemberDao {
 
     @Autowired
     @Qualifier("mysqlSqlMapClientTemplate")
-    private SqlMapClientTemplate sqlMapClientTemplate;
+    private SqlSessionTemplate sqlMapClientTemplate;
 
     public void add(Member member) {
         sqlMapClientTemplate.insert("add", member);
@@ -30,12 +30,12 @@ public class MemberDaoIbatis implements MemberDao {
     }
 
     public Member get(int id) {
-        return (Member) sqlMapClientTemplate.queryForObject("get", id);
+        return (Member) sqlMapClientTemplate.selectOne("get", id);
     }
 
     @SuppressWarnings("unchecked")
     public List<Member> list() {
-        return sqlMapClientTemplate.queryForList("list");
+        return sqlMapClientTemplate.selectList("list");
     }
 
     public void update(Member member) {
