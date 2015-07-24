@@ -1,11 +1,12 @@
 package com.navercorp.pinpoint.testweb.repository;
 
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,7 +19,7 @@ public class OracleDaoIbatis implements OracleDao {
 
     @Autowired
     @Qualifier("oracleSqlMapClientTemplate")
-    private SqlMapClientTemplate sqlMapClientTemplate;
+    private SqlSessionTemplate sqlMapClientTemplate;
 
     @Autowired
     @Qualifier("oracleDataSource")
@@ -26,7 +27,7 @@ public class OracleDaoIbatis implements OracleDao {
 
     @Override
     public int selectOne() {
-        return (Integer) sqlMapClientTemplate.queryForObject("selectOne");
+        return (Integer) sqlMapClientTemplate.selectOne("selectOne");
     }
 
     @Override

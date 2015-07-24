@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE sqlMapConfig      
-    PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"      
-    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
-
-<sqlMapConfig>
-    <settings defaultStatementTimeout="3"/>
-
-	<sqlMap resource="cubrid/sql-member.xml" />
-    <sqlMap resource="cubrid/test-sql.xml" />
-</sqlMapConfig>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+<configuration>
+	<mappers>
+		<mapper resource="cubrid/sql-member.xml" />
+		<mapper resource="cubrid/test-sql.xml" />
+	</mappers>
+</configuration>
