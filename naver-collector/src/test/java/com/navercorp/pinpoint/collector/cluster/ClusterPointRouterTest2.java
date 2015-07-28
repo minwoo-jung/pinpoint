@@ -24,6 +24,7 @@ import com.navercorp.pinpoint.rpc.client.MessageListener;
 import com.navercorp.pinpoint.rpc.client.PinpointSocketFactory;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
+import com.navercorp.pinpoint.rpc.packet.PingPacket;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.ResponsePacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
@@ -159,6 +160,11 @@ public class ClusterPointRouterTest2 {
         public HandshakeResponseCode handleHandshake(Map properties) {
             logger.warn("do handleEnableWorker {}", properties);
             return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
+        }
+
+        @Override
+        public void handlePing(PingPacket pingPacket, PinpointServer writablePinpointServer) {
+            logger.warn("Unsupport ping received {} {}", pingPacket, writablePinpointServer);
         }
     }
 
