@@ -1,15 +1,15 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc;
 
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 
 /**
  * @author Taejin Koo
  */
 public class NpcPluginHolder {
 
-    private final ProfilerPluginContext context;
+    private final ProfilerPluginSetupContext context;
     
-    public NpcPluginHolder(ProfilerPluginContext context) {
+    public NpcPluginHolder(ProfilerPluginSetupContext context) {
         this.context = context;
     }
     

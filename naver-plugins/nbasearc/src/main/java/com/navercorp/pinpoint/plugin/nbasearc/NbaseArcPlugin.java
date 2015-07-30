@@ -19,7 +19,7 @@ import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConstructorTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerBuilder;
@@ -72,7 +72,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void setup(ProfilerPluginContext context) {
+    public void setup(ProfilerPluginSetupContext context) {
         final NbaseArcPluginConfig config = new NbaseArcPluginConfig(context.getConfig());
         final boolean enabled = config.isEnabled();
         final boolean pipelineEnabled = config.isPipelineEnabled();
@@ -94,7 +94,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
     }
 
     
-    private void addGatewayClientClassEditor(ProfilerPluginContext context) {
+    private void addGatewayClientClassEditor(ProfilerPluginSetupContext context) {
         final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder(GATEWAY_CLIENT);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
         
@@ -120,7 +120,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         context.addClassFileTransformer(classEditorBuilder.build());
     }
     
-    private void addRedisConnectionClassEditor(ProfilerPluginContext context) {
+    private void addRedisConnectionClassEditor(ProfilerPluginSetupContext context) {
         final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder(REDIS_CONNECTION);
         classEditorBuilder.injectMetadata(METADATA_END_POINT);
 
@@ -139,7 +139,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         context.addClassFileTransformer(classEditorBuilder.build());
     }
     
-    private void addGatewayServerClassEditor(ProfilerPluginContext context, NbaseArcPluginConfig config) {
+    private void addGatewayServerClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
         final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder(GATEWAY_SERVER);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
 
@@ -150,7 +150,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         context.addClassFileTransformer(classEditorBuilder.build());
     }
 
-    private void addGatewayClassEditor(ProfilerPluginContext context, NbaseArcPluginConfig config) {
+    private void addGatewayClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
         final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder(GATEWAY);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
 
@@ -164,7 +164,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         context.addClassFileTransformer(classEditorBuilder.build());
     }
 
-    private void addRedisClusterClassEditor(ProfilerPluginContext context, NbaseArcPluginConfig config) {
+    private void addRedisClusterClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
         // super
         final ClassFileTransformerBuilder classEditorBuilder = addRedisClusterExtendedClassEditor(context, config, BINARY_TRIPLES_REDIS_CLUSTER);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
@@ -179,7 +179,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         context.addClassFileTransformer(addRedisClusterExtendedClassEditor(context, config, REDIS_CLUSTER).build());
     }
 
-    private ClassFileTransformerBuilder addRedisClusterExtendedClassEditor(ProfilerPluginContext context, NbaseArcPluginConfig config, final String targetClassName) {
+    private ClassFileTransformerBuilder addRedisClusterExtendedClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config, final String targetClassName) {
         final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder(targetClassName);
 
         final ConstructorTransformerBuilder constructorEditorBuilderArg1 = classEditorBuilder.editConstructor(STRING);
@@ -208,7 +208,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         return classEditorBuilder;
     }
 
-    private void addRedisClusterPipeline(ProfilerPluginContext context, NbaseArcPluginConfig config) {
+    private void addRedisClusterPipeline(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
         final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder(REDIS_CLUSTER_PIPELINE);
         classEditorBuilder.injectMetadata(METADATA_DESTINATION_ID);
         classEditorBuilder.injectMetadata(METADATA_END_POINT);

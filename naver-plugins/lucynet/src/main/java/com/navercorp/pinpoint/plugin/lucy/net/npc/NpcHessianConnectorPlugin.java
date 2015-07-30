@@ -1,7 +1,7 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc;
 
-import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentableClass;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassCondition;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
@@ -13,7 +13,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
  */
 class NpcHessianConnectorPlugin extends NpcPlugin {
     
-    public NpcHessianConnectorPlugin(ProfilerPluginContext context) {
+    public NpcHessianConnectorPlugin(ProfilerPluginSetupContext context) {
         super(context);
     }
 
@@ -91,7 +91,7 @@ class NpcHessianConnectorPlugin extends NpcPlugin {
         }
         
         @Override
-        public boolean check(ProfilerPluginContext context, ClassLoader classLoader, InstrumentClass target) {
+        public boolean check(ProfilerPluginSetupContext context, ClassLoader classLoader, InstrumentableClass target) {
             return NpcHessianConnectorConditionType.getCondition(versionName).isSupport(target);
         }
     }

@@ -31,7 +31,7 @@ public class Bloc4Detector implements ApplicationTypeDetector, BlocConstants {
     private static final String REQUIRED_CLASS =  "com.nhncorp.lucy.bloc.server.Bootstrap";
     
     @Override
-    public ServiceType getServerType() {
+    public ServiceType getApplicationType() {
         return BLOC;
     }
 

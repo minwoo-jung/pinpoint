@@ -1,6 +1,6 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc;
 
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConstructorTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerBuilder;
@@ -11,9 +11,9 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
  */
 public abstract class NpcPlugin {
 
-    final ProfilerPluginContext context;
+    final ProfilerPluginSetupContext context;
 
-    public NpcPlugin(ProfilerPluginContext context) {
+    public NpcPlugin(ProfilerPluginSetupContext context) {
         this.context = context;
     }
 
