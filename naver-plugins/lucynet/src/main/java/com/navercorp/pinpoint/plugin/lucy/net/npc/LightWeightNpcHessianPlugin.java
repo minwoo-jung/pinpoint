@@ -1,7 +1,7 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc;
 
-import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentableClass;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassCondition;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
@@ -13,7 +13,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
  */
 class LightWeightNpcHessianPlugin extends NpcPlugin {
     
-    public LightWeightNpcHessianPlugin(ProfilerPluginContext context) {
+    public LightWeightNpcHessianPlugin(ProfilerPluginSetupContext context) {
         super(context);
     }
 
@@ -44,7 +44,7 @@ class LightWeightNpcHessianPlugin extends NpcPlugin {
     private class V11to12ClassCondition implements ClassCondition {
 
         @Override
-        public boolean check(ProfilerPluginContext context, ClassLoader classLoader, InstrumentClass target) {
+        public boolean check(ProfilerPluginSetupContext context, ClassLoader classLoader, InstrumentableClass target) {
             String superClazz = target.getSuperClass();
             if (superClazz != null && superClazz.equals("com.nhncorp.lucy.npc.connector.AbstractNpcHessianConnector")) {
                 return true;

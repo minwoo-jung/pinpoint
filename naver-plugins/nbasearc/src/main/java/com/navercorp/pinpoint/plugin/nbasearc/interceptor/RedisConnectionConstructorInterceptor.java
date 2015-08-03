@@ -67,7 +67,7 @@ public class RedisConnectionConstructorInterceptor implements SimpleAroundInterc
             }
             endPointAccessor.set(target, endPoint.toString());
         } catch (Throwable t) {
-            logger.warn("Failed to before process. {}", t.getMessage(), t);
+            logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
         }
     }
 

@@ -15,7 +15,7 @@
 package com.navercorp.pinpoint.plugin.line;
 
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 
 /**
@@ -25,10 +25,10 @@ import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerB
 public class LinePlugin implements ProfilerPlugin, LineConstants {
 
     /* (non-Javadoc)
-     * @see com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin#setup(com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext)
+     * @see com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin#setup(com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext)
      */
     @Override
-    public void setup(ProfilerPluginContext context) {
+    public void setup(ProfilerPluginSetupContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler$InvokeTask");
 
         builder.injectMetadata(CHANNEL_HANDLER_CONTEXT);

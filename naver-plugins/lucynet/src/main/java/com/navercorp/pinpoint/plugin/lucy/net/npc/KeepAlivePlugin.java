@@ -1,7 +1,7 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc;
 
-import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentableClass;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassCondition;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
@@ -13,7 +13,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
  */
 class KeepAlivePlugin extends NpcPlugin {
 
-    public KeepAlivePlugin(ProfilerPluginContext context) {
+    public KeepAlivePlugin(ProfilerPluginSetupContext context) {
         super(context);
     }
 
@@ -68,7 +68,7 @@ class KeepAlivePlugin extends NpcPlugin {
     private class V13to19ClassCondition implements ClassCondition {
 
         @Override
-        public boolean check(ProfilerPluginContext context, ClassLoader classLoader, InstrumentClass target) {
+        public boolean check(ProfilerPluginSetupContext context, ClassLoader classLoader, InstrumentableClass target) {
             if (target.hasConstructor(new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" })) {
                 if (target.hasDeclaredMethod("invokeImpl", new String[] {"java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]"})) {
                     return true;
@@ -83,7 +83,7 @@ class KeepAlivePlugin extends NpcPlugin {
     private class V11to12ClassCondition implements ClassCondition {
 
         @Override
-        public boolean check(ProfilerPluginContext context, ClassLoader classLoader, InstrumentClass target) {
+        public boolean check(ProfilerPluginSetupContext context, ClassLoader classLoader, InstrumentableClass target) {
             if (target.hasConstructor(new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" })) {
                 if (target.hasDeclaredMethod("invokeImpl", new String[] {"java.lang.String", "java.lang.String", "java.lang.Object[]"})) {
                     return true;
@@ -98,7 +98,7 @@ class KeepAlivePlugin extends NpcPlugin {
     private class V8to10ClassCondition implements ClassCondition {
 
         @Override
-        public boolean check(ProfilerPluginContext context, ClassLoader classLoader, InstrumentClass target) {
+        public boolean check(ProfilerPluginSetupContext context, ClassLoader classLoader, InstrumentableClass target) {
             if (target.hasConstructor(new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" })) {
                 return false;
             }

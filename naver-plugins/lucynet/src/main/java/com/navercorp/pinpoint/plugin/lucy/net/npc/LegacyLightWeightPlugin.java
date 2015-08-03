@@ -1,6 +1,6 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc;
 
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 
@@ -9,7 +9,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
  */
 class LegacyLightWeightPlugin extends NpcPlugin {
 
-    public LegacyLightWeightPlugin(ProfilerPluginContext context) {
+    public LegacyLightWeightPlugin(ProfilerPluginSetupContext context) {
         super(context);
     }
 

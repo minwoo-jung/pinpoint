@@ -63,7 +63,7 @@ public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, N
                 destinationIdAccessor.set(target, config.getClusterName());
             }
         } catch (Throwable t) {
-            logger.warn("Failed to before process. {}", t.getMessage(), t);
+            logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
         }
     }
 

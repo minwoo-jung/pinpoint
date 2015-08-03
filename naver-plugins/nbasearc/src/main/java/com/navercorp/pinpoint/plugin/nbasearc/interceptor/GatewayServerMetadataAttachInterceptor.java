@@ -61,7 +61,7 @@ public class GatewayServerMetadataAttachInterceptor implements SimpleAroundInter
                 destinationIdAccessor.set(result, destinationId);
             }
         } catch (Throwable t) {
-            logger.warn("Failed to after process. {}", t.getMessage(), t);
+            logger.warn("Failed to AFTER process. {}", t.getMessage(), t);
         }
     }
 
