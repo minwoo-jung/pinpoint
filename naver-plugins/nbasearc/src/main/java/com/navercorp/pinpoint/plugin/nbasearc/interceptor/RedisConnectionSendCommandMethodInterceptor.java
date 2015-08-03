@@ -34,7 +34,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
-@Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPoint = ExecutionPolicy.INTERNAL)
+@Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPolicy = ExecutionPolicy.INTERNAL)
 public class RedisConnectionSendCommandMethodInterceptor implements SimpleAroundInterceptor, NbaseArcConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
@@ -63,7 +63,7 @@ public class RedisConnectionSendCommandMethodInterceptor implements SimpleAround
             final InterceptorGroupInvocation scope = interceptorGroup.getCurrentInvocation();
             scope.setAttachment(endPoint);
         } catch (Throwable t) {
-            logger.warn("Failed to before process. {}", t.getMessage(), t);
+            logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
         }
     }
 

@@ -1,33 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE sqlMap      
-    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
-    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
-
-<sqlMap namespace="Member">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.navercorp.pinpoint.testweb.domain.Member">
+<!-- 
 	<typeAlias alias="Member" type="com.navercorp.pinpoint.testweb.domain.Member" />
-
-	<delete id="delete" parameterClass="int">
+ -->
+ 
+	<delete id="delete" parameterType="int">
 		delete from member where id = #id#
 	</delete>
 
-	<insert id="add" parameterClass="Member">
+	<insert id="add" parameterType="com.navercorp.pinpoint.testweb.domain.Member">
 		insert into member (id, name, joined) values(#id#, #name#, #joined#)
 	</insert>
 
-    <insert id="addStatement" parameterClass="Member">
+    <insert id="addStatement" parameterType="com.navercorp.pinpoint.testweb.domain.Member">
 		insert into member (id, name, joined) values($id$, $name$, #joined#);
 	</insert>
 
 
-    <update id="update" parameterClass="Member">
+    <update id="update" parameterType="com.navercorp.pinpoint.testweb.domain.Member">
 		update member set name = #name#, joined = #joined# where id = #id#
 	</update>
 
-	<select id="get" parameterClass="int" resultClass="Member">
+	<select id="get" parameterType="int" resultType="com.navercorp.pinpoint.testweb.domain.Member">
 		select * from member where id = #id#
 	</select>
 
-	<select id="list" resultClass="Member">
+	<select id="list" resultType="com.navercorp.pinpoint.testweb.domain.Member">
 		select * from member order by id
 	</select>
-</sqlMap>
+</mapper>

@@ -1,13 +1,13 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc;
 
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 
 /**
  * @author Taejin Koo
  */
 class LightWeightPlugin extends LegacyLightWeightPlugin {
 
-    public LightWeightPlugin(ProfilerPluginContext context) {
+    public LightWeightPlugin(ProfilerPluginSetupContext context) {
         super(context);
     }
 

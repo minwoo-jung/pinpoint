@@ -19,7 +19,7 @@ import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
-import com.navercorp.pinpoint.bootstrap.instrument.MethodInfo;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentableMethod;
 
 /**
  * Name based on method filter
@@ -36,7 +36,7 @@ public class NameBasedMethodFilter implements MethodFilter {
     }
 
     @Override
-    public boolean accept(MethodInfo ctMethod) {
+    public boolean accept(InstrumentableMethod ctMethod) {
         final int modifiers = ctMethod.getModifiers();
 
         if (isSynthetic(modifiers) || !Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers) || Modifier.isAbstract(modifiers) || Modifier.isNative(modifiers)) {

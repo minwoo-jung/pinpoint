@@ -1,7 +1,7 @@
 package com.navercorp.pinpoint.plugin.lucy.net;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
-import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginContext;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerBuilder;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.MethodTransformerProperty;
@@ -29,7 +29,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcPluginHolder;
 public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
 
     @Override
-    public void setup(ProfilerPluginContext context) {
+    public void setup(ProfilerPluginSetupContext context) {
         // lucy-net
         addCompositeInvocationFutureTransformer(context);
         addDefaultInvocationFutureTransformer(context);
@@ -43,7 +43,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         npcPlugin.addPlugin();
     }
 
-    private void addCompositeInvocationFutureTransformer(ProfilerPluginContext context) {
+    private void addCompositeInvocationFutureTransformer(ProfilerPluginSetupContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.net.invoker.CompositeInvocationFuture");
 
         // FIXME 이렇게 하면 api type이 internal method로 보이는데 사실 NPC_CLIENT, NIMM_CLIENT로 보여야함. servicetype으로 넣기에 애매해서. 어떻게 수정할 것인지는 나중에 고민.
@@ -51,7 +51,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         context.addClassFileTransformer(builder.build());
     }
     
-    private void addDefaultInvocationFutureTransformer(ProfilerPluginContext context) {
+    private void addDefaultInvocationFutureTransformer(ProfilerPluginSetupContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.net.invoker.DefaultInvocationFuture");
         builder.injectMetadata(METADATA_ASYNC_TRACE_ID);
         
@@ -66,7 +66,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
         context.addClassFileTransformer(builder.build());
     }
     
-    private void addNimmInvokerTransformer(ProfilerPluginContext context) {
+    private void addNimmInvokerTransformer(ProfilerPluginSetupContext context) {
         ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.nhncorp.lucy.nimm.connector.bloc.NimmInvoker");
         
         builder.injectMetadata(METADATA_NIMM_ADDRESS);

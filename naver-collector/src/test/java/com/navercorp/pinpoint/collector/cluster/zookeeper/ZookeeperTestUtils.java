@@ -12,6 +12,7 @@ import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.rpc.client.MessageListener;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
+import com.navercorp.pinpoint.rpc.packet.PingPacket;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
@@ -89,6 +90,11 @@ final class ZookeeperTestUtils {
         public HandshakeResponseCode handleHandshake(Map properties) {
             LOGGER.warn("do handleEnableWorker {}", properties);
             return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
+        }
+
+        @Override
+        public void handlePing(PingPacket pingPacket, PinpointServer writablePinpointServer) {
+            LOGGER.warn("Unsupport ping received {} {}", pingPacket, writablePinpointServer);
         }
     }
 
