@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.lucy.net.npc;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.navercorp.pinpoint.bootstrap.instrument.InstrumentableClass;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 
 
 /**
@@ -13,7 +13,7 @@ public enum NpcHessianConnectorConditionType {
 
     V13to19("V13to19") {
         @Override
-        public boolean isSupport(InstrumentableClass target) {
+        public boolean isSupport(InstrumentClass target) {
             if (checkUpperVersionSupport(this, target)) {
                 return false;
             }
@@ -22,7 +22,7 @@ public enum NpcHessianConnectorConditionType {
     },
     V12("V12", V13to19) {
         @Override
-        public boolean isSupport(InstrumentableClass target) {
+        public boolean isSupport(InstrumentClass target) {
             if (checkUpperVersionSupport(this, target)) {
                 return false;
             }
@@ -31,7 +31,7 @@ public enum NpcHessianConnectorConditionType {
     },
     V11("V11", V12, V13to19) {
         @Override
-        public boolean isSupport(InstrumentableClass target) {
+        public boolean isSupport(InstrumentClass target) {
             if (checkUpperVersionSupport(this, target)) {
                 return false;
             }
@@ -40,7 +40,7 @@ public enum NpcHessianConnectorConditionType {
     },
     V6to10("V6to10", V11, V12, V13to19) {
         @Override
-        public boolean isSupport(InstrumentableClass target) {
+        public boolean isSupport(InstrumentClass target) {
             if (checkUpperVersionSupport(this, target)) {
                 return false;
             }
@@ -57,7 +57,7 @@ public enum NpcHessianConnectorConditionType {
     },
     V5("V5", V6to10, V11, V12, V13to19) {
         @Override
-        public boolean isSupport(InstrumentableClass target) {
+        public boolean isSupport(InstrumentClass target) {
             if (checkUpperVersionSupport(this, target)) {
                 return false;
             }
@@ -67,12 +67,12 @@ public enum NpcHessianConnectorConditionType {
     },
     UNKNOWN("UNKNOWN") {
         @Override
-        public boolean isSupport(InstrumentableClass target) {
+        public boolean isSupport(InstrumentClass target) {
             return false;
         }
     };
     
-    public abstract boolean isSupport(InstrumentableClass target);
+    public abstract boolean isSupport(InstrumentClass target);
     
     private final String versionName;
     private final List<NpcHessianConnectorConditionType> upperVersionConditionList = new ArrayList<NpcHessianConnectorConditionType>();
@@ -87,7 +87,7 @@ public enum NpcHessianConnectorConditionType {
         }
     }
 
-    private static boolean checkUpperVersionSupport(NpcHessianConnectorConditionType npcHessianConnectorCondition, InstrumentableClass target) {
+    private static boolean checkUpperVersionSupport(NpcHessianConnectorConditionType npcHessianConnectorCondition, InstrumentClass target) {
         for (NpcHessianConnectorConditionType upperVersionCondition : npcHessianConnectorCondition.upperVersionConditionList) {
             boolean isSupport = upperVersionCondition.isSupport(target);
             if (isSupport) {
