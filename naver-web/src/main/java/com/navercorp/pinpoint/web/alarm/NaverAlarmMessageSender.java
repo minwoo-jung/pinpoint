@@ -75,7 +75,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     
     @Override
     public void sendSms(AlarmChecker checker) {
-        List<String> receivers = dao.selectEmpGroupPhoneNumber(checker.getEmpGroup());
+        List<String> receivers = dao.selectEmpGroupPhoneNumber(checker.getuserGroupId());
 
         if (receivers.size() == 0) {
             return;
@@ -154,7 +154,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
 
     private Object[] createSendMailParams(AlarmChecker checker) {
         AlarmMailTemplate mailTemplate = new AlarmMailTemplate(checker, pinpointUrl);
-        List<String> receivers = dao.selectEmpGroupEmail(checker.getEmpGroup());
+        List<String> receivers = dao.selectEmpGroupEmail(checker.getuserGroupId());
         String subject = mailTemplate.createSubject();
         logger.info("send email : {}", subject);
         return new Object[] { EMAIL_SERVICE_ID, OPTION, SENDER_EMAIL_ADDRESS, "", joinAddresses(receivers), subject, mailTemplate.createBody()};
