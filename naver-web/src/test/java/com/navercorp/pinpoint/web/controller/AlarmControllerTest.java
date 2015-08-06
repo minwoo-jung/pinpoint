@@ -19,9 +19,9 @@ import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.web.alarm.CheckerCategory;
 import com.navercorp.pinpoint.web.alarm.vo.AlarmEmp;
 import com.navercorp.pinpoint.web.alarm.vo.Rule;
-import com.navercorp.pinpoint.web.controller.AlarmController;
-import com.navercorp.pinpoint.web.controller.AlarmController.EmpGroup;
-import com.navercorp.pinpoint.web.controller.AlarmController.RuleGroup;
+import com.navercorp.pinpoint.web.controller.AlarmRuleController;
+import com.navercorp.pinpoint.web.controller.AlarmRuleController.EmpGroup;
+import com.navercorp.pinpoint.web.controller.AlarmRuleController.RuleGroup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:servlet-context.xml", "classpath:applicationContext-test.xml"})
@@ -29,7 +29,7 @@ import com.navercorp.pinpoint.web.controller.AlarmController.RuleGroup;
 public class AlarmControllerTest {
 
     @Autowired
-    AlarmController controller;
+    AlarmRuleController controller;
     
     @Test
     public void alarmGroupListTest() {
@@ -139,7 +139,7 @@ public class AlarmControllerTest {
         List<Rule> updateRules = new LinkedList<Rule>();
         for (int i = 0; i < 3; i++) {
             Rule rule = new Rule(applicationName, CheckerCategory.SLOW_COUNT.getName(), 1000, "test_group", true, true, "");
-            rule.setId(rules.get(i).getId());
+            rule.setRuleId(rules.get(i).getRuleId());
             updateRules.add(rule);
         }
         
