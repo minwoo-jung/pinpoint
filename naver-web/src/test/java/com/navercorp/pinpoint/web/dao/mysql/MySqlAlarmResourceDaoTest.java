@@ -24,66 +24,66 @@ import com.navercorp.pinpoint.web.dao.mysql.MySqlAlarmResourceDao;
 @Transactional
 public class MySqlAlarmResourceDaoTest {
 
-    @Autowired
-    MySqlAlarmResourceDao dao;
+//    @Autowired
+//    MySqlAlarmResourceDao dao;
+//    
+//    @Test
+//    public void getAlarmRules() {
+//        List<Rule> rules = dao.selectAppRule("minwoo_tomcat");
+//        assertNotNull(rules);
+//        assertTrue(rules.size() > 0);
+//    }
     
-    @Test
-    public void getAlarmRules() {
-        List<Rule> rules = dao.selectAppRule("minwoo_tomcat");
-        assertNotNull(rules);
-        assertTrue(rules.size() > 0);
-    }
+//    @Test
+//    public void selectAlarmGroupList() {
+//        List<String> groups = dao.selectEmpGroupName();
+//        assertTrue(groups.size() > 0);
+//    }
     
-    @Test
-    public void selectAlarmGroupList() {
-        List<String> groups = dao.selectEmpGroupName();
-        assertTrue(groups.size() > 0);
-    }
+//    @Test
+//    public void crudAlarmRuleTest() {
+//        final String applicationId = "test_app_id" + Version.VERSION;
+//        List<Rule> rules = new LinkedList<Rule>();
+//        
+//        for(int i = 0; i < 3; i++) {
+//            rules.add(new Rule(applicationId, CheckerCategory.SLOW_COUNT.getName(), 100, "test_group", true, true, ""));
+//        }
+//        
+//        dao.insertAppRule(rules);
+//        rules = dao.selectAppRule(applicationId);
+//        assertEquals(3, rules.size());
+//        
+//        for (Rule rule : rules) {
+//            assertEquals(applicationId, rule.getApplicationId());
+//        }
+//        
+//        dao.deleteAppRule(rules.get(0).getApplicationId());
+//        rules = dao.selectAppRule(applicationId);
+//        assertEquals(0, rules.size());
+//        
+//    }
     
-    @Test
-    public void crudAlarmRuleTest() {
-        final String applicationId = "test_app_id" + Version.VERSION;
-        List<Rule> rules = new LinkedList<Rule>();
-        
-        for(int i = 0; i < 3; i++) {
-            rules.add(new Rule(applicationId, CheckerCategory.SLOW_COUNT.getName(), 100, "test_group", true, true, ""));
-        }
-        
-        dao.insertAppRule(rules);
-        rules = dao.selectAppRule(applicationId);
-        assertEquals(3, rules.size());
-        
-        for (Rule rule : rules) {
-            assertEquals(applicationId, rule.getApplicationId());
-        }
-        
-        dao.deleteAppRule(rules.get(0).getApplicationId());
-        rules = dao.selectAppRule(applicationId);
-        assertEquals(0, rules.size());
-        
-    }
-    
-    @Test
-    public void crudAlarmGroupMemberTest() {
-        List<AlarmEmp> emps = new LinkedList<AlarmEmp>();
-        final String groupName = "s_mem_test" + Version.VERSION;
-        final String empName = "empName";
-        
-        for (int i = 0; i < 3; i++) {
-            emps.add(new AlarmEmp(groupName, empName + i));    
-        }
-
-        dao.insertEmpGroupMember(emps);
-        emps = dao.selectEmpGroupMember(groupName);
-        assertEquals(3, emps.size());
-        
-        for (AlarmEmp emp : emps) {
-            assertEquals(groupName, emp.getGroupName());
-        }
-
-        dao.deleteEmpGroupMember(emps.get(0).getGroupName());
-        emps = dao.selectEmpGroupMember(groupName);
-        assertEquals(0, emps.size());
-    }
+//    @Test
+//    public void crudAlarmGroupMemberTest() {
+//        List<AlarmEmp> emps = new LinkedList<AlarmEmp>();
+//        final String groupName = "s_mem_test" + Version.VERSION;
+//        final String empName = "empName";
+//        
+//        for (int i = 0; i < 3; i++) {
+//            emps.add(new AlarmEmp(groupName, empName + i));    
+//        }
+//
+//        dao.insertEmpGroupMember(emps);
+//        emps = dao.selectEmpGroupMember(groupName);
+//        assertEquals(3, emps.size());
+//        
+//        for (AlarmEmp emp : emps) {
+//            assertEquals(groupName, emp.getGroupName());
+//        }
+//
+//        dao.deleteEmpGroupMember(emps.get(0).getGroupName());
+//        emps = dao.selectEmpGroupMember(groupName);
+//        assertEquals(0, emps.size());
+//    }
 
 }
