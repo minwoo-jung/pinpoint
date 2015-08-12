@@ -29,8 +29,6 @@
                                          com.navercorp.pinpoint.web.alarm,
                                          com.navercorp.pinpoint.web.config,
                                          com.navercorp.pinpoint.collector.mapper.thrift" />
-	
-	<bean id="alarmController" class="com.navercorp.pinpoint.web.controller.AlarmRuleController"/>
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
