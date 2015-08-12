@@ -71,7 +71,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     private String smsServerUrl;
     @Value("#{batchProps['alarm.sms.serviceId']}")
     private String smsServiceID;
-    private static final String SENDER_NUMBER = "15883820";
+    private static final String SENDER_NUMBER = "0317844499";
     
     @Override
     public void sendSms(AlarmChecker checker) {
