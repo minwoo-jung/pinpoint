@@ -13,6 +13,7 @@ import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
@@ -32,8 +33,11 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
     private static final String NAMESPACE_URA = "URA 1.0";
     private static final String UNKNOWN_ADDRESS = "Unknown Address";
     
-    public MessageReceivedInterceptor() {
+    public MessageReceivedInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(MessageReceivedInterceptor.class);
+        
+        setTraceContext(traceContext);
+        setMethodDescriptor(descriptor);
     }
 
     @Override
