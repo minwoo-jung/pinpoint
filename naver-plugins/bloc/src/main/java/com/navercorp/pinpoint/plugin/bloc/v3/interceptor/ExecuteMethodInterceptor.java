@@ -6,7 +6,9 @@ import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
@@ -25,8 +27,11 @@ import external.org.apache.coyote.Request;
 @TargetMethod(name="execute", paramTypes={"external.org.apache.coyote.Request", "external.org.apache.coyote.Response"})
 public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
 
-    public ExecuteMethodInterceptor() {
+    public ExecuteMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(ExecuteMethodInterceptor.class);
+        
+        setTraceContext(traceContext);
+        setMethodDescriptor(descriptor);
     }
 
     @Override
