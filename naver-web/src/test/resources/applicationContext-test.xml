@@ -116,4 +116,13 @@
     <bean id="sqlMetaDataMapper2" class="com.navercorp.pinpoint.web.mapper.SqlMetaDataMapper">
         <property name="rowKeyDistributorByHashPrefix" ref="metadataRowKeyDistributor2"></property>
     </bean>
+    
+    <!--  Web Socket  -->
+    <bean id="handlerRepository" class="com.navercorp.pinpoint.web.websocket.WebSocketHandlerRepository">
+        <constructor-arg>
+            <list>
+            </list>
+        </constructor-arg>
+    </bean>
+    
 </beans>
