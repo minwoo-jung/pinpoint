@@ -26,9 +26,13 @@ import com.navercorp.pinpoint.common.trace.LoggingInfo;
 /**
  * @author minwoo.jung
  */
-public class AppenderInterceptor implements SimpleAroundInterceptor, TraceContextSupport, TargetClassLoader {
+public class AppenderInterceptor implements SimpleAroundInterceptor {
 
-    private TraceContext traceContext;
+    private final TraceContext traceContext;
+    
+    public AppenderInterceptor(TraceContext traceContext) {
+        this.traceContext = traceContext;
+    }
 
     @Override
     public void before(Object target, Object[] args) {
@@ -44,10 +48,4 @@ public class AppenderInterceptor implements SimpleAroundInterceptor, TraceContex
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
     }
-
-    @Override
-    public void setTraceContext(TraceContext traceContext) {
-        this.traceContext = traceContext;
-    }
-
 }
