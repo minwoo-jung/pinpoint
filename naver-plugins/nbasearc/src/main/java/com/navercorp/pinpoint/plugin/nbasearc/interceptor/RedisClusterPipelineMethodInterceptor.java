@@ -88,7 +88,7 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
                 if (commandContext.isReadFail()) {
                     sb.append("(fail)");
                 }
-                recorder.recordAttribute(AnnotationKey.API_IO, sb.toString());
+                recorder.recordAttribute(AnnotationKey.ARGS0, sb.toString());
             }
             // clear
             invocation.removeAttachment();

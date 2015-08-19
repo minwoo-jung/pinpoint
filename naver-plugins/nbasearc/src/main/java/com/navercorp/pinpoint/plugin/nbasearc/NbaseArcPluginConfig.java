@@ -31,7 +31,7 @@ public class NbaseArcPluginConfig {
     public NbaseArcPluginConfig(ProfilerConfig src) {
         enabled = src.readBoolean("profiler.nbase_arc", true);
         pipelineEnabled = src.readBoolean("profiler.nbase_arc.pipeline", true);
-        io = src.readBoolean("profiler.nbase_arc.io", false);
+        io = src.readBoolean("profiler.nbase_arc.io", true);
     }
 
     public boolean isEnabled() {
