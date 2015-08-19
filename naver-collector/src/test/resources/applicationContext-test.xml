@@ -47,7 +47,6 @@
         <constructor-arg ref="metricRegistry" />
     </bean>
 
-	<!-- Cluster 관련된 Bean들 -->
 	<bean id="commandHeaderTBaseSerializerFactory" class="com.navercorp.pinpoint.thrift.io.CommandHeaderTBaseSerializerFactory">
     	<constructor-arg value="#{T(com.navercorp.pinpoint.common.Version).VERSION}" />
     </bean>
@@ -55,8 +54,70 @@
     <bean id="commandHeaderTBaseDeserializerFactory" class="com.navercorp.pinpoint.thrift.io.CommandHeaderTBaseDeserializerFactory">
     	<constructor-arg value="#{T(com.navercorp.pinpoint.common.Version).VERSION}" />
     </bean>
-	
+
+    <!-- Route Filters -->
+    <bean id="loggingRouteFilter" class="com.navercorp.pinpoint.collector.cluster.route.filter.LoggingFilter"/>
+
+    <!-- Filter Chains -->
+    <bean id="requestFilterChain" class="com.navercorp.pinpoint.collector.cluster.route.DefaultRouteFilterChain">
+        <constructor-arg>
+            <list value-type="com.navercorp.pinpoint.collector.cluster.route.filter.RouteFilter">
+                <ref bean="loggingRouteFilter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="responseFilterChain" class="com.navercorp.pinpoint.collector.cluster.route.DefaultRouteFilterChain">
+        <constructor-arg>
+            <list value-type="com.navercorp.pinpoint.collector.cluster.route.filter.RouteFilter">
+                <ref bean="loggingRouteFilter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="streamCreateFilterChain" class="com.navercorp.pinpoint.collector.cluster.route.DefaultRouteFilterChain">
+        <constructor-arg>
+            <list value-type="com.navercorp.pinpoint.collector.cluster.route.filter.RouteFilter">
+                <ref bean="loggingRouteFilter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="streamResponseFilterChain" class="com.navercorp.pinpoint.collector.cluster.route.DefaultRouteFilterChain">
+        <constructor-arg>
+            <list value-type="com.navercorp.pinpoint.collector.cluster.route.filter.RouteFilter">
+                <ref bean="loggingRouteFilter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="streamCloseFilterChain" class="com.navercorp.pinpoint.collector.cluster.route.DefaultRouteFilterChain">
+        <constructor-arg>
+            <list value-type="com.navercorp.pinpoint.collector.cluster.route.filter.RouteFilter">
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <!-- Cluster 관련된 Bean들 -->
+    <bean id="targetClusterPointRepository" class="com.navercorp.pinpoint.collector.cluster.ClusterPointRepository"/>
+
+    <bean id="defaultRouteHandler" class="com.navercorp.pinpoint.collector.cluster.route.DefaultRouteHandler">
+        <constructor-arg index="0" type="com.navercorp.pinpoint.collector.cluster.ClusterPointLocator" ref="targetClusterPointRepository"/>
+        <constructor-arg index="1" type="com.navercorp.pinpoint.collector.cluster.route.RouteFilterChain" ref="requestFilterChain"/>
+        <constructor-arg index="2" type="com.navercorp.pinpoint.collector.cluster.route.RouteFilterChain" ref="responseFilterChain"/>
+    </bean>
+
+    <bean id="streamRouteHandler" class="com.navercorp.pinpoint.collector.cluster.route.StreamRouteHandler">
+        <constructor-arg index="0" type="com.navercorp.pinpoint.collector.cluster.ClusterPointLocator" ref="targetClusterPointRepository"/>
+        <constructor-arg index="1" type="com.navercorp.pinpoint.collector.cluster.route.RouteFilterChain" ref="streamCreateFilterChain"/>
+        <constructor-arg index="2" type="com.navercorp.pinpoint.collector.cluster.route.RouteFilterChain" ref="streamResponseFilterChain"/>
+        <constructor-arg index="3" type="com.navercorp.pinpoint.collector.cluster.route.RouteFilterChain" ref="streamCloseFilterChain"/>
+    </bean>
+
     <bean id="clusterPointRouter" class="com.navercorp.pinpoint.collector.cluster.ClusterPointRouter">
+        <constructor-arg ref="targetClusterPointRepository"/>
+        <constructor-arg ref="defaultRouteHandler"/>
+        <constructor-arg ref="streamRouteHandler"/>
     </bean>
 
     <bean id="jsonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper">
