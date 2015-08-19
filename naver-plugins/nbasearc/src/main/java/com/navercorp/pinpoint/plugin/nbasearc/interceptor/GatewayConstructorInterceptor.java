@@ -15,13 +15,12 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 import com.nhncorp.redis.cluster.gateway.GatewayConfig;
 
@@ -32,14 +31,11 @@ import com.nhncorp.redis.cluster.gateway.GatewayConfig;
  *
  */
 public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, NbaseArcConstants {
-
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
-    private final MetadataAccessor destinationIdAccessor;
 
-    public GatewayConstructorInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor) {
-        this.destinationIdAccessor = destinationIdAccessor;
+    public GatewayConstructorInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
     }
 
     @Override
@@ -55,12 +51,12 @@ public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, N
 
             final GatewayConfig config = (GatewayConfig) args[0];
             if (config.getDomainAddress() != null) {
-                destinationIdAccessor.set(target, config.getDomainAddress());
+                ((DestinationIdAccessor)target)._$PINPOINT$_setDestinationId(config.getDomainAddress());
             } else if (config.getIpAddress() != null) {
-                destinationIdAccessor.set(target, config.getIpAddress());
+                ((DestinationIdAccessor)target)._$PINPOINT$_setDestinationId(config.getIpAddress());
             } else if (config.getClusterName() != null) {
                 // over 1.1.x
-                destinationIdAccessor.set(target, config.getClusterName());
+                ((DestinationIdAccessor)target)._$PINPOINT$_setDestinationId(config.getClusterName());
             }
         } catch (Throwable t) {
             logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
@@ -78,8 +74,8 @@ public class GatewayConstructorInterceptor implements SimpleAroundInterceptor, N
             return false;
         }
 
-        if (!destinationIdAccessor.isApplicable(target)) {
-            logger.debug("Invalid target object. Need metadata accessor({}).", METADATA_DESTINATION_ID);
+        if (!(target instanceof DestinationIdAccessor)) {
+            logger.debug("Invalid target object. Need field accessor({}).", METADATA_DESTINATION_ID);
             return false;
         }
 

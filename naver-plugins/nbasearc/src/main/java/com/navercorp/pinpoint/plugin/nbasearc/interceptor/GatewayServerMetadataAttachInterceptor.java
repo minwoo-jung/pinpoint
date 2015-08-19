@@ -15,13 +15,12 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
@@ -34,10 +33,7 @@ public class GatewayServerMetadataAttachInterceptor implements SimpleAroundInter
     protected final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     protected final boolean isDebug = logger.isDebugEnabled();
 
-    protected final MetadataAccessor destinationIdAccessor;
-
-    public GatewayServerMetadataAttachInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor) {
-        this.destinationIdAccessor = destinationIdAccessor;
+    public GatewayServerMetadataAttachInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
     }
 
     @Override
@@ -55,10 +51,10 @@ public class GatewayServerMetadataAttachInterceptor implements SimpleAroundInter
                 return;
             }
 
-            final String destinationId = destinationIdAccessor.get(target);
+            final String destinationId = ((DestinationIdAccessor)target)._$PINPOINT$_getDestinationId();
             if (destinationId != null) {
                 // result is GatewayServer object
-                destinationIdAccessor.set(result, destinationId);
+                ((DestinationIdAccessor)result)._$PINPOINT$_setDestinationId(destinationId);
             }
         } catch (Throwable t) {
             logger.warn("Failed to AFTER process. {}", t.getMessage(), t);
@@ -73,16 +69,16 @@ public class GatewayServerMetadataAttachInterceptor implements SimpleAroundInter
             return false;
         }
 
-        if (!destinationIdAccessor.isApplicable(target)) {
+        if (!(target instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need metadata accessor({}).", METADATA_DESTINATION_ID);
+                logger.debug("Invalid target object. Need field accessor({}).", METADATA_DESTINATION_ID);
             }
             return false;
         }
 
-        if (!destinationIdAccessor.isApplicable(result)) {
+        if (!(result instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid result object. Need metadata accessor({}).", METADATA_DESTINATION_ID);
+                logger.debug("Invalid result object. Need field accessor({}).", METADATA_DESTINATION_ID);
             }
             return false;
         }

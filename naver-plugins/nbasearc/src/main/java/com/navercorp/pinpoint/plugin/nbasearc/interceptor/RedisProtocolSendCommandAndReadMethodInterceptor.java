@@ -26,7 +26,6 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContext;
-import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
@@ -36,16 +35,18 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  *
  */
 @Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPolicy = ExecutionPolicy.INTERNAL)
-public class RedisConnectionSendCommandMethodInterceptor implements SimpleAroundInterceptor, NbaseArcConstants {
+public class RedisProtocolSendCommandAndReadMethodInterceptor implements SimpleAroundInterceptor, NbaseArcConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
     private TraceContext traceContext;
+    private MethodDescriptor methodDescriptor;
     private InterceptorGroup interceptorGroup;
 
-    public RedisConnectionSendCommandMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup) {
+    public RedisProtocolSendCommandAndReadMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup) {
         this.traceContext = traceContext;
+        this.methodDescriptor = methodDescriptor;
         this.interceptorGroup = interceptorGroup;
     }
 
@@ -61,15 +62,14 @@ public class RedisConnectionSendCommandMethodInterceptor implements SimpleAround
         }
 
         try {
-            if (!validate(target, args)) {
-                return;
-            }
-
-            final String endPoint = ((EndPointAccessor) target)._$PINPOINT$_getEndPoint();
             final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
             if (invocation != null && invocation.getAttachment() != null) {
                 final CommandContext commandContext = (CommandContext) invocation.getAttachment();
-                commandContext.setEndPoint(endPoint);
+                if (methodDescriptor.getMethodName().equals("sendCommand")) {
+                    commandContext.setWriteBeginTime(System.currentTimeMillis());
+                } else {
+                    commandContext.setReadBeginTime(System.currentTimeMillis());
+                }
                 logger.debug("Set command context {}", commandContext);
             }
         } catch (Throwable t) {
@@ -77,18 +77,32 @@ public class RedisConnectionSendCommandMethodInterceptor implements SimpleAround
         }
     }
 
-    private boolean validate(final Object target, final Object[] args) {
-        if (!(target instanceof EndPointAccessor)) {
-            if (isDebug) {
-                logger.debug("Invalid target object. Need field accessor({}).", METADATA_END_POINT);
-            }
-            return false;
-        }
-
-        return true;
-    }
-
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
+        if (isDebug) {
+            logger.afterInterceptor(target, methodDescriptor.getClassName(), methodDescriptor.getMethodName(), "", args, result, throwable);
+        }
+
+        final Trace trace = traceContext.currentTraceObject();
+        if (trace == null) {
+            return;
+        }
+
+        try {
+            final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
+            if (invocation != null && invocation.getAttachment() != null) {
+                final CommandContext commandContext = (CommandContext) invocation.getAttachment();
+                if (methodDescriptor.getMethodName().equals("sendCommand")) {
+                    commandContext.setWriteEndTime(System.currentTimeMillis());
+                    commandContext.setWriteFail(throwable != null);
+                } else {
+                    commandContext.setReadEndTime(System.currentTimeMillis());
+                    commandContext.setReadFail(throwable != null);
+                }
+                logger.debug("Set command context {}", commandContext);
+            }
+        } catch (Throwable t) {
+            logger.warn("Failed to after process. {}", t.getMessage(), t);
+        }
     }
 }
