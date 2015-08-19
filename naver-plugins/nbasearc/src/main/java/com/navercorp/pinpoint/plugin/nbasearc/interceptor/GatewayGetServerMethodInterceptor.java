@@ -15,10 +15,8 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 
 /**
  * Gateway(nBase-ARC client) getServer() method interceptor 
@@ -29,7 +27,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
  */
 public class GatewayGetServerMethodInterceptor extends GatewayServerMetadataAttachInterceptor {
 
-    public GatewayGetServerMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor) {
-        super(traceContext, methodDescriptor, destinationIdAccessor);
+    public GatewayGetServerMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
+        super(traceContext, methodDescriptor);
     }
 }

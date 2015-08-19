@@ -15,13 +15,18 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.instrument.AttachmentFactory;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptorForPlugin;
+import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
+import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupInvocation;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.plugin.nbasearc.CommandContext;
+import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
+import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
@@ -33,18 +38,26 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 @Group(NbaseArcConstants.NBASE_ARC_SCOPE)
 public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin implements NbaseArcConstants {
 
-    private MetadataAccessor destinationIdAccessor;
-    private MetadataAccessor endPointAccessor;
-
-    public RedisClusterPipelineMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
+    private InterceptorGroup interceptorGroup;
+    
+    public RedisClusterPipelineMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup) {
         super(traceContext, methodDescriptor);
-
-        this.destinationIdAccessor = destinationIdAccessor;
-        this.endPointAccessor = endPointAccessor;
+        
+        this.interceptorGroup = interceptorGroup;
     }
 
     @Override
     public void doInBeforeTrace(SpanEventRecorder recorder, Object target, Object[] args) {
+        final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
+        if (invocation != null) {
+            final CommandContext callContext = (CommandContext) invocation.getOrCreateAttachment(new AttachmentFactory() {
+                @Override
+                public Object createAttachment() {
+                    return new CommandContext();
+                }
+            });
+            invocation.setAttachment(callContext);
+        }
     }
 
     @Override
@@ -52,11 +65,32 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
         String destinationId = null;
         String endPoint = null;
 
-        if (destinationIdAccessor.isApplicable(target) && endPointAccessor.isApplicable(target)) {
-            destinationId = destinationIdAccessor.get(target);
-            endPoint = endPointAccessor.get(target);
+        if (target instanceof DestinationIdAccessor  && target instanceof EndPointAccessor) {
+            destinationId = ((DestinationIdAccessor)target)._$PINPOINT$_getDestinationId();
+            endPoint = ((EndPointAccessor)target)._$PINPOINT$_getEndPoint();
         }
 
+        final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
+        if (invocation != null && invocation.getAttachment() != null) {
+            final CommandContext commandContext = (CommandContext) invocation.getAttachment();
+            logger.debug("Check command context {}", commandContext);
+
+            endPoint = commandContext.getEndPoint();
+
+            final StringBuilder sb = new StringBuilder();
+            sb.append("write=").append(commandContext.getWriteElapsedTime());
+            if (commandContext.isWriteFail()) {
+                sb.append("(fail)");
+            }
+            sb.append(", read=").append(commandContext.getReadElapsedTime());
+            if (commandContext.isReadFail()) {
+                sb.append("(fail)");
+            }
+            recorder.recordAttribute(AnnotationKey.API_IO, sb.toString());
+            // clear
+            invocation.removeAttachment();
+        }
+        
         recorder.recordApi(getMethodDescriptor());
         recorder.recordEndPoint(endPoint != null ? endPoint : "Unknown");
         recorder.recordDestinationId(destinationId != null ? destinationId : NBASE_ARC.toString());

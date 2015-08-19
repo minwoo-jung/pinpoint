@@ -15,7 +15,7 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
@@ -25,7 +25,8 @@ import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupInvoca
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.plugin.nbasearc.CommandContext;
+import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
@@ -40,11 +41,11 @@ public class RedisConnectionSendCommandMethodInterceptor implements SimpleAround
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
-    private MetadataAccessor endPointAccessor;
+    private TraceContext traceContext;
     private InterceptorGroup interceptorGroup;
 
-    public RedisConnectionSendCommandMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor, InterceptorGroup interceptorGroup) {
-        this.endPointAccessor = endPointAccessor;
+    public RedisConnectionSendCommandMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup) {
+        this.traceContext = traceContext;
         this.interceptorGroup = interceptorGroup;
     }
 
@@ -54,23 +55,32 @@ public class RedisConnectionSendCommandMethodInterceptor implements SimpleAround
             logger.beforeInterceptor(target, args);
         }
 
+        final Trace trace = traceContext.currentTraceObject();
+        if (trace == null) {
+            return;
+        }
+
         try {
             if (!validate(target, args)) {
                 return;
             }
 
-            final String endPoint = endPointAccessor.get(target);
-            final InterceptorGroupInvocation scope = interceptorGroup.getCurrentInvocation();
-            scope.setAttachment(endPoint);
+            final String endPoint = ((EndPointAccessor) target)._$PINPOINT$_getEndPoint();
+            final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
+            if (invocation != null && invocation.getAttachment() != null) {
+                final CommandContext commandContext = (CommandContext) invocation.getAttachment();
+                commandContext.setEndPoint(endPoint);
+                logger.debug("Set command context {}", commandContext);
+            }
         } catch (Throwable t) {
-            logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
+            logger.warn("Failed to before process. {}", t.getMessage(), t);
         }
     }
 
     private boolean validate(final Object target, final Object[] args) {
-        if (!endPointAccessor.isApplicable(target)) {
+        if (!(target instanceof EndPointAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need metadata accessor({}).", METADATA_END_POINT);
+                logger.debug("Invalid target object. Need field accessor({}).", METADATA_END_POINT);
             }
             return false;
         }
