@@ -44,11 +44,14 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         final NbaseArcPluginConfig config = new NbaseArcPluginConfig(context.getConfig());
         final boolean enabled = config.isEnabled();
         final boolean pipelineEnabled = config.isPipelineEnabled();
+        final boolean io = config.isIo();
 
         if (enabled || pipelineEnabled) {
-            addGatewayClientClassEditor(context);
+            addGatewayClientClassEditor(context, config);
             addRedisConnectionClassEditor(context);
-            addRedisProtocolClassEditor(context);
+            if(io) {
+                addRedisProtocolClassEditor(context);
+            }
             addGatewayServerClassEditor(context, config);
             addGatewayClassEditor(context, config);
 
@@ -62,7 +65,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         }
     }
 
-    private void addGatewayClientClassEditor(ProfilerPluginSetupContext context) {
+    private void addGatewayClientClassEditor(ProfilerPluginSetupContext context, final NbaseArcPluginConfig config) {
         context.addClassFileTransformer("com.nhncorp.redis.cluster.gateway.GatewayClient", new PinpointClassFileTransformer() {
 
             @Override
@@ -75,7 +78,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
 
                 for (InstrumentMethod method : target.getDeclaredMethods(new NameBasedMethodFilter(RedisClusterMethodNames.get()))) {
                     try {
-                        method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientMethodInterceptor");
+                        method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientMethodInterceptor", config.isIo());
                     } catch (Exception e) {
                         if (logger.isWarnEnabled()) {
                             logger.warn("Unsupported method " + method, e);
@@ -214,7 +217,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         });
     }
 
-    private void addRedisClusterPipeline(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
+    private void addRedisClusterPipeline(ProfilerPluginSetupContext context, final NbaseArcPluginConfig config) {
         context.addClassFileTransformer("com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline", new PinpointClassFileTransformer() {
 
             @Override
@@ -234,7 +237,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
 
                 for (InstrumentMethod method : target.getDeclaredMethods(new NameBasedMethodFilter(RedisClusterPipelineMethodNames.get()))) {
                     try {
-                        method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor");
+                        method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor", config.isIo());
                     } catch (Exception e) {
                         if (logger.isWarnEnabled()) {
                             logger.warn("Unsupported method " + method, e);

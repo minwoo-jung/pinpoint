@@ -39,11 +39,13 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin implements NbaseArcConstants {
 
     private InterceptorGroup interceptorGroup;
-    
-    public RedisClusterPipelineMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup) {
+    private boolean io;
+
+    public RedisClusterPipelineMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup, boolean io) {
         super(traceContext, methodDescriptor);
-        
+
         this.interceptorGroup = interceptorGroup;
+        this.io = io;
     }
 
     @Override
@@ -65,9 +67,9 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
         String destinationId = null;
         String endPoint = null;
 
-        if (target instanceof DestinationIdAccessor  && target instanceof EndPointAccessor) {
-            destinationId = ((DestinationIdAccessor)target)._$PINPOINT$_getDestinationId();
-            endPoint = ((EndPointAccessor)target)._$PINPOINT$_getEndPoint();
+        if (target instanceof DestinationIdAccessor && target instanceof EndPointAccessor) {
+            destinationId = ((DestinationIdAccessor) target)._$PINPOINT$_getDestinationId();
+            endPoint = ((EndPointAccessor) target)._$PINPOINT$_getEndPoint();
         }
 
         final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
@@ -76,21 +78,22 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
             logger.debug("Check command context {}", commandContext);
 
             endPoint = commandContext.getEndPoint();
-
-            final StringBuilder sb = new StringBuilder();
-            sb.append("write=").append(commandContext.getWriteElapsedTime());
-            if (commandContext.isWriteFail()) {
-                sb.append("(fail)");
+            if (io) {
+                final StringBuilder sb = new StringBuilder();
+                sb.append("write=").append(commandContext.getWriteElapsedTime());
+                if (commandContext.isWriteFail()) {
+                    sb.append("(fail)");
+                }
+                sb.append(", read=").append(commandContext.getReadElapsedTime());
+                if (commandContext.isReadFail()) {
+                    sb.append("(fail)");
+                }
+                recorder.recordAttribute(AnnotationKey.API_IO, sb.toString());
             }
-            sb.append(", read=").append(commandContext.getReadElapsedTime());
-            if (commandContext.isReadFail()) {
-                sb.append("(fail)");
-            }
-            recorder.recordAttribute(AnnotationKey.API_IO, sb.toString());
             // clear
             invocation.removeAttachment();
         }
-        
+
         recorder.recordApi(getMethodDescriptor());
         recorder.recordEndPoint(endPoint != null ? endPoint : "Unknown");
         recorder.recordDestinationId(destinationId != null ? destinationId : NBASE_ARC.toString());

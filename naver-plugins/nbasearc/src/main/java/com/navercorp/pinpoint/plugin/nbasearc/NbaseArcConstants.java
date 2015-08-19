@@ -18,7 +18,6 @@ package com.navercorp.pinpoint.plugin.nbasearc;
 import static com.navercorp.pinpoint.common.trace.HistogramSchema.*;
 import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.*;
 
-import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 
 /**

@@ -26,10 +26,12 @@ public class NbaseArcPluginConfig {
 
     private final boolean enabled;
     private final boolean pipelineEnabled;
+    private final boolean io;
 
     public NbaseArcPluginConfig(ProfilerConfig src) {
         enabled = src.readBoolean("profiler.nbase_arc", true);
         pipelineEnabled = src.readBoolean("profiler.nbase_arc.pipeline", true);
+        io = src.readBoolean("profiler.nbase_arc.io", false);
     }
 
     public boolean isEnabled() {
@@ -40,6 +42,10 @@ public class NbaseArcPluginConfig {
         return pipelineEnabled;
     }
 
+    public boolean isIo() {
+        return io;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -47,6 +53,8 @@ public class NbaseArcPluginConfig {
         builder.append(enabled);
         builder.append(", pipelineEnabled=");
         builder.append(pipelineEnabled);
+        builder.append(", io=");
+        builder.append(io);
         builder.append("}");
         return builder.toString();
     }

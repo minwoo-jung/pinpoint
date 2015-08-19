@@ -38,11 +38,13 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin implements NbaseArcConstants {
 
     private InterceptorGroup interceptorGroup;
+    private boolean io;
 
-    public GatewayClientMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup) {
+    public GatewayClientMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup, boolean io) {
         super(traceContext, methodDescriptor);
 
         this.interceptorGroup = interceptorGroup;
+        this.io = io;
     }
 
     @Override
@@ -73,16 +75,18 @@ public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterce
             final CommandContext commandContext = (CommandContext) invocation.getAttachment();
             endPoint = commandContext.getEndPoint();
             logger.debug("Check command context {}", commandContext);
-            final StringBuilder sb = new StringBuilder();
-            sb.append("write=").append(commandContext.getWriteElapsedTime());
-            if (commandContext.isWriteFail()) {
-                sb.append("(fail)");
+            if (io) {
+                final StringBuilder sb = new StringBuilder();
+                sb.append("write=").append(commandContext.getWriteElapsedTime());
+                if (commandContext.isWriteFail()) {
+                    sb.append("(fail)");
+                }
+                sb.append(", read=").append(commandContext.getReadElapsedTime());
+                if (commandContext.isReadFail()) {
+                    sb.append("(fail)");
+                }
+                recorder.recordAttribute(AnnotationKey.API_IO, sb.toString());
             }
-            sb.append(", read=").append(commandContext.getReadElapsedTime());
-            if (commandContext.isReadFail()) {
-                sb.append("(fail)");
-            }
-            recorder.recordAttribute(AnnotationKey.API_IO, sb.toString());
             // clear
             invocation.removeAttachment();
         }
