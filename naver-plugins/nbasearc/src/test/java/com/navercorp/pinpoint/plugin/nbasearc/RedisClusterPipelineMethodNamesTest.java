@@ -13,32 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.plugin.nbasearc.filter;
+package com.navercorp.pinpoint.plugin.nbasearc;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+
+import com.navercorp.pinpoint.plugin.nbasearc.RedisClusterPipelineMethodNames;
 
 /**
  * 
  * @author jaehong.kim
  *
  */
-public class RedisClusterMethodNamesTest {
+public class RedisClusterPipelineMethodNamesTest {
 
     @Test
     public void test() {
-        Set<String> names = RedisClusterMethodNames.get();
+        List<String> names = Arrays.asList(RedisClusterPipelineMethodNames.get());
 
         assertTrue(names.contains("get"));
         assertTrue(names.contains("sinterstore"));
         assertTrue(names.contains("info"));
-
-        assertTrue(names.contains("zadd2"));
-        assertTrue(names.contains("slexpire"));
-        assertTrue(names.contains("ssttl"));
+        assertTrue(names.contains("sync"));
+        assertTrue(names.contains("syncAndReturnAll"));
+        assertTrue(names.contains("close"));
     }
-
 }

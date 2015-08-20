@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.plugin.nbasearc.filter;
+package com.navercorp.pinpoint.plugin.nbasearc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Set;
+import java.util.List;
 
 /**
  * RedisClusterPipeline method names
@@ -27,23 +28,17 @@ import java.util.Set;
  */
 public class RedisClusterPipelineMethodNames {
 
-    private static Set<String> names = null;
-    
-    public static Set<String> get() {
-        if(names != null) {
-            return names;
-        }
-        
+    public static String[] get() {
         final String[] methodNames = { 
                 "sync",
                 "syncAndReturnAll",
                 "close"
         };
+
+        final List<String> names = new ArrayList<String>();
+        names.addAll(Arrays.asList(RedisClusterMethodNames.get()));
+        names.addAll(Arrays.asList(methodNames));
         
-        final Set<String> redisClusterMethodNames = RedisClusterMethodNames.get();
-        redisClusterMethodNames.addAll(Arrays.asList(methodNames));
-        names = redisClusterMethodNames;
-        
-        return names;
+        return names.toArray(new String[names.size()]);
     }
 }

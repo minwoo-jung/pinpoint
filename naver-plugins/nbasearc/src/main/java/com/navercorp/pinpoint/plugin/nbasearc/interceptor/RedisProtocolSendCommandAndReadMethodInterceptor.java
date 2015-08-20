@@ -73,7 +73,7 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements SimpleA
                 logger.debug("Set command context {}", commandContext);
             }
         } catch (Throwable t) {
-            logger.warn("Failed to before process. {}", t.getMessage(), t);
+            logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
         }
     }
 
@@ -102,7 +102,7 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements SimpleA
                 logger.debug("Set command context {}", commandContext);
             }
         } catch (Throwable t) {
-            logger.warn("Failed to after process. {}", t.getMessage(), t);
+            logger.warn("Failed to AFTER process. {}", t.getMessage(), t);
         }
     }
 }
