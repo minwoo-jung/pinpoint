@@ -15,12 +15,10 @@
  */
 package com.navercorp.pinpoint.plugin.nelo.interceptor;
 
+import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.TargetClassLoader;
-import com.navercorp.pinpoint.bootstrap.interceptor.TraceContextSupport;
 import com.navercorp.pinpoint.common.trace.LoggingInfo;
 
 /**
