@@ -27,9 +27,6 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginInstrumentContext;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.transformer.PinpointClassFileTransformer;
-import com.navercorp.pinpoint.plugin.nbasearc.filter.NameBasedMethodFilter;
-import com.navercorp.pinpoint.plugin.nbasearc.filter.RedisClusterMethodNames;
-import com.navercorp.pinpoint.plugin.nbasearc.filter.RedisClusterPipelineMethodNames;
 
 /**
  * 
@@ -49,7 +46,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         if (enabled || pipelineEnabled) {
             addGatewayClientClassEditor(context, config);
             addRedisConnectionClassEditor(context);
-            if(io) {
+            if (io) {
                 addRedisProtocolClassEditor(context);
             }
             addGatewayServerClassEditor(context, config);
@@ -74,9 +71,11 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                 target.addField(METADATA_DESTINATION_ID);
 
                 InstrumentMethod constructorMethod = target.getConstructor("com.nhncorp.redis.cluster.gateway.GatewayConfig");
-                constructorMethod.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientConstructorInterceptor");
+                if (constructorMethod != null) {
+                    constructorMethod.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientConstructorInterceptor");
+                }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(new NameBasedMethodFilter(RedisClusterMethodNames.get()))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name(new int[] { MethodFilters.SYNTHETIC }, RedisClusterMethodNames.get()))) {
                     try {
                         method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientMethodInterceptor", config.isIo());
                     } catch (Exception e) {
@@ -104,10 +103,14 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                 target.addField(METADATA_END_POINT);
 
                 InstrumentMethod constructorEditorBuilderArg1 = target.getConstructor("java.lang.String");
-                constructorEditorBuilderArg1.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionConstructorInterceptor");
+                if (constructorEditorBuilderArg1 != null) {
+                    constructorEditorBuilderArg1.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionConstructorInterceptor");
+                }
 
                 InstrumentMethod constructorEditorBuilderArg2 = target.getConstructor("java.lang.String", "int");
-                constructorEditorBuilderArg2.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionConstructorInterceptor");
+                if (constructorEditorBuilderArg2 != null) {
+                    constructorEditorBuilderArg2.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionConstructorInterceptor");
+                }
 
                 for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name("sendCommand"))) {
                     method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionSendCommandMethodInterceptor");
@@ -143,7 +146,9 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                 target.addField(METADATA_DESTINATION_ID);
 
                 InstrumentMethod method = target.getDeclaredMethod("getResource");
-                method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayServerGetResourceMethodInterceptor");
+                if (method != null) {
+                    method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayServerGetResourceMethodInterceptor");
+                }
 
                 return target.toBytecode();
             }
@@ -159,7 +164,9 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                 target.addField(METADATA_DESTINATION_ID);
 
                 InstrumentMethod constructor = target.getConstructor("com.nhncorp.redis.cluster.gateway.GatewayConfig");
-                constructor.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayConstructorInterceptor");
+                if (constructor != null) {
+                    constructor.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayConstructorInterceptor");
+                }
 
                 for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name("getServer"))) {
                     method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayGetServerMethodInterceptor");
@@ -194,15 +201,21 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                 }
 
                 InstrumentMethod constructorEditorBuilderArg1 = target.getConstructor("java.lang.String");
-                constructorEditorBuilderArg1.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
+                if (constructorEditorBuilderArg1 != null) {
+                    constructorEditorBuilderArg1.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
+                }
 
                 InstrumentMethod constructorEditorBuilderArg2 = target.getConstructor("java.lang.String", "int");
-                constructorEditorBuilderArg2.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
+                if (constructorEditorBuilderArg2 != null) {
+                    constructorEditorBuilderArg2.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
+                }
 
                 InstrumentMethod constructorEditorBuilderArg3 = target.getConstructor("java.lang.String", "int", "int");
-                constructorEditorBuilderArg3.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
+                if (constructorEditorBuilderArg3 != null) {
+                    constructorEditorBuilderArg3.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
+                }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(new NameBasedMethodFilter(RedisClusterMethodNames.get()))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name(new int[] { MethodFilters.SYNTHETIC }, RedisClusterMethodNames.get()))) {
                     try {
                         method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterMethodInterceptor");
                     } catch (Exception e) {
@@ -235,7 +248,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                     method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineSetServerMethodInterceptor");
                 }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(new NameBasedMethodFilter(RedisClusterPipelineMethodNames.get()))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name(new int[] { MethodFilters.SYNTHETIC }, RedisClusterPipelineMethodNames.get()))) {
                     try {
                         method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor", config.isIo());
                     } catch (Exception e) {
