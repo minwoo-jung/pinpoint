@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
  * @author netspider
  */
 @Component
+@Deprecated
 public class ApacheClosableAsyncHttpClient {
 
     private static final Logger logger = LoggerFactory.getLogger(ApacheClosableAsyncHttpClient.class);
