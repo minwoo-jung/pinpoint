@@ -115,9 +115,9 @@ public class ArcusIT {
         verifier.verifyTrace(event(ARCUS, set, args(KEY)),
                 event(ARCUS_FUTURE_GET, operationFutureGet));
         
-        verifier.verifyTrace(async(ARCUS, asyncGet, args(KEY), 
-                                            event("ASYNC", "Asynchronous Invocation"),
-                                            event(ARCUS_FUTURE_GET, getFutureSet)));
+        verifier.verifyTrace(async(event(ARCUS, asyncGet, args(KEY)), 
+                                        event("ASYNC", "Asynchronous Invocation"),
+                                        event(ARCUS_FUTURE_GET, getFutureSet)));
         
         
         verifier.verifyTrace(event(ARCUS_FUTURE_GET, getFutureGet));
