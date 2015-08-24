@@ -105,7 +105,7 @@ public class NpcIT {
         verifier.verifyTrace(event(NPC_CLIENT_INTERNAL, createConnector, annotation("npc.url", DESTINATION_ID)));
         verifier.verifyTrace(event(NPC_CLIENT_INTERNAL, nioNpcHessianConnectorConstructor, annotation("npc.url", DESTINATION_ID)));
         verifier.verifyTrace(event(NPC_CLIENT_INTERNAL, npcHessianConnectorInvoke));
-        verifier.verifyTrace(async(NPC, invoke, null, null, DESTINATION_ID, annotations(annotation("npc.url", SERVER_ADDRESS.toString())),
+        verifier.verifyTrace(async(event(NPC, invoke, null, null, DESTINATION_ID, annotation("npc.url", SERVER_ADDRESS.toString())),
                                             event("ASYNC", "Asynchronous Invocation"),
                                             event(ServiceType.INTERNAL_METHOD.getName(), isReadAndSet)));
         verifier.verifyTrace(event(ServiceType.INTERNAL_METHOD.getName(), get));

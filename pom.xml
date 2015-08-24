@@ -198,5 +198,13 @@
                 <env>release</env>
             </properties>
         </profile>
+        
+        <!-- ent real server -->
+        <profile>
+            <id>Ent-release</id>
+            <properties>
+                <env>Ent-release</env>
+            </properties>
+        </profile>
     </profiles>
 </project>

@@ -17,7 +17,6 @@ import redis.clients.jedis.Pipeline;
 import com.nhncorp.redis.cluster.gateway.GatewayClient;
 import com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline;
 //import com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline;
-import com.nhncorp.redis.cluster.spring.StringRedisClusterTemplate;
 
 @Controller
 public class RedisController {

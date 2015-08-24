@@ -15,13 +15,13 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptorForPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Group;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
+import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
@@ -33,14 +33,8 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 @Group(NbaseArcConstants.NBASE_ARC_SCOPE)
 public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin implements NbaseArcConstants {
 
-    private MetadataAccessor destinationIdAccessor;
-    private MetadataAccessor endPointAccessor;
-
-    public RedisClusterMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
+    public RedisClusterMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
         super(traceContext, methodDescriptor);
-
-        this.destinationIdAccessor = destinationIdAccessor;
-        this.endPointAccessor = endPointAccessor;
     }
 
     @Override
@@ -52,9 +46,9 @@ public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundIntercep
         String destinationId = null;
         String endPoint = null;
 
-        if (destinationIdAccessor.isApplicable(target) && endPointAccessor.isApplicable(target)) {
-            destinationId = destinationIdAccessor.get(target);
-            endPoint = endPointAccessor.get(target);
+        if ((target instanceof DestinationIdAccessor) && (target instanceof EndPointAccessor)) {
+            destinationId = ((DestinationIdAccessor)target)._$PINPOINT$_getDestinationId();
+            endPoint = ((EndPointAccessor)target)._$PINPOINT$_getEndPoint();
         }
 
         recorder.recordApi(getMethodDescriptor());

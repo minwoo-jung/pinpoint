@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.navercorp.pinpoint.web.alarm.checker.AlarmChecker;
-import com.navercorp.pinpoint.web.dao.mysql.MySqlAlarmResourceDao;
+import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.nhncorp.lucy.net.call.Fault;
 import com.nhncorp.lucy.net.call.Reply;
 import com.nhncorp.lucy.net.call.ReturnValue;
@@ -55,7 +55,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     private String pinpointUrl;
     
     @Autowired
-    private MySqlAlarmResourceDao dao;
+    private UserGroupService userGroupService;
     
     // Email config
     @Value("#{batchProps['alarm.mail.url']}")
@@ -71,11 +71,11 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     private String smsServerUrl;
     @Value("#{batchProps['alarm.sms.serviceId']}")
     private String smsServiceID;
-    private static final String SENDER_NUMBER = "15883820";
+    private static final String SENDER_NUMBER = "0317844499";
     
     @Override
     public void sendSms(AlarmChecker checker) {
-        List<String> receivers = dao.selectEmpGroupPhoneNumber(checker.getEmpGroup());
+        List<String> receivers = userGroupService.selectPhoneNumberOfMember(checker.getuserGroupId());
 
         if (receivers.size() == 0) {
             return;
@@ -154,7 +154,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
 
     private Object[] createSendMailParams(AlarmChecker checker) {
         AlarmMailTemplate mailTemplate = new AlarmMailTemplate(checker, pinpointUrl);
-        List<String> receivers = dao.selectEmpGroupEmail(checker.getEmpGroup());
+        List<String> receivers = userGroupService.selectEmailOfMember(checker.getuserGroupId());
         String subject = mailTemplate.createSubject();
         logger.info("send email : {}", subject);
         return new Object[] { EMAIL_SERVICE_ID, OPTION, SENDER_EMAIL_ADDRESS, "", joinAddresses(receivers), subject, mailTemplate.createBody()};

@@ -15,13 +15,13 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
+import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
+import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 import com.nhncorp.redis.cluster.gateway.GatewayServer;
 
@@ -36,14 +36,10 @@ public abstract class GatewayServerMetadataReadInterceptor implements SimpleArou
     protected final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     protected final boolean isDebug = logger.isDebugEnabled();
 
-    protected MetadataAccessor destinationIdAccessor;
-    protected MetadataAccessor endPointAccessor;
     protected MethodDescriptor methodDescriptor;
 
-    public GatewayServerMetadataReadInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(METADATA_DESTINATION_ID) MetadataAccessor destinationIdAccessor, @Name(METADATA_END_POINT) MetadataAccessor endPointAccessor) {
+    public GatewayServerMetadataReadInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
         this.methodDescriptor = methodDescriptor;
-        this.destinationIdAccessor = destinationIdAccessor;
-        this.endPointAccessor = endPointAccessor;
     }
 
     @Override
@@ -61,11 +57,11 @@ public abstract class GatewayServerMetadataReadInterceptor implements SimpleArou
             // first argument is GatewayServer
             final GatewayServer server = (GatewayServer) args[0];
             final String endPoint = server.getAddress().getHost() + ":" + server.getAddress().getPort();
-            endPointAccessor.set(target, endPoint);
+            ((EndPointAccessor)target)._$PINPOINT$_setEndPoint(endPoint);
 
-            final String destinationId = destinationIdAccessor.get(args[0]);
+            final String destinationId = ((DestinationIdAccessor)args[0])._$PINPOINT$_getDestinationId();
             if (destinationId != null) {
-                destinationIdAccessor.set(target, destinationId);
+                ((DestinationIdAccessor)target)._$PINPOINT$_setDestinationId(destinationId);
             }
         } catch (Throwable t) {
             logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
@@ -73,16 +69,16 @@ public abstract class GatewayServerMetadataReadInterceptor implements SimpleArou
     }
 
     private boolean validate(final Object target, final Object[] args) {
-        if (!destinationIdAccessor.isApplicable(target)) {
+        if (!(target instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need metadata accessor({}).", METADATA_DESTINATION_ID);
+                logger.debug("Invalid target object. Need field accessor({}).", METADATA_DESTINATION_ID);
             }
             return false;
         }
 
-        if (!endPointAccessor.isApplicable(target)) {
+        if (!(target instanceof EndPointAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need metadata accessor({}).", METADATA_END_POINT);
+                logger.debug("Invalid target object. Need field accessor({}).", METADATA_END_POINT);
             }
             return false;
         }
@@ -101,9 +97,9 @@ public abstract class GatewayServerMetadataReadInterceptor implements SimpleArou
             return false;
         }
 
-        if (!destinationIdAccessor.isApplicable(args[0])) {
+        if (!(args[0] instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid args[0]({}) object. Need metadata accessor({})", args[0], METADATA_DESTINATION_ID);
+                logger.debug("Invalid args[0]({}) object. Need field accessor({})", args[0], METADATA_DESTINATION_ID);
             }
             return false;
         }

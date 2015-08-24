@@ -17,7 +17,9 @@ import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
@@ -36,9 +38,12 @@ import com.navercorp.pinpoint.plugin.bloc.BlocPlugin;
 public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
     private final FieldAccessor uriEncodingSnooper;
 
-    public ChannelRead0Interceptor(@Name(BlocPlugin.FIELD_URI_ENCODING) FieldAccessor snooper) {
+    public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(BlocPlugin.FIELD_URI_ENCODING) FieldAccessor snooper) {
         super(ChannelRead0Interceptor.class);
         this.uriEncodingSnooper = snooper;
+        
+        setTraceContext(traceContext);
+        setMethodDescriptor(descriptor);
     }
 
     @Override
