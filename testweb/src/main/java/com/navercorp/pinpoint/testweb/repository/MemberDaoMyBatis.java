@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.navercorp.pinpoint.testweb.domain.Member;
 
 @Repository
-public class MemberDaoIbatis implements MemberDao {
+public class MemberDaoMyBatis implements MemberDao {
 
     @Autowired
     @Qualifier("mysqlSqlMapClientTemplate")

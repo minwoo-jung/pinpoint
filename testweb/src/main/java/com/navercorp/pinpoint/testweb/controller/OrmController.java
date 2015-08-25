@@ -19,56 +19,11 @@ import java.util.Date;
 public class OrmController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static final String IBATIS_VIEW = "orm/ibatis";
     public static final String MYBATIS_VIEW = "orm/mybatis";
-
-    @Autowired
-    @Qualifier("sqlMapClientMemberService")
-    private MemberService sqlMapClientMemberService;
-
-    @Autowired
-    @Qualifier("sqlMapSessionMemberService")
-    private MemberService sqlMapSessionMemberService;
 
     @Autowired
     @Qualifier("myBatisMemberService")
     private MemberService myBatisMemberService;
-
-    @RequestMapping(value = "/orm/ibatis/sqlMapClient/query")
-    public String iBatisSqlMapClientQuery() {
-        logger.info("/orm/ibatis/sqlMapClient/query");
-
-        this.sqlMapClientMemberService.get(0);
-
-        return IBATIS_VIEW;
-    }
-
-    @RequestMapping(value = "/orm/ibatis/sqlMapClient/transaction")
-    public String iBatisSqlMapClientTranscation() {
-        logger.info("/orm/ibatis/sqlMapClient/transaction - add, update, get, delete");
-
-        runTransaction(this.sqlMapClientMemberService);
-
-        return IBATIS_VIEW;
-    }
-
-    @RequestMapping(value = "/orm/ibatis/sqlMapSession/query")
-    public String iBatisSqlMapSessionQuery() {
-        logger.info("/orm/ibatis/sqlMapSession/query");
-
-        this.sqlMapSessionMemberService.get(0);
-
-        return IBATIS_VIEW;
-    }
-
-    @RequestMapping(value = "/orm/ibatis/sqlMapSession/transaction")
-    public String iBatisSqlMapSessionTransaction() {
-        logger.info("/orm/ibatis/sqlMapSession/transaction - add, update, get, delete");
-
-        runTransaction(this.sqlMapSessionMemberService);
-
-        return IBATIS_VIEW;
-    }
 
     @RequestMapping(value = "/orm/mybatis/sqlSessionTemplate/query")
     public String myBatisSqlSessionTemplateQuery() {

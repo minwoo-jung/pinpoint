@@ -15,14 +15,14 @@ import java.sql.Statement;
  *
  */
 @Repository
-public class MySqlDaoIbatis implements MySqlDao {
+public class MsSqlServerDaoMyBatis implements MsSqlServerDao {
 
     @Autowired
-    @Qualifier("mysqlSqlMapClientTemplate")
+    @Qualifier("msSqlServerSqlMapClientTemplate")
     private SqlSessionTemplate sqlMapClientTemplate;
 
     @Autowired
-    @Qualifier("mysqlDataSource")
+    @Qualifier("jtdsDataSource")
     private DataSource datasource;
 
     @Override

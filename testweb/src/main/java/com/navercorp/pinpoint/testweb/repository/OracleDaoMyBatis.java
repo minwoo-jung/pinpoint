@@ -15,14 +15,14 @@ import java.sql.Statement;
  *
  */
 @Repository
-public class CubridDaoIbatis implements CubridDao {
+public class OracleDaoMyBatis implements OracleDao {
 
     @Autowired
-    @Qualifier("cubridSqlMapClientTemplate")
+    @Qualifier("oracleSqlMapClientTemplate")
     private SqlSessionTemplate sqlMapClientTemplate;
 
     @Autowired
-    @Qualifier("cubridDataSource")
+    @Qualifier("oracleDataSource")
     private DataSource datasource;
 
     @Override
@@ -37,34 +37,7 @@ public class CubridDaoIbatis implements CubridDao {
         try {
             connection = datasource.getConnection();
             statement = connection.createStatement();
-            return statement.execute("select 1");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
-
-        }
-    }
-    
-    @Override
-    public boolean createErrorStatement() {
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = datasource.getConnection();
-            statement = connection.createStatement();
-            return statement.execute("SELECT * FROM NOT_EXISTS_TABLE");
+            return statement.execute("select 1 from dual");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
