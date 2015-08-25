@@ -15,14 +15,14 @@ import java.sql.Statement;
  *
  */
 @Repository
-public class OracleDaoIbatis implements OracleDao {
+public class MySqlDaoMyBatis implements MySqlDao {
 
     @Autowired
-    @Qualifier("oracleSqlMapClientTemplate")
+    @Qualifier("mysqlSqlMapClientTemplate")
     private SqlSessionTemplate sqlMapClientTemplate;
 
     @Autowired
-    @Qualifier("oracleDataSource")
+    @Qualifier("mysqlDataSource")
     private DataSource datasource;
 
     @Override
@@ -37,7 +37,7 @@ public class OracleDaoIbatis implements OracleDao {
         try {
             connection = datasource.getConnection();
             statement = connection.createStatement();
-            return statement.execute("select 1 from dual");
+            return statement.execute("select 1");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {

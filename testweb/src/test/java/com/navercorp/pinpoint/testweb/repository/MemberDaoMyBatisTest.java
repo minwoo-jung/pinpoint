@@ -21,10 +21,10 @@ import com.navercorp.pinpoint.testweb.domain.Member;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext-testweb.xml", "/servlet-context.xml" })
 @Transactional
-public class MemberDaoIbatisTest extends DBUnitSupport {
+public class MemberDaoMyBatisTest extends DBUnitSupport {
 
     @Autowired
-    MemberDaoIbatis memberDao;
+    MemberDaoMyBatis memberDao;
 
     @Test
     public void di() {
