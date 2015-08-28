@@ -306,7 +306,7 @@
     <div class="modal-content" id="pinpoint-configuration">
       <div class="modal-header" style="text-align:center">
       	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="testModalLabel">Pinpoint Configuration</h4>
+        <h4 class="modal-title" id="testModalLabel">Preference</h4>
         <ul>
         	<li ng-class="{true: 'active'}[isGeneral()]" ng-click="setCurrentTab('general')">General</li>
         	<li ng-class="{true: 'active'}[isAlarm()]" ng-click="setCurrentTab('alarm')">Alarm</li>
@@ -342,7 +342,7 @@
 	    <div id="config-help" ng-show="isHelp()" ng-controller="HelpCtrl">
       		<div style="font-family:verdana;">
       			<a href="https://github.com/naver/pinpoint/wiki/FAQ" target="_blank" class="link-title"><i class="xi-clip"></i> FAQ</a>
-      			<a href="https://github.com/naver/pinpoint/issues" class="link-title"><i class="xi-info-circle"></i> Issues</a></h4>
+      			<a href="https://github.com/naver/pinpoint/issues" class="link-title"><i class="xi-info-circle"></i> Issues</a>
       			<a href="https://groups.google.com/forum/#!forum/pinpoint_user" class="link-title"><i class="xi-pen"></i> User Group</a>
       			<hr/>
       			<h4>English</h4>
@@ -389,6 +389,7 @@
 <script src="common/services/server-map-hint-vo.service.js?v=${buildTime}"></script>
 <script src="common/services/is-visible.service.js?v=${buildTime}"></script>
 <script src="common/services/user-locales.service.js?v=${buildTime}"></script>
+<script src="common/services/analytics.service.js?v=${buildTime}"></script>
 <script src="common/services/help-content.service.js?v=${buildTime}"></script>
 <script src="common/help/help-content-en.js?v=${buildTime}"></script>
 <script src="common/help/help-content-ko.js?v=${buildTime}"></script>
