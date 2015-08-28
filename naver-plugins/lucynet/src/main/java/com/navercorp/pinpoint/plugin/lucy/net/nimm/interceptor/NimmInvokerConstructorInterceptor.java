@@ -1,12 +1,12 @@
 package com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetConstructor;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
+import com.navercorp.pinpoint.plugin.lucy.net.NimmAddressAccessor;
 import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
 
 /**
@@ -15,17 +15,19 @@ import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
  * @author netspider
  * 
  */
-@TargetConstructor({"com.nhncorp.lucy.nimm.connector.address.NimmAddress", "com.nhncorp.lucy.nimm.connector.NimmSocket", "long"})
 public class NimmInvokerConstructorInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
+    private final MethodDescriptor descriptor;
+    private final TraceContext traceContext;
+
     // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고 있음.
-    private final MetadataAccessor nimmAddressAccessor;
-    
-    public NimmInvokerConstructorInterceptor(@Name(METADATA_NIMM_ADDRESS) MetadataAccessor nimmAddressAccessor) {
-        this.nimmAddressAccessor = nimmAddressAccessor;
+
+    public NimmInvokerConstructorInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
+        this.traceContext = traceContext;
+        this.descriptor = descriptor;
     }
 
     @Override
@@ -51,7 +53,9 @@ public class NimmInvokerConstructorInterceptor implements SimpleAroundIntercepto
             address.append(nimmAddress.getServerId()).append(":");
             address.append(nimmAddress.getSocketId());
 
-            nimmAddressAccessor.set(target, address.toString());
+            if (target instanceof NimmAddressAccessor) {
+                ((NimmAddressAccessor) target)._$PINPOINT$_setNimmAddress(address.toString());
+            }
         }
     }
 

@@ -1,19 +1,19 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
-import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
-
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.interceptor.AsyncTraceIdAccessor;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
+import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
+
+import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 
 public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
@@ -22,14 +22,10 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
 
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
-    private final MetadataAccessor serverAddressAccessor;
-    private final MetadataAccessor asyncTraceIdAccessor;
-    
-    public InvokeInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_ASYNC_TRACE_ID) MetadataAccessor asyncTraceIdAccessor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+
+    public InvokeInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
-        this.serverAddressAccessor = serverAddressAccessor;
-        this.asyncTraceIdAccessor = asyncTraceIdAccessor;
     }
 
     @Override
@@ -77,7 +73,11 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
 
         recorder.recordServiceType(NPC_CLIENT);
 
-        InetSocketAddress serverAddress = serverAddressAccessor.get(target);
+        InetSocketAddress serverAddress = null;
+        if (target instanceof NpcServerAddressAccessor) {
+            serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
+        }
+
         int port = serverAddress.getPort();
         String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
 //      DestinationId와 동일하므로 없는게 맞음.
@@ -106,7 +106,7 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
                 // set asynchronous trace
                 final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();
                 recorder.recordNextAsyncId(asyncTraceId.getAsyncId());
-                asyncTraceIdAccessor.set(result, asyncTraceId);
+                ((AsyncTraceIdAccessor)result)._$PINPOINT$_setAsyncTraceId(asyncTraceId);
                 if (isDebug) {
                     logger.debug("Set asyncTraceId metadata {}", asyncTraceId);
                 }
@@ -123,8 +123,8 @@ public class InvokeInterceptor implements SimpleAroundInterceptor, LucyNetConsta
             return false;
         }
 
-        if (!asyncTraceIdAccessor.isApplicable(result)) {
-            logger.debug("Invalid result object. Need metadata accessor({}).", METADATA_ASYNC_TRACE_ID);
+        if (!(result instanceof AsyncTraceIdAccessor)) {
+            logger.debug("Invalid result object. Need accessor({}).", AsyncTraceIdAccessor.class.getName());
             return false;
         }
 
