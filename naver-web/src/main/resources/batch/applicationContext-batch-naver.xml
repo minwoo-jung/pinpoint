@@ -14,4 +14,17 @@
     
     <bean id="naverAlarmMessageSender" class="com.navercorp.pinpoint.web.alarm.NaverAlarmMessageSender"/>
     <util:properties id="batchProps" location="classpath:batch.properties"/>
+    
+    <task:scheduled-tasks scheduler="naverScheduler">
+        <task:scheduled ref="naverBatchJobLauncher" method="innerSystemSyncJob" cron="0 0 7 * * *" />
+    </task:scheduled-tasks>
+    
+    <task:scheduler id="naverScheduler" pool-size="1"/>
+    
+    <bean id="naverBatchJobLauncher" class="com.navercorp.pinpoint.web.batch.NaverBatchJobLauncher">
+        <property name="batchServerIp" value="#{batchProps['batch.server.ip']}"/>
+    </bean>
+    
+    <import resource="classpath:batch/innerSystemSyncJob.xml"/>
+    
 </beans>
