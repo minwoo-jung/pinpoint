@@ -1,8 +1,5 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
-import java.net.InetSocketAddress;
-
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
@@ -10,8 +7,10 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
+import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
+
+import java.net.InetSocketAddress;
 
 public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
@@ -20,12 +19,10 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
 
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
-    private final MetadataAccessor serverAddressAccessor;
 
-    public InitializeConnectorInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+    public InitializeConnectorInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
-        this.serverAddressAccessor = serverAddressAccessor;
     }
 
     @Override
@@ -44,7 +41,11 @@ public class InitializeConnectorInterceptor implements SimpleAroundInterceptor, 
         SpanEventRecorder recorder = trace.traceBlockBegin();
         recorder.recordServiceType(NPC_CLIENT_INTERNAL);
 
-        InetSocketAddress serverAddress = serverAddressAccessor.get(target);
+        InetSocketAddress serverAddress = null;
+        if (target instanceof NpcServerAddressAccessor) {
+            serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
+        }
+
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");

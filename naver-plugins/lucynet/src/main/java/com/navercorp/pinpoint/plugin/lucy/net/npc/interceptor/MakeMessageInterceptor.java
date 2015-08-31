@@ -1,26 +1,20 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
-import com.navercorp.pinpoint.bootstrap.context.Header;
-import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
-import com.navercorp.pinpoint.bootstrap.context.Trace;
-import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.context.*;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
-import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.NetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
+import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
 import com.nhncorp.lucy.npc.DefaultNpcMessage;
 import com.nhncorp.lucy.npc.UserOptionIndex;
+
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Taejin Koo
@@ -35,12 +29,9 @@ public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetC
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
 
-    private final MetadataAccessor serverAddressAccessor;
-
-    public MakeMessageInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+    public MakeMessageInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
-        this.serverAddressAccessor = serverAddressAccessor;
     }
 
     @Override
@@ -71,8 +62,12 @@ public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetC
             putOption(defaultNpcMessage, options);
             
             recorder.recordServiceType(NPC_CLIENT);
-            
-            InetSocketAddress serverAddress = serverAddressAccessor.get(target);
+
+            InetSocketAddress serverAddress = null;
+            if (target instanceof NpcServerAddressAccessor) {
+                serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
+            }
+
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
             recorder.recordDestinationId(endPoint);
