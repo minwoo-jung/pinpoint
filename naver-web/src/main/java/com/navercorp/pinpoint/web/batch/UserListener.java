@@ -15,24 +15,29 @@
  */
 package com.navercorp.pinpoint.web.batch;
 
-import java.util.Date;
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
+import com.navercorp.pinpoint.web.dao.UserDao;
 
 /**
  * @author minwoo.jung <minwoo.jung@navercorp.com>
  */
-public class NaverBatchJobLauncher extends JobLaunchSupport {
-    public void innerSystemSyncJob() {
-        JobParameters params = createTimeParameter();
-        run("innerSystemSyncJob", params);
+public class UserListener implements StepExecutionListener {
+
+    @Autowired
+    UserDao userDao;
+    
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+        userDao.dropAndCreateUserTable();
     }
 
-    private JobParameters createTimeParameter() {
-        JobParametersBuilder builder = new JobParametersBuilder();
-        Date now = new Date();
-        builder.addDate("schedule.date", now);
-        return builder.toJobParameters();
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        return null;
     }
+
 }

@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
