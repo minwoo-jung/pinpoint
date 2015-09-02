@@ -11,12 +11,11 @@
 			<tasklet>
 				<chunk reader="imdbUserReader" writer="userWriter" commit-interval="200" />
 			</tasklet>
+            <listeners>
+                <listener ref="userListener"/>
+            </listeners>
 		</step>
 	</job>
-	
-<!-- 	<bean id="innerSystemSyncJobListener" class="com.navercorp.pms.batch.InnerSystemSyncJobListner"> -->
-<!-- 		<property name="sqlSessionTemplate" ref="pmsBatchSqlSessionTemplate"/> -->
-<!-- 	</bean> -->
 	
 	<bean id="imdbUserReader" class="com.navercorp.pinpoint.web.batch.CubridCursorItemReader" scope="step" >
 		<property name="dataSource" ref="imdbDataSource" />
@@ -44,10 +43,13 @@
 	
 	<bean id="userWriter" class="com.navercorp.pinpoint.web.batch.UserWriter"/>
     
+    <bean id="userListener" class="com.navercorp.pinpoint.web.batch.UserListener"/>
+
     <bean id="imdbDataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="${imdb.jdbc.driverClassName}" />
 		<property name="url" value="${imdb.jdbc.url}" />
 		<property name="username" value="${imdb.jdbc.username}" />
 		<property name="password" value="${imdb.jdbc.password}" />
     </bean>
+    
 </beans>
