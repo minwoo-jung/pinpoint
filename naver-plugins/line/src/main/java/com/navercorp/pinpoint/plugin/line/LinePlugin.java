@@ -14,9 +14,14 @@
  */
 package com.navercorp.pinpoint.plugin.line;
 
+import java.security.ProtectionDomain;
+
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginInstrumentContext;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
-import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
+import com.navercorp.pinpoint.bootstrap.plugin.transformer.PinpointClassFileTransformer;
 
 /**
  * @author Jongho Moon
@@ -29,14 +34,22 @@ public class LinePlugin implements ProfilerPlugin, LineConstants {
      */
     @Override
     public void setup(ProfilerPluginSetupContext context) {
-        ClassFileTransformerBuilder builder = context.getClassFileTransformerBuilder("com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler$InvokeTask");
+        final LineConfig config = new LineConfig(context.getConfig());
+        
+        context.addClassFileTransformer("com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler$InvokeTask", new PinpointClassFileTransformer() {
+            
+            @Override
+            public byte[] transform(ProfilerPluginInstrumentContext instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
+                
+                target.addField("com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor");
+                target.addField("com.navercorp.pinpoint.plugin.line.MessageEventAccessor");
 
-        builder.injectMetadata(CHANNEL_HANDLER_CONTEXT);
-        builder.injectMetadata(MESSAGE_EVENT);
-        
-        builder.injectInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskConstructorInterceptor");
-        builder.injectInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskRunInterceptor");
-        
-        context.addClassFileTransformer(builder.build());
+                target.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskConstructorInterceptor");
+                target.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskRunInterceptor", config.getParamDumpSize(), config.getEntityDumpSize());
+
+                return target.toBytecode();
+            }
+        });
     }
 }
