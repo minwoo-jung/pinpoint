@@ -18,13 +18,13 @@ package com.navercorp.pinpoint.plugin.nelo.interceptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.BeforeInterceptor0;
 import com.navercorp.pinpoint.common.trace.LoggingInfo;
 
 /**
  * @author minwoo.jung
  */
-public class AppenderInterceptor implements SimpleAroundInterceptor {
+public class AppenderInterceptor implements BeforeInterceptor0 {
 
     private final TraceContext traceContext;
     
@@ -33,17 +33,12 @@ public class AppenderInterceptor implements SimpleAroundInterceptor {
     }
 
     @Override
-    public void before(Object target, Object[] args) {
-        
+    public void before(Object target) {
         Trace trace = traceContext.currentTraceObject();
         
         if (trace != null) {
             SpanRecorder recorder = trace.getSpanRecorder();
             recorder.recordLogging(LoggingInfo.LOGGED);
         }
-    }
-
-    @Override
-    public void after(Object target, Object[] args, Object result, Throwable throwable) {
     }
 }

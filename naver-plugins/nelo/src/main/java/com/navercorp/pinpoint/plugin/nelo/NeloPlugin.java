@@ -15,12 +15,16 @@
  */
 package com.navercorp.pinpoint.plugin.nelo;
 
+import java.security.ProtectionDomain;
+
+import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
+import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginInstrumentContext;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
-import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassConditions;
-import com.navercorp.pinpoint.bootstrap.plugin.transformer.ClassFileTransformerBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerBuilder;
-import com.navercorp.pinpoint.bootstrap.plugin.transformer.ConditionalClassFileTransformerSetup;
+import com.navercorp.pinpoint.bootstrap.plugin.transformer.PinpointClassFileTransformer;
 
 /**
  * check up on sending nelo server a log. 
@@ -38,49 +42,78 @@ public class NeloPlugin implements ProfilerPlugin {
 
     @Override
     public void setup(ProfilerPluginSetupContext context) {
-        final NeloPluginConfig config = new NeloPluginConfig(context.getConfig());
+        final ProfilerConfig config = context.getConfig();
         
         if (config.isLog4jLoggingTransactionInfo()) {
             addLog4jNelo2AsyncAppenderEditor(context);
             addLog4jNeloAppenderEditor(context);
         }
         
-        if (config.isLogBackLoggingTransactionInfo()) {
+        if (config.isLogbackLoggingTransactionInfo()) {
             addLogBackNelo2AsyncAppenderEditor(context);
             addLogBackNeloAppenderEditor(context);
         }
     }
     
     private void addLogBackNeloAppenderEditor(ProfilerPluginSetupContext context) {
-        final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder("com.nhncorp.nelo2.logback.NeloLogbackAppender");
-        classEditorBuilder.editMethod("append", new String[]{"ch.qos.logback.classic.spi.ILoggingEvent"}).injectInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
-        context.addClassFileTransformer(classEditorBuilder.build());
+        context.addClassFileTransformer("com.nhncorp.nelo2.logback.NeloLogbackAppender", new PinpointClassFileTransformer() {
+            
+            @Override
+            public byte[] transform(ProfilerPluginInstrumentContext instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
+                InstrumentMethod append = target.getDeclaredMethod("append", "ch.qos.logback.classic.spi.ILoggingEvent");
+                append.addInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
+                
+                return target.toBytecode();
+            }
+        });
     }
 
     private void addLogBackNelo2AsyncAppenderEditor(ProfilerPluginSetupContext context) {
-        final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder("com.nhncorp.nelo2.logback.LogbackAsyncAppender");
-        classEditorBuilder.editMethod("append", new String[]{"java.lang.Object"}).injectInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
-        context.addClassFileTransformer(classEditorBuilder.build());
+        context.addClassFileTransformer("com.nhncorp.nelo2.logback.LogbackAsyncAppender", new PinpointClassFileTransformer() {
+            
+            @Override
+            public byte[] transform(ProfilerPluginInstrumentContext instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
+                InstrumentMethod append = target.getDeclaredMethod("append", "java.lang.Object");
+                append.addInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
+                
+                return target.toBytecode();
+            }
+        });
     }
 
     private void addLog4jNelo2AsyncAppenderEditor(ProfilerPluginSetupContext context) {
-        final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder("com.nhncorp.nelo2.log4j.Nelo2AsyncAppender");
-        classEditorBuilder.conditional(ClassConditions.hasNotDeclaredMethod("append", new String[]{"org.apache.log4j.spi.LoggingEvent"}), new ConditionalClassFileTransformerSetup() {
-           
-            @Override
-            public void setup(ConditionalClassFileTransformerBuilder conditional) {
-                conditional.overrideMethodToDelegate("append", new String[]{"org.apache.log4j.spi.LoggingEvent"});
-            }
+        context.addClassFileTransformer("com.nhncorp.nelo2.log4j.Nelo2AsyncAppender", new PinpointClassFileTransformer() {
             
+            @Override
+            public byte[] transform(ProfilerPluginInstrumentContext instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
+                
+                InstrumentMethod append = target.getDeclaredMethod("append", "org.apache.log4j.spi.LoggingEvent");
+                
+                if (append == null) {
+                    append = target.addDelegatorMethod("append", "org.apache.log4j.spi.LoggingEvent");
+                }
+                
+                append.addInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
+                
+                return target.toBytecode();
+            }
         });
-        
-        classEditorBuilder.editMethod("append", new String[]{"org.apache.log4j.spi.LoggingEvent"}).injectInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
-        context.addClassFileTransformer(classEditorBuilder.build());
     }
 
     private void addLog4jNeloAppenderEditor(ProfilerPluginSetupContext context) {
-        final ClassFileTransformerBuilder classEditorBuilder = context.getClassFileTransformerBuilder("com.nhncorp.nelo2.log4j.NeloAppender");
-        classEditorBuilder.editMethod("append", new String[]{"org.apache.log4j.spi.LoggingEvent"}).injectInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
-        context.addClassFileTransformer(classEditorBuilder.build());
+        context.addClassFileTransformer("com.nhncorp.nelo2.log4j.NeloAppender", new PinpointClassFileTransformer() {
+            
+            @Override
+            public byte[] transform(ProfilerPluginInstrumentContext instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
+                InstrumentMethod append = target.getDeclaredMethod("append", "org.apache.log4j.spi.LoggingEvent");
+                append.addInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
+                
+                return target.toBytecode();
+            }
+        });
     }
 }
