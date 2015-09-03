@@ -1,1 +1,2 @@
-com.navercorp.pinpoint.plugin.bloc.BlocPlugin
+com.navercorp.pinpoint.plugin.bloc.v3.Bloc3Plugin
+com.navercorp.pinpoint.plugin.bloc.v4.Bloc4Plugin
