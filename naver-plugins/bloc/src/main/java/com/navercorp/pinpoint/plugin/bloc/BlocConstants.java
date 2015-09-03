@@ -26,13 +26,10 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
  *
  */
 public interface BlocConstants {
-    public static final String FIELD_URI_ENCODING = "uriEncoding";
-
     public static final AnnotationKey CALL_URL = new AnnotationKey(15, "CALL_URL");
     public static final AnnotationKey CALL_PARAM = new AnnotationKey(16, "CALL_PARAM", VIEW_IN_RECORD_SET);
     public static final AnnotationKey PROTOCOL = new AnnotationKey(17, "PROTOCOL", VIEW_IN_RECORD_SET);
     
-    public static final String SERVER_TYPE_TOMCAT = "TOMCAT";
     public static final String SERVER_TYPE_BLOC = "BLOC";
 
     public static final ServiceType BLOC = ServiceType.of(1020, "BLOC", NORMAL_SCHEMA, RECORD_STATISTICS);

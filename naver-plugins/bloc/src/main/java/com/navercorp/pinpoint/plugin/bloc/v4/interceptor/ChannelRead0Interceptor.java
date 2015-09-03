@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.navercorp.pinpoint.bootstrap.FieldAccessor;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
@@ -21,7 +20,6 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
@@ -29,18 +27,16 @@ import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.BlocPlugin;
+import com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter;
 
 /**
  * @author netspider
  */
 @TargetMethod(name="channelRead0", paramTypes={"io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest"})
 public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
-    private final FieldAccessor uriEncodingSnooper;
 
-    public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(BlocPlugin.FIELD_URI_ENCODING) FieldAccessor snooper) {
+    public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(ChannelRead0Interceptor.class);
-        this.uriEncodingSnooper = snooper;
         
         setTraceContext(traceContext);
         setMethodDescriptor(descriptor);
@@ -137,7 +133,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
             if (HttpMethod.POST.name().equals(request.getMethod().name()) || HttpMethod.PUT.name().equals(request.getMethod().name())) {
                 // TODO record post body
             } else {
-                Charset uriEncoding = uriEncodingSnooper.get(target);
+                Charset uriEncoding = ((UriEncodingGetter)target)._$PINPOINT$_getUriEncoding();
                 String parameters = getRequestParameter(request, 64, 512, uriEncoding);
                 if (parameters != null && parameters.length() > 0) {
                     recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
