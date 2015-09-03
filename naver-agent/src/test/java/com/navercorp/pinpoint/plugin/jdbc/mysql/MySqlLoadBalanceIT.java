@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.profiler.modifier.db.mysql;
+package com.navercorp.pinpoint.plugin.jdbc.mysql;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.NClob;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,25 +29,28 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mysql.jdbc.JDBC4PreparedStatement;
-import com.mysql.jdbc.NonRegisteringDriver;
 import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
-import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.DatabaseInfoTraceValue;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
+import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.common.util.PropertyUtils;
-import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
+import com.navercorp.pinpoint.test.plugin.Dependency;
+import com.navercorp.pinpoint.test.plugin.PinpointAgent;
+import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 
 /**
  * @author emeroad
  */
-public class MySQLConnectionImplModifierIT extends BasePinpointTest {
+@RunWith(PinpointPluginTestSuite.class)
+@PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
+@Dependency({"mysql:mysql-connector-java:[5.1.6],[5.1.34],[5.1.36,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
+public class MySqlLoadBalanceIT {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private static Properties db;
 
     @BeforeClass
@@ -56,44 +58,16 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         db = PropertyUtils.loadPropertyFromClassPath("database.properties");
     }
 
-    @Test
-    public void testModify() throws Exception {
-
-        Connection connection = connectDB(db.getProperty("mysql.url"));
-
-        logger.info("Connection class name:{}", connection.getClass().getName());
-        logger.info("Connection class cl:{}", connection.getClass().getClassLoader());
-
-        DatabaseInfo url = ((DatabaseInfoTraceValue) connection)._$PINPOINT$_getTraceDatabaseInfo();
-        Assert.assertNotNull(url);
-
-        statement(connection);
-
-        preparedStatement(connection);
-
-        preparedStatement2(connection);
-
-        preparedStatement3(connection);
-
-        connection.close();
-
-        DatabaseInfo clearUrl = ((DatabaseInfoTraceValue) connection)._$PINPOINT$_getTraceDatabaseInfo();
-        Assert.assertNull(clearUrl);
-
-    }
-
     private Connection connectDB(String url) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         String user = db.getProperty("mysql.user");
         String password = db.getProperty("mysql.password");
 
-        Driver driver = new NonRegisteringDriver();
         Properties properties = new Properties();
         properties.setProperty("user", user);
         properties.setProperty("password", password);
-        return driver.connect(url, properties);
+        return DriverManager.getConnection(url, properties);
     }
 
-    @Ignore
     @Test
     public void loadBalancedUrlModify() throws Exception {
         // random fail
@@ -107,13 +81,22 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         // So use reflection to get currentConn field.
         InvocationHandler invocationHandler = Proxy.getInvocationHandler(connection);
         Class<? extends InvocationHandler> aClass = invocationHandler.getClass();
+        
+        System.out.println("INVOCATION HANDLER: " + aClass.getName());
 
-        Field current = aClass.getDeclaredField("currentConn");
+        Field current = null;
+        
+        try {
+            current = aClass.getDeclaredField("currentConn");
+        } catch (NoSuchFieldException e) {
+            current = aClass.getSuperclass().getDeclaredField("currentConnection");
+        }
+        
         current.setAccessible(true);
         Object internalConnection = current.get(invocationHandler);
 
 
-        DatabaseInfo url = ((DatabaseInfoTraceValue) internalConnection)._$PINPOINT$_getTraceDatabaseInfo();
+        DatabaseInfo url = ((DatabaseInfoAccessor) internalConnection)._$PINPOINT$_getDatabaseInfo();
         Assert.assertNotNull(url);
 
         statement(connection);
@@ -135,7 +118,7 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         preparedStatement8(connection);
 
         connection.close();
-        DatabaseInfo clearUrl = ((DatabaseInfoTraceValue) internalConnection)._$PINPOINT$_getTraceDatabaseInfo();
+        DatabaseInfo clearUrl = ((DatabaseInfoAccessor) internalConnection)._$PINPOINT$_getDatabaseInfo();
         Assert.assertNull(clearUrl);
 
     }
@@ -216,25 +199,6 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         preparedStatement.close();
     }
 
-    private void preparedStatementError(Connection connection) throws SQLException {
-//        Statement.RETURN_GENERATED_KEYS or Statement.NO_GENERATED_KEYS
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            preparedStatement = connection.prepareStatement("select 8 from invalidTable", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            logger.info("PreparedStatement className:{}", preparedStatement.getClass().getName());
-            resultSet = preparedStatement.executeQuery();
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-
-        }
-    }
-
     private void preparedStatement8(Connection connection) throws SQLException {
 //        Statement.RETURN_GENERATED_KEYS or Statement.NO_GENERATED_KEYS
 //        ResultSet.HOLD_CURSORS_OVER_COMMIT or ResultSet.CLOSE_CURSORS_AT_COMMIT
@@ -243,15 +207,5 @@ public class MySQLConnectionImplModifierIT extends BasePinpointTest {
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.close();
         preparedStatement.close();
-    }
-
-
-    @Test
-    public void test() throws NoSuchMethodException {
-//        setNClob(int parameterIndex, NClob value)
-        JDBC4PreparedStatement.class.getDeclaredMethod("setNClob", new Class[]{int.class, NClob.class});
-//        JDBC4PreparedStatement.class.getDeclaredMethod("addBatch", null);
-        JDBC4PreparedStatement.class.getMethod("addBatch");
-
     }
 }
