@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.profiler.modifier.db.jtds;
+package com.navercorp.pinpoint.plugin.jdbc.jtds;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -27,13 +27,12 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
-import com.navercorp.pinpoint.bootstrap.interceptor.tracevalue.DatabaseInfoTraceValue;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
 import com.navercorp.pinpoint.common.bo.SpanEventBo;
 import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
@@ -87,7 +86,7 @@ public class JtdsConnectionIT extends BasePinpointTest {
         logger.info("Connection class name:{}", connection.getClass().getName());
         logger.info("Connection class cl:{}", connection.getClass().getClassLoader());
 
-        DatabaseInfo url = ((DatabaseInfoTraceValue) connection)._$PINPOINT$_getTraceDatabaseInfo();
+        DatabaseInfo url = ((DatabaseInfoAccessor) connection)._$PINPOINT$_getDatabaseInfo();
         Assert.assertNotNull(url);
         List<SpanEventBo> currentSpanEvents = getCurrentSpanEvents();
         logger.debug("{}", currentSpanEvents);
@@ -116,7 +115,7 @@ public class JtdsConnectionIT extends BasePinpointTest {
 
 
         connection.close();
-        DatabaseInfo clearUrl = ((DatabaseInfoTraceValue) connection)._$PINPOINT$_getTraceDatabaseInfo();
+        DatabaseInfo clearUrl = ((DatabaseInfoAccessor) connection)._$PINPOINT$_getDatabaseInfo();
         Assert.assertNull(clearUrl);
 
     }
