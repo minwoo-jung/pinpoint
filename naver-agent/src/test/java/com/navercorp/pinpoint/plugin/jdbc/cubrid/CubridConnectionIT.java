@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.profiler.modifier.db.cubrid;
+package com.navercorp.pinpoint.plugin.jdbc.cubrid;
 
 import java.sql.Connection;
 import java.sql.Driver;
