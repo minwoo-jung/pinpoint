@@ -48,8 +48,8 @@ import com.navercorp.pinpoint.test.plugin.Repository;
 @Repository("http://maven.cubrid.org")
 @Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.1.0.0212],[9.2.19.0003],[9.3.2,)"})
 public class CubridIT {
-    private static final String CUBRID = "ORACLE";
-    private static final String CUBRID_EXECUTE_QUERY = "ORACLE_EXECUTE_QUERY";
+    private static final String CUBRID = "CUBRID";
+    private static final String CUBRID_EXECUTE_QUERY = "CUBRID_EXECUTE_QUERY";
     
     
     private static String DB_ID;
