@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.plugin.jdbc.cubrid;
+package com.navercorp.pinpoint.plugin.jdbc.oracle;
 
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 
@@ -41,15 +41,14 @@ import com.navercorp.pinpoint.test.plugin.Repository;
 /**
  * @author Jongho Moon
  * 
- * Cannot test cubrid-jdbc 9.0.0 because it is not compatible with test db version 8.4.3.1025
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@Repository("http://maven.cubrid.org")
-@Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.1.0.0212],[9.2.19.0003],[9.3.2,)"})
-public class CubridIT {
-    private static final String CUBRID = "ORACLE";
-    private static final String CUBRID_EXECUTE_QUERY = "ORACLE_EXECUTE_QUERY";
+@Dependency({"oracle:ojdbc6:(,)"})
+@Repository("http://repo.nhncorp.com/maven2")
+public class OracleIT {
+    private static final String ORACLE = "ORACLE";
+    private static final String ORACLE_EXECUTE_QUERY = "ORACLE_EXECUTE_QUERY";
     
     
     private static String DB_ID;
@@ -60,19 +59,35 @@ public class CubridIT {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Class.forName("cubrid.jdbc.driver.CUBRIDDriver");
+        Class.forName("oracle.jdbc.driver.OracleDriver");
         
         Properties db = PropertyUtils.loadPropertyFromClassPath("database.properties");
         
-        JDBC_URL = db.getProperty("cubrid.url");
+        JDBC_URL = db.getProperty("oracle.url");
         String[] tokens = JDBC_URL.split(":");
         
-        DB_ADDRESS = tokens[2] + ":" + tokens[3];
-        DB_NAME = tokens[4];
+        String ip = tokens[3].substring(1);
+        String port = tokens[4];
+
         
-        DB_ID = db.getProperty("cubrid.user");
-        DB_PASSWORD = db.getProperty("cubrid.password");
+        DB_ADDRESS = ip + ":" + port;
+        DB_NAME = tokens[5];
+        
+        DB_ID = db.getProperty("oracle.user");
+        DB_PASSWORD = db.getProperty("oracle.password");
     }
+    
+//  @Test
+  public void create() throws Exception {
+      Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+      
+      Statement statement = conn.createStatement();
+      statement.execute("CREATE TABLE test (id INTEGER NOT NULL, name VARCHAR(45) NOT NULL, age INTEGER NOT NULL, CONSTRAINT test_pk PRIMARY KEY (id))" );
+      statement.execute("CREATE SEQUENCE test_seq");
+      statement.execute("CREATE OR REPLACE TRIGGER test_trigger BEFORE INSERT ON test FOR EACH ROW BEGIN SELECT test_seq.nextval INTO :new.id FROM dual; END;");
+      conn.commit();
+  }
+
     
     @Test
     public void test() throws Exception {
@@ -94,7 +109,7 @@ public class CubridIT {
         
         while (rs.next()) {
             System.out.println("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
-        }
+        } 
         
         Statement delete = conn.createStatement();
         delete.executeUpdate(deleteQuery);
@@ -105,30 +120,29 @@ public class CubridIT {
         
         verifier.printCache();
         
-        Class<?> driverClass = Class.forName("cubrid.jdbc.driver.CUBRIDDriver");
+        Class<?> driverClass = Class.forName("oracle.jdbc.driver.OracleDriver");
         Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
-        verifier.verifyTrace(event(CUBRID, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
+        verifier.verifyTrace(event(ORACLE, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
         
-        Class<?> connectionClass = Class.forName("cubrid.jdbc.driver.CUBRIDConnection");
+        Class<?> connectionClass = Class.forName("oracle.jdbc.driver.PhysicalConnection");
+        
         Method setAutoCommit = connectionClass.getDeclaredMethod("setAutoCommit", boolean.class);
-        verifier.verifyTrace(event(CUBRID, setAutoCommit, null, DB_ADDRESS, DB_NAME, args(false)));
+        verifier.verifyTrace(event(ORACLE, setAutoCommit, null, DB_ADDRESS, DB_NAME, args(false)));
         
 
         Method prepareStatement = connectionClass.getDeclaredMethod("prepareStatement", String.class);
-        verifier.verifyTrace(event(CUBRID, prepareStatement, null, DB_ADDRESS, DB_NAME, sql(insertQuery, null)));
+        verifier.verifyTrace(event(ORACLE, prepareStatement, null, DB_ADDRESS, DB_NAME, sql(insertQuery, null)));
         
-        Class<?> preparedStatement = Class.forName("cubrid.jdbc.driver.CUBRIDPreparedStatement");
-        Method execute = preparedStatement.getDeclaredMethod("execute");
-        verifier.verifyTrace(event(CUBRID_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, Expectations.sql(insertQuery, null, "maru, 5")));
+        Method execute = insert.getClass().getDeclaredMethod("execute");
+        verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, Expectations.sql(insertQuery, null, "maru, 5")));
         
-        Class<?> statement = Class.forName("cubrid.jdbc.driver.CUBRIDStatement");
-        Method executeQuery = statement.getDeclaredMethod("executeQuery", String.class);
-        verifier.verifyTrace(event(CUBRID_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, Expectations.sql(selectQuery, null)));
+        Method executeQuery = select.getClass().getDeclaredMethod("executeQuery", String.class);
+        verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, Expectations.sql(selectQuery, null)));
         
-        Method executeUpdate = statement.getDeclaredMethod("executeUpdate", String.class);
-        verifier.verifyTrace(event(CUBRID_EXECUTE_QUERY, executeUpdate, null, DB_ADDRESS, DB_NAME, Expectations.sql(deleteQuery, null)));
+        Method executeUpdate = select.getClass().getDeclaredMethod("executeUpdate", String.class);
+        verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, executeUpdate, null, DB_ADDRESS, DB_NAME, Expectations.sql(deleteQuery, null)));
         
         Method commit = connectionClass.getDeclaredMethod("commit");
-        verifier.verifyTrace(event(CUBRID, commit, null, DB_ADDRESS, DB_NAME));
+        verifier.verifyTrace(event(ORACLE, commit, null, DB_ADDRESS, DB_NAME));
     }
 }
