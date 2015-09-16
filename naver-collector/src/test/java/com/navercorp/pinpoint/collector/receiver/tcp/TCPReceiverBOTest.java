@@ -129,7 +129,7 @@ public class TCPReceiverBOTest {
     }
 
     private TAgentInfo getAgentInfo() {
-        TAgentInfo agentInfo = new TAgentInfo("hostname", "127.0.0.1", "8081", "agentId", "appName", (short) 2, 1111, "1", System.currentTimeMillis());
+        TAgentInfo agentInfo = new TAgentInfo("hostname", "127.0.0.1", "8081", "agentId", "appName", (short) 2, 1111, "1", "1.7.0_60", System.currentTimeMillis());
         return agentInfo;
     }
 

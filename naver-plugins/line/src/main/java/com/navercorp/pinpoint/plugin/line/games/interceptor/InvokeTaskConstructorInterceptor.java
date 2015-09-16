@@ -1,10 +1,13 @@
 package com.navercorp.pinpoint.plugin.line.games.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.MessageEvent;
+
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetConstructor;
+import com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor;
 import com.navercorp.pinpoint.plugin.line.LineConstants;
+import com.navercorp.pinpoint.plugin.line.MessageEventAccessor;
 
 /**
  * 
@@ -13,14 +16,6 @@ import com.navercorp.pinpoint.plugin.line.LineConstants;
  */
 @TargetConstructor({"com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent"})
 public class InvokeTaskConstructorInterceptor implements SimpleAroundInterceptor, LineConstants {
-    
-    private final MetadataAccessor channelHandlerContextAccessor;
-    private final MetadataAccessor messageEventAccessor;
-
-    public InvokeTaskConstructorInterceptor(@Name(CHANNEL_HANDLER_CONTEXT) MetadataAccessor channelHandlerContextAccessor, @Name(MESSAGE_EVENT) MetadataAccessor messageEvent) {
-        this.channelHandlerContextAccessor = channelHandlerContextAccessor;
-        this.messageEventAccessor = messageEvent;
-    }
 
     @Override
     public void before(Object target, Object[] args) {
@@ -29,16 +24,16 @@ public class InvokeTaskConstructorInterceptor implements SimpleAroundInterceptor
             return;
         }
 
-        if (!(args[1] instanceof org.jboss.netty.channel.ChannelHandlerContext)) {
+        if (!(args[1] instanceof ChannelHandlerContext)) {
             return;
         }
 
-        if (!(args[2] instanceof org.jboss.netty.channel.MessageEvent)) {
+        if (!(args[2] instanceof MessageEvent)) {
             return;
         }
 
-        channelHandlerContextAccessor.set(target, args[1]);
-        messageEventAccessor.set(target, args[2]);
+        ((ChannelHandlerContextAccessor)target)._$PINPOINT$_setChannelHandlerContext((ChannelHandlerContext)args[1]);
+        ((MessageEventAccessor)target)._$PINPOINT$_setMessageEvent((MessageEvent)args[2]);
     }
 
     @Override

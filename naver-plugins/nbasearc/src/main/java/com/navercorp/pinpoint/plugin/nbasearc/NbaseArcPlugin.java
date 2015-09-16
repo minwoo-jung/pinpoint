@@ -75,7 +75,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                     constructorMethod.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientConstructorInterceptor");
                 }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name(new int[] { MethodFilters.SYNTHETIC }, RedisClusterMethodNames.get()))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(MethodFilters.name(RedisClusterMethodNames.get()), MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
                     try {
                         method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientMethodInterceptor", config.isIo());
                     } catch (Exception e) {
@@ -215,7 +215,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                     constructorEditorBuilderArg3.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
                 }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name(new int[] { MethodFilters.SYNTHETIC }, RedisClusterMethodNames.get()))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(MethodFilters.name(RedisClusterMethodNames.get()), MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
                     try {
                         method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterMethodInterceptor");
                     } catch (Exception e) {
@@ -248,7 +248,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
                     method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineSetServerMethodInterceptor");
                 }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name(new int[] { MethodFilters.SYNTHETIC }, RedisClusterPipelineMethodNames.get()))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(MethodFilters.name(RedisClusterPipelineMethodNames.get()), MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
                     try {
                         method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor", config.isIo());
                     } catch (Exception e) {

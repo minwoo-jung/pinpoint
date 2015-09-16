@@ -86,6 +86,11 @@
 			<version>1.20.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.squareup.okhttp</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>2.5.0</version>
+		</dependency>
 		<!-- <dependency> <groupId>net.spy</groupId> <artifactId>spymemcached</artifactId> 
 			<version>2.12.0</version> </dependency> -->
 
@@ -156,10 +161,6 @@
 		</dependency>
 
 		<!-- ORM dependencies -->
-		<dependency>
-			<groupId>org.apache.ibatis</groupId>
-			<artifactId>ibatis-sqlmap</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>

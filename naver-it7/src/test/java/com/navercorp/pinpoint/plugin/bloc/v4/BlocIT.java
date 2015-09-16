@@ -60,6 +60,9 @@ public class BlocIT {
         assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
         connection.disconnect();
         
+        // give chance to run interceptor's after method. sometimes the response arrives before the method is excuted. 
+        Thread.sleep(0);
+        
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.printCache();
         

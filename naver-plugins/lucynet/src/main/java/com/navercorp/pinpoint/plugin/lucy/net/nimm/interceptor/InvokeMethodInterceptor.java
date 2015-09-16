@@ -1,27 +1,21 @@
 package com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor;
 
-import java.util.Arrays;
-
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
-import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
-import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
-import com.navercorp.pinpoint.bootstrap.context.Trace;
-import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.context.*;
+import com.navercorp.pinpoint.bootstrap.interceptor.AsyncTraceIdAccessor;
 import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
+import com.navercorp.pinpoint.plugin.lucy.net.NimmAddressAccessor;
+
+import java.util.Arrays;
 
 /**
  * target lib = com.nhncorp.lucy.lucy-nimmconnector-2.1.4
  * 
  * @author netspider
  */
-@TargetMethod(name = "invoke", paramTypes = { "long", "java.lang.String", "java.lang.String", "java.lang.Object[]" })
 public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
@@ -29,16 +23,12 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
 
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
-    private final MetadataAccessor nimmAddressAccessor;
-    private final MetadataAccessor asyncTraceIdAccessor;
 
     // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고 있음.
 
-    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_ASYNC_TRACE_ID) MetadataAccessor asyncTraceIdAccessor, @Name(METADATA_NIMM_ADDRESS) MetadataAccessor nimmAddressAccessor) {
+    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
-        this.asyncTraceIdAccessor = asyncTraceIdAccessor;
-        this.nimmAddressAccessor = nimmAddressAccessor;
     }
 
     @Override
@@ -72,7 +62,11 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
 
         // TODO protocol은 어떻게 표기하지???
 
-        String nimmAddress = nimmAddressAccessor.get(target);
+        String nimmAddress = "";
+        if (target instanceof NimmAddressAccessor) {
+            nimmAddress = ((NimmAddressAccessor) target)._$PINPOINT$_getNimmAddress();
+        }
+
         recorder.recordDestinationId(nimmAddress);
 
         // DestinationId와 동일하므로 없는게 맞음.
@@ -111,7 +105,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
                 // set asynchronous trace
                 final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();
                 recorder.recordNextAsyncId(asyncTraceId.getAsyncId());
-                asyncTraceIdAccessor.set(result, asyncTraceId);
+                ((AsyncTraceIdAccessor)result)._$PINPOINT$_setAsyncTraceId(asyncTraceId);
                 if (isDebug) {
                     logger.debug("Set asyncTraceId metadata {}", asyncTraceId);
                 }
@@ -127,8 +121,8 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
             return false;
         }
 
-        if (!asyncTraceIdAccessor.isApplicable(result)) {
-            logger.debug("Invalid result object. Need metadata accessor({}).", METADATA_ASYNC_TRACE_ID);
+        if (!(result instanceof AsyncTraceIdAccessor)) {
+            logger.debug("Invalid result object. Need accessor({}).", AsyncTraceIdAccessor.class.getName());
             return false;
         }
 

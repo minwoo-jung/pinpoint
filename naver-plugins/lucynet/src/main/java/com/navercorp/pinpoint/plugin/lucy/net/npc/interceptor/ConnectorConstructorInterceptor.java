@@ -1,8 +1,5 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
-import java.net.InetSocketAddress;
-
-import com.navercorp.pinpoint.bootstrap.MetadataAccessor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
@@ -10,10 +7,12 @@ import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.Name;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
+import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
 import com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector;
 import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
+
+import java.net.InetSocketAddress;
 
 /**
  * based on NPC client 1.5.18
@@ -28,12 +27,10 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
 
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
-    private final MetadataAccessor serverAddressAccessor;
-    
-    public ConnectorConstructorInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(METADATA_NPC_SERVER_ADDRESS) MetadataAccessor serverAddressAccessor) {
+
+    public ConnectorConstructorInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
-        this.serverAddressAccessor = serverAddressAccessor;
     }
 
     @Override
@@ -67,7 +64,9 @@ public class ConnectorConstructorInterceptor implements SimpleAroundInterceptor,
             }
         }
 
-        serverAddressAccessor.set(target, serverAddress);
+        if (target instanceof NpcServerAddressAccessor) {
+            ((NpcServerAddressAccessor) target)._$PINPOINT$_setNpcServerAddress(serverAddress);
+        }
 
         Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
