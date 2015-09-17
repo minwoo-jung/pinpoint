@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
@@ -34,10 +34,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
     private static final String UNKNOWN_ADDRESS = "Unknown Address";
     
     public MessageReceivedInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
-        super(MessageReceivedInterceptor.class);
-        
-        setTraceContext(traceContext);
-        setMethodDescriptor(descriptor);
+        super(traceContext, descriptor, MessageReceivedInterceptor.class);
     }
 
     @Override
@@ -54,7 +51,6 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
             // create Trace object to mark 'not sampling'.
             // For example, if this transaction invokes rpc call, we can add
             // parameter to tell remote node 'don't sample this transaction'
-            final TraceContext traceContext = getTraceContext();
             final Trace trace = traceContext.disableSampling();
             if (isDebug) {
                 logger.debug("remotecall sampling flag found. skip trace remoteAddr:{}", new Object[] { ioSession.getRemoteAddress().toString() });
@@ -64,7 +60,6 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
         
         final TraceId traceId = populateTraceIdFromRequest(pinpointOptions);
         if (traceId != null) {
-            final TraceContext traceContext = getTraceContext();
             final Trace trace = traceContext.continueTraceObject(traceId);
             if (trace.canSampled()) {
                 if (isDebug) {
@@ -78,7 +73,6 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
             }
             return trace;
         } else {
-            final TraceContext traceContext = getTraceContext();
             final Trace trace = traceContext.newTraceObject();
             if (trace.canSampled()) {
                 if (isDebug) {
@@ -133,7 +127,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
     @Override
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
         if (recorder.canSampled()) {
-            recorder.recordApi(getMethodDescriptor());
+            recorder.recordApi(methodDescriptor);
         }
         
         recorder.recordException(throwable);
@@ -290,7 +284,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
                 return null;
             }
 
-            final TraceId id = getTraceContext().createTraceId(transactionId, parentSpanID, spanID, flags);
+            final TraceId id = traceContext.createTraceId(transactionId, parentSpanID, spanID, flags);
             if (isDebug) {
                 logger.debug("TraceID exist. continue trace. {}", id);
             }

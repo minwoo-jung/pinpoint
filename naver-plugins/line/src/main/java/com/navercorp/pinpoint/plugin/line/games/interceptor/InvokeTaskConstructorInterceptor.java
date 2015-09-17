@@ -4,7 +4,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 
 import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetConstructor;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetConstructor;
 import com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor;
 import com.navercorp.pinpoint.plugin.line.LineConstants;
 import com.navercorp.pinpoint.plugin.line.MessageEventAccessor;
