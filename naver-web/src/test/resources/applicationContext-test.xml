@@ -120,11 +120,7 @@
     </bean>
     
     <!--  Web Socket  -->
-    <bean id="handlerRepository" class="com.navercorp.pinpoint.web.websocket.WebSocketHandlerRepository">
-        <constructor-arg>
-            <list>
-            </list>
-        </constructor-arg>
+    <bean id="handlerRegister" class="com.navercorp.pinpoint.web.websocket.WebSocketHandlerManager">
     </bean>
     
 </beans>
