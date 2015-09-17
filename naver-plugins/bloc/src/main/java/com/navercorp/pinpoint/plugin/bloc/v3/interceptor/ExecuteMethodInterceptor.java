@@ -3,14 +3,14 @@ package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 import java.util.Enumeration;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
@@ -28,10 +28,7 @@ import external.org.apache.coyote.Request;
 public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
 
     public ExecuteMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
-        super(ExecuteMethodInterceptor.class);
-        
-        setTraceContext(traceContext);
-        setMethodDescriptor(descriptor);
+        super(traceContext, descriptor, ExecuteMethodInterceptor.class);
     }
 
     @Override
@@ -63,7 +60,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
         if (!sampling) {
             // 샘플링 대상이 아닐 경우도 TraceObject를 생성하여, sampling 대상이 아니라는것을 명시해야 한다.
             // sampling 대상이 아닐경우 rpc 호출에서 sampling 대상이 아닌 것에 rpc호출 파라미터에 sampling disable 파라미터를 박을수 있다.
-            final Trace trace = getTraceContext().disableSampling();
+            final Trace trace = traceContext.disableSampling();
             if (isDebug) {
                 logger.debug("mark disable sampling. skip trace");
             }
@@ -73,7 +70,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
 
         final TraceId traceId = populateTraceIdFromRequest(request);
         if (traceId != null) {
-            final Trace trace = getTraceContext().continueTraceObject(traceId);
+            final Trace trace = traceContext.continueTraceObject(traceId);
             if (trace.canSampled()) {
                 if (isDebug) {
                     logger.debug("TraceID exist. continue trace. traceId:{}, requestUrl:{}, remoteAddr:{}", new Object[]{traceId, request.requestURI(), request.remoteAddr()});
@@ -86,7 +83,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
                 return trace;
             }
         } else {
-            final Trace trace = getTraceContext().newTraceObject();
+            final Trace trace = traceContext.newTraceObject();
             if (trace.canSampled()) {
                 if (isDebug) {
                     logger.debug("TraceID not exist. start new trace. requestUrl:{}, remoteAddr:{}", request.requestURI(), request.remoteAddr());
@@ -111,7 +108,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
                 recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
             }
 
-            recorder.recordApi(getMethodDescriptor());
+            recorder.recordApi(methodDescriptor);
         }
         recorder.recordException(throwable);
     }
@@ -136,7 +133,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
             long spanId = NumberUtils.parseLong(request.getHeader(Header.HTTP_SPAN_ID.toString()), SpanId.NULL);
             short flags = NumberUtils.parseShort(request.getHeader(Header.HTTP_FLAGS.toString()), (short) 0);
 
-            TraceId id = this.getTraceContext().createTraceId(transactionId, parentSpanId, spanId, flags);
+            TraceId id = this.traceContext.createTraceId(transactionId, parentSpanId, spanId, flags);
             if (isDebug) {
                 logger.debug("TraceID exist. continue trace. {}", id);
             }

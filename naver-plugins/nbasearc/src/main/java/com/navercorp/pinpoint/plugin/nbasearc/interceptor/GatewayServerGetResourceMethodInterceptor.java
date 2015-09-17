@@ -15,8 +15,8 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
+import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 
 /**
  * GatewayServer(nBase-ARC client) getResource() method interceptor 
