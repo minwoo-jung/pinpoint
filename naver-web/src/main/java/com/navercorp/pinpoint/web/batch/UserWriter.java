@@ -38,6 +38,6 @@ public class UserWriter implements ItemWriter<User> {
 	        user.removeHyphenForPhoneNumber();
 	    }
 	    
-		userDao.inserUserList((List<User>) users);
+		userDao.insertUserList((List<User>) users);
 	}
 }
