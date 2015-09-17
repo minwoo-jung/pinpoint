@@ -16,14 +16,14 @@ import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.util.CharsetUtil;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
@@ -51,13 +51,10 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
     private final int entityDumpSize;
 
     public InvokeTaskRunInterceptor(TraceContext traceContext, MethodDescriptor descriptor, int paramDumpSize, int entityDumpSize) {
-        super(InvokeTaskRunInterceptor.class);
+        super(traceContext, descriptor, InvokeTaskRunInterceptor.class);
         
         this.paramDumpSize = paramDumpSize;
         this.entityDumpSize = entityDumpSize;
-        
-        setTraceContext(traceContext);
-        setMethodDescriptor(descriptor);
     }
 
 
@@ -149,7 +146,6 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
             // 한다.
             // sampling 대상이 아닐경우 rpc 호출에서 sampling 대상이 아닌 것에 rpc호출 파라미터에
             // sampling disable 파라미터를 박을수 있다.
-            final TraceContext traceContext = getTraceContext();
             final Trace trace = traceContext.disableSampling();
             if (isDebug) {
                 String requestURL = request.getUri();
@@ -163,7 +159,6 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
         if (traceId != null) {
             // TODO remote에서 sampling flag로 마크가되는 대상으로 왔을 경우도 추가로 샘플링 칠수 있어야
             // 할것으로 보임.
-            final TraceContext traceContext = getTraceContext();
             final Trace trace = traceContext.continueTraceObject(traceId);
             if (trace.canSampled()) {
                 if (isDebug) {
@@ -182,7 +177,6 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
                 return trace;
             }
         } else {
-            TraceContext traceContext = getTraceContext();
             final Trace trace = traceContext.newTraceObject();
             if (trace.canSampled()) {
                 if (isDebug) {
@@ -220,7 +214,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
                 recordHttpParameter2(recorder, e);
             }
 
-            recorder.recordApi(getMethodDescriptor());
+            recorder.recordApi(methodDescriptor);
         }
         recorder.recordException(throwable);
     }
@@ -340,7 +334,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implem
             long spanID = NumberUtils.parseLong(request.getHeader(Header.HTTP_SPAN_ID.toString()), SpanId.NULL);
             short flags = NumberUtils.parseShort(request.getHeader(Header.HTTP_FLAGS.toString()), (short) 0);
 
-            TraceId id = getTraceContext().createTraceId(transactionId, parentSpanID, spanID, flags);
+            TraceId id = traceContext.createTraceId(transactionId, parentSpanID, spanID, flags);
             if (isDebug) {
                 logger.debug("TraceID exist. continue trace. {}", id);
             }

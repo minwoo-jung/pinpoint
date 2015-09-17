@@ -13,14 +13,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
+import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.plugin.annotation.TargetMethod;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
@@ -36,10 +36,7 @@ import com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter;
 public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
 
     public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor) {
-        super(ChannelRead0Interceptor.class);
-        
-        setTraceContext(traceContext);
-        setMethodDescriptor(descriptor);
+        super(traceContext, descriptor, ChannelRead0Interceptor.class);
     }
 
     @Override
@@ -76,7 +73,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
             // 한다.
             // sampling 대상이 아닐경우 rpc 호출에서 sampling 대상이 아닌 것에 rpc호출 파라미터에
             // sampling disable 파라미터를 박을수 있다.
-            final Trace trace = getTraceContext().disableSampling();
+            final Trace trace = traceContext.disableSampling();
             if (isDebug) {
                 logger.debug("mark disable sampling. skip trace");
             }
@@ -85,7 +82,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
 
         final TraceId traceId = populateTraceIdFromRequest(request);
         if (traceId != null) {
-            final Trace trace = getTraceContext().continueTraceObject(traceId);
+            final Trace trace = traceContext.continueTraceObject(traceId);
             if (trace.canSampled()) {
                 if (isDebug) {
                     String requestURL = request.getUri();
@@ -104,7 +101,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
                 return trace;
             }
         } else {
-            final Trace trace = getTraceContext().newTraceObject();
+            final Trace trace = traceContext.newTraceObject();
             if (trace.canSampled()) {
                 if (isDebug) {
                     String requestURL = request.getUri();
@@ -140,7 +137,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
                 }
             }
 
-            recorder.recordApi(getMethodDescriptor());
+            recorder.recordApi(methodDescriptor);
         }
         recorder.recordException(throwable);
     }
@@ -167,7 +164,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
             long spanId = NumberUtils.parseLong(headers.get(Header.HTTP_SPAN_ID.toString()), SpanId.NULL);
             short flags = NumberUtils.parseShort(headers.get(Header.HTTP_FLAGS.toString()), (short) 0);
 
-            final TraceId id = getTraceContext().createTraceId(transactionId, parentSpanId, spanId, flags);
+            final TraceId id = traceContext.createTraceId(transactionId, parentSpanId, spanId, flags);
             if (isDebug) {
                 logger.debug("TraceID exist. continue trace. {}", id);
             }
