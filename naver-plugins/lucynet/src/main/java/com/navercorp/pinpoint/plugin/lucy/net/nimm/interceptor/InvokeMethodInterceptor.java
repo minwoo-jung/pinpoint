@@ -2,7 +2,7 @@ package com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.async.AsyncTraceIdAccessor;
 import com.navercorp.pinpoint.bootstrap.context.*;
-import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
@@ -15,7 +15,7 @@ import java.util.Arrays;
  * 
  * @author netspider
  */
-public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
+public class InvokeMethodInterceptor implements AroundInterceptor, LucyNetConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -84,7 +84,7 @@ public class InvokeMethodInterceptor implements SimpleAroundInterceptor, LucyNet
     }
 
     @Override
-    public void after(Object target, Object[] args, Object result, Throwable throwable) {
+    public void after(Object target, Object result, Throwable throwable, Object[] args) {
         if (isDebug) {
             // result는 로깅하지 않는다.
             logger.afterInterceptor(target, args);

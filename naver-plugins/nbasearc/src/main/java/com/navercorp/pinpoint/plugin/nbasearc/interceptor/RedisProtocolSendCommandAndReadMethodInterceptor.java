@@ -18,7 +18,7 @@ package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Group;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
@@ -35,7 +35,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  *
  */
 @Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPolicy = ExecutionPolicy.INTERNAL)
-public class RedisProtocolSendCommandAndReadMethodInterceptor implements SimpleAroundInterceptor, NbaseArcConstants {
+public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundInterceptor, NbaseArcConstants {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -78,7 +78,7 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements SimpleA
     }
 
     @Override
-    public void after(Object target, Object[] args, Object result, Throwable throwable) {
+    public void after(Object target, Object result, Throwable throwable, Object[] args) {
         if (isDebug) {
             logger.afterInterceptor(target, methodDescriptor.getClassName(), methodDescriptor.getMethodName(), "", args, result, throwable);
         }

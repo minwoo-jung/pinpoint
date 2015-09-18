@@ -17,7 +17,7 @@ package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
@@ -31,7 +31,7 @@ import com.nhncorp.redis.cluster.gateway.GatewayServer;
  * @author jaehong.kim
  *
  */
-public abstract class GatewayServerMetadataReadInterceptor implements SimpleAroundInterceptor, NbaseArcConstants {
+public abstract class GatewayServerMetadataReadInterceptor implements AroundInterceptor, NbaseArcConstants {
 
     protected final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     protected final boolean isDebug = logger.isDebugEnabled();
@@ -108,6 +108,6 @@ public abstract class GatewayServerMetadataReadInterceptor implements SimpleArou
     }
 
     @Override
-    public void after(Object target, Object[] args, Object result, Throwable throwable) {
+    public void after(Object target, Object result, Throwable throwable, Object[] args) {
     }
 }

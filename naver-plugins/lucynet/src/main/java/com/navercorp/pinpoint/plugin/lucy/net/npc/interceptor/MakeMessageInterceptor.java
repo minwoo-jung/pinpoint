@@ -1,7 +1,7 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.*;
-import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.common.util.NetUtils;
@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * @author Taejin Koo
  */
-public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetConstants {
+public class MakeMessageInterceptor implements AroundInterceptor, LucyNetConstants {
 
     private static final int DEFAULT_MAX_USER_OPTIONS_SET_INDEX = 3;
 
@@ -42,7 +42,7 @@ public class MakeMessageInterceptor implements SimpleAroundInterceptor, LucyNetC
     }
     
     @Override
-    public void after(Object target, Object[] args, Object result, Throwable throwable) {
+    public void after(Object target, Object result, Throwable throwable, Object[] args) {
         if (isDebug) {
             logger.afterInterceptor(target, args, result, throwable);
         }
