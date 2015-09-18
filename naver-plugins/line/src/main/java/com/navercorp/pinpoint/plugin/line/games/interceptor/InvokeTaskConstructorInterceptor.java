@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.line.games.interceptor;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 
-import com.navercorp.pinpoint.bootstrap.interceptor.SimpleAroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetConstructor;
 import com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor;
 import com.navercorp.pinpoint.plugin.line.LineConstants;
@@ -15,7 +15,7 @@ import com.navercorp.pinpoint.plugin.line.MessageEventAccessor;
  * 
  */
 @TargetConstructor({"com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent"})
-public class InvokeTaskConstructorInterceptor implements SimpleAroundInterceptor, LineConstants {
+public class InvokeTaskConstructorInterceptor implements AroundInterceptor, LineConstants {
 
     @Override
     public void before(Object target, Object[] args) {
@@ -37,7 +37,7 @@ public class InvokeTaskConstructorInterceptor implements SimpleAroundInterceptor
     }
 
     @Override
-    public void after(Object target, Object[] args, Object result, Throwable throwable) {
+    public void after(Object target, Object result, Throwable throwable, Object[] args) {
 
     }
 }
