@@ -76,8 +76,6 @@
     <bean id="pinpointSocketManager" class="com.navercorp.pinpoint.web.server.PinpointSocketManager">
     	<constructor-arg ref="config" />
     </bean>
-
-    <bean id="jobLauncherTestUtils" class="org.springframework.batch.test.JobLauncherTestUtils"/>
     
     <bean id="agentEventMessageDeserializer" class="com.navercorp.pinpoint.common.util.AgentEventMessageDeserializer">
         <constructor-arg ref="commandHeaderTBaseDeserializerFactory"/>
