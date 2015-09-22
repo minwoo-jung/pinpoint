@@ -1,16 +1,14 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-
-import org.junit.Assert;
-
+import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.rpc.PinpointSocketException;
+import com.navercorp.pinpoint.rpc.client.MessageListener;
+import com.navercorp.pinpoint.rpc.client.PinpointClient;
+import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
+import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import org.apache.curator.test.TestingServer;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,13 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.rpc.PinpointSocketException;
-import com.navercorp.pinpoint.rpc.client.MessageListener;
-import com.navercorp.pinpoint.rpc.client.PinpointSocket;
-import com.navercorp.pinpoint.rpc.client.PinpointSocketFactory;
-import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
+import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -207,23 +201,23 @@ public class ZookeeperProfilerClusterStressTest {
 
     private class TestSocket {
 
-        private final PinpointSocketFactory factory;
+        private final PinpointClientFactory factory;
         private final Map<String, Object> properties;
 
-        private PinpointSocket socket;
+        private PinpointClient socket;
 
 
         public TestSocket() {
             this.properties = ZookeeperTestUtils.getParams(Thread.currentThread().getName(), "agent", System.currentTimeMillis());
 
-            this.factory = new PinpointSocketFactory();
+            this.factory = new PinpointClientFactory();
             this.factory.setProperties(properties);
             this.factory.setMessageListener(messageListener);
         }
 
         private void connect(InetSocketAddress address) {
             if (socket == null) {
-                socket = createPinpointSocket(factory, address);
+                socket = createPinpointClient(factory, address);
             }
         }
 
@@ -245,14 +239,14 @@ public class ZookeeperProfilerClusterStressTest {
 
     }
 
-    private PinpointSocket createPinpointSocket(PinpointSocketFactory factory, InetSocketAddress address) {
+    private PinpointClient createPinpointClient(PinpointClientFactory clientFactory, InetSocketAddress address) {
         String host = address.getHostName();
         int port = address.getPort();
 
-        PinpointSocket socket = null;
+        PinpointClient socket = null;
         for (int i = 0; i < 3; i++) {
             try {
-                socket = factory.connect(host, port);
+                socket = clientFactory.connect(host, port);
                 logger.info("tcp connect success:{}/{}", host, port);
                 return socket;
             } catch (PinpointSocketException e) {
@@ -260,7 +254,7 @@ public class ZookeeperProfilerClusterStressTest {
             }
         }
         logger.warn("change background tcp connect mode  {}/{} ", host, port);
-        socket = factory.scheduledConnect(host, port);
+        socket = clientFactory.scheduledConnect(host, port);
 
         return socket;
     }
