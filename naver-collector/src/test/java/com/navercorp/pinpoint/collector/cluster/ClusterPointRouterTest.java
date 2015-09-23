@@ -1,20 +1,18 @@
 package com.navercorp.pinpoint.collector.cluster;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Assert;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
+import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
+import com.navercorp.pinpoint.collector.util.CollectorUtils;
+import com.navercorp.pinpoint.rpc.PinpointSocket;
+import com.navercorp.pinpoint.rpc.packet.*;
+import com.navercorp.pinpoint.rpc.server.*;
+import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
+import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
+import com.navercorp.pinpoint.rpc.util.TimerFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.util.Timer;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,22 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
-import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
-import com.navercorp.pinpoint.collector.util.CollectorUtils;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
-import com.navercorp.pinpoint.rpc.packet.PingPacket;
-import com.navercorp.pinpoint.rpc.packet.RequestPacket;
-import com.navercorp.pinpoint.rpc.packet.SendPacket;
-import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
-import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
-import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
-import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
-import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
-import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
-import com.navercorp.pinpoint.rpc.util.TimerFactory;
+import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -122,14 +110,15 @@ public class ClusterPointRouterTest {
     }
 
     private class PinpointSocketManagerHandler implements ServerMessageListener {
+
         @Override
-        public void handleSend(SendPacket sendPacket, PinpointServer writablePinpointServer) {
-            logger.warn("Unsupport send received {} {}", sendPacket, writablePinpointServer);
+        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
+            logger.warn("Unsupport send received {} {}", sendPacket, pinpointSocket);
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, PinpointServer writablePinpointServer) {
-            logger.warn("Unsupport request received {} {}", requestPacket, writablePinpointServer);
+        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
+            logger.warn("Unsupport request received {} {}", requestPacket, pinpointSocket);
         }
 
         @Override
