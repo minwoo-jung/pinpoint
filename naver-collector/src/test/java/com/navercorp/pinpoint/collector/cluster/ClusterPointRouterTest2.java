@@ -3,8 +3,9 @@ package com.navercorp.pinpoint.collector.cluster;
 import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.rpc.Future;
+import com.navercorp.pinpoint.rpc.MessageListener;
+import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.ResponseMessage;
-import com.navercorp.pinpoint.rpc.client.MessageListener;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.rpc.packet.*;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
@@ -17,7 +18,6 @@ import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
 import com.navercorp.pinpoint.thrift.io.SerializerFactory;
 import com.navercorp.pinpoint.thrift.util.SerializationUtils;
 import org.apache.thrift.TException;
-import org.jboss.netty.channel.Channel;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -140,14 +140,15 @@ public class ClusterPointRouterTest2 {
     }
 
     private class PinpointSocketManagerHandler implements ServerMessageListener {
+
         @Override
-        public void handleSend(SendPacket sendPacket, PinpointServer writablePinpointServer) {
-            logger.warn("Unsupport send received {} {}", sendPacket, writablePinpointServer);
+        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
+            logger.warn("Unsupport send received {} {}", sendPacket, pinpointSocket);
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, PinpointServer writablePinpointServer) {
-            logger.warn("Unsupport request received {} {}", requestPacket, writablePinpointServer);
+        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
+            logger.warn("Unsupport request received {} {}", requestPacket, pinpointSocket);
         }
 
         @Override
@@ -188,17 +189,15 @@ public class ClusterPointRouterTest2 {
     class EchoMessageListener implements MessageListener {
 
         @Override
-        public void handleSend(SendPacket sendPacket, Channel channel) {
-            // TODO Auto-generated method stub
-            
+        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
+
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, Channel channel) {
+        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
             byte[] payload = requestPacket.getPayload();
-            channel.write(new ResponsePacket(requestPacket.getRequestId(), requestPacket.getPayload()));
+            pinpointSocket.response(requestPacket, payload);
         }
-        
     }
     
     

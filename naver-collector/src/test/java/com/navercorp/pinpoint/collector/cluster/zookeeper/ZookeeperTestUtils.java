@@ -1,22 +1,17 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
+import com.navercorp.pinpoint.rpc.MessageListener;
+import com.navercorp.pinpoint.rpc.PinpointSocket;
+import com.navercorp.pinpoint.rpc.packet.*;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
 import org.apache.curator.test.TestingServer;
-import org.jboss.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
-import com.navercorp.pinpoint.rpc.client.MessageListener;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
-import com.navercorp.pinpoint.rpc.packet.PingPacket;
-import com.navercorp.pinpoint.rpc.packet.RequestPacket;
-import com.navercorp.pinpoint.rpc.packet.SendPacket;
-import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import java.util.HashMap;
+import java.util.Map;
 
 final class ZookeeperTestUtils {
 
@@ -65,25 +60,25 @@ final class ZookeeperTestUtils {
         }
 
         @Override
-        public void handleSend(SendPacket sendPacket, Channel channel) {
-            LOGGER.info("Received SendPacket{} {}", sendPacket, channel);
+        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
+            LOGGER.info("Received SendPacket{} {}", sendPacket, pinpointSocket);
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, Channel channel) {
-            LOGGER.info("Received RequestPacket{} {}", requestPacket, channel);
+        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
+            LOGGER.info("Received RequestPacket{} {}", requestPacket, pinpointSocket);
         }
     }
 
     private static class SimpleServerMessageListner implements ServerMessageListener {
         @Override
-        public void handleSend(SendPacket sendPacket, PinpointServer writablePinpointServer) {
-            LOGGER.warn("Unsupport send received {} {}", sendPacket, writablePinpointServer);
+        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
+            LOGGER.warn("Unsupport send received {} {}", sendPacket, pinpointSocket);
         }
 
         @Override
-        public void handleRequest(RequestPacket requestPacket, PinpointServer writablePinpointServer) {
-            LOGGER.warn("Unsupport request received {} {}", requestPacket, writablePinpointServer);
+        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
+            LOGGER.warn("Unsupport request received {} {}", requestPacket, pinpointSocket);
         }
 
         @Override
