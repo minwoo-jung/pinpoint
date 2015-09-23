@@ -17,13 +17,13 @@
         <property name="location" value="classpath:database.properties"/>
     </bean>
 
-    <bean id="commonDataSource" abstract="true" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="commonDataSource" abstract="true" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
 
         <property name="initialSize" value="30"/>
-        <property name="maxActive" value="30"/>
+        <property name="maxTotal" value="30"/>
         <property name="maxIdle" value="30"/>
         <property name="minIdle" value="30"/>
-        <property name="maxWait" value="3000"/>
+        <property name="maxWaitMillis" value="3000"/>
 
         <property name="testOnBorrow" value="false"/>
         <property name="testOnReturn" value="false"/>
