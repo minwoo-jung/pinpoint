@@ -33,10 +33,10 @@ public class LucyNetTypeProvider implements TraceMetadataProvider, LucyNetConsta
         context.addAnnotationKey(NPC_CONNECT_OPTION);
         context.addAnnotationKey(NPC_PARAM);
         context.addAnnotationKey(NPC_URL);
-//
-//        context.addType(NIMM_CLIENT);
-//        context.addAnnotationKey(NIMM_OBJECT_NAME);
-//        context.addAnnotationKey(NIMM_METHOD_NAME);
-//        context.addAnnotationKey(NIMM_PARAM);
+
+        context.addServiceType(NIMM_CLIENT);
+        context.addAnnotationKey(NIMM_OBJECT_NAME);
+        context.addAnnotationKey(NIMM_METHOD_NAME);
+        context.addAnnotationKey(NIMM_PARAM);
     }
 }
