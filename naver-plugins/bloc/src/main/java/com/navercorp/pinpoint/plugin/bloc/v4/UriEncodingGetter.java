@@ -21,5 +21,5 @@ import java.nio.charset.Charset;
  *
  */
 public interface UriEncodingGetter {
-    public Charset _$PINPOINT$_getUriEncoding();
+    Charset _$PINPOINT$_getUriEncoding();
 }

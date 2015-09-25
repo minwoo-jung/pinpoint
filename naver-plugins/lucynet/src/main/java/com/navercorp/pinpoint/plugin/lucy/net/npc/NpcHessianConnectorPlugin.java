@@ -12,7 +12,7 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class NpcHessianConnectorPlugin extends NpcPlugin implements LucyNetConstants {
+class NpcHessianConnectorPlugin extends NpcPlugin {
     
     public NpcHessianConnectorPlugin(ProfilerPluginSetupContext context) {
         super(context);

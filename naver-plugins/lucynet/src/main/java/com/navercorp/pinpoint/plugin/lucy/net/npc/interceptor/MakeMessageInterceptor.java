@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * @author Taejin Koo
  */
-public class MakeMessageInterceptor implements AroundInterceptor, LucyNetConstants {
+public class MakeMessageInterceptor implements AroundInterceptor {
 
     private static final int DEFAULT_MAX_USER_OPTIONS_SET_INDEX = 3;
 
@@ -60,7 +60,7 @@ public class MakeMessageInterceptor implements AroundInterceptor, LucyNetConstan
             Map<String, Object> options = createOption(id);
             putOption(defaultNpcMessage, options);
             
-            recorder.recordServiceType(NPC_CLIENT);
+            recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
 
             InetSocketAddress serverAddress = null;
             if (target instanceof NpcServerAddressAccessor) {

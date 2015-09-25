@@ -12,7 +12,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
 
 import java.net.InetSocketAddress;
 
-public class InitializeConnectorInterceptor implements AroundInterceptor, LucyNetConstants {
+public class InitializeConnectorInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -39,7 +39,7 @@ public class InitializeConnectorInterceptor implements AroundInterceptor, LucyNe
         }
 
         SpanEventRecorder recorder = trace.traceBlockBegin();
-        recorder.recordServiceType(NPC_CLIENT_INTERNAL);
+        recorder.recordServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
 
         InetSocketAddress serverAddress = null;
         if (target instanceof NpcServerAddressAccessor) {
@@ -49,9 +49,9 @@ public class InitializeConnectorInterceptor implements AroundInterceptor, LucyNe
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordAttribute(NPC_URL, endPoint);
+            recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
         } else {
-            recorder.recordAttribute(NPC_URL, "unknown");
+            recorder.recordAttribute(LucyNetConstants.NPC_URL, "unknown");
         }
     }
 

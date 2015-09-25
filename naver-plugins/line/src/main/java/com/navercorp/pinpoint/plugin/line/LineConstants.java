@@ -18,7 +18,7 @@ package com.navercorp.pinpoint.plugin.line;
  * @author Jongho Moon
  *
  */
-public interface LineConstants {
+public final class LineConstants {
     public static final String MESSAGE_EVENT = "messageEvent";
     public static final String CHANNEL_HANDLER_CONTEXT = "channelHandlerContext";
 }

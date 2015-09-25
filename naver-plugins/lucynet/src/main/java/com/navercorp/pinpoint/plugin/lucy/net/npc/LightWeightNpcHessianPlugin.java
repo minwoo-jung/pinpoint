@@ -14,7 +14,7 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class LightWeightNpcHessianPlugin extends NpcPlugin implements LucyNetConstants {
+class LightWeightNpcHessianPlugin extends NpcPlugin {
     
     public LightWeightNpcHessianPlugin(ProfilerPluginSetupContext context) {
         super(context);
@@ -32,16 +32,16 @@ class LightWeightNpcHessianPlugin extends NpcPlugin implements LucyNetConstants 
             @Override
             public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(METADATA_NPC_SERVER_ADDRESS);
+                target.addField(LucyNetConstants.METADATA_NPC_SERVER_ADDRESS);
 
                 String superClazz = target.getSuperClass();
                 if (superClazz != null && superClazz.equals("com.nhncorp.lucy.npc.connector.AbstractNpcHessianConnector")) {
                     InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption");
-                    LucyNetPlugin.addInterceptor(constructor, NPC_CONSTRUCTOR_INTERCEPTOR);
+                    LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_CONSTRUCTOR_INTERCEPTOR);
                 }
 
                 InstrumentMethod method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.lang.Object[]");
-                LucyNetPlugin.addInterceptor(method, NPC_INVOKE_INTERCEPTOR);
+                LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_INVOKE_INTERCEPTOR);
 
                 return target.toBytecode();
             }

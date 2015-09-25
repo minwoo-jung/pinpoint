@@ -26,7 +26,7 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  * @author HyunGil Jeong
  *
  */
-public class Bloc3Detector implements ApplicationTypeDetector, BlocConstants { 
+public class Bloc3Detector implements ApplicationTypeDetector {
     
     private static final String REQUIRED_MAIN_CLASS = "org.apache.catalina.startup.Bootstrap";
     
@@ -36,7 +36,7 @@ public class Bloc3Detector implements ApplicationTypeDetector, BlocConstants {
     
     @Override
     public ServiceType getApplicationType() {
-        return BLOC;
+        return BlocConstants.BLOC;
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
  */
 public interface NpcServerAddressAccessor {
 
-    public void _$PINPOINT$_setNpcServerAddress(InetSocketAddress serverAddress);
-    public InetSocketAddress _$PINPOINT$_getNpcServerAddress();
+    void _$PINPOINT$_setNpcServerAddress(InetSocketAddress serverAddress);
+    InetSocketAddress _$PINPOINT$_getNpcServerAddress();
 
 }

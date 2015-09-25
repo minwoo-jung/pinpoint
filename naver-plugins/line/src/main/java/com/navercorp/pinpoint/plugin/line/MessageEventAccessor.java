@@ -21,6 +21,6 @@ import org.jboss.netty.channel.MessageEvent;
  *
  */
 public interface MessageEventAccessor {
-    public MessageEvent _$PINPOINT$_getMessageEvent();
-    public void _$PINPOINT$_setMessageEvent(MessageEvent c);
+    MessageEvent _$PINPOINT$_getMessageEvent();
+    void _$PINPOINT$_setMessageEvent(MessageEvent c);
 }

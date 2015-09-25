@@ -29,7 +29,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
-public class GatewayServerMetadataAttachInterceptor implements AroundInterceptor, NbaseArcConstants {
+public class GatewayServerMetadataAttachInterceptor implements AroundInterceptor {
     protected final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     protected final boolean isDebug = logger.isDebugEnabled();
 
@@ -71,14 +71,14 @@ public class GatewayServerMetadataAttachInterceptor implements AroundInterceptor
 
         if (!(target instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need field accessor({}).", METADATA_DESTINATION_ID);
+                logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_DESTINATION_ID);
             }
             return false;
         }
 
         if (!(result instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid result object. Need field accessor({}).", METADATA_DESTINATION_ID);
+                logger.debug("Invalid result object. Need field accessor({}).", NbaseArcConstants.METADATA_DESTINATION_ID);
             }
             return false;
         }

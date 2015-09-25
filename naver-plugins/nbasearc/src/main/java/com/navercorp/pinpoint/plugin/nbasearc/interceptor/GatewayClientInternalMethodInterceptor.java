@@ -27,7 +27,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
-public class GatewayClientInternalMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin implements NbaseArcConstants {
+public class GatewayClientInternalMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin {
 
     public GatewayClientInternalMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
         super(traceContext, methodDescriptor);
@@ -40,7 +40,7 @@ public class GatewayClientInternalMethodInterceptor extends SpanEventSimpleAroun
     @Override
     public void doInAfterTrace(SpanEventRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
         recorder.recordApi(getMethodDescriptor());
-        recorder.recordServiceType(NBASE_ARC_INTERNAL);
+        recorder.recordServiceType(NbaseArcConstants.NBASE_ARC_INTERNAL);
         recorder.recordException(throwable);
     }
 }

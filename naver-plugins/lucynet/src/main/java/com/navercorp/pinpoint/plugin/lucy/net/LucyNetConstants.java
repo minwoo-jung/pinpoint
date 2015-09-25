@@ -24,7 +24,10 @@ import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.RECORD_STA
  * @author Jongho Moon
  *
  */
-public interface LucyNetConstants {
+public final class LucyNetConstants {
+    private LucyNetConstants() {
+    }
+
     // NPC
     public static final String METADATA_NPC_SERVER_ADDRESS = "com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor";
 

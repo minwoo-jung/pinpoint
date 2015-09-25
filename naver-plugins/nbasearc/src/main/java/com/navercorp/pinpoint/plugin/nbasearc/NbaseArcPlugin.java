@@ -33,7 +33,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
  * @author jaehong.kim
  *
  */
-public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
+public class NbaseArcPlugin implements ProfilerPlugin {
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -68,7 +68,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
             @Override
             public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(METADATA_DESTINATION_ID);
+                target.addField(NbaseArcConstants.METADATA_DESTINATION_ID);
 
                 InstrumentMethod constructorMethod = target.getConstructor("com.nhncorp.redis.cluster.gateway.GatewayConfig");
                 if (constructorMethod != null) {
@@ -100,7 +100,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
             @Override
             public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(METADATA_END_POINT);
+                target.addField(NbaseArcConstants.METADATA_END_POINT);
 
                 InstrumentMethod constructorEditorBuilderArg1 = target.getConstructor("java.lang.String");
                 if (constructorEditorBuilderArg1 != null) {
@@ -143,7 +143,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
             @Override
             public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(METADATA_DESTINATION_ID);
+                target.addField(NbaseArcConstants.METADATA_DESTINATION_ID);
 
                 InstrumentMethod method = target.getDeclaredMethod("getResource");
                 if (method != null) {
@@ -161,7 +161,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
             @Override
             public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(METADATA_DESTINATION_ID);
+                target.addField(NbaseArcConstants.METADATA_DESTINATION_ID);
 
                 InstrumentMethod constructor = target.getConstructor("com.nhncorp.redis.cluster.gateway.GatewayConfig");
                 if (constructor != null) {
@@ -181,8 +181,8 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
         addRedisClusterExtendedClassEditor(context, "com.nhncorp.redis.cluster.triples.BinaryTriplesRedisCluster", new TransformHandler() {
             @Override
             public void handle(InstrumentClass target) throws InstrumentException {
-                target.addField(METADATA_DESTINATION_ID);
-                target.addField(METADATA_END_POINT);
+                target.addField(NbaseArcConstants.METADATA_DESTINATION_ID);
+                target.addField(NbaseArcConstants.METADATA_END_POINT);
             }
         });
         addRedisClusterExtendedClassEditor(context, "com.nhncorp.redis.cluster.triples.TriplesRedisCluster", null);
@@ -236,8 +236,8 @@ public class NbaseArcPlugin implements ProfilerPlugin, NbaseArcConstants {
             @Override
             public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(METADATA_DESTINATION_ID);
-                target.addField(METADATA_END_POINT);
+                target.addField(NbaseArcConstants.METADATA_DESTINATION_ID);
+                target.addField(NbaseArcConstants.METADATA_END_POINT);
 
                 if (target.hasConstructor("com.nhncorp.redis.cluster.gateway.GatewayServer")) {
                     InstrumentMethod constructor = target.getConstructor("com.nhncorp.redis.cluster.gateway.GatewayServer");

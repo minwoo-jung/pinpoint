@@ -18,7 +18,7 @@ import java.net.InetSocketAddress;
  * @author netspider
  * 
  */
-public class ConnectInterceptor implements AroundInterceptor, LucyNetConstants {
+public class ConnectInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -50,7 +50,7 @@ public class ConnectInterceptor implements AroundInterceptor, LucyNetConstants {
         TraceId nextId = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(nextId.getSpanId());
 
-        recorder.recordServiceType(NPC_CLIENT);
+        recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
 
         InetSocketAddress serverAddress = connectorOption.getAddress();
         int port = serverAddress.getPort();
@@ -59,8 +59,8 @@ public class ConnectInterceptor implements AroundInterceptor, LucyNetConstants {
 //        trace.recordEndPoint(endpiont);
         recorder.recordDestinationId(endpiont);
 
-        recorder.recordAttribute(NPC_URL, serverAddress.toString());
-        recorder.recordAttribute(NPC_CONNECT_OPTION, connectorOption.toString());
+        recorder.recordAttribute(LucyNetConstants.NPC_URL, serverAddress.toString());
+        recorder.recordAttribute(LucyNetConstants.NPC_CONNECT_OPTION, connectorOption.toString());
     }
 
     @Override

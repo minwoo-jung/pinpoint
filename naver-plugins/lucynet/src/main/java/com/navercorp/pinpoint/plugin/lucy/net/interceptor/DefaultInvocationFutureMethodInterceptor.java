@@ -11,7 +11,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 /**
  * @author jaehong.kim
  */
-public class DefaultInvocationFutureMethodInterceptor extends SpanAsyncEventSimpleAroundInterceptor implements LucyNetConstants {
+public class DefaultInvocationFutureMethodInterceptor extends SpanAsyncEventSimpleAroundInterceptor {
 
     public DefaultInvocationFutureMethodInterceptor(MethodDescriptor methodDescriptor, TraceContext traceContext) {
         super(traceContext, methodDescriptor);

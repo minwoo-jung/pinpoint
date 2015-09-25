@@ -12,7 +12,7 @@ import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
 
 import java.net.InetSocketAddress;
 
-public class CreateConnectorInterceptor implements AroundInterceptor, LucyNetConstants {
+public class CreateConnectorInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -38,7 +38,7 @@ public class CreateConnectorInterceptor implements AroundInterceptor, LucyNetCon
         }
 
         SpanEventRecorder recorder = trace.traceBlockBegin();
-        recorder.recordServiceType(NPC_CLIENT_INTERNAL);
+        recorder.recordServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
 
         NpcConnectorOption option = (NpcConnectorOption) args[0];
 
@@ -47,9 +47,9 @@ public class CreateConnectorInterceptor implements AroundInterceptor, LucyNetCon
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordAttribute(NPC_URL, endPoint);
+            recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
         } else {
-            recorder.recordAttribute(NPC_URL, "unknown");
+            recorder.recordAttribute(LucyNetConstants.NPC_URL, "unknown");
         }
     }
 

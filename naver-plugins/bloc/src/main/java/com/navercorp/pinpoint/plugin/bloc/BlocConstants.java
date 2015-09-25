@@ -25,7 +25,10 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
  * @author Jongho Moon
  *
  */
-public interface BlocConstants {
+public final class BlocConstants {
+    private BlocConstants() {
+    }
+
     public static final AnnotationKey CALL_URL = new AnnotationKey(15, "CALL_URL");
     public static final AnnotationKey CALL_PARAM = new AnnotationKey(16, "CALL_PARAM", VIEW_IN_RECORD_SET);
     public static final AnnotationKey PROTOCOL = new AnnotationKey(17, "PROTOCOL", VIEW_IN_RECORD_SET);

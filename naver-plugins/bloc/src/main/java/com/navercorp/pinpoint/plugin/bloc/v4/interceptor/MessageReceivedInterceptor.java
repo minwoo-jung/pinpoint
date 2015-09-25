@@ -28,7 +28,7 @@ import external.org.apache.mina.common.IoSession;
 
 
 @TargetMethod(name="messageReceived", paramTypes={"external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
-public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
+public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
     private static final String NAMESPACE_URA = "URA 1.0";
     private static final String UNKNOWN_ADDRESS = "Unknown Address";
@@ -93,7 +93,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor impl
         if (recorder.canSampled()) {
             NpcMessage npcMessage = getNpcMessage(args);
 
-            recorder.recordServiceType(BLOC);
+            recorder.recordServiceType(BlocConstants.BLOC);
             recorder.recordRpcName(createRpcName(npcMessage));
 
             final IoSession ioSession = getIOSession(args);

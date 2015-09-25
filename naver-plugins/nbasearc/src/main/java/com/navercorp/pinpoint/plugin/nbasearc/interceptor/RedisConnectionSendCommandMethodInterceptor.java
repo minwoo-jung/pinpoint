@@ -36,7 +36,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  *
  */
 @Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPolicy = ExecutionPolicy.INTERNAL)
-public class RedisConnectionSendCommandMethodInterceptor implements AroundInterceptor, NbaseArcConstants {
+public class RedisConnectionSendCommandMethodInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -80,7 +80,7 @@ public class RedisConnectionSendCommandMethodInterceptor implements AroundInterc
     private boolean validate(final Object target, final Object[] args) {
         if (!(target instanceof EndPointAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need field accessor({}).", METADATA_END_POINT);
+                logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_END_POINT);
             }
             return false;
         }

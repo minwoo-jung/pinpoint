@@ -35,7 +35,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  *
  */
 @Group(value = NbaseArcConstants.NBASE_ARC_SCOPE, executionPolicy = ExecutionPolicy.INTERNAL)
-public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundInterceptor, NbaseArcConstants {
+public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();

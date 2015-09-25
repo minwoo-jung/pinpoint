@@ -15,7 +15,7 @@ import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
  * @author netspider
  * 
  */
-public class NimmInvokerConstructorInterceptor implements AroundInterceptor, LucyNetConstants {
+public class NimmInvokerConstructorInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
