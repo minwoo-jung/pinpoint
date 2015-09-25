@@ -26,7 +26,7 @@ pinpointApp.run([ '$rootScope', '$timeout', '$modal', '$location', '$cookies', '
         }
 
         checkLoginSession = function () {
-            return angular.isDefined($cookies.SMSESSION);
+            return angular.isDefined($cookies.nssTok) || angular.isDefined($cookies.SMSESSION); 
         };
 
         oLoginModal = $modal({template: 'scripts/views/login.modal.html', backdrop: 'static', placement: 'center', show: false});
