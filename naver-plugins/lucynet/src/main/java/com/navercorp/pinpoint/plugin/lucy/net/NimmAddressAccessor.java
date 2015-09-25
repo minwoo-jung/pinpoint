@@ -5,7 +5,7 @@ package com.navercorp.pinpoint.plugin.lucy.net;
  */
 public interface NimmAddressAccessor {
 
-    public void _$PINPOINT$_setNimmAddress(String serverAddress);
-    public String _$PINPOINT$_getNimmAddress();
+    void _$PINPOINT$_setNimmAddress(String serverAddress);
+    String _$PINPOINT$_getNimmAddress();
 
 }

@@ -21,22 +21,22 @@ import com.navercorp.pinpoint.common.trace.TraceMetadataSetupContext;
  * @author Jongho Moon
  *
  */
-public class LucyNetTypeProvider implements TraceMetadataProvider, LucyNetConstants {
+public class LucyNetTypeProvider implements TraceMetadataProvider {
 
     /* (non-Javadoc)
      * @see com.navercorp.pinpoint.common.plugin.TraceMetadataProvider#setup(com.navercorp.pinpoint.common.plugin.TraceMetadataSetupContext)
      */
     @Override
     public void setup(TraceMetadataSetupContext context) {
-        context.addServiceType(NPC_CLIENT);
-        context.addServiceType(NPC_CLIENT_INTERNAL);
-        context.addAnnotationKey(NPC_CONNECT_OPTION);
-        context.addAnnotationKey(NPC_PARAM);
-        context.addAnnotationKey(NPC_URL);
+        context.addServiceType(LucyNetConstants.NPC_CLIENT);
+        context.addServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
+        context.addAnnotationKey(LucyNetConstants.NPC_CONNECT_OPTION);
+        context.addAnnotationKey(LucyNetConstants.NPC_PARAM);
+        context.addAnnotationKey(LucyNetConstants.NPC_URL);
 
-        context.addServiceType(NIMM_CLIENT);
-        context.addAnnotationKey(NIMM_OBJECT_NAME);
-        context.addAnnotationKey(NIMM_METHOD_NAME);
-        context.addAnnotationKey(NIMM_PARAM);
+        context.addServiceType(LucyNetConstants.NIMM_CLIENT);
+        context.addAnnotationKey(LucyNetConstants.NIMM_OBJECT_NAME);
+        context.addAnnotationKey(LucyNetConstants.NIMM_METHOD_NAME);
+        context.addAnnotationKey(LucyNetConstants.NIMM_PARAM);
     }
 }

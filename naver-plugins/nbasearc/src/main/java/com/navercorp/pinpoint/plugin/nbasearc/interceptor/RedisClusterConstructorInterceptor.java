@@ -29,7 +29,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
-public class RedisClusterConstructorInterceptor implements AroundInterceptor, NbaseArcConstants {
+public class RedisClusterConstructorInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -77,7 +77,7 @@ public class RedisClusterConstructorInterceptor implements AroundInterceptor, Nb
 
         if (!(target instanceof EndPointAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need field accessor({}).", METADATA_END_POINT);
+                logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_END_POINT);
             }
             return false;
         }

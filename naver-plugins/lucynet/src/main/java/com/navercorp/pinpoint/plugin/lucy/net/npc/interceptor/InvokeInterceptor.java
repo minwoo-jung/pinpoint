@@ -15,7 +15,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
-public class InvokeInterceptor implements AroundInterceptor, LucyNetConstants {
+public class InvokeInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -71,7 +71,7 @@ public class InvokeInterceptor implements AroundInterceptor, LucyNetConstants {
         // TODO add pinpoint headers to the request message here.
         //
 
-        recorder.recordServiceType(NPC_CLIENT);
+        recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
 
         InetSocketAddress serverAddress = null;
         if (target instanceof NpcServerAddressAccessor) {
@@ -84,7 +84,7 @@ public class InvokeInterceptor implements AroundInterceptor, LucyNetConstants {
 //        trace.recordEndPoint(endPoint);
         recorder.recordDestinationId(endPoint);
 
-        recorder.recordAttribute(NPC_URL, serverAddress.toString());
+        recorder.recordAttribute(LucyNetConstants.NPC_URL, serverAddress.toString());
     }
 
     @Override

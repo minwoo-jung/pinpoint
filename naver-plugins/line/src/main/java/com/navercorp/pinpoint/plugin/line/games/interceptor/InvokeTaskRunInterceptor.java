@@ -43,7 +43,7 @@ import com.navercorp.pinpoint.plugin.line.MessageEventAccessor;
  * @author emeroad
  */
 @TargetMethod(name="run")
-public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor implements LineConstants {
+public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
 
     private static final String DEFAULT_CHARSET = "UTF-8";
 

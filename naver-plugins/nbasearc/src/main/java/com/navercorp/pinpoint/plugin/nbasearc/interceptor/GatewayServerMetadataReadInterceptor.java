@@ -31,7 +31,7 @@ import com.nhncorp.redis.cluster.gateway.GatewayServer;
  * @author jaehong.kim
  *
  */
-public abstract class GatewayServerMetadataReadInterceptor implements AroundInterceptor, NbaseArcConstants {
+public abstract class GatewayServerMetadataReadInterceptor implements AroundInterceptor {
 
     protected final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     protected final boolean isDebug = logger.isDebugEnabled();
@@ -71,14 +71,14 @@ public abstract class GatewayServerMetadataReadInterceptor implements AroundInte
     private boolean validate(final Object target, final Object[] args) {
         if (!(target instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need field accessor({}).", METADATA_DESTINATION_ID);
+                logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_DESTINATION_ID);
             }
             return false;
         }
 
         if (!(target instanceof EndPointAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need field accessor({}).", METADATA_END_POINT);
+                logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_END_POINT);
             }
             return false;
         }
@@ -99,7 +99,7 @@ public abstract class GatewayServerMetadataReadInterceptor implements AroundInte
 
         if (!(args[0] instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid args[0]({}) object. Need field accessor({})", args[0], METADATA_DESTINATION_ID);
+                logger.debug("Invalid args[0]({}) object. Need field accessor({})", args[0], NbaseArcConstants.METADATA_DESTINATION_ID);
             }
             return false;
         }

@@ -14,7 +14,7 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class NioPlugin extends NpcPlugin implements LucyNetConstants {
+class NioPlugin extends NpcPlugin {
 
     public NioPlugin(ProfilerPluginSetupContext context) {
         super(context);
@@ -32,16 +32,16 @@ class NioPlugin extends NpcPlugin implements LucyNetConstants {
             @Override
             public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(METADATA_NPC_SERVER_ADDRESS);
+                target.addField(LucyNetConstants.METADATA_NPC_SERVER_ADDRESS);
 
                 InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption");
-                LucyNetPlugin.addInterceptor(constructor, NPC_CONSTRUCTOR_INTERCEPTOR);
+                LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_CONSTRUCTOR_INTERCEPTOR);
 
                 InstrumentMethod method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
-                LucyNetPlugin.addInterceptor(method, NPC_INVOKE_INTERCEPTOR);
+                LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_INVOKE_INTERCEPTOR);
 
                 method = target.getDeclaredMethod("makeMessage", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
-                LucyNetPlugin.addInterceptor(method, NET_MAKE_MESSAGE_INTERCEPTOR);
+                LucyNetPlugin.addInterceptor(method, LucyNetConstants.NET_MAKE_MESSAGE_INTERCEPTOR);
 
                 return target.toBytecode();
             }

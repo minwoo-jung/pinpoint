@@ -25,7 +25,7 @@ import external.org.apache.coyote.Request;
  * @author emeroad
  */
 @TargetMethod(name="execute", paramTypes={"external.org.apache.coyote.Request", "external.org.apache.coyote.Response"})
-public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
+public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
 
     public ExecuteMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, ExecuteMethodInterceptor.class);
@@ -36,7 +36,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor implem
 
         final Request request = (Request) args[0];
         if (recorder.canSampled()) {
-            recorder.recordServiceType(BLOC);
+            recorder.recordServiceType(BlocConstants.BLOC);
 
             final String requestURL = request.requestURI().toString();
             recorder.recordRpcName(requestURL);

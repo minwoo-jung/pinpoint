@@ -15,7 +15,7 @@ import com.navercorp.pinpoint.plugin.line.MessageEventAccessor;
  * 
  */
 @TargetConstructor({"com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent"})
-public class InvokeTaskConstructorInterceptor implements AroundInterceptor, LineConstants {
+public class InvokeTaskConstructorInterceptor implements AroundInterceptor {
 
     @Override
     public void before(Object target, Object[] args) {

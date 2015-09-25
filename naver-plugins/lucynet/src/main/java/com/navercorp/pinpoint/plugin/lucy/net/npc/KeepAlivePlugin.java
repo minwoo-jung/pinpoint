@@ -12,7 +12,7 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class KeepAlivePlugin extends NpcPlugin implements LucyNetConstants {
+class KeepAlivePlugin extends NpcPlugin {
 
     public KeepAlivePlugin(ProfilerPluginSetupContext context) {
         super(context);

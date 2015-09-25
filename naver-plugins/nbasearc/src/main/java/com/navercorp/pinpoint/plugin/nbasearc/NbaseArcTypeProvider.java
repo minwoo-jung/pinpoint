@@ -24,11 +24,11 @@ import com.navercorp.pinpoint.common.trace.TraceMetadataSetupContext;
  * @author jaehong.kim
  *
  */
-public class NbaseArcTypeProvider implements TraceMetadataProvider, NbaseArcConstants{
+public class NbaseArcTypeProvider implements TraceMetadataProvider {
 
     @Override
     public void setup(TraceMetadataSetupContext context) {
-        context.addServiceType(NBASE_ARC, AnnotationKeyMatchers.ARGS_MATCHER);
-        context.addServiceType(NBASE_ARC_INTERNAL);
+        context.addServiceType(NbaseArcConstants.NBASE_ARC, AnnotationKeyMatchers.ARGS_MATCHER);
+        context.addServiceType(NbaseArcConstants.NBASE_ARC_INTERNAL);
     }
 }

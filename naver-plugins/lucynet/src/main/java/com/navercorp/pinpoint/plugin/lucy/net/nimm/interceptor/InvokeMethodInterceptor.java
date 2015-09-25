@@ -15,7 +15,7 @@ import java.util.Arrays;
  * 
  * @author netspider
  */
-public class InvokeMethodInterceptor implements AroundInterceptor, LucyNetConstants {
+public class InvokeMethodInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -57,7 +57,7 @@ public class InvokeMethodInterceptor implements AroundInterceptor, LucyNetConsta
         TraceId nextId = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(nextId.getSpanId());
 
-        recorder.recordServiceType(NIMM_CLIENT);
+        recorder.recordServiceType(LucyNetConstants.NIMM_CLIENT);
 
         // TODO protocol은 어떻게 표기하지???
 
@@ -72,13 +72,13 @@ public class InvokeMethodInterceptor implements AroundInterceptor, LucyNetConsta
         // trace.recordEndPoint(nimmAddress);
 
         if (objectName != null) {
-            recorder.recordAttribute(NIMM_OBJECT_NAME, objectName);
+            recorder.recordAttribute(LucyNetConstants.NIMM_OBJECT_NAME, objectName);
         }
         if (methodName != null) {
-            recorder.recordAttribute(NIMM_METHOD_NAME, methodName);
+            recorder.recordAttribute(LucyNetConstants.NIMM_METHOD_NAME, methodName);
         }
         if (params != null) {
-            recorder.recordAttribute(NIMM_PARAM, Arrays.toString(params));
+            recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, Arrays.toString(params));
         }
 
     }

@@ -20,7 +20,7 @@ import java.net.InetSocketAddress;
  * @author netspider
  * 
  */
-public class ConnectorConstructorInterceptor implements AroundInterceptor, LucyNetConstants {
+public class ConnectorConstructorInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -74,15 +74,15 @@ public class ConnectorConstructorInterceptor implements AroundInterceptor, LucyN
         }
 
         SpanEventRecorder recorder = trace.traceBlockBegin();
-        recorder.recordServiceType(NPC_CLIENT_INTERNAL);
+        recorder.recordServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
 
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordAttribute(NPC_URL, endPoint);
+            recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
         } else {
             // destination id가 없으면 안되기 때문에 unknown으로 지정.
-            recorder.recordAttribute(NPC_URL, "unknown");
+            recorder.recordAttribute(LucyNetConstants.NPC_URL, "unknown");
         }
     }
 

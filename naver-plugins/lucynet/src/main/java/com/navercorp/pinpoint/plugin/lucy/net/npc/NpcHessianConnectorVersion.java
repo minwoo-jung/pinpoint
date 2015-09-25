@@ -9,7 +9,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPlugin;
 /**
  * @Author Taejin Koo
  */
-public enum NpcHessianConnectorVersion implements LucyNetConstants {
+public enum NpcHessianConnectorVersion {
 
     V13to {
         @Override
@@ -20,13 +20,13 @@ public enum NpcHessianConnectorVersion implements LucyNetConstants {
         @Override
         public byte[] transform(InstrumentClass target) throws InstrumentException {
             InstrumentMethod method = target.getDeclaredMethod("createConnecor", "com.nhncorp.lucy.npc.connector.NpcConnectorOption");
-            LucyNetPlugin.addInterceptor(method, NPC_CONSTRUCTOR_INTERCEPTOR);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_CONSTRUCTOR_INTERCEPTOR);
 
             method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
-            LucyNetPlugin.addInterceptor(method, BASIC_INTERCEPTOR, NPC_CLIENT_INTERNAL);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.BASIC_INTERCEPTOR, LucyNetConstants.NPC_CLIENT_INTERNAL);
 
             method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.lang.Object[]");
-            LucyNetPlugin.addInterceptor(method, BASIC_INTERCEPTOR, NPC_CLIENT_INTERNAL);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.BASIC_INTERCEPTOR, LucyNetConstants.NPC_CLIENT_INTERNAL);
 
             return target.toBytecode();
         }
@@ -41,13 +41,13 @@ public enum NpcHessianConnectorVersion implements LucyNetConstants {
         @Override
         public byte[] transform(InstrumentClass target) throws InstrumentException {
             InstrumentMethod method = target.getDeclaredMethod("initialize", "com.nhncorp.lucy.npc.connector.NpcConnectorOption");
-            LucyNetPlugin.addInterceptor(method, NPC_CREATE_CONNECTOR_INTERCEPTOR);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_CREATE_CONNECTOR_INTERCEPTOR);
 
             method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
-            LucyNetPlugin.addInterceptor(method, BASIC_INTERCEPTOR, NPC_CLIENT_INTERNAL);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.BASIC_INTERCEPTOR, LucyNetConstants.NPC_CLIENT_INTERNAL);
 
             method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.lang.Object[]");
-            LucyNetPlugin.addInterceptor(method, BASIC_INTERCEPTOR, NPC_CLIENT_INTERNAL);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.BASIC_INTERCEPTOR, LucyNetConstants.NPC_CLIENT_INTERNAL);
 
             return target.toBytecode();
         }
@@ -63,13 +63,13 @@ public enum NpcHessianConnectorVersion implements LucyNetConstants {
         @Override
         public byte[] transform(InstrumentClass target) throws InstrumentException {
             InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption");
-            LucyNetPlugin.addInterceptor(constructor, NPC_CONSTRUCTOR_INTERCEPTOR);
+            LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_CONSTRUCTOR_INTERCEPTOR);
 
             InstrumentMethod method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
-            LucyNetPlugin.addInterceptor(method, BASIC_INTERCEPTOR, NPC_CLIENT_INTERNAL);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.BASIC_INTERCEPTOR, LucyNetConstants.NPC_CLIENT_INTERNAL);
 
             method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.lang.Object[]");
-            LucyNetPlugin.addInterceptor(method, BASIC_INTERCEPTOR, NPC_CLIENT_INTERNAL);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.BASIC_INTERCEPTOR, LucyNetConstants.NPC_CLIENT_INTERNAL);
 
             return target.toBytecode();
         }
@@ -91,13 +91,13 @@ public enum NpcHessianConnectorVersion implements LucyNetConstants {
         @Override
         public byte[] transform(InstrumentClass target) throws InstrumentException {
             InstrumentMethod constructor = target.getConstructor("java.net.InetSocketAddress", "boolean", "boolean", "boolean", "java.nio.charset.Charset", "long");
-            LucyNetPlugin.addInterceptor(constructor, NPC_OLD_CONSTRUCTOR_INTERCEPTOR);
+            LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_OLD_CONSTRUCTOR_INTERCEPTOR);
 
             constructor = target.getConstructor("java.net.InetSocketAddress", "com.nhncorp.lucy.npc.connector.ConnectionFactory");
-            LucyNetPlugin.addInterceptor(constructor, NPC_OLD_CONSTRUCTOR_INTERCEPTOR);
+            LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_OLD_CONSTRUCTOR_INTERCEPTOR);
 
             InstrumentMethod method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
-            LucyNetPlugin.addInterceptor(method, NPC_INVOKE_INTERCEPTOR);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_INVOKE_INTERCEPTOR);
 
             return target.toBytecode();
         }
@@ -112,10 +112,10 @@ public enum NpcHessianConnectorVersion implements LucyNetConstants {
         @Override
         public byte[] transform(InstrumentClass target) throws InstrumentException {
             InstrumentMethod constructor = target.getConstructor("java.net.InetSocketAddress", "boolean", "boolean", "boolean", "java.nio.charset.Charset", "long");
-            LucyNetPlugin.addInterceptor(constructor, NPC_OLD_CONSTRUCTOR_INTERCEPTOR);
+            LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_OLD_CONSTRUCTOR_INTERCEPTOR);
 
             InstrumentMethod method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
-            LucyNetPlugin.addInterceptor(method, NPC_INVOKE_INTERCEPTOR);
+            LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_INVOKE_INTERCEPTOR);
 
             return target.toBytecode();
         }

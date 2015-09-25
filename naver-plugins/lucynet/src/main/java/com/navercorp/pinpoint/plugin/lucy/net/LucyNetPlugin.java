@@ -36,7 +36,7 @@ import java.util.List;
  * @author Jongho Moon
  *
  */
-public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
+public class LucyNetPlugin implements ProfilerPlugin {
 
     private static final PLogger LOGGER = PLoggerFactory.getLogger(LucyNetPlugin.class);
 
@@ -62,7 +62,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
 
                 InstrumentMethod method = target.getDeclaredMethod("getReturnValue");
-                addInterceptor(method, BASIC_INTERCEPTOR, ServiceType.INTERNAL_METHOD);
+                addInterceptor(method, LucyNetConstants.BASIC_INTERCEPTOR, ServiceType.INTERNAL_METHOD);
 
                 return target.toBytecode();
             }
@@ -81,7 +81,7 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
                 // FIXME 이렇게 하면 api type이 internal method로 보이는데 사실 NPC_CLIENT, NIMM_CLIENT로 보여야함. servicetype으로 넣기에 애매해서. 어떻게 수정할 것인지는 나중에 고민.
                 List<InstrumentMethod> methods = target.getDeclaredMethods(MethodFilters.name("getReturnValue", "get", "isReadyAndSet"));
                 for (InstrumentMethod method : methods) {
-                    addInterceptor(method, NET_INVOCATION_FUTURE_INTERCEPTOR);
+                    addInterceptor(method, LucyNetConstants.NET_INVOCATION_FUTURE_INTERCEPTOR);
                 }
 
                 return target.toBytecode();
@@ -97,14 +97,14 @@ public class LucyNetPlugin implements ProfilerPlugin, LucyNetConstants {
             @Override
             public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(METADATA_NIMM_ADDRESS);
+                target.addField(LucyNetConstants.METADATA_NIMM_ADDRESS);
                 target.addField(AsyncTraceIdAccessor.class.getName());
 
                 InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.nimm.connector.address.NimmAddress", "com.nhncorp.lucy.nimm.connector.NimmSocket", "long");
-                addInterceptor(constructor, NIMM_CONSTRUCTOR_INTERCEPTOR);
+                addInterceptor(constructor, LucyNetConstants.NIMM_CONSTRUCTOR_INTERCEPTOR);
 
                 InstrumentMethod method = target.getDeclaredMethod("invoke", "long", "java.lang.String", "java.lang.String", "java.lang.Object[]");
-                addInterceptor(method, NIMM_INVOKE_INTERCEPTOR);
+                addInterceptor(method, LucyNetConstants.NIMM_INVOKE_INTERCEPTOR);
 
                 return target.toBytecode();
             }

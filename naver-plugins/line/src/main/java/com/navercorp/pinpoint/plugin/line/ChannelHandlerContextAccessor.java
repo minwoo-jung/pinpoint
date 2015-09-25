@@ -21,6 +21,6 @@ import org.jboss.netty.channel.ChannelHandlerContext;
  *
  */
 public interface ChannelHandlerContextAccessor {
-    public ChannelHandlerContext _$PINPOINT$_getChannelHandlerContext();
-    public void _$PINPOINT$_setChannelHandlerContext(ChannelHandlerContext c);
+    ChannelHandlerContext _$PINPOINT$_getChannelHandlerContext();
+    void _$PINPOINT$_setChannelHandlerContext(ChannelHandlerContext c);
 }

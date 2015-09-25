@@ -35,7 +35,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  *
  */
 @Group(NbaseArcConstants.NBASE_ARC_SCOPE)
-public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin implements NbaseArcConstants {
+public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin {
 
     private InterceptorGroup interceptorGroup;
     private boolean io;
@@ -93,8 +93,8 @@ public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterce
 
         recorder.recordApi(getMethodDescriptor());
         recorder.recordEndPoint(endPoint != null ? endPoint : "Unknown");
-        recorder.recordDestinationId(destinationId != null ? destinationId : NBASE_ARC.toString());
-        recorder.recordServiceType(NBASE_ARC);
+        recorder.recordDestinationId(destinationId != null ? destinationId : NbaseArcConstants.NBASE_ARC.toString());
+        recorder.recordServiceType(NbaseArcConstants.NBASE_ARC);
         recorder.recordException(throwable);
     }
 }

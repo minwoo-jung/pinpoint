@@ -25,7 +25,10 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
  * @author jaehong.kim
  *
  */
-public interface NbaseArcConstants {
+public final class NbaseArcConstants {
+    private NbaseArcConstants() {
+    }
+
     public static final ServiceType NBASE_ARC = ServiceType.of(8250, "NBASE_ARC", FAST_SCHEMA, TERMINAL, RECORD_STATISTICS, INCLUDE_DESTINATION_ID);
     public static final ServiceType NBASE_ARC_INTERNAL = ServiceType.of(8251, "NBASE_ARC_INTERNAL", NORMAL_SCHEMA);
     

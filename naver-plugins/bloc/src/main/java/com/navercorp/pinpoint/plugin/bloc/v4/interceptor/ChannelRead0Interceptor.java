@@ -33,7 +33,7 @@ import com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter;
  * @author netspider
  */
 @TargetMethod(name="channelRead0", paramTypes={"io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest"})
-public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor implements BlocConstants {
+public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
 
     public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, ChannelRead0Interceptor.class);
@@ -45,7 +45,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor impleme
         io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
         if (recorder.canSampled()) {
-            recorder.recordServiceType(BLOC);
+            recorder.recordServiceType(BlocConstants.BLOC);
             final String requestURL = request.getUri();
             recorder.recordRpcName(requestURL);
 

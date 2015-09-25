@@ -24,7 +24,7 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  * @author HyunGil Jeong
  *
  */
-public class Bloc4Detector implements ApplicationTypeDetector, BlocConstants {
+public class Bloc4Detector implements ApplicationTypeDetector {
     
     private static final String REQUIRED_MAIN_CLASS = "com.nhncorp.lucy.bloc.server.BlocServer";
     
@@ -32,7 +32,7 @@ public class Bloc4Detector implements ApplicationTypeDetector, BlocConstants {
     
     @Override
     public ServiceType getApplicationType() {
-        return BLOC;
+        return BlocConstants.BLOC;
     }
 
     @Override

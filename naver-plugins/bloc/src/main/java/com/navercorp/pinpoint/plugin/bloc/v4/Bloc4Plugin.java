@@ -10,7 +10,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
-public class Bloc4Plugin implements ProfilerPlugin, BlocConstants {
+public class Bloc4Plugin implements ProfilerPlugin {
     
     @Override
     public void setup(ProfilerPluginSetupContext context) {

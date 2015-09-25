@@ -30,7 +30,7 @@ import com.nhncorp.redis.cluster.gateway.GatewayConfig;
  * @author jaehong.kim
  *
  */
-public class GatewayConstructorInterceptor implements AroundInterceptor, NbaseArcConstants {
+public class GatewayConstructorInterceptor implements AroundInterceptor {
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
@@ -75,7 +75,7 @@ public class GatewayConstructorInterceptor implements AroundInterceptor, NbaseAr
         }
 
         if (!(target instanceof DestinationIdAccessor)) {
-            logger.debug("Invalid target object. Need field accessor({}).", METADATA_DESTINATION_ID);
+            logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_DESTINATION_ID);
             return false;
         }
 

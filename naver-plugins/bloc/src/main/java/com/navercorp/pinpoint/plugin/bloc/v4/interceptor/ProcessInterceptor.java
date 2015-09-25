@@ -13,7 +13,7 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 import com.nhncorp.lucy.bloc.core.processor.BlocRequest;
 
 @TargetMethod(name="process", paramTypes="com.nhncorp.lucy.bloc.core.processor.BlocRequest")
-public class ProcessInterceptor implements AroundInterceptor, BlocConstants {
+public class ProcessInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
@@ -61,8 +61,8 @@ public class ProcessInterceptor implements AroundInterceptor, BlocConstants {
             
             if (args[0] != null) {
                 BlocRequest blocRequest = (BlocRequest)args[0];
-                recorder.recordAttribute(CALL_URL, blocRequest.getPath());
-                recorder.recordAttribute(PROTOCOL, blocRequest.getProtocol());
+                recorder.recordAttribute(BlocConstants.CALL_URL, blocRequest.getPath());
+                recorder.recordAttribute(BlocConstants.PROTOCOL, blocRequest.getProtocol());
             }
         } finally {
             trace.traceBlockEnd();

@@ -27,7 +27,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
  * @author Jongho Moon
  *
  */
-public class LinePlugin implements ProfilerPlugin, LineConstants {
+public class LinePlugin implements ProfilerPlugin {
 
     /* (non-Javadoc)
      * @see com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin#setup(com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext)
