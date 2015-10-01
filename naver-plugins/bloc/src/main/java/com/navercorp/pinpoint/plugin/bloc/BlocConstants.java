@@ -15,7 +15,6 @@
 package com.navercorp.pinpoint.plugin.bloc;
 
 import static com.navercorp.pinpoint.common.trace.AnnotationKeyProperty.*;
-import static com.navercorp.pinpoint.common.trace.HistogramSchema.*;
 import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.*;
 
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
@@ -35,7 +34,7 @@ public final class BlocConstants {
     
     public static final String SERVER_TYPE_BLOC = "BLOC";
 
-    public static final ServiceType BLOC = ServiceType.of(1020, "BLOC", NORMAL_SCHEMA, RECORD_STATISTICS);
-    public static final ServiceType BLOC_INTERNAL_METHOD = ServiceType.of(1021, "BLOC_INTERNAL_METHOD", "INTERNAL_METHOD", NORMAL_SCHEMA);
+    public static final ServiceType BLOC = ServiceType.of(1020, "BLOC", RECORD_STATISTICS);
+    public static final ServiceType BLOC_INTERNAL_METHOD = ServiceType.of(1021, "BLOC_INTERNAL_METHOD", "INTERNAL_METHOD");
 
 }
