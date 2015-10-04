@@ -64,4 +64,6 @@ public final class LucyNetConstants {
     public static final String NET_MAKE_MESSAGE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.MakeMessageInterceptor";
 
     public static final String BASIC_INTERCEPTOR = "com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor";
+
+    public static final String UNKOWN_ADDRESS = "Unknown Address";
 }
