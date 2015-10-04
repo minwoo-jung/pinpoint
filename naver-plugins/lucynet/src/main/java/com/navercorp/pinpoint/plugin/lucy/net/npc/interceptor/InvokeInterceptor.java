@@ -73,18 +73,23 @@ public class InvokeInterceptor implements AroundInterceptor {
 
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
 
-        InetSocketAddress serverAddress = null;
-        if (target instanceof NpcServerAddressAccessor) {
-            serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
+        if (target != null && target instanceof NpcServerAddressAccessor) {
+            InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
+
+            if (serverAddress != null) {
+                int port = serverAddress.getPort();
+                String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
+
+                //      DestinationId와 동일하므로 없는게 맞음.
+                //        trace.recordEndPoint(endPoint);
+                recorder.recordDestinationId(endPoint);
+                recorder.recordAttribute(LucyNetConstants.NPC_URL, serverAddress.toString());
+                return;
+            }
         }
 
-        int port = serverAddress.getPort();
-        String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-//      DestinationId와 동일하므로 없는게 맞음.
-//        trace.recordEndPoint(endPoint);
-        recorder.recordDestinationId(endPoint);
-
-        recorder.recordAttribute(LucyNetConstants.NPC_URL, serverAddress.toString());
+        recorder.recordDestinationId(LucyNetConstants.UNKOWN_ADDRESS);
+        recorder.recordAttribute(LucyNetConstants.NPC_URL, LucyNetConstants.UNKOWN_ADDRESS);
     }
 
     @Override

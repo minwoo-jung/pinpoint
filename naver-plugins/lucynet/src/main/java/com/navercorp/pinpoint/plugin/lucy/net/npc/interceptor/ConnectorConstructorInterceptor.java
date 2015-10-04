@@ -82,7 +82,7 @@ public class ConnectorConstructorInterceptor implements AroundInterceptor {
             recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
         } else {
             // destination id가 없으면 안되기 때문에 unknown으로 지정.
-            recorder.recordAttribute(LucyNetConstants.NPC_URL, "unknown");
+            recorder.recordAttribute(LucyNetConstants.NPC_URL, LucyNetConstants.UNKOWN_ADDRESS);
         }
     }
 
