@@ -1,5 +1,9 @@
 package com.navercorp.pinpoint.collector.cluster;
 
+import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionFactory;
+import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionManager;
+import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionRepository;
+import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnector;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
 import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
@@ -39,13 +43,16 @@ public class ClusterPointRouterTest {
 
     private final long currentTime = System.currentTimeMillis();
 
+
     @Autowired
     ClusterPointRouter clusterPointRouter;
 
+    private static String serverIdentifier;
     private static Timer testTimer;
 
     @BeforeClass
     public static void setUp() {
+        serverIdentifier = CollectorUtils.getServerIdentifier();
         testTimer = TimerFactory.createHashedWheelTimer(ClusterPointRouterTest.class.getSimpleName(), 50, TimeUnit.MILLISECONDS, 512);
     }
 
@@ -56,29 +63,35 @@ public class ClusterPointRouterTest {
 
     @Test
     public void webClusterPointtest() {
-        WebCluster webClusterPoint = new WebCluster(CollectorUtils.getServerIdentifier(), clusterPointRouter);
+        CollectorClusterConnectionRepository clusterRepository = new CollectorClusterConnectionRepository();
+        CollectorClusterConnectionFactory clusterConnectionFactory = new CollectorClusterConnectionFactory(serverIdentifier, clusterPointRouter, clusterPointRouter);
+        CollectorClusterConnector clusterConnector = clusterConnectionFactory.createConnector();
+
+        CollectorClusterConnectionManager clusterManager = new CollectorClusterConnectionManager(serverIdentifier, clusterRepository, clusterConnector);
 
         try {
+            clusterManager.start();
+
             PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
             serverAcceptor.setMessageListener(new PinpointSocketManagerHandler());
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
-            Assert.assertEquals(0, webClusterPoint.getWebClusterList().size());
-            webClusterPoint.connectPointIfAbsent(address);
-            Assert.assertEquals(1, webClusterPoint.getWebClusterList().size());
-            webClusterPoint.connectPointIfAbsent(address);
-            Assert.assertEquals(1, webClusterPoint.getWebClusterList().size());
+            Assert.assertEquals(0, clusterManager.getConnectedAddressList().size());
+            clusterManager.connectPointIfAbsent(address);
+            Assert.assertEquals(1, clusterManager.getConnectedAddressList().size());
+            clusterManager.connectPointIfAbsent(address);
+            Assert.assertEquals(1, clusterManager.getConnectedAddressList().size());
 
-            webClusterPoint.disconnectPoint(address);
-            Assert.assertEquals(0, webClusterPoint.getWebClusterList().size());
-            webClusterPoint.disconnectPoint(address);
-            Assert.assertEquals(0, webClusterPoint.getWebClusterList().size());
+            clusterManager.disconnectPoint(address);
+            Assert.assertEquals(0, clusterManager.getConnectedAddressList().size());
+            clusterManager.disconnectPoint(address);
+            Assert.assertEquals(0, clusterManager.getConnectedAddressList().size());
             
             serverAcceptor.close();
         } finally {
-            webClusterPoint.close();
+            clusterManager.stop();
         }
     }
 

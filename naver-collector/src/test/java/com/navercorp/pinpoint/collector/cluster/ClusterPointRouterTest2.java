@@ -1,5 +1,9 @@
 package com.navercorp.pinpoint.collector.cluster;
 
+import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionFactory;
+import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionManager;
+import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionRepository;
+import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnector;
 import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.rpc.Future;
@@ -54,22 +58,29 @@ public class ClusterPointRouterTest2 {
 
     @Test
     public void profilerClusterPointtest() throws TException, InterruptedException {
-        WebCluster webCluster = null;
+        String serverIdentifier = CollectorUtils.getServerIdentifier();
+
+        CollectorClusterConnectionRepository clusterRepository = new CollectorClusterConnectionRepository();
+        CollectorClusterConnectionFactory clusterConnectionFactory = new CollectorClusterConnectionFactory(serverIdentifier, clusterPointRouter, clusterPointRouter);
+        CollectorClusterConnector clusterConnector = clusterConnectionFactory.createConnector();
+
         PinpointClientFactory agentFactory = null;
         PinpointServerAcceptor collectorAcceptor = null;
         PinpointServerAcceptor webAcceptor = null;
+        CollectorClusterConnectionManager clusterManager = null;
         try {
-            webCluster = new WebCluster(CollectorUtils.getServerIdentifier(), clusterPointRouter);
-            
+            clusterManager = new CollectorClusterConnectionManager(serverIdentifier, clusterRepository, clusterConnector);
+            clusterManager.start();
+
             agentFactory = createSocketFactory();
             collectorAcceptor = createServerAcceptor("127.0.0.1", DEFAULT_COLLECTOR_ACCEPTOR_SOCKET_PORT);
             agentFactory.connect("127.0.0.1", DEFAULT_COLLECTOR_ACCEPTOR_SOCKET_PORT);
             
             Thread.sleep(100);
             
-            List<PinpointServer> writablePinpointServerList = collectorAcceptor.getWritableServerList();
+            List<PinpointSocket> writablePinpointServerList = collectorAcceptor.getWritableSocketList();
 
-            for (PinpointServer writablePinpointServer : writablePinpointServerList) {
+            for (PinpointSocket writablePinpointServer : writablePinpointServerList) {
                 ClusterPoint clusterPoint = new PinpointServerClusterPoint((DefaultPinpointServer)writablePinpointServer);
                 
                 ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
@@ -79,22 +90,22 @@ public class ClusterPointRouterTest2 {
             webAcceptor = createServerAcceptor("127.0.0.1", DEFAULT_WEB_ACCEPTOR_SOCKET_PORT);
             
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_WEB_ACCEPTOR_SOCKET_PORT);
-            webCluster.connectPointIfAbsent(address);
+            clusterManager.connectPointIfAbsent(address);
             
   
             byte[] echoPayload = createEchoPayload("hello");
             byte[] commandDeliveryPayload = createDeliveryCommandPayload("application", "agent", currentTime, echoPayload);
 
-            List<PinpointServer> contextList = webAcceptor.getWritableServerList();
-            PinpointServer writablePinpointServer = contextList.get(0);
+            List<PinpointSocket> contextList = webAcceptor.getWritableSocketList();
+            PinpointSocket writablePinpointServer = contextList.get(0);
             Future<ResponseMessage> future = writablePinpointServer.request(commandDeliveryPayload);
             future.await();
 
             TCommandEcho base = (TCommandEcho) SerializationUtils.deserialize(future.getResult().getMessage(), commandDeserializerFactory);
             Assert.assertEquals(base.getMessage(), "hello");
         } finally {
-            if (webCluster != null) {
-                webCluster.close();
+            if (clusterManager != null) {
+                clusterManager.stop();
             }
             
             if (agentFactory  != null) {
@@ -199,7 +210,5 @@ public class ClusterPointRouterTest2 {
             pinpointSocket.response(requestPacket, payload);
         }
     }
-    
-    
     
 }

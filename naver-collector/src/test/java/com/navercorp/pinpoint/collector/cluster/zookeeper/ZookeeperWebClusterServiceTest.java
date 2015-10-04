@@ -1,11 +1,12 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
-import java.util.List;
-
-import org.junit.Assert;
-
+import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.rpc.PinpointSocket;
+import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.WatchedEvent;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -76,13 +74,13 @@ public class ZookeeperWebClusterServiceTest {
 
             Thread.sleep(5000);
 
-            List<PinpointServer> writablePinpointServerList = serverAcceptor.getWritableServerList();
+            List<PinpointSocket> writablePinpointServerList = serverAcceptor.getWritableSocketList();
             Assert.assertEquals(1, writablePinpointServerList.size());
 
             client.close();
 
             Thread.sleep(5000);
-            writablePinpointServerList = serverAcceptor.getWritableServerList();
+            writablePinpointServerList = serverAcceptor.getWritableSocketList();
             Assert.assertEquals(0, writablePinpointServerList.size());
 
             service.tearDown();
