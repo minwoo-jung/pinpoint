@@ -62,17 +62,19 @@ public class MakeMessageInterceptor implements AroundInterceptor {
             
             recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
 
-            InetSocketAddress serverAddress = null;
-            if (target instanceof NpcServerAddressAccessor) {
-                serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
-            }
+            if (target != null && target instanceof NpcServerAddressAccessor) {
+                InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
 
-            int port = serverAddress.getPort();
-            String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordDestinationId(endPoint);
-        } else {
+                if (serverAddress != null) {
+                    int port = serverAddress.getPort();
+                    String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
+                    recorder.recordDestinationId(endPoint);
+                    return;
+                }
+            }
         }
 
+        recorder.recordDestinationId(LucyNetConstants.UNKOWN_ADDRESS);
     }
     
     private Map<String, Object> createOption(TraceId id) {
