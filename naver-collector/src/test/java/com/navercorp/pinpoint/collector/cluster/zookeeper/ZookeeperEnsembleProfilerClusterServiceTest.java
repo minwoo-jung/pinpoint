@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
 import org.junit.Assert;
 import org.apache.curator.test.InstanceSpec;
 import org.apache.curator.test.TestingCluster;
@@ -290,6 +291,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
         when(config.getMessageListener()).thenReturn(new EchoServerListener());
+        when(config.getClusterOption()).thenReturn(ClusterOption.DISABLE_CLUSTER_OPTION);
 
         return config;
     }
