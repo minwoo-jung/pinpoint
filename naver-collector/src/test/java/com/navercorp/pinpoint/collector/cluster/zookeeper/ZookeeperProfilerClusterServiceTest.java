@@ -4,6 +4,7 @@ import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
+import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
 import com.navercorp.pinpoint.rpc.packet.*;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
@@ -318,6 +319,7 @@ public class ZookeeperProfilerClusterServiceTest {
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
         when(config.getMessageListener()).thenReturn(new EchoServerListener());
+        when(config.getClusterOption()).thenReturn(ClusterOption.DISABLE_CLUSTER_OPTION);
 
         return config;
     }
