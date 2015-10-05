@@ -23,6 +23,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.transformer.PinpointClassFile
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 
+import static com.navercorp.pinpoint.common.util.VarArgs.va;
+
 /**
  * @author Jongho Moon
  *
@@ -46,7 +48,7 @@ public class LinePlugin implements ProfilerPlugin {
                 target.addField("com.navercorp.pinpoint.plugin.line.MessageEventAccessor");
 
                 target.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskConstructorInterceptor");
-                target.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskRunInterceptor", config.getParamDumpSize(), config.getEntityDumpSize());
+                target.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskRunInterceptor", va(config.getParamDumpSize(), config.getEntityDumpSize()));
 
                 return target.toBytecode();
             }
