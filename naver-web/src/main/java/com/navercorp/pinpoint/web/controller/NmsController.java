@@ -47,6 +47,7 @@ public class NmsController {
   
         //TODO call rport api 
   
+        hostIp = "61.247.193.104";
         String rsPort = "80";
         ResponseEntity<Map> responseEntity = this.restTemplate.exchange(NMS_CONN_CPS_API_URL, HttpMethod.GET, null, Map.class, hostIp, rsPort);
         
@@ -60,6 +61,11 @@ public class NmsController {
         Map<String, Object> responseData = responseEntity.getBody();
         Map<String, String> nmsUrlInfo = (Map<String, String>) responseData.get("result");
         Map<String, String> result= new HashMap<>();
+        result.put("rsName", nmsUrlInfo.get("rsName"));
+        result.put("rsIp", nmsUrlInfo.get("rsIp"));
+        result.put("rsPort", nmsUrlInfo.get("rsPort"));
+        result.put("vsIP", nmsUrlInfo.get("vsIp"));
+        result.put("vsPort", nmsUrlInfo.get("vsPort"));
         result.put("vsConnUrl", nmsUrlInfo.get("vsConnUrl"));
         result.put("vsCpsUrl", nmsUrlInfo.get("vsCpsUrl"));
         result.put("rsConnUrl", nmsUrlInfo.get("rsConnUrl"));
