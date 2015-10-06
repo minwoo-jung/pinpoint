@@ -108,9 +108,9 @@ public class NmsController {
         Map<String, String> nmsUrlInfo = (Map<String, String>) responseData.get("result");
         
         Map<String, Object> realServerInfo = new HashMap<>();
-        realServerInfo.put("rsName", nmsUrlInfo.get("rsName"));
-        realServerInfo.put("rsIp", nmsUrlInfo.get("rsIp"));
-        realServerInfo.put("rsPort", nmsUrlInfo.get("rsPort"));
+        realServerInfo.put("Name", nmsUrlInfo.get("rsName"));
+        realServerInfo.put("Ip", nmsUrlInfo.get("rsIp"));
+        realServerInfo.put("Port", nmsUrlInfo.get("rsPort"));
         
         List<Map> rsImageInfos = new ArrayList<>(2);
         Map<String, String> rsConnImageInfo = new HashMap<>();
@@ -126,9 +126,9 @@ public class NmsController {
         nmsInfo.add(realServerInfo);
         
         Map<String, Object> virtualServerInfo = new HashMap<>();
-        virtualServerInfo.put("vsName", "L4");
-        virtualServerInfo.put("vsIp", nmsUrlInfo.get("vsIp"));
-        virtualServerInfo.put("vsPort", nmsUrlInfo.get("vsPort"));
+        virtualServerInfo.put("Name", "L4");
+        virtualServerInfo.put("Ip", nmsUrlInfo.get("vsIp"));
+        virtualServerInfo.put("Port", nmsUrlInfo.get("vsPort"));
         
         List<Map> vsImageInfos = new ArrayList<>(2);
         Map<String, String> vsConnImageInfo = new HashMap<>();
