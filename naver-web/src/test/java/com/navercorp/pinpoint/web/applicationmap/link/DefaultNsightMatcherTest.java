@@ -4,6 +4,8 @@ import org.junit.Assert;
 
 import org.junit.Test;
 
+import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
+
 public class DefaultNsightMatcherTest {
 
     @Test
@@ -12,8 +14,8 @@ public class DefaultNsightMatcherTest {
         ServerMatcher matcher = new DefaultNSightMatcher();
 
         Assert.assertTrue(matcher.isMatched(sampleString));
-        String link = matcher.getLink(sampleString);
-        Assert.assertEquals("http://nsight.nhncorp.com/dashboard_server/dev-pinpoint-workload003.ncl", link);
+        LinkInfo linkInfo = matcher.getLinkInfo(sampleString);
+        Assert.assertEquals("http://nsight.nhncorp.com/dashboard_server/dev-pinpoint-workload003.ncl", linkInfo.getLinkUrl());
     }
-
+    
 }
