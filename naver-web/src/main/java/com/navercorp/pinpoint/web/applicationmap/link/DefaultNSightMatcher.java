@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.web.applicationmap.link;
 
+import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
+
 /**
  * @author emeroad
  */
@@ -29,12 +31,7 @@ public class DefaultNSightMatcher implements ServerMatcher {
     }
 
     @Override
-    public String getLinkName() {
-        return "NSight";
-    }
-
-    @Override
-    public String getLink(String value) {
-        return URL + value;
+    public LinkInfo getLinkInfo(String value) {
+        return new LinkInfo("Nsight", URL + value, LinkType.ATAG);
     }
 }

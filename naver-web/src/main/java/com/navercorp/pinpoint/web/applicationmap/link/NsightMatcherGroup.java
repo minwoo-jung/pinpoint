@@ -20,16 +20,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.util.StringUtils;
+
+import com.navercorp.pinpoint.web.applicationmap.ServerInstance;
+import com.navercorp.pinpoint.web.applicationmap.ServerInstanceList;
+import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
+import com.navercorp.pinpoint.web.vo.AgentInfo;
+
 /**
  * @author minwoo.jung <minwoo.jung@navercorp.com>
  */
-public class NaverMatcherGroup extends MatcherGroup {
+public class NsightMatcherGroup extends MatcherGroup {
     
     static final String MATCHER_KEY_PREFIX = "site.matcher.key";
     static final String MATCHER_URL_PREFIX = "site.matcher.url";
     static final String LINK_NAME ="Nsight";
     
-    public NaverMatcherGroup(final Map<String, String> matcherProps) {
+    public NsightMatcherGroup(final Map<String, String> matcherProps) {
         if (matcherProps != null) {
             Map<String, String> keyMap = new HashMap<String, String>();
             Map<String, String> urlMap = new HashMap<String, String>();
@@ -55,13 +62,36 @@ public class NaverMatcherGroup extends MatcherGroup {
                 String[] keys = keyInfo.getValue().replaceAll(" ", "").split(",");
                 
                 for (String key : keys) {
-                    addServerMatcher(new PostfixServerMatcher(key, urlMap.get(matcherUrlName), LINK_NAME));
+                    addServerMatcher(new PostfixServerMatcher(key, urlMap.get(matcherUrlName), LINK_NAME, LinkType.ATAG));
                 }
                 
             }
         }
 
         setDefaultMatcher(new DefaultNSightMatcher());
+    }
+
+    public boolean ismatchingType(Object data) {
+        if (data instanceof ServerInstance) {
+            return !StringUtils.isEmpty(((ServerInstance)data).getHostName());
+        }
+        if (data instanceof AgentInfo) {
+            return !StringUtils.isEmpty(((AgentInfo)data).getHostName());
+        }
+        
+        return false;
+    }
+
+    @Override
+    protected String getMatchingSource(Object data) {
+        if (data instanceof AgentInfo) {
+            return ((AgentInfo)data).getHostName();
+        }
+        if (data instanceof ServerInstance) {
+            return ((ServerInstance)data).getHostName();
+        }
+        
+        return null;
     }
 
 }

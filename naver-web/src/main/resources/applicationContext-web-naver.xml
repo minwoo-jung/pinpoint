@@ -15,7 +15,7 @@
 	<import resource="classpath:batch/applicationContext-batch-naver.xml" />
 <!--     <import resource="classpath:applicationContext-web-nelo.xml"/> -->
 	
-	<bean id="matcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NaverMatcherGroup">
+	<bean id="matcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NsightMatcherGroup">
         <constructor-arg index="0" value="#{matcherInfo}"/>       
     </bean>
     
