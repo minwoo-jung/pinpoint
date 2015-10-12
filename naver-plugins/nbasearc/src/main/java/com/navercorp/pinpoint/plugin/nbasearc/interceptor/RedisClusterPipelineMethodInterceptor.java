@@ -20,11 +20,11 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptorForPlugin;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Group;
-import com.navercorp.pinpoint.bootstrap.interceptor.group.AttachmentFactory;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
 import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupInvocation;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContext;
+import com.navercorp.pinpoint.plugin.nbasearc.CommandContextFactory;
 import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
@@ -52,13 +52,7 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
     public void doInBeforeTrace(SpanEventRecorder recorder, Object target, Object[] args) {
         final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
         if (invocation != null) {
-            final CommandContext callContext = (CommandContext) invocation.getOrCreateAttachment(new AttachmentFactory() {
-                @Override
-                public Object createAttachment() {
-                    return new CommandContext();
-                }
-            });
-            invocation.setAttachment(callContext);
+            invocation.getOrCreateAttachment(CommandContextFactory.COMMAND_CONTEXT_FACTORY);
         }
     }
 
