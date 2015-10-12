@@ -6,7 +6,6 @@ import org.jboss.netty.channel.MessageEvent;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetConstructor;
 import com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor;
-import com.navercorp.pinpoint.plugin.line.LineConstants;
 import com.navercorp.pinpoint.plugin.line.MessageEventAccessor;
 
 /**
@@ -37,7 +36,7 @@ public class InvokeTaskConstructorInterceptor implements AroundInterceptor {
     }
 
     @Override
-    public void after(Object target, Object result, Throwable throwable, Object[] args) {
+    public void after(Object target, Object[] args, Object result, Throwable throwable) {
 
     }
 }
