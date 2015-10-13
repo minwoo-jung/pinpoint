@@ -8,7 +8,6 @@
 	 * @class
 	 */
 	pinpointApp.constant('AjaxServiceConfig', {
-	    nmsUrl: "nms.pinpoint"
 	});
 	
 	pinpointApp.service('AjaxService', [ 'AjaxServiceConfig', function(cfg) {
@@ -20,15 +19,12 @@
 	     * @param query
 	     * @param callback
 	     */
-	     this.getNMSData = function(query, cb) {
+	     this.getNMSData = function(url, cb) {
 	        jQuery.ajax({
 	            type: 'GET',
-	            url: cfg.nmsUrl,
+	            url: url,
 	            cache: false,
 	            dataType: 'json',
-	            data: {
-		            "hostIp": query
-		        },
 	            success: function (result) {
 	                if (angular.isFunction(cb)) {
 	                    cb(result);
