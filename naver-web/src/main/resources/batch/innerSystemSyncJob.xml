@@ -36,6 +36,7 @@
 					telphone AS phoneNumber,
 					email
 				FROM im_tbl_direct_user
+                WHERE retirechk  <> '002'
 			]]>
 	   		</value>
 		</property>
