@@ -15,8 +15,15 @@
 	<import resource="classpath:batch/applicationContext-batch-naver.xml" />
 <!--     <import resource="classpath:applicationContext-web-nelo.xml"/> -->
 	
-	<bean id="matcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NsightMatcherGroup">
+	<bean id="nsightMatcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NsightMatcherGroup">
         <constructor-arg index="0" value="#{matcherInfo}"/>       
+    </bean>
+    
+    <bean id="nmsMatcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NmsMatcherGroup">
+        <constructor-arg index="0" value="#{matcherInfo['site.matcher.enable.nms']}"/>
+        <property name="defaultMatcher">
+            <bean class="com.navercorp.pinpoint.web.applicationmap.link.DefaultNmsMatcher"/>
+        </property>
     </bean>
     
     <util:properties id="matcherInfo" location="classpath:site-matcher.properties"/>

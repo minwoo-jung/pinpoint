@@ -20,6 +20,7 @@ import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
 
 /**
  * @author emeroad
+ * @author minwoo.jung
  */
 public class DefaultNSightMatcher implements ServerMatcher {
 
