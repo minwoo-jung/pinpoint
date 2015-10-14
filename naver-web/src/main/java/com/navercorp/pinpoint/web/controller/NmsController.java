@@ -76,8 +76,19 @@ public class NmsController {
             nmsInfos.add(nmsInfo);
         }
 
+        if (nmsInfos.size() == 0) {
+            return getNMSGuideMessage();
+        }
+        
         return nmsInfos;
   }
+
+    private Map<String, String> getNMSGuideMessage() {
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("errorCode", "204");
+        result.put("errorMessage", "NMS(Network Management System)에서<br/> 데이터를 제공하지 않는 서버입니다.<br/><br/> NMS 담당자에게 문의하시거나<br/> 상위 NMS 링크에서 참고하세요.<br/><br/> dl : !nms@navercorp.com");
+        return result;
+    }
 
     private Set<String> parseRsPort(ResponseEntity<String> rsPortResponseEntity) throws Exception {
         Set<String> rsPorts = new HashSet();
