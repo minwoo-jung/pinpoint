@@ -118,7 +118,7 @@
     </bean>
     
     <!--  Web Socket  -->
-    <bean id="handlerRegister" class="com.navercorp.pinpoint.web.websocket.WebSocketHandlerManager">
+    <bean id="handlerRegister" class="com.navercorp.pinpoint.web.websocket.PinpointWebSocketHandlerManager">
     </bean>
     
 </beans>
