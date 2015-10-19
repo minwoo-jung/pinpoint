@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.plugin.nbasearc;
 import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.*;
 
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
 
 /**
  * 
@@ -28,8 +29,8 @@ public final class NbaseArcConstants {
     private NbaseArcConstants() {
     }
 
-    public static final ServiceType NBASE_ARC = ServiceType.of(8250, "NBASE_ARC", TERMINAL, RECORD_STATISTICS, INCLUDE_DESTINATION_ID);
-    public static final ServiceType NBASE_ARC_INTERNAL = ServiceType.of(8251, "NBASE_ARC_INTERNAL");
+    public static final ServiceType NBASE_ARC = ServiceTypeFactory.of(8250, "NBASE_ARC", TERMINAL, RECORD_STATISTICS, INCLUDE_DESTINATION_ID);
+    public static final ServiceType NBASE_ARC_INTERNAL = ServiceTypeFactory.of(8251, "NBASE_ARC_INTERNAL");
     
     public static final String METADATA_END_POINT = "com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor";
     public static final String METADATA_DESTINATION_ID = "com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor";
