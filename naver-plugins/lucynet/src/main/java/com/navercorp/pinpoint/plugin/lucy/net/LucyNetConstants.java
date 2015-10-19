@@ -16,6 +16,7 @@ package com.navercorp.pinpoint.plugin.lucy.net;
 
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
 
 import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.RECORD_STATISTICS;
 
@@ -32,8 +33,8 @@ public final class LucyNetConstants {
 
     public static final String METADATA_ASYNC_TRACE_ID = "asyncTraceId";
     
-    public static final ServiceType NPC_CLIENT = ServiceType.of(9060, "NPC_CLIENT", RECORD_STATISTICS);
-    public static final ServiceType NPC_CLIENT_INTERNAL = ServiceType.of(9061, "NPC_CLIENT_INTERNAL", "NPC_CLIENT");
+    public static final ServiceType NPC_CLIENT = ServiceTypeFactory.of(9060, "NPC_CLIENT", RECORD_STATISTICS);
+    public static final ServiceType NPC_CLIENT_INTERNAL = ServiceTypeFactory.of(9061, "NPC_CLIENT_INTERNAL", "NPC_CLIENT");
     
     public static final AnnotationKey NPC_URL = new AnnotationKey(60, "npc.url");
     public static final AnnotationKey NPC_PARAM = new AnnotationKey(61, "npc.param");
@@ -42,7 +43,7 @@ public final class LucyNetConstants {
     // NIMM
     public static final String METADATA_NIMM_ADDRESS = "nimmAddress";
 
-    public static final ServiceType NIMM_CLIENT = ServiceType.of(9070, "NIMM_CLIENT", RECORD_STATISTICS);
+    public static final ServiceType NIMM_CLIENT = ServiceTypeFactory.of(9070, "NIMM_CLIENT", RECORD_STATISTICS);
     
     public static final AnnotationKey NIMM_OBJECT_NAME = new AnnotationKey(70, "nimm.objectName");
     public static final AnnotationKey NIMM_METHOD_NAME = new AnnotationKey(71, "nimm.methodName");

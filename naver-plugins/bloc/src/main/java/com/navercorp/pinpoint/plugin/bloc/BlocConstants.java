@@ -19,6 +19,7 @@ import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.*;
 
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
 
 /**
  * @author Jongho Moon
@@ -34,7 +35,7 @@ public final class BlocConstants {
     
     public static final String SERVER_TYPE_BLOC = "BLOC";
 
-    public static final ServiceType BLOC = ServiceType.of(1020, "BLOC", RECORD_STATISTICS);
-    public static final ServiceType BLOC_INTERNAL_METHOD = ServiceType.of(1021, "BLOC_INTERNAL_METHOD", "INTERNAL_METHOD");
+    public static final ServiceType BLOC = ServiceTypeFactory.of(1020, "BLOC", RECORD_STATISTICS);
+    public static final ServiceType BLOC_INTERNAL_METHOD = ServiceTypeFactory.of(1021, "BLOC_INTERNAL_METHOD", "INTERNAL_METHOD");
 
 }
