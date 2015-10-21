@@ -69,6 +69,7 @@
     <script src="components/bootstrap/dist/js/bootstrap.min.js?v=${buildTime}"></script>
     <script src="components/gojs/go.js?v=${buildTime}"></script>
     <!--scirpt src="components/gojs/go-debug.js?v=${buildTime}"></scirpt-->
+    <script src="components/d3/d3.min.js?v=${buildTime}"></script>
     <script src="components/select2/select2.min.js?v=${buildTime}"></script>
     <script src="components/select2/select2_locale_ko.js?v=${buildTime}"></script>
     <script src="components/jquery-class/jquery.Class.js?v=${buildTime}"></script>
@@ -184,7 +185,7 @@
 	                <load-chart-directive namespace="forServerList"></load-chart-directive>
 				</div>
 				<div class="nms-list" ng-show="showNMSList" style="position:absolute;background-color:#FCFCFC;border:1px solid #F3880C;right:4px;padding:24px 18px 2px 1px;height:620px;overflow-y:auto;;overflow-x:hidden;box-shadow: -5px 0px 5px 0px rgba(243,136,12,0.75);width:410px;">
-					<div style="color:brown;height:20px;margin-bottom:4px;font-weight:bold;position:fixed;font-weight:bold;margin-top:-22px;right:24px"><a href="http://nms.navercorp.com" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> NMS</a></div>
+					<div style="color:brown;height:20px;margin-bottom:4px;font-weight:bold;position:fixed;font-weight:bold;margin-top:-22px;right:24px"><a href="http://nms.navercorp.com" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Network Monitor System</a></div>
 					<div class="nms"></div>
 				</div>				
 			</div>
@@ -310,12 +311,12 @@
     </div>
 </div>
 
-<div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="testModalLabel" ng-controller="ConfigurationCtrl">
+<div class="modal fade" tabindex="-1" role="dialog" ng-controller="ConfigurationCtrl">
   <div class="modal-dialog" role="document" style="width:1000px">
     <div class="modal-content" id="pinpoint-configuration">
       <div class="modal-header" style="text-align:center">
       	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="testModalLabel">Preference</h4>
+        <h4 class="modal-title">Pinpoint Configuration</h4>
         <ul>
         	<li ng-class="{true: 'active'}[isGeneral()]" ng-click="setCurrentTab('general')">General</li>
         	<li ng-class="{true: 'active'}[isAlarm()]" ng-click="setCurrentTab('alarm')">Alarm</li>
@@ -324,9 +325,41 @@
         </ul>
       </div>
       <div class="modal-body">
-      	<div id="config-general" ng-show="isGeneral()" ng-controller="GeneralCtrl">
+		<div id="config-general" ng-show="isGeneral()" ng-controller="GeneralCtrl">
+      		<h4>General Configuration</h4>
       		<div style="text-align:center;font-family:verdana;">
-      			<h1>Add General Setting</h1>
+      			<table class="table table-bordered table-condensed">
+      				<tbody>
+      					<tr>
+      						<td class="col-md-1">Depth</td>
+      						<td class="col-md-4">
+      							<select class="depth form-control" ng-change="changeDepth()" ng-model="depth">
+      								<option ng-repeat="dep in depthList" ng-selected="dep == depth" value="{{dep}}">{{dep}}</option>
+      							</select>
+      						</td>
+      						<td class="col-md-1">Peroid</td>
+      						<td class="col-md-4">
+      							<select class="period form-control" ng-change="changePeriod()" ng-model="period">
+      								<option ng-repeat="per in periodTypes" ng-selected="per == period" value="{{dep}}">{{per}}</option>
+      							</select>
+      						</td>
+      					</tr>
+      					<tr>
+      						<td class="col-md-1">Favorite</td>
+      						<td  class="col-md-4">
+      							<select class="applicationList" style="width:100%">
+					                <option ng-repeat="app in applications" value="{{app.text}}">{{app.text}}</option>
+					            </select>
+      						</td>
+      						<td class="col-md-5" colspan="2">
+      							<ul class="favorite-list">
+      								<li ng-repeat="favorite in favoriteList"><img ng-src='/images/icons/{{favorite.split("@")[1]}}.png' height="25px"/> {{favorite.split('@')[0]}} <button class="btn btn-danger btn-xs" style="float:right" ng-click="removeFavorite(favorite)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></li>
+      							</ul>
+      							<div ng-show="favoriteList.length == 0" style="color:#F00">등록된 목록이 없습니다.</div>
+      						</td>
+      					</tr>
+      				</tbody>
+      			</table>
       		</div>
       	</div>
       	<div id="config-alram" ng-show="isAlarm()" style="margin-top:10px;">
@@ -401,6 +434,7 @@
 <script src="common/services/analytics.service.js?v=${buildTime}"></script>
 <script src="common/services/ajax.service.js?v=${buildTime}"></script>
 <script src="common/services/help-content.service.js?v=${buildTime}"></script>
+<script src="common/services/realtime-websocket.service.js?v=${buildTime}"></script>
 <script src="common/services/preference.service.js?v=${buildTime}"></script>
 <script src="common/help/help-content-en.js?v=${buildTime}"></script>
 <script src="common/help/help-content-ko.js?v=${buildTime}"></script>
@@ -408,6 +442,7 @@
 
 <script src="features/navbar/navbar.directive.js?v=${buildTime}"></script>
 <script src="features/serverMap/server-map.directive.js?v=${buildTime}"></script>
+<script src="features/realtimeChart/realtime-chart.directive.js?v=${buildTime}"></script>
 <script src="features/scatter/scatter.directive.js?v=${buildTime}"></script>
 <script src="features/nodeInfoDetails/node-info-details.directive.js?v=${buildTime}"></script>
 <script src="features/linkInfoDetails/link-info-details.directive.js?v=${buildTime}"></script>
@@ -441,7 +476,7 @@
 <script src="pages/filteredMap/filtered-map.controller.js?v=${buildTime}"></script>
 <script src="pages/transactionView/transaction-view.controller.js?v=${buildTime}"></script>
 <script src="pages/scatterFullScreenMode/scatter-full-screen-mode.controller.js?v=${buildTime}"></script>
-
+<script src="features/realtimeChart/realtime-chart.controller.js?v=${buildTime}"></script>
 <!-- endbuild -->
 </body>
 </html>
