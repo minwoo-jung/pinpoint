@@ -18,6 +18,7 @@ import static com.navercorp.pinpoint.common.trace.AnnotationKeyProperty.*;
 import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.*;
 
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.common.trace.AnnotationKeyFactory;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
 
@@ -29,9 +30,9 @@ public final class BlocConstants {
     private BlocConstants() {
     }
 
-    public static final AnnotationKey CALL_URL = new AnnotationKey(15, "CALL_URL");
-    public static final AnnotationKey CALL_PARAM = new AnnotationKey(16, "CALL_PARAM", VIEW_IN_RECORD_SET);
-    public static final AnnotationKey PROTOCOL = new AnnotationKey(17, "PROTOCOL", VIEW_IN_RECORD_SET);
+    public static final AnnotationKey CALL_URL = AnnotationKeyFactory.of(15, "CALL_URL");
+    public static final AnnotationKey CALL_PARAM = AnnotationKeyFactory.of(16, "CALL_PARAM", VIEW_IN_RECORD_SET);
+    public static final AnnotationKey PROTOCOL = AnnotationKeyFactory.of(17, "PROTOCOL", VIEW_IN_RECORD_SET);
     
     public static final String SERVER_TYPE_BLOC = "BLOC";
 
