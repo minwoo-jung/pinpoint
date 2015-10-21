@@ -15,6 +15,7 @@
 package com.navercorp.pinpoint.plugin.lucy.net;
 
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.common.trace.AnnotationKeyFactory;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
 
@@ -36,21 +37,21 @@ public final class LucyNetConstants {
     public static final ServiceType NPC_CLIENT = ServiceTypeFactory.of(9060, "NPC_CLIENT", RECORD_STATISTICS);
     public static final ServiceType NPC_CLIENT_INTERNAL = ServiceTypeFactory.of(9061, "NPC_CLIENT_INTERNAL", "NPC_CLIENT");
     
-    public static final AnnotationKey NPC_URL = new AnnotationKey(60, "npc.url");
-    public static final AnnotationKey NPC_PARAM = new AnnotationKey(61, "npc.param");
-    public static final AnnotationKey NPC_CONNECT_OPTION = new AnnotationKey(62, "npc.connect.options");
+    public static final AnnotationKey NPC_URL = AnnotationKeyFactory.of(60, "npc.url");
+    public static final AnnotationKey NPC_PARAM = AnnotationKeyFactory.of(61, "npc.param");
+    public static final AnnotationKey NPC_CONNECT_OPTION = AnnotationKeyFactory.of(62, "npc.connect.options");
 
     // NIMM
     public static final String METADATA_NIMM_ADDRESS = "nimmAddress";
 
     public static final ServiceType NIMM_CLIENT = ServiceTypeFactory.of(9070, "NIMM_CLIENT", RECORD_STATISTICS);
     
-    public static final AnnotationKey NIMM_OBJECT_NAME = new AnnotationKey(70, "nimm.objectName");
-    public static final AnnotationKey NIMM_METHOD_NAME = new AnnotationKey(71, "nimm.methodName");
-    public static final AnnotationKey NIMM_PARAM = new AnnotationKey(72, "nimm.param");
+    public static final AnnotationKey NIMM_OBJECT_NAME = AnnotationKeyFactory.of(70, "nimm.objectName");
+    public static final AnnotationKey NIMM_METHOD_NAME = AnnotationKeyFactory.of(71, "nimm.methodName");
+    public static final AnnotationKey NIMM_PARAM = AnnotationKeyFactory.of(72, "nimm.param");
     
     // TODO 사용되는 곳이 없음. 필요 없으면 삭제하자 
-    public static final AnnotationKey NIMM_CONNECT_OPTION = new AnnotationKey(73, "nimm.connect.options");
+    public static final AnnotationKey NIMM_CONNECT_OPTION = AnnotationKeyFactory.of(73, "nimm.connect.options");
 
     public static final String NPC_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.ConnectorConstructorInterceptor";
     public static final String NPC_OLD_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.OldVersionConnectorConstructorInterceptor";
