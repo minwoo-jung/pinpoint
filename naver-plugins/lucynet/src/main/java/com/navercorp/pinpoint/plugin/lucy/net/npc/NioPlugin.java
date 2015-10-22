@@ -4,7 +4,7 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
-import com.navercorp.pinpoint.bootstrap.instrument.transformer.PinpointClassFileTransformer;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPlugin;
@@ -27,10 +27,10 @@ class NioPlugin extends NpcPlugin {
 
     @Override
     public void addRecipe() {
-        context.addClassFileTransformer(getEditClazzName(), new PinpointClassFileTransformer() {
+        context.addClassFileTransformer(getEditClazzName(), new TransformCallback() {
 
             @Override
-            public byte[] transform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(LucyNetConstants.METADATA_NPC_SERVER_ADDRESS);
 

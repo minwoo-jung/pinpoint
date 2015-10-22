@@ -19,7 +19,7 @@ import java.security.ProtectionDomain;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
-import com.navercorp.pinpoint.bootstrap.instrument.transformer.PinpointClassFileTransformer;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 
@@ -38,10 +38,10 @@ public class LinePlugin implements ProfilerPlugin {
     public void setup(ProfilerPluginSetupContext context) {
         final LineConfig config = new LineConfig(context.getConfig());
         
-        context.addClassFileTransformer("com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler$InvokeTask", new PinpointClassFileTransformer() {
+        context.addClassFileTransformer("com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler$InvokeTask", new TransformCallback() {
             
             @Override
-            public byte[] transform(Instrumentor instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
                 
                 target.addField("com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor");
