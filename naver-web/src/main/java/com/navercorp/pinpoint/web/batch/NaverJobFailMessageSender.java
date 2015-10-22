@@ -12,6 +12,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.beans.factory.annotation.Value;
 
 public class NaverJobFailMessageSender implements JobFailMessageSender {
 	
@@ -20,6 +21,9 @@ public class NaverJobFailMessageSender implements JobFailMessageSender {
     private final List<String> cellPhoneNumbers;
     private final String serviceID;
     private static final String SENDER_NUMBER = "0317844499";
+    
+    @Value("#{batchProps['batch.server.env']}")
+    private String batchEnv;
     
     public NaverJobFailMessageSender(String mexServerUrl, String serviceID, List<String> cellPhoneNumbers) {
         this.mexServerUrl = mexServerUrl;
@@ -32,7 +36,7 @@ public class NaverJobFailMessageSender implements JobFailMessageSender {
 		String jobName = jobExecution.getJobInstance().getJobName();
 		Date startTime = jobExecution.getStartTime();
 		
-        String encodeMsg = encodeMessage("[PINPOINT]batch job fail\n jobName : " + jobName + "\n start : " + startTime + "\n end : NOW");
+        String encodeMsg = encodeMessage("[PINPOINT-" + batchEnv + "]batch job fail\n jobName : " + jobName + "\n start : " + startTime + "\n end : NOW");
 
         for (String number : cellPhoneNumbers) {
             String url = mexServerUrl + "?serviceId=\"" + serviceID + "\""
