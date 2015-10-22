@@ -15,6 +15,9 @@
                 <listener ref="userListener"/>
             </listeners>
 		</step>
+		<listeners>
+        	<listener ref="jobFailListener"/>
+        </listeners>
 	</job>
 	
 	<bean id="imdbUserReader" class="com.navercorp.pinpoint.web.batch.CubridCursorItemReader" scope="step" >

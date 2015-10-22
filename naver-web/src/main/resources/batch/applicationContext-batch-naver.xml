@@ -15,6 +15,18 @@
     <bean id="naverAlarmMessageSender" class="com.navercorp.pinpoint.web.alarm.NaverAlarmMessageSender"/>
     <util:properties id="batchProps" location="classpath:batch.properties"/>
     
+    <bean id="naverJobFailMessageSender" class="com.navercorp.pinpoint.web.batch.NaverJobFailMessageSender">
+    	<constructor-arg index="0" value="#{batchProps['alarm.sms.url']}"/>
+    	<constructor-arg index="1" value="#{batchProps['alarm.sms.serviceId']}"/>
+    	<constructor-arg index="2">
+    		<list>
+    			<value>01073715625</value>
+    			<value>01037773637</value>
+    			<value>01089440733</value>
+    		</list>
+    	</constructor-arg>
+    </bean>
+    
     <task:scheduled-tasks scheduler="naverScheduler">
         <task:scheduled ref="naverBatchJobLauncher" method="innerSystemSyncJob" cron="0 0 7 * * *" />
     </task:scheduled-tasks>
