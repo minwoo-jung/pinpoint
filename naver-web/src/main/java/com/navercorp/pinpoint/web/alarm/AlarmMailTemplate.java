@@ -29,15 +29,17 @@ public class AlarmMailTemplate {
 
     private final String pinpointUrl;
     private final AlarmChecker checker;
+    private final String batchEnv;
     
-    public AlarmMailTemplate(AlarmChecker checker, String pinpointUrl) {
+    public AlarmMailTemplate(AlarmChecker checker, String pinpointUrl, String batchEnv) {
         this.checker = checker;
         this.pinpointUrl =pinpointUrl;
+        this.batchEnv = batchEnv;
     }
     
     public String createSubject() {
         Rule rule = checker.getRule();
-        return String.format("[PINPOINT-DEV] %s Alarm for %s Service.", rule.getCheckerName(), rule.getApplicationId());
+        return String.format("[PINPOINT-" + batchEnv + "] %s Alarm for %s Service.", rule.getCheckerName(), rule.getApplicationId());
     }
 
     public String createBody() {

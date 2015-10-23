@@ -54,6 +54,10 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     @Value("#{batchProps['pinpoint.url']}")
     private String pinpointUrl;
     
+    @Value("#{batchProps['batch.server.env']}")
+    private String batchEnv;
+
+    
     @Autowired
     private UserGroupService userGroupService;
     
@@ -71,6 +75,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     private String smsServerUrl;
     @Value("#{batchProps['alarm.sms.serviceId']}")
     private String smsServiceID;
+        
     private static final String SENDER_NUMBER = "0317844499";
     
     @Override
@@ -153,7 +158,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     }
 
     private Object[] createSendMailParams(AlarmChecker checker) {
-        AlarmMailTemplate mailTemplate = new AlarmMailTemplate(checker, pinpointUrl);
+        AlarmMailTemplate mailTemplate = new AlarmMailTemplate(checker, pinpointUrl, batchEnv);
         List<String> receivers = userGroupService.selectEmailOfMember(checker.getuserGroupId());
         String subject = mailTemplate.createSubject();
         logger.info("send email : {}", subject);
