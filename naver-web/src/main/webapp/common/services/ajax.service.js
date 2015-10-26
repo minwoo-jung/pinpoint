@@ -37,5 +37,23 @@
 	            }
 	        });
 	    };
+	    this.getSQLBind = function(url, cb) {
+			jQuery.ajax({
+				type: 'GET',
+				url: url,
+				cache: false,
+				dataType: 'json',
+				success: function (result) {
+					if (angular.isFunction(cb)) {
+						cb(result);
+					}
+				},
+				error: function (xhr, status, error) {
+					if (angular.isFunction(cb)) {
+						cb(error);
+					}
+				}
+			});
+		};
 	}]);
 })();
