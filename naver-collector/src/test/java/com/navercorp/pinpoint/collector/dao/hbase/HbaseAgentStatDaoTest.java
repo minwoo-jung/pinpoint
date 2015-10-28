@@ -73,7 +73,10 @@ public class HbaseAgentStatDaoTest {
         Put actualPut = argCaptor.getValue();
         List<Cell> cellsToPut = actualPut.getFamilyCellMap().get(AGENT_STAT_CF_STATISTICS);
         verifyColumnsPresent(cellsToPut, jvmGc);
-        verifyColumnsNotPresent(cellsToPut, AGENT_STAT_CF_STATISTICS_COL_JVM_CPU, AGENT_STAT_CF_STATISTICS_COL_SYS_CPU, AGENT_STAT_CF_STATISTICS_COL_TPS);
+        verifyColumnsNotPresent(cellsToPut, AGENT_STAT_COL_JVM_CPU, AGENT_STAT_COL_SYS_CPU);
+        verifyColumnsNotPresent(cellsToPut, AGENT_STAT_COL_TRANSACTION_VERSION,
+                AGENT_STAT_COL_TRANSACTION_SAMPLED_NEW, AGENT_STAT_COL_TRANSACTION_SAMPLED_CONTINUATION,
+                AGENT_STAT_COL_TRANSACTION_UNSAMPLED_NEW, AGENT_STAT_COL_TRANSACTION_UNSAMPLED_CONTINUATION);
     }
 
     @Test
@@ -95,7 +98,9 @@ public class HbaseAgentStatDaoTest {
         List<Cell> cellsToPut = actualPut.getFamilyCellMap().get(AGENT_STAT_CF_STATISTICS);
         verifyColumnsPresent(cellsToPut, jvmGc);
         verifyColumnsPresent(cellsToPut, cpuLoad);
-        verifyColumnsNotPresent(cellsToPut, AGENT_STAT_CF_STATISTICS_COL_TPS);
+        verifyColumnsNotPresent(cellsToPut, AGENT_STAT_COL_TRANSACTION_VERSION,
+                AGENT_STAT_COL_TRANSACTION_SAMPLED_NEW, AGENT_STAT_COL_TRANSACTION_SAMPLED_CONTINUATION,
+                AGENT_STAT_COL_TRANSACTION_UNSAMPLED_NEW, AGENT_STAT_COL_TRANSACTION_UNSAMPLED_CONTINUATION);
     }
 
     @Test
@@ -125,19 +130,19 @@ public class HbaseAgentStatDaoTest {
     private void verifyColumnsPresent(List<Cell> cells, TJvmGc gc) {
         for (Cell cell : cells) {
             byte[] columnName = CellUtil.cloneQualifier(cell);
-            if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_GC_TYPE)) {
+            if (Bytes.equals(columnName, AGENT_STAT_COL_GC_TYPE)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(gc.getType().name()));
-            } else if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_GC_OLD_COUNT)) {
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_GC_OLD_COUNT)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(gc.getJvmGcOldCount()));
-            } else if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_GC_OLD_TIME)) {
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_GC_OLD_TIME)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(gc.getJvmGcOldTime()));
-            } else if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_HEAP_USED)) {
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_HEAP_USED)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(gc.getJvmMemoryHeapUsed()));
-            } else if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_HEAP_MAX)) {
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_HEAP_MAX)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(gc.getJvmMemoryHeapMax()));
-            } else if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_NON_HEAP_USED)) {
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_NON_HEAP_USED)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(gc.getJvmMemoryNonHeapUsed()));
-            } else if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_NON_HEAP_MAX)) {
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_NON_HEAP_MAX)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(gc.getJvmMemoryNonHeapMax()));
             }
         }
@@ -146,9 +151,9 @@ public class HbaseAgentStatDaoTest {
     private void verifyColumnsPresent(List<Cell> cells, TCpuLoad cpuLoad) {
         for (Cell cell : cells) {
             byte[] columnName = CellUtil.cloneQualifier(cell);
-            if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_JVM_CPU)) {
+            if (Bytes.equals(columnName, AGENT_STAT_COL_JVM_CPU)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(cpuLoad.getJvmCpuLoad()));
-            } else if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_SYS_CPU)) {
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_SYS_CPU)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(cpuLoad.getSystemCpuLoad()));
             }
         }
@@ -157,8 +162,16 @@ public class HbaseAgentStatDaoTest {
     private void verifyColumnsPresent(List<Cell> cells, TTransaction transaction) {
         for (Cell cell : cells) {
             byte[] columnName = CellUtil.cloneQualifier(cell);
-            if (Bytes.equals(columnName, AGENT_STAT_CF_STATISTICS_COL_TPS)) {
-                assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getTps()));
+            if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_VERSION)) {
+                assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getVersion()));
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_SAMPLED_NEW)) {
+                assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getSampledNewCount()));
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_SAMPLED_CONTINUATION)) {
+                assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getSampledContinuationCount()));
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_UNSAMPLED_NEW)) {
+                assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getUnsampledNewCount()));
+            } else if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_UNSAMPLED_CONTINUATION)) {
+                assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getUnsampledContinuationCount()));
             }
         }
     }
@@ -200,7 +213,11 @@ public class HbaseAgentStatDaoTest {
 
     private TTransaction createTTransaction() {
         final TTransaction transaction = new TTransaction();
-        transaction.setTps(Integer.MAX_VALUE);
+        transaction.setVersion(Short.MAX_VALUE);
+        transaction.setSampledNewCount(Long.MAX_VALUE);
+        transaction.setSampledContinuationCount(Long.MAX_VALUE);
+        transaction.setUnsampledNewCount(Long.MAX_VALUE);
+        transaction.setUnsampledContinuationCount(Long.MAX_VALUE);
         return transaction;
     }
 
