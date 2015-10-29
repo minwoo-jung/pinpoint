@@ -74,7 +74,7 @@ public class HbaseAgentStatDaoTest {
         List<Cell> cellsToPut = actualPut.getFamilyCellMap().get(AGENT_STAT_CF_STATISTICS);
         verifyColumnsPresent(cellsToPut, jvmGc);
         verifyColumnsNotPresent(cellsToPut, AGENT_STAT_COL_JVM_CPU, AGENT_STAT_COL_SYS_CPU);
-        verifyColumnsNotPresent(cellsToPut, AGENT_STAT_COL_TRANSACTION_VERSION,
+        verifyColumnsNotPresent(cellsToPut,
                 AGENT_STAT_COL_TRANSACTION_SAMPLED_NEW, AGENT_STAT_COL_TRANSACTION_SAMPLED_CONTINUATION,
                 AGENT_STAT_COL_TRANSACTION_UNSAMPLED_NEW, AGENT_STAT_COL_TRANSACTION_UNSAMPLED_CONTINUATION);
     }
@@ -98,7 +98,7 @@ public class HbaseAgentStatDaoTest {
         List<Cell> cellsToPut = actualPut.getFamilyCellMap().get(AGENT_STAT_CF_STATISTICS);
         verifyColumnsPresent(cellsToPut, jvmGc);
         verifyColumnsPresent(cellsToPut, cpuLoad);
-        verifyColumnsNotPresent(cellsToPut, AGENT_STAT_COL_TRANSACTION_VERSION,
+        verifyColumnsNotPresent(cellsToPut,
                 AGENT_STAT_COL_TRANSACTION_SAMPLED_NEW, AGENT_STAT_COL_TRANSACTION_SAMPLED_CONTINUATION,
                 AGENT_STAT_COL_TRANSACTION_UNSAMPLED_NEW, AGENT_STAT_COL_TRANSACTION_UNSAMPLED_CONTINUATION);
     }
@@ -162,9 +162,7 @@ public class HbaseAgentStatDaoTest {
     private void verifyColumnsPresent(List<Cell> cells, TTransaction transaction) {
         for (Cell cell : cells) {
             byte[] columnName = CellUtil.cloneQualifier(cell);
-            if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_VERSION)) {
-                assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getVersion()));
-            } else if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_SAMPLED_NEW)) {
+            if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_SAMPLED_NEW)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getSampledNewCount()));
             } else if (Bytes.equals(columnName, AGENT_STAT_COL_TRANSACTION_SAMPLED_CONTINUATION)) {
                 assertArrayEquals(CellUtil.cloneValue(cell), Bytes.toBytes(transaction.getSampledContinuationCount()));
@@ -213,7 +211,6 @@ public class HbaseAgentStatDaoTest {
 
     private TTransaction createTTransaction() {
         final TTransaction transaction = new TTransaction();
-        transaction.setVersion(Short.MAX_VALUE);
         transaction.setSampledNewCount(Long.MAX_VALUE);
         transaction.setSampledContinuationCount(Long.MAX_VALUE);
         transaction.setUnsampledNewCount(Long.MAX_VALUE);
