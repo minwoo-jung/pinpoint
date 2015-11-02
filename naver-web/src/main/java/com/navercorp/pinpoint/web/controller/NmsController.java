@@ -25,6 +25,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,9 @@ public class NmsController {
 
     private final static String NMS_CONN_RS_PORT_API_URL = "http://view.nms.navercorp.com/nms-api/dashboard.php?cmd=getVipsByRip&rip={hostIp}";
     private final static String NMS_CONN_CPS_API_URL = "http://view.nms.navercorp.com/nms-api/topology.php?cmd=vsByRsip&rsIp={hostIp}&rsPort={rsPort}";
+    
+    @Value("#{pinpointWebProps['nms.error.message']}")
+    private String nmsErrorMessage;
     
     @Autowired  
     private RestTemplate restTemplate;
@@ -86,7 +90,7 @@ public class NmsController {
     private Map<String, String> getNMSGuideMessage() {
         Map<String, String> result = new HashMap<String, String>();
         result.put("errorCode", "204");
-        result.put("errorMessage", "NMS(Network Management System)에서<br/> 데이터를 제공하지 않는 서버입니다.<br/><br/> NMS 담당자에게 문의하시거나<br/> 상위 NMS 링크에서 참고하세요.<br/><br/> dl : !nms@navercorp.com");
+        result.put("errorMessage", nmsErrorMessage);
         return result;
     }
 
