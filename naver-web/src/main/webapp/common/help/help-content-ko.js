@@ -129,6 +129,20 @@
 				}]
 			} 
 		},
+		realtime: {
+			"default": {
+				mainStyle: "",
+				title: "Realtime Active Thread Chart",
+				desc: "",
+				category: [{
+					title: "[]",
+					items: []
+				},{
+					title: "[]",
+					items: []
+				}]
+			}
+		},		
 		scatter : {
 			"default": {
 				mainStyle: "",
