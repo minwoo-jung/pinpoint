@@ -16,6 +16,8 @@
 package com.navercorp.pinpoint.web.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,7 +68,7 @@ public class NmsController {
             throw new RuntimeException("NMS_CONN_RS_PORT_API_URL api call is not success.");
         }
         
-        Set<String> rsPorts = parseRsPort(rsPortResponseEntity);
+        List<String> rsPorts = parseRsPort(rsPortResponseEntity);
         List nmsInfos = new ArrayList<List>();
         
         for (String rsPort : rsPorts) {
@@ -94,14 +96,14 @@ public class NmsController {
         return result;
     }
 
-    private Set<String> parseRsPort(ResponseEntity<String> rsPortResponseEntity) throws Exception {
+    private List<String> parseRsPort(ResponseEntity<String> rsPortResponseEntity) throws Exception {
         Set<String> rsPorts = new HashSet();
         
         Map<String, Object> responseData = new ObjectMapper().readValue(rsPortResponseEntity.getBody(), Map.class);
         int portCount = (int)responseData.get("records");
         
         if (portCount <= 0) {
-            return rsPorts;
+            return new ArrayList<>();
         }
         
         List<Map> rsPortInfos = (List<Map>)responseData.get("rows");
@@ -114,7 +116,16 @@ public class NmsController {
             }
         }
         
-        return rsPorts;
+        List<String> ports = new ArrayList<String>(rsPorts);
+        Collections.sort(ports, new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                Integer i1 = Integer.parseInt(o1);
+                Integer i2 = Integer.parseInt(o2);
+                return (i1 < i2 ? -1 : (i1 == i2 ? 0 : 1));
+            }
+        });
+        
+        return ports;
     }
 
     private List<Map<String, Object>> parseNmsInfo(ResponseEntity<Map> responseEntity) {
