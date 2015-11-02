@@ -166,6 +166,20 @@
 				}]
 			}
 		},
+		realtime: {
+			"default": {
+				mainStyle: "",
+				title: "Realtime Active Thread Chart",
+				desc: "",
+				category: [{
+					title: "[]",
+					items: []
+				},{
+					title: "[]",
+					items: []
+				}]
+			}
+		},		
 		nodeInfoDetails: {
 			responseSummary: {
 				mainStyle: "",
