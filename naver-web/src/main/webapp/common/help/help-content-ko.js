@@ -488,7 +488,7 @@
 					}]
 				}]
 			},
-			tps: {
+            tps: {
                 mainStyle: "",
                 title: "TPS",
                 desc: "서버로 인입된 초당 트랜잭션 수",
