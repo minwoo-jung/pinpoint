@@ -294,6 +294,21 @@
 						desc: "갯수를 오름/내림차순 정렬 합니다."
 					}]
 				}]
+			},
+			nms: {
+				mainStyle: "",
+				title: "NMS",
+				desc: "Network Management System",
+				category: [{
+					title: "[용어]",
+					items: [{
+						name: "Connection Per Seconds",
+						desc: "초당 커넥션 처리 수 입니다."
+					},{
+						name: "Concurrent Connection",
+						desc: "동시 연결 수 입니다."
+					}]
+				}]
 			}
 		},
 		linkInfoDetails: {
@@ -417,6 +432,21 @@
 					},{
 						name: "Count",
 						desc: "갯수를 오름/내림차순 정렬 합니다."
+					}]
+				}]
+			},
+			nms: {
+				mainStyle: "",
+				title: "NMS",
+				desc: "Network Management System",
+				category: [{
+					title: "[용어]",
+					items: [{
+						name: "Connection Per Seconds",
+						desc: "초당 커넥션 처리 수 입니다."
+					},{
+						name: "Concurrent Connection",
+						desc: "동시 연결 수 입니다."
 					}]
 				}]
 			}

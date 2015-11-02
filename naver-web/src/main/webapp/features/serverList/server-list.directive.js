@@ -37,6 +37,13 @@
                 	$element.on('hide.bs.modal', function() {
                 		scope.showNMSList = false;
                 	});
+                	jQuery('.nmsTooltip').tooltipster({
+                    	content: function() {
+                    		return helpContentTemplate(helpContentService.nodeInfoDetails.nms);
+                    	},
+                    	position: "bottom",
+                    	trigger: "click"
+                    });
                 	
             		var compiledTemplate = Handlebars.compile( [
     						'<div>',
@@ -107,7 +114,7 @@
 	                		ajaxService.getNMSData( value, function( result ) {
 	                			$nms.empty();
 	                			if ( angular.isDefined(result.errorCode) ) {
-	                				$nms.html('<h4 style="text-align:center;padding-top:50%;text-decoration:red;text-decoration-color:orange">' + result.errorMessage + '</h4>');
+	                				$nms.html('<h4 style="text-align:center;padding-top:20%;text-decoration:red;text-decoration-color:orange">' + result.errorMessage + '</h4>');
 	                			} else {
 	                				$nms.html( compiledTemplate({ "datum": result }) );
 	                			}

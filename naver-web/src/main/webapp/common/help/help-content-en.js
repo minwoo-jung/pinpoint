@@ -279,7 +279,22 @@
 				mainStyle: "",
 				title: "Search and Fliter",
 				desc: "Filter by server name or total count.Clicking Name or Count sorts the list in ascending/descending order."
-			}			
+			},
+			nms: {
+				mainStyle: "",
+				title: "NMS",
+				desc: "Network Management System",
+				category: [{
+					title: "[word]",
+					items: [{
+						name: "Connection Per Seconds",
+						desc: "Connection Per Seconds"
+					},{
+						name: "Concurrent Connection",
+						desc: "Concurrent Connection"
+					}]
+				}]
+			}
 		},
 		linkInfoDetails: {
 			responseSummary: {
@@ -397,6 +412,21 @@
 				mainStyle: "",
 				title: "Search and Filter",
 				desc: "Filter by server name or total count.<br/>Clicking Name or Count sorts the list in ascending/descending order."
+			},
+			nms: {
+				mainStyle: "",
+				title: "NMS",
+				desc: "Network Management System",
+				category: [{
+					title: "[word]",
+					items: [{
+						name: "Connection Per Seconds",
+						desc: "Connection Per Seconds"
+					},{
+						name: "Concurrent Connection",
+						desc: "Concurrent Connection"
+					}]
+				}]
 			}
 		},
 		inspector: {
