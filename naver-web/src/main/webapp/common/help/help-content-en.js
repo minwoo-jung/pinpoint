@@ -465,7 +465,31 @@
 						desc: "Both the JVM's and the system's CPU usage are collected"
 					}]
 				}]
-			}
+			},
+            tps: {
+                mainStyle: "",
+                title: "TPS",
+                desc: "Transactions per second received by the server",
+                category: [{
+                    title: "[Legend]",
+                    items: [{
+                        name: "Sampled New (S.N)",
+                        desc: "Profiled transactions that started from the current agent"
+                    },{
+                        name: "Sampled Continuation (S.C)",
+                        desc: "Profiled transactions that started from another agent"
+                    },{
+                        name: "Unsampled New (U.N)",
+                        desc: "Unprofiled transactions that started from the current agent"
+                    },{
+                        name: "Unsampled Continuation (U.C)",
+                        desc: "Unprofiled transactions that started from another agent"
+                    },{
+                        name: "Total",
+                        desc: "All transactions"
+                    }]
+                }]
+            }
 		},
 		callTree: {
 			column: {
