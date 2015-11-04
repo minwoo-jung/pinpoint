@@ -189,7 +189,10 @@
 	                <load-chart-directive namespace="forServerList"></load-chart-directive>
 				</div>
 				<div class="nms-list" ng-show="showNMSList" style="position:absolute;background-color:#FCFCFC;border:1px solid #F3880C;right:4px;padding:24px 18px 2px 1px;height:620px;overflow-y:auto;;overflow-x:hidden;box-shadow: -5px 0px 5px 0px rgba(243,136,12,0.75);width:410px;">
-					<div style="color:brown;height:20px;margin-bottom:4px;font-weight:bold;position:fixed;font-weight:bold;margin-top:-22px;right:24px"><a href="http://nms.navercorp.com" target="_blank"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Network Monitor System</a></div>
+					<div style="color:brown;height:20px;margin-bottom:4px;font-weight:bold;position:fixed;font-weight:bold;margin-top:-22px;right:24px"><a href="http://nms.navercorp.com" target="_blank">
+						<span class="glyphicon glyphicon-link" aria-hidden="true"></span> Network Monitor System</a>
+						<span class="glyphicon glyphicon-question-sign nmsTooltip" style="cursor:pointer;margin-right:2px;"></span>
+					</div>
 					<div class="nms"></div>
 				</div>				
 			</div>
@@ -349,7 +352,7 @@
       						<td class="col-md-2 title">Search Peroid</td>
       						<td class="col-md-3">
       							<select class="period form-control" ng-change="changePeriod()" ng-model="period">
-      								<option ng-repeat="per in periodTypes" ng-selected="per == period" value="{{dep}}">{{per}}</option>
+      								<option ng-repeat="per in periodTypes" ng-selected="per == period" value="{{per}}">{{per}}</option>
       							</select>
       						</td>
       					</tr>
@@ -476,6 +479,7 @@
 <script src="features/loadChart/load-chart.directive.js?v=${buildTime}"></script>
 <script src="features/jvmMemoryChart/jvm-memory-chart.directive.js?v=${buildTime}"></script>
 <script src="features/cpuLoadChart/cpu-load-chart.directive.js?v=${buildTime}"></script>
+<script src="features/tpsChart/tps-chart.directive.js?v=${buildTime}"></script>
 <script src="features/loading/loading.directive.js?v=${buildTime}"></script>
 <script src="features/configuration/configuration.controller.js?v=${buildTime}"></script>
 <script src="features/configuration/general/general.controller.js?v=${buildTime}"></script>
