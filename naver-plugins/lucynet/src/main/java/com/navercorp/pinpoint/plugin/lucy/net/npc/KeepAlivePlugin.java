@@ -4,6 +4,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 
 import java.security.ProtectionDomain;
@@ -11,7 +13,9 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class KeepAlivePlugin extends NpcPlugin {
+class KeepAlivePlugin extends NpcPlugin implements TransformTemplateAware {
+
+    private TransformTemplate transformTemplate;
 
     public KeepAlivePlugin(ProfilerPluginSetupContext context) {
         super(context);
@@ -42,4 +46,9 @@ class KeepAlivePlugin extends NpcPlugin {
         });
     }
 
+
+    @Override
+    public void setTransformTemplate(TransformTemplate transformTemplate) {
+        this.transformTemplate = transformTemplate;
+    }
 }

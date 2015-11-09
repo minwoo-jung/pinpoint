@@ -5,6 +5,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPlugin;
@@ -14,8 +16,10 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class LightWeightNpcHessianPlugin extends NpcPlugin {
-    
+class LightWeightNpcHessianPlugin extends NpcPlugin implements TransformTemplateAware {
+
+    private TransformTemplate transformTemplate;
+
     public LightWeightNpcHessianPlugin(ProfilerPluginSetupContext context) {
         super(context);
     }
@@ -50,4 +54,8 @@ class LightWeightNpcHessianPlugin extends NpcPlugin {
 
     }
 
+    @Override
+    public void setTransformTemplate(TransformTemplate transformTemplate) {
+        this.transformTemplate = transformTemplate;
+    }
 }
