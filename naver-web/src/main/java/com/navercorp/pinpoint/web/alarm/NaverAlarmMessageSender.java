@@ -79,7 +79,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     private static final String SENDER_NUMBER = "0317844499";
     
     @Override
-    public void sendSms(AlarmChecker checker) {
+    public void sendSms(AlarmChecker checker, int sequenceCount) {
         List<String> receivers = userGroupService.selectPhoneNumberOfMember(checker.getuserGroupId());
 
         if (receivers.size() == 0) {
@@ -95,7 +95,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
                 nvps.add(new BasicNameValuePair("serviceId", smsServiceID));
                 nvps.add(new BasicNameValuePair("sendMdn", QUOTATATION + SENDER_NUMBER + QUOTATATION));
                 nvps.add(new BasicNameValuePair("receiveMdnList",convertToReceiverFormat(receivers)));
-                nvps.add(new BasicNameValuePair("content", QUOTATATION + message + QUOTATATION));
+                nvps.add(new BasicNameValuePair("content", QUOTATATION + message + " #" + sequenceCount + QUOTATATION));
             
                 HttpGet get = new HttpGet(smsServerUrl + "?" + URLEncodedUtils.format(nvps, "UTF-8"));
                 logger.debug("SMSServer url : {}", get.getURI());
@@ -124,7 +124,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     }
     
     @Override
-    public void sendEmail(AlarmChecker checker) {
+    public void sendEmail(AlarmChecker checker, int sequenceCount) {
         NpcConnectionFactory factory = new NpcConnectionFactory();
         factory.setBoxDirectoryServiceHostName(emailServerUrl);
         factory.setCharset(Charset.forName("UTF-8"));
@@ -134,7 +134,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
 
         try {
             connector = factory.create();
-            Object[] params = createSendMailParams(checker);
+            Object[] params = createSendMailParams(checker, sequenceCount);
             InvocationFuture future = connector.invoke(null, "send", params);
             future.await();
             Reply reply = (Reply) future.getReturnValue();
@@ -157,10 +157,10 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
         }
     }
 
-    private Object[] createSendMailParams(AlarmChecker checker) {
+    private Object[] createSendMailParams(AlarmChecker checker, int sequenceCount) {
         AlarmMailTemplate mailTemplate = new AlarmMailTemplate(checker, pinpointUrl, batchEnv);
         List<String> receivers = userGroupService.selectEmailOfMember(checker.getuserGroupId());
-        String subject = mailTemplate.createSubject();
+        String subject = mailTemplate.createSubject() + " #" + sequenceCount;
         logger.info("send email : {}", subject);
         return new Object[] { EMAIL_SERVICE_ID, OPTION, SENDER_EMAIL_ADDRESS, "", joinAddresses(receivers), subject, mailTemplate.createBody()};
     }
