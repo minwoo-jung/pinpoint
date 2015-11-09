@@ -27,7 +27,7 @@ class NioPlugin extends NpcPlugin {
 
     @Override
     public void addRecipe() {
-        context.addClassFileTransformer(getEditClazzName(), new TransformCallback() {
+        transformTemplate.transform(getEditClazzName(), new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {

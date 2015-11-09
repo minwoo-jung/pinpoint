@@ -20,6 +20,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 
@@ -29,7 +31,9 @@ import static com.navercorp.pinpoint.common.util.VarArgs.va;
  * @author Jongho Moon
  *
  */
-public class LinePlugin implements ProfilerPlugin {
+public class LinePlugin implements ProfilerPlugin, TransformTemplateAware {
+
+    private TransformTemplate transformTemplate;
 
     /* (non-Javadoc)
      * @see com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin#setup(com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext)
@@ -38,12 +42,12 @@ public class LinePlugin implements ProfilerPlugin {
     public void setup(ProfilerPluginSetupContext context) {
         final LineConfig config = new LineConfig(context.getConfig());
         
-        context.addClassFileTransformer("com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler$InvokeTask", new TransformCallback() {
-            
+        transformTemplate.transform("com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler$InvokeTask", new TransformCallback() {
+
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
-                
+
                 target.addField("com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor");
                 target.addField("com.navercorp.pinpoint.plugin.line.MessageEventAccessor");
 
@@ -53,5 +57,10 @@ public class LinePlugin implements ProfilerPlugin {
                 return target.toBytecode();
             }
         });
+    }
+
+    @Override
+    public void setTransformTemplate(TransformTemplate transformTemplate) {
+        this.transformTemplate = transformTemplate;
     }
 }

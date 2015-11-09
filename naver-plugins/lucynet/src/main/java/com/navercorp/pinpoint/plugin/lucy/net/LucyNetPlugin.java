@@ -7,6 +7,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
@@ -36,26 +38,28 @@ import java.util.List;
  * @author Jongho Moon
  *
  */
-public class LucyNetPlugin implements ProfilerPlugin {
+public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
 
     private static final PLogger LOGGER = PLoggerFactory.getLogger(LucyNetPlugin.class);
+
+    private TransformTemplate transformTemplate;
 
     @Override
     public void setup(ProfilerPluginSetupContext context) {
         // lucy-net
-        addCompositeInvocationFutureTransformer(context, "com.nhncorp.lucy.net.invoker.CompositeInvocationFuture");
-        addDefaultInvocationFutureTransformer(context, "com.nhncorp.lucy.net.invoker.DefaultInvocationFuture");
+        addCompositeInvocationFutureTransformer("com.nhncorp.lucy.net.invoker.CompositeInvocationFuture");
+        addDefaultInvocationFutureTransformer("com.nhncorp.lucy.net.invoker.DefaultInvocationFuture");
         
         // nimm
-        addNimmInvokerTransformer(context, "com.nhncorp.lucy.nimm.connector.bloc.NimmInvoker");
+        addNimmInvokerTransformer("com.nhncorp.lucy.nimm.connector.bloc.NimmInvoker");
         
         // npc
         NpcPluginHolder npcPlugin = new NpcPluginHolder(context);
         npcPlugin.addPlugin();
     }
 
-    private void addCompositeInvocationFutureTransformer(ProfilerPluginSetupContext context, String clazzName) {
-        context.addClassFileTransformer(clazzName, new TransformCallback() {
+    private void addCompositeInvocationFutureTransformer(String clazzName) {
+        transformTemplate.transform(clazzName, new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -70,8 +74,8 @@ public class LucyNetPlugin implements ProfilerPlugin {
         });
     }
 
-    private void addDefaultInvocationFutureTransformer(ProfilerPluginSetupContext context, String clazzName) {
-        context.addClassFileTransformer(clazzName, new TransformCallback() {
+    private void addDefaultInvocationFutureTransformer(String clazzName) {
+        transformTemplate.transform(clazzName, new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -91,8 +95,8 @@ public class LucyNetPlugin implements ProfilerPlugin {
 
     }
 
-    private void addNimmInvokerTransformer(ProfilerPluginSetupContext context, String clazzName) {
-        context.addClassFileTransformer(clazzName, new TransformCallback() {
+    private void addNimmInvokerTransformer(String clazzName) {
+        transformTemplate.transform(clazzName, new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -122,5 +126,9 @@ public class LucyNetPlugin implements ProfilerPlugin {
         }
     }
 
+    @Override
+    public void setTransformTemplate(TransformTemplate transformTemplate) {
+        this.transformTemplate = transformTemplate;
+    }
 
 }

@@ -23,6 +23,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 
@@ -38,82 +40,89 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
  * 
  * @author minwoo.jung
  */
-public class NeloPlugin implements ProfilerPlugin {
+public class NeloPlugin implements ProfilerPlugin, TransformTemplateAware {
+
+    private TransformTemplate transformTemplate;
 
     @Override
     public void setup(ProfilerPluginSetupContext context) {
         final ProfilerConfig config = context.getConfig();
         
         if (config.isLog4jLoggingTransactionInfo()) {
-            addLog4jNelo2AsyncAppenderEditor(context);
-            addLog4jNeloAppenderEditor(context);
+            addLog4jNelo2AsyncAppenderEditor();
+            addLog4jNeloAppenderEditor();
         }
         
         if (config.isLogbackLoggingTransactionInfo()) {
-            addLogBackNelo2AsyncAppenderEditor(context);
-            addLogBackNeloAppenderEditor(context);
+            addLogBackNelo2AsyncAppenderEditor();
+            addLogBackNeloAppenderEditor();
         }
     }
     
-    private void addLogBackNeloAppenderEditor(ProfilerPluginSetupContext context) {
-        context.addClassFileTransformer("com.nhncorp.nelo2.logback.NeloLogbackAppender", new TransformCallback() {
-            
+    private void addLogBackNeloAppenderEditor() {
+        transformTemplate.transform("com.nhncorp.nelo2.logback.NeloLogbackAppender", new TransformCallback() {
+
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
                 InstrumentMethod append = target.getDeclaredMethod("append", "ch.qos.logback.classic.spi.ILoggingEvent");
                 append.addInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
-                
+
                 return target.toBytecode();
             }
         });
     }
 
-    private void addLogBackNelo2AsyncAppenderEditor(ProfilerPluginSetupContext context) {
-        context.addClassFileTransformer("com.nhncorp.nelo2.logback.LogbackAsyncAppender", new TransformCallback() {
-            
+    private void addLogBackNelo2AsyncAppenderEditor() {
+        transformTemplate.transform("com.nhncorp.nelo2.logback.LogbackAsyncAppender", new TransformCallback() {
+
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
                 InstrumentMethod append = target.getDeclaredMethod("append", "java.lang.Object");
                 append.addInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
-                
+
                 return target.toBytecode();
             }
         });
     }
 
-    private void addLog4jNelo2AsyncAppenderEditor(ProfilerPluginSetupContext context) {
-        context.addClassFileTransformer("com.nhncorp.nelo2.log4j.Nelo2AsyncAppender", new TransformCallback() {
-            
+    private void addLog4jNelo2AsyncAppenderEditor() {
+        transformTemplate.transform("com.nhncorp.nelo2.log4j.Nelo2AsyncAppender", new TransformCallback() {
+
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
-                
+
                 InstrumentMethod append = target.getDeclaredMethod("append", "org.apache.log4j.spi.LoggingEvent");
-                
+
                 if (append == null) {
                     append = target.addDelegatorMethod("append", "org.apache.log4j.spi.LoggingEvent");
                 }
-                
+
                 append.addInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
-                
+
                 return target.toBytecode();
             }
         });
     }
 
-    private void addLog4jNeloAppenderEditor(ProfilerPluginSetupContext context) {
-        context.addClassFileTransformer("com.nhncorp.nelo2.log4j.NeloAppender", new TransformCallback() {
-            
+    private void addLog4jNeloAppenderEditor() {
+        transformTemplate.transform("com.nhncorp.nelo2.log4j.NeloAppender", new TransformCallback() {
+
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentContext.getInstrumentClass(loader, className, classfileBuffer);
                 InstrumentMethod append = target.getDeclaredMethod("append", "org.apache.log4j.spi.LoggingEvent");
                 append.addInterceptor("com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor");
-                
+
                 return target.toBytecode();
             }
         });
+    }
+
+    @Override
+    public void setTransformTemplate(TransformTemplate transformTemplate) {
+        this.transformTemplate = transformTemplate;
     }
 }

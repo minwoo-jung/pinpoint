@@ -23,6 +23,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
@@ -35,8 +37,10 @@ import static com.navercorp.pinpoint.common.util.VarArgs.va;
  * @author jaehong.kim
  *
  */
-public class NbaseArcPlugin implements ProfilerPlugin {
+public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+
+    private TransformTemplate transformTemplate;
 
     @Override
     public void setup(ProfilerPluginSetupContext context) {
@@ -46,26 +50,26 @@ public class NbaseArcPlugin implements ProfilerPlugin {
         final boolean io = config.isIo();
 
         if (enabled || pipelineEnabled) {
-            addGatewayClientClassEditor(context, config);
-            addRedisConnectionClassEditor(context);
+            addGatewayClientClassEditor(config);
+            addRedisConnectionClassEditor();
             if (io) {
-                addRedisProtocolClassEditor(context);
+                addRedisProtocolClassEditor();
             }
-            addGatewayServerClassEditor(context, config);
-            addGatewayClassEditor(context, config);
+            addGatewayServerClassEditor(config);
+            addGatewayClassEditor();
 
             if (enabled) {
-                addRedisClusterClassEditor(context, config);
+                addRedisClusterClassEditor();
             }
 
             if (pipelineEnabled) {
-                addRedisClusterPipeline(context, config);
+                addRedisClusterPipeline(config);
             }
         }
     }
 
-    private void addGatewayClientClassEditor(ProfilerPluginSetupContext context, final NbaseArcPluginConfig config) {
-        context.addClassFileTransformer("com.nhncorp.redis.cluster.gateway.GatewayClient", new TransformCallback() {
+    private void addGatewayClientClassEditor(final NbaseArcPluginConfig config) {
+        transformTemplate.transform("com.nhncorp.redis.cluster.gateway.GatewayClient", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -96,8 +100,8 @@ public class NbaseArcPlugin implements ProfilerPlugin {
         });
     }
 
-    private void addRedisConnectionClassEditor(final ProfilerPluginSetupContext context) {
-        context.addClassFileTransformer("com.nhncorp.redis.cluster.connection.RedisConnection", new TransformCallback() {
+    private void addRedisConnectionClassEditor() {
+        transformTemplate.transform("com.nhncorp.redis.cluster.connection.RedisConnection", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -123,8 +127,8 @@ public class NbaseArcPlugin implements ProfilerPlugin {
         });
     }
 
-    private void addRedisProtocolClassEditor(final ProfilerPluginSetupContext context) {
-        context.addClassFileTransformer("com.nhncorp.redis.cluster.connection.RedisProtocol", new TransformCallback() {
+    private void addRedisProtocolClassEditor() {
+        transformTemplate.transform("com.nhncorp.redis.cluster.connection.RedisProtocol", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -139,8 +143,8 @@ public class NbaseArcPlugin implements ProfilerPlugin {
         });
     }
 
-    private void addGatewayServerClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
-        context.addClassFileTransformer("com.nhncorp.redis.cluster.gateway.GatewayServer", new TransformCallback() {
+    private void addGatewayServerClassEditor(NbaseArcPluginConfig config) {
+        transformTemplate.transform("com.nhncorp.redis.cluster.gateway.GatewayServer", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -157,8 +161,8 @@ public class NbaseArcPlugin implements ProfilerPlugin {
         });
     }
 
-    private void addGatewayClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
-        context.addClassFileTransformer("com.nhncorp.redis.cluster.gateway.Gateway", new TransformCallback() {
+    private void addGatewayClassEditor() {
+        transformTemplate.transform("com.nhncorp.redis.cluster.gateway.Gateway", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -179,21 +183,21 @@ public class NbaseArcPlugin implements ProfilerPlugin {
         });
     }
 
-    private void addRedisClusterClassEditor(ProfilerPluginSetupContext context, NbaseArcPluginConfig config) {
-        addRedisClusterExtendedClassEditor(context, "com.nhncorp.redis.cluster.triples.BinaryTriplesRedisCluster", new TransformHandler() {
+    private void addRedisClusterClassEditor() {
+        addRedisClusterExtendedClassEditor("com.nhncorp.redis.cluster.triples.BinaryTriplesRedisCluster", new TransformHandler() {
             @Override
             public void handle(InstrumentClass target) throws InstrumentException {
                 target.addField(NbaseArcConstants.METADATA_DESTINATION_ID);
                 target.addField(NbaseArcConstants.METADATA_END_POINT);
             }
         });
-        addRedisClusterExtendedClassEditor(context, "com.nhncorp.redis.cluster.triples.TriplesRedisCluster", null);
-        addRedisClusterExtendedClassEditor(context, "com.nhncorp.redis.cluster.BinaryRedisCluster", null);
-        addRedisClusterExtendedClassEditor(context, "com.nhncorp.redis.cluster.RedisCluster", null);
+        addRedisClusterExtendedClassEditor("com.nhncorp.redis.cluster.triples.TriplesRedisCluster", null);
+        addRedisClusterExtendedClassEditor("com.nhncorp.redis.cluster.BinaryRedisCluster", null);
+        addRedisClusterExtendedClassEditor("com.nhncorp.redis.cluster.RedisCluster", null);
     }
 
-    private void addRedisClusterExtendedClassEditor(ProfilerPluginSetupContext context, String targetClassName, final TransformHandler handler) {
-        context.addClassFileTransformer(targetClassName, new TransformCallback() {
+    private void addRedisClusterExtendedClassEditor(String targetClassName, final TransformHandler handler) {
+        transformTemplate.transform(targetClassName, new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -232,8 +236,8 @@ public class NbaseArcPlugin implements ProfilerPlugin {
         });
     }
 
-    private void addRedisClusterPipeline(ProfilerPluginSetupContext context, final NbaseArcPluginConfig config) {
-        context.addClassFileTransformer("com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline", new TransformCallback() {
+    private void addRedisClusterPipeline(final NbaseArcPluginConfig config) {
+        transformTemplate.transform("com.nhncorp.redis.cluster.pipeline.RedisClusterPipeline", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
@@ -267,5 +271,10 @@ public class NbaseArcPlugin implements ProfilerPlugin {
 
     private interface TransformHandler {
         void handle(InstrumentClass target) throws InstrumentException;
+    }
+
+    @Override
+    public void setTransformTemplate(TransformTemplate transformTemplate) {
+        this.transformTemplate = transformTemplate;
     }
 }
