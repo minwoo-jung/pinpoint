@@ -15,7 +15,7 @@
                 	var bInitialized = false;
                 	var bIsNode = false;
                 	var $element = jQuery(element);
-                	var $nms = $element.find(".nms");
+                	var $nms = jQuery($element.find(".nms"));
                 	var bAjaxLoading = false;
                 	var showModal = function() {
                 		$element.modal({});
@@ -106,11 +106,12 @@
                 	scope.invokeLinkAction = function( name, value ) {
                 		if ( bAjaxLoading === true ) return;
                 		bAjaxLoading = true;
-                		if ( scope.showNMSList === true ) {
-                			$nms.parent().scrollTop(0);
-                			scope.showNMSList = !scope.showNMSList;
+                		if ( scope.showNMSList === true && $nms.attr("data-server") === value ) {
+            				$nms.parent().scrollTop(0);
+                			scope.showNMSList = false;
                 			bAjaxLoading = false;
                 		} else {
+                			$nms.attr("data-server", value);
 	                		ajaxService.getNMSData( value, function( result ) {
 	                			$nms.empty();
 	                			if ( angular.isDefined(result.errorCode) ) {
@@ -119,7 +120,7 @@
 	                				$nms.html( compiledTemplate({ "datum": result }) );
 	                			}
 	                			scope.$apply(function() {
-	                				scope.showNMSList = !scope.showNMSList;
+	                				scope.showNMSList = true;
 	                			});
 	                			bAjaxLoading = false;
 	                		});
