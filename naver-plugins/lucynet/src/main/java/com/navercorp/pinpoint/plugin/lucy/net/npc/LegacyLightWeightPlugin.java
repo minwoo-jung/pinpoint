@@ -18,8 +18,6 @@ import java.security.ProtectionDomain;
  */
 class LegacyLightWeightPlugin extends NpcPlugin {
 
-    private TransformTemplate transformTemplate;
-
     public LegacyLightWeightPlugin(ProfilerPluginSetupContext context, TransformTemplate transformTemplate) {
         super(context, transformTemplate);
     }
