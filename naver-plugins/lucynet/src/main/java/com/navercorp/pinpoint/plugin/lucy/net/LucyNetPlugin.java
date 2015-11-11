@@ -54,7 +54,7 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
         addNimmInvokerTransformer("com.nhncorp.lucy.nimm.connector.bloc.NimmInvoker");
         
         // npc
-        NpcPluginHolder npcPlugin = new NpcPluginHolder(context);
+        NpcPluginHolder npcPlugin = new NpcPluginHolder(context, transformTemplate);
         npcPlugin.addPlugin();
     }
 

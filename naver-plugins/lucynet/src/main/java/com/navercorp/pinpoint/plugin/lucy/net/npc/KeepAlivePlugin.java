@@ -13,12 +13,10 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class KeepAlivePlugin extends NpcPlugin implements TransformTemplateAware {
+class KeepAlivePlugin extends NpcPlugin {
 
-    private TransformTemplate transformTemplate;
-
-    public KeepAlivePlugin(ProfilerPluginSetupContext context) {
-        super(context);
+    public KeepAlivePlugin(ProfilerPluginSetupContext context, TransformTemplate transformTemplate) {
+        super(context, transformTemplate);
     }
 
     @Override
@@ -46,9 +44,4 @@ class KeepAlivePlugin extends NpcPlugin implements TransformTemplateAware {
         });
     }
 
-
-    @Override
-    public void setTransformTemplate(TransformTemplate transformTemplate) {
-        this.transformTemplate = transformTemplate;
-    }
 }

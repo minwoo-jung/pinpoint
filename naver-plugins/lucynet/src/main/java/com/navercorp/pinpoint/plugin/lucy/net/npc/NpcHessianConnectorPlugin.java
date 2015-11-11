@@ -13,11 +13,10 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class NpcHessianConnectorPlugin extends NpcPlugin implements TransformTemplateAware {
-    private TransformTemplate transformTemplate;
-    
-    public NpcHessianConnectorPlugin(ProfilerPluginSetupContext context) {
-        super(context);
+class NpcHessianConnectorPlugin extends NpcPlugin {
+
+    public NpcHessianConnectorPlugin(ProfilerPluginSetupContext context, TransformTemplate transformTemplate) {
+        super(context, transformTemplate);
     }
 
     @Override
@@ -45,8 +44,4 @@ class NpcHessianConnectorPlugin extends NpcPlugin implements TransformTemplateAw
         });
     }
 
-    @Override
-    public void setTransformTemplate(TransformTemplate transformTemplate) {
-        this.transformTemplate = transformTemplate;
-    }
 }

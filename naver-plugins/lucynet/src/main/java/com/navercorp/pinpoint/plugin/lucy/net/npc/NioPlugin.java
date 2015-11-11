@@ -16,12 +16,10 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class NioPlugin extends NpcPlugin implements TransformTemplateAware {
+class NioPlugin extends NpcPlugin {
 
-    private TransformTemplate transformTemplate;
-
-    public NioPlugin(ProfilerPluginSetupContext context) {
-        super(context);
+    public NioPlugin(ProfilerPluginSetupContext context, TransformTemplate transformTemplate) {
+        super(context, transformTemplate);
     }
 
     @Override
@@ -54,8 +52,4 @@ class NioPlugin extends NpcPlugin implements TransformTemplateAware {
 
     }
 
-    @Override
-    public void setTransformTemplate(TransformTemplate transformTemplate) {
-        this.transformTemplate = transformTemplate;
-    }
 }

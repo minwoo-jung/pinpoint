@@ -16,12 +16,10 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class LightWeightNpcHessianPlugin extends NpcPlugin implements TransformTemplateAware {
+class LightWeightNpcHessianPlugin extends NpcPlugin  {
 
-    private TransformTemplate transformTemplate;
-
-    public LightWeightNpcHessianPlugin(ProfilerPluginSetupContext context) {
-        super(context);
+    public LightWeightNpcHessianPlugin(ProfilerPluginSetupContext context, TransformTemplate transformTemplate) {
+        super(context, transformTemplate);
     }
 
     @Override
@@ -54,8 +52,4 @@ class LightWeightNpcHessianPlugin extends NpcPlugin implements TransformTemplate
 
     }
 
-    @Override
-    public void setTransformTemplate(TransformTemplate transformTemplate) {
-        this.transformTemplate = transformTemplate;
-    }
 }
