@@ -16,12 +16,12 @@ import java.security.ProtectionDomain;
 /**
  * @author Taejin Koo
  */
-class LegacyLightWeightPlugin extends NpcPlugin implements TransformTemplateAware {
+class LegacyLightWeightPlugin extends NpcPlugin {
 
     private TransformTemplate transformTemplate;
 
-    public LegacyLightWeightPlugin(ProfilerPluginSetupContext context) {
-        super(context);
+    public LegacyLightWeightPlugin(ProfilerPluginSetupContext context, TransformTemplate transformTemplate) {
+        super(context, transformTemplate);
     }
 
     @Override
@@ -52,8 +52,4 @@ class LegacyLightWeightPlugin extends NpcPlugin implements TransformTemplateAwar
     }
 
 
-    @Override
-    public void setTransformTemplate(TransformTemplate transformTemplate) {
-        this.transformTemplate = transformTemplate;
-    }
 }

@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc;
 
+import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 
 /**
@@ -7,8 +8,8 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
  */
 class LightWeightPlugin extends LegacyLightWeightPlugin {
 
-    public LightWeightPlugin(ProfilerPluginSetupContext context) {
-        super(context);
+    public LightWeightPlugin(ProfilerPluginSetupContext context, TransformTemplate transformTemplate) {
+        super(context, transformTemplate);
     }
 
     @Override
