@@ -10,14 +10,10 @@ import com.navercorp.pinpoint.testweb.util.Description;
 import com.nhncorp.lucy.net.invoker.InvocationFuture;
 import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
 
-import net.spy.memcached.AddrUtil;
-//import net.spy.memcached.ArcusClient;
-import net.spy.memcached.ConnectionFactoryBuilder;
-import net.spy.memcached.MemcachedClient;
 
+import net.spy.memcached.ArcusClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -39,14 +35,18 @@ import java.util.concurrent.TimeUnit;
 
 @Controller
 @Deprecated
-public class HelloWorldController implements DisposableBean {
+public class HelloWorldController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    @Qualifier("arcusClientFactory")
+    private ArcusClient arcusClient;
     private final LevelManager levelManager;
 
     private static final Random RANDOM = new Random();
 
     public HelloWorldController() throws IOException {
+
         levelManager = new LevelManager();
     }
 
@@ -56,6 +56,9 @@ public class HelloWorldController implements DisposableBean {
 
     @Autowired
     private DummyService dummyService;
+
+    @Autowired
+    private CacheService cacheService;
 
     private void randomSlowMethod() {
         try {
@@ -76,6 +79,20 @@ public class HelloWorldController implements DisposableBean {
     @ResponseBody
     public String encoding(Model model, @RequestParam("name") String name) {
         logger.debug("name=" + name);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/arcus")
+    @ResponseBody
+    public String arcus() {
+        cacheService.arcus();
+        return "OK";
+    }
+
+    @RequestMapping(value = "/memcached")
+    @ResponseBody
+    public String memcached() {
+        cacheService.memcached();
         return "OK";
     }
 
@@ -164,6 +181,44 @@ public class HelloWorldController implements DisposableBean {
         return "OK";
     }
 
+    @RequestMapping(value = "/remotearcus")
+    @ResponseBody
+    public String remotearcus() {
+        arcus();
+
+        String[] ports = new String[]{"9080", "10080", "11080"};
+        Random random = new Random();
+        String port = ports[random.nextInt(3)];
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        client.execute("http://localhost:" + port + "/arcus.pinpoint", new HashMap<String, Object>());
+        return "OK";
+    }
+
+    @RequestMapping(value = "/combination")
+    @ResponseBody
+    public String combination() {
+
+        mysql();
+
+        arcus();
+
+        memcached();
+
+
+        randomSlowMethod();
+
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        client.execute("http://www.naver.com/", new HashMap<String, Object>());
+        client.execute("http://www.naver.com/", new HashMap<String, Object>());
+
+        client.execute("http://section.cafe.naver.com/", new HashMap<String, Object>());
+        client.execute("http://section.cafe.naver.com/", new HashMap<String, Object>());
+
+        npc();
+
+        return "OK";
+    }
+
     @RequestMapping(value = "/httperror")
     @ResponseBody
     public String httperror() {
@@ -194,6 +249,37 @@ public class HelloWorldController implements DisposableBean {
     @ResponseBody
     public String exception() {
         throw new RuntimeException("Exception test");
+    }
+
+    @RequestMapping(value = "/arcustimeout")
+    @ResponseBody
+    public String arcustimeout() {
+        Future<Boolean> future = null;
+        try {
+            future = arcusClient.set("pinpoint:expect-timeout", 10, "Hello, Timeout.");
+            future.get(10L, TimeUnit.MICROSECONDS);
+        } catch (Exception e) {
+            logger.warn("set error:{}", e.getMessage(), e);
+            if (future != null) {
+                future.cancel(true);
+            }
+            throw new RuntimeException(e);
+        }
+        return "OK";
+    }
+
+    @RequestMapping(value = "/remotesimple")
+    @ResponseBody
+    public String remotesimple() {
+        String[] ports = new String[]{"9080", "10080", "11080"};
+        Random random = new Random();
+        String port = ports[random.nextInt(3)];
+
+        arcus();
+
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        client.execute("http://localhost:" + port + "/arcus.pinpoint", new HashMap<String, Object>());
+        return "OK";
     }
 
     @RequestMapping(value = "/remoteerror")
@@ -242,7 +328,4 @@ public class HelloWorldController implements DisposableBean {
         return "OK";
     }
 
-    @Override
-    public void destroy() throws Exception {
-    }
 }
