@@ -1,37 +1,26 @@
 package com.navercorp.pinpoint.testweb.service;
 
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ArcusClient;
 import net.spy.memcached.ConnectionFactoryBuilder;
-import net.spy.memcached.MemcachedClient;
 
 @Service("arcusService")
 public class ArcusServiceImpl implements ArcusService {
     private static final String KEY = "pinpoint:testkey";
 
+    @Autowired
+    @Qualifier("arcusClientFactory")
     private ArcusClient arcus;
-
-    @PostConstruct
-    public void init() throws Exception {
-        arcus = ArcusClient.createArcusClient("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27", new ConnectionFactoryBuilder());
-    }
-
-    @PreDestroy
-    public void destroy() {
-        arcus.shutdown();
-    }
 
     public void set() {
         Future<Boolean> setFuture = null;
