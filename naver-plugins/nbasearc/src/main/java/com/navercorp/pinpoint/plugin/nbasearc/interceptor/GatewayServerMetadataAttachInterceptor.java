@@ -71,14 +71,14 @@ public class GatewayServerMetadataAttachInterceptor implements AroundInterceptor
 
         if (!(target instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_DESTINATION_ID);
+                logger.debug("Invalid target object. Need field accessor({}).", DestinationIdAccessor.class.getName());
             }
             return false;
         }
 
         if (!(result instanceof DestinationIdAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid result object. Need field accessor({}).", NbaseArcConstants.METADATA_DESTINATION_ID);
+                logger.debug("Invalid result object. Need field accessor({}).", DestinationIdAccessor.class.getName());
             }
             return false;
         }

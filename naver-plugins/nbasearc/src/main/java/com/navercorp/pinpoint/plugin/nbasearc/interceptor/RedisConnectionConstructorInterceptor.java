@@ -77,7 +77,7 @@ public class RedisConnectionConstructorInterceptor implements AroundInterceptor 
 
         if (!(target instanceof EndPointAccessor)) {
             if (isDebug) {
-                logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_END_POINT);
+                logger.debug("Invalid target object. Need field accessor({}).", EndPointAccessor.class.getName());
             }
             return false;
         }

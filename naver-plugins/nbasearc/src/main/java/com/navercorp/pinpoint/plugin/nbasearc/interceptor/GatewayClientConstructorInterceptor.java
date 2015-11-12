@@ -75,7 +75,7 @@ public class GatewayClientConstructorInterceptor implements AroundInterceptor {
         }
 
         if (!(target instanceof DestinationIdAccessor)) {
-            logger.debug("Invalid target object. Need field accessor({}).", NbaseArcConstants.METADATA_DESTINATION_ID);
+            logger.debug("Invalid target object. Need field accessor({}).", DestinationIdAccessor.class.getName());
             return false;
         }
 
