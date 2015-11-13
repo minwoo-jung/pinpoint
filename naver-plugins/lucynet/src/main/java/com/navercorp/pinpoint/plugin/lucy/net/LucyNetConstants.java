@@ -42,8 +42,6 @@ public final class LucyNetConstants {
     public static final AnnotationKey NPC_CONNECT_OPTION = AnnotationKeyFactory.of(62, "npc.connect.options");
 
     // NIMM
-    public static final String METADATA_NIMM_ADDRESS = "nimmAddress";
-
     public static final ServiceType NIMM_CLIENT = ServiceTypeFactory.of(9070, "NIMM_CLIENT", RECORD_STATISTICS);
     
     public static final AnnotationKey NIMM_OBJECT_NAME = AnnotationKeyFactory.of(70, "nimm.objectName");

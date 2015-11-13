@@ -65,11 +65,11 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
         if (target instanceof NimmAddressAccessor) {
             nimmAddress = ((NimmAddressAccessor) target)._$PINPOINT$_getNimmAddress();
         }
-
-        recorder.recordDestinationId(nimmAddress);
-
-        // DestinationId와 동일하므로 없는게 맞음.
-        // trace.recordEndPoint(nimmAddress);
+        if(nimmAddress == null || nimmAddress.length() == 0) {
+            recorder.recordDestinationId("unknown");
+        } else {
+            recorder.recordDestinationId(nimmAddress);
+        }
 
         if (objectName != null) {
             recorder.recordAttribute(LucyNetConstants.NIMM_OBJECT_NAME, objectName);
