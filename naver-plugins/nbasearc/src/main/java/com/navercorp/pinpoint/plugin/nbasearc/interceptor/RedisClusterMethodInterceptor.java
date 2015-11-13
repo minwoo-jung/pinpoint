@@ -19,7 +19,7 @@ import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptorForPlugin;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Group;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
 import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
@@ -30,7 +30,7 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
-@Group(NbaseArcConstants.NBASE_ARC_SCOPE)
+@Scope(NbaseArcConstants.NBASE_ARC_SCOPE)
 public class RedisClusterMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin {
 
     public RedisClusterMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
