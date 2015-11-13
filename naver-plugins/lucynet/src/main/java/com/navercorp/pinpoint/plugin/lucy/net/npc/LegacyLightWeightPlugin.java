@@ -28,12 +28,12 @@ class LegacyLightWeightPlugin extends NpcPlugin {
     }
 
     @Override
-    public void addRecipe() {
+    public void transform() {
         transformTemplate.transform(getEditClazzName(), new TransformCallback() {
 
             @Override
-            public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
+            public byte[] doInTransform(Instrumentor Instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = Instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(LucyNetConstants.METADATA_NPC_SERVER_ADDRESS);
 
                 InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption");

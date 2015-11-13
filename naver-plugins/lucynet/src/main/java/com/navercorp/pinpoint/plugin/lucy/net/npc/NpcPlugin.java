@@ -20,6 +20,6 @@ public abstract class NpcPlugin {
     }
 
     abstract String getEditClazzName();
-    abstract void addRecipe();
+    abstract void transform();
 
 }
