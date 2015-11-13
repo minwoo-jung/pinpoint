@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ import net.spy.memcached.ConnectionFactoryBuilder;
 
 @Service("arcusService")
 public class ArcusServiceImpl implements ArcusService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private static final String KEY = "pinpoint:testkey";
 
     @Autowired
@@ -28,8 +33,7 @@ public class ArcusServiceImpl implements ArcusService {
             setFuture = arcus.set(KEY, 10, "Hello, pinpoint.");
             setFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            if (setFuture != null)
-                setFuture.cancel(true);
+            handelException(e, setFuture, "set");
         }
     }
 
@@ -39,8 +43,7 @@ public class ArcusServiceImpl implements ArcusService {
             getFuture = arcus.asyncGet(KEY);
             getFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            if (getFuture != null)
-                getFuture.cancel(true);
+            handelException(e, getFuture, "get");
         }
     }
 
@@ -50,8 +53,7 @@ public class ArcusServiceImpl implements ArcusService {
             delFuture = arcus.delete(KEY);
             delFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            if (delFuture != null)
-                delFuture.cancel(true);
+            handelException(e, delFuture, "delete");
         }
     }
 
@@ -61,8 +63,7 @@ public class ArcusServiceImpl implements ArcusService {
             setFuture = arcus.set(KEY, 10, "Hello, pinpoint.");
             setFuture.get(1L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            if (setFuture != null)
-                setFuture.cancel(true);
+            handelException(e, setFuture, "set");
         }
     }
 
@@ -72,22 +73,46 @@ public class ArcusServiceImpl implements ArcusService {
         try {
             getFuture = arcus.asyncGet(KEY);
             final Future<Object> future = getFuture;
-            final CountDownLatch latch = new CountDownLatch(1);
-            Thread thread = new Thread(new Runnable() {
+
+            final Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         future.get(1000L, TimeUnit.MILLISECONDS);
                     } catch (Exception e) {
+                        logger.info("another thread get error:{}", e.getMessage(), e);
                     }
-                    latch.countDown();
                 }
             });
             thread.start();
-            latch.await(2000L, TimeUnit.MICROSECONDS);
+            thread.join(2000L);
         } catch (Exception e) {
-            if (getFuture != null)
-                getFuture.cancel(true);
+            handelException(e, getFuture, "get");
+        }
+    }
+
+    private void handelException(Exception e, Future<?> future, String message) {
+        logException(e, future, "delete");
+        cancelFuture(future);
+    }
+
+    private void cancelFuture(Future<?> future) {
+        if (future != null) {
+            future.cancel(true);
+        }
+    }
+
+    private void logException(Exception ex, Future future, String message) {
+        if (ex != null) {
+            logger.warn(message + " error:{}", ex.getMessage(), ex);
+        }
+        if (future != null) {
+            try {
+                final Object o = future.get();
+                logger.info("result :{}", o);
+            } catch (Exception futureEx) {
+                logger.warn(message + " error:{}", futureEx.getMessage(), futureEx.getCause());
+            }
         }
     }
 }
