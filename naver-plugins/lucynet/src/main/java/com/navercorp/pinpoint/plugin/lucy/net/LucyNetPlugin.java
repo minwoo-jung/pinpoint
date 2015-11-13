@@ -62,8 +62,8 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
         transformTemplate.transform(clazzName, new TransformCallback() {
 
             @Override
-            public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
+            public byte[] doInTransform(Instrumentor Instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = Instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
 
                 InstrumentMethod method = target.getDeclaredMethod("getReturnValue");
                 addInterceptor(method, LucyNetConstants.BASIC_INTERCEPTOR, ServiceType.INTERNAL_METHOD);
@@ -78,8 +78,8 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
         transformTemplate.transform(clazzName, new TransformCallback() {
 
             @Override
-            public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
+            public byte[] doInTransform(Instrumentor Instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = Instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(AsyncTraceIdAccessor.class.getName());
 
                 // FIXME 이렇게 하면 api type이 internal method로 보이는데 사실 NPC_CLIENT, NIMM_CLIENT로 보여야함. servicetype으로 넣기에 애매해서. 어떻게 수정할 것인지는 나중에 고민.
@@ -99,8 +99,8 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
         transformTemplate.transform(clazzName, new TransformCallback() {
 
             @Override
-            public byte[] doInTransform(Instrumentor instrumentContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentContext.getInstrumentClass(classLoader, className, classfileBuffer);
+            public byte[] doInTransform(Instrumentor Instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = Instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(NimmAddressAccessor.class.getName());
                 target.addField(AsyncTraceIdAccessor.class.getName());
 
