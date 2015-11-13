@@ -10,6 +10,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
 import com.nhncorp.lucy.npc.DefaultNpcMessage;
 import com.nhncorp.lucy.npc.UserOptionIndex;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
@@ -56,28 +57,39 @@ public class MakeMessageInterceptor implements AroundInterceptor {
         TraceId id = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(id.getSpanId());
         if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {
-            com.nhncorp.lucy.npc.DefaultNpcMessage defaultNpcMessage = (com.nhncorp.lucy.npc.DefaultNpcMessage) result;
-            Map<String, Object> options = createOption(id);
-            putOption(defaultNpcMessage, options);
-            
             recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
-
+            String endPoint = LucyNetConstants.UNKOWN_ADDRESS;
             if (target != null && target instanceof NpcServerAddressAccessor) {
                 InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
-
                 if (serverAddress != null) {
                     int port = serverAddress.getPort();
-                    String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-                    recorder.recordDestinationId(endPoint);
-                    return;
+                    endPoint = getHostAddress(serverAddress) + ((port > 0) ? ":" + port : "");
                 }
             }
-        }
+            recorder.recordDestinationId(endPoint);
 
-        recorder.recordDestinationId(LucyNetConstants.UNKOWN_ADDRESS);
+            com.nhncorp.lucy.npc.DefaultNpcMessage defaultNpcMessage = (com.nhncorp.lucy.npc.DefaultNpcMessage) result;
+            Map<String, Object> options = createOption(id, endPoint);
+            putOption(defaultNpcMessage, options);
+        } else {
+            recorder.recordDestinationId(LucyNetConstants.UNKOWN_ADDRESS);
+        }
     }
-    
-    private Map<String, Object> createOption(TraceId id) {
+
+    private String getHostAddress(InetSocketAddress inetSocketAddress) {
+        if (inetSocketAddress == null) {
+            return null;
+        }
+        // TODO JDK 1.7 InetSocketAddress.getHostString();
+        // Warning : Avoid unnecessary DNS lookup  (warning:InetSocketAddress.getHostName())
+        final InetAddress inetAddress = inetSocketAddress.getAddress();
+        if (inetAddress == null) {
+            return null;
+        }
+        return inetAddress.getHostAddress();
+    }
+
+    private Map<String, Object> createOption(TraceId id, String endPoint) {
         Map<String, Object> options = new HashMap<String, Object>();
         
         options.put(Header.HTTP_TRACE_ID.toString(), id.getTransactionId());
@@ -86,7 +98,7 @@ public class MakeMessageInterceptor implements AroundInterceptor {
         options.put(Header.HTTP_FLAGS.toString(), String.valueOf(id.getFlags()));
         options.put(Header.HTTP_PARENT_APPLICATION_NAME.toString(), traceContext.getApplicationName());
         options.put(Header.HTTP_PARENT_APPLICATION_TYPE.toString(), traceContext.getServerTypeCode());
-        options.put(Header.HTTP_HOST.toString(), getRepresentationLocalV4Ip());
+        options.put(Header.HTTP_HOST.toString(), endPoint);
         return options;
     }
     
