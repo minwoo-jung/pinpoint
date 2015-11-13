@@ -19,9 +19,9 @@ import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterceptorForPlugin;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Group;
-import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroup;
-import com.navercorp.pinpoint.bootstrap.interceptor.group.InterceptorGroupInvocation;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
+import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
+import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvocation;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContext;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContextFactory;
@@ -34,22 +34,22 @@ import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
  * @author jaehong.kim
  *
  */
-@Group(NbaseArcConstants.NBASE_ARC_SCOPE)
+@Scope(NbaseArcConstants.NBASE_ARC_SCOPE)
 public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterceptorForPlugin {
 
-    private InterceptorGroup interceptorGroup;
+    private InterceptorScope interceptorScope;
     private boolean io;
 
-    public GatewayClientMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorGroup interceptorGroup, boolean io) {
+    public GatewayClientMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorScope interceptorScope, boolean io) {
         super(traceContext, methodDescriptor);
 
-        this.interceptorGroup = interceptorGroup;
+        this.interceptorScope = interceptorScope;
         this.io = io;
     }
 
     @Override
     public void doInBeforeTrace(SpanEventRecorder recorder, Object target, Object[] args) {
-        final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
+        final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
         if (invocation != null) {
             invocation.getOrCreateAttachment(CommandContextFactory.COMMAND_CONTEXT_FACTORY);
         }
@@ -64,7 +64,7 @@ public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterce
             destinationId = ((DestinationIdAccessor) target)._$PINPOINT$_getDestinationId();
         }
 
-        final InterceptorGroupInvocation invocation = interceptorGroup.getCurrentInvocation();
+        final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
         if (invocation != null && invocation.getAttachment() != null) {
             final CommandContext commandContext = (CommandContext) invocation.getAttachment();
             endPoint = commandContext.getEndPoint();
