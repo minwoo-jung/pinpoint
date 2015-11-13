@@ -90,36 +90,31 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
     @Override
     public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
-        if (recorder.canSampled()) {
-            NpcMessage npcMessage = getNpcMessage(args);
+        NpcMessage npcMessage = getNpcMessage(args);
 
-            recorder.recordServiceType(BlocConstants.BLOC);
-            recorder.recordRpcName(createRpcName(npcMessage));
+        recorder.recordServiceType(BlocConstants.BLOC);
+        recorder.recordRpcName(createRpcName(npcMessage));
 
-            final IoSession ioSession = getIOSession(args);
-            recorder.recordEndPoint(getLocalAddress(ioSession));
-            recorder.recordRemoteAddress(getRemoteAddress(ioSession));
-        }
+        final IoSession ioSession = getIOSession(args);
+        recorder.recordEndPoint(getLocalAddress(ioSession));
+        recorder.recordRemoteAddress(getRemoteAddress(ioSession));
 
         if (!recorder.isRoot()) {
-            final IoSession ioSession = getIOSession(args);
-            NpcMessage npcMessage = getNpcMessage(args);
-
             List<String> userOptions = getAllUserOptions(npcMessage);
             Map<String, String> pinpointOptions = extractPinpointOptions(userOptions);
 
             String parentApplicationName = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
             if (parentApplicationName != null) {
-                recorder.recordAcceptorHost(getLocalAddress(ioSession));
+                String remoteHost = pinpointOptions.get(Header.HTTP_HOST.toString());
+                if (remoteHost != null && remoteHost.length() > 0) {
+                    recorder.recordAcceptorHost(remoteHost);
+                } else {
+                    recorder.recordAcceptorHost(getLocalAddress(ioSession));
+                }
 
                 final String type = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
                 final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
                 recorder.recordParentApplication(parentApplicationName, parentApplicationType);
-            }
-            
-            String remoteHost = pinpointOptions.get(Header.HTTP_HOST.toString());
-            if (remoteHost != null && remoteHost.length() > 0) {
-                recorder.recordRemoteAddress(remoteHost);
             }
         }
     }
