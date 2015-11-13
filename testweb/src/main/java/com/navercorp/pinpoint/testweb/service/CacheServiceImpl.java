@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CacheServiceImpl implements CacheService {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public static final int RANDOM_RANGE = 1000;
     @Autowired
     @Qualifier("arcusClientFactory")
@@ -29,7 +31,7 @@ public class CacheServiceImpl implements CacheService {
     private MemcachedClient memcached;
 
     private final Random random = new Random();
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     public CacheServiceImpl() {
     }
@@ -47,13 +49,11 @@ public class CacheServiceImpl implements CacheService {
             final Collection<Object> values = resultMap.values();
             logger.info("multiGet:{}", values);
         } catch (Exception e) {
-            logger.warn("delete error:{}", e.getMessage(), e);
-            if (getFuture != null) {
-                getFuture.cancel(true);
-            }
+            handelException(e, getFuture, "multiGet");
         }
         multiDelete(multiSetKey);
     }
+
 
     private void multiDelete(List<String> multiSetKey) {
         for (String key : multiSetKey) {
@@ -64,10 +64,7 @@ public class CacheServiceImpl implements CacheService {
                 delFuture = arcus.delete(key);
                 delFuture.get(1000L, TimeUnit.MILLISECONDS);
             } catch (Exception e) {
-                logger.info("delete error:{}", e.getMessage(), e);
-                if (delFuture != null) {
-                    delFuture.cancel(true);
-                }
+                handelException(e, delFuture, "get");
             }
         }
 
@@ -87,10 +84,7 @@ public class CacheServiceImpl implements CacheService {
             try {
                 setFuture = arcus.set(key, 10, "Hello, pinpoint." + rand);
             } catch (Exception e) {
-                logger.warn("set error:{}", e.getMessage(), e);
-                if (setFuture != null) {
-                    setFuture.cancel(true);
-                }
+                handelException(e, setFuture, "set");
             }
 
         }
@@ -108,10 +102,7 @@ public class CacheServiceImpl implements CacheService {
             setFuture = arcus.set(key, 10, "Hello, pinpoint." + rand);
             setFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            logger.warn("set error:{}", e.getMessage(), e);
-            if (setFuture != null) {
-                setFuture.cancel(true);
-            }
+            handelException(e, setFuture, "get");
         }
 
         // get
@@ -120,10 +111,7 @@ public class CacheServiceImpl implements CacheService {
             getFuture = arcus.asyncGet(key);
             getFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            logger.warn("asyncGet error:{}", e.getMessage(), e);
-            if (getFuture != null) {
-                getFuture.cancel(true);
-            }
+            handelException(e, getFuture, "asyncGet");
         }
 
         // del
@@ -132,12 +120,11 @@ public class CacheServiceImpl implements CacheService {
             delFuture = arcus.delete(key);
             delFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            logger.warn("delete error:{}", e.getMessage(), e);
-            if (delFuture != null) {
-                delFuture.cancel(true);
-            }
+            handelException(e, delFuture, "delete");
         }
     }
+
+
 
     @Override
     public void memcached() {
@@ -150,10 +137,7 @@ public class CacheServiceImpl implements CacheService {
             setFuture = memcached.set(key, 10, "Hello, pinpoint." + rand);
             setFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            logger.warn("set error:{}", e.getMessage(), e);
-            if (setFuture != null) {
-                setFuture.cancel(true);
-            }
+            handelException(e, setFuture, "set");
         }
 
         // get
@@ -162,10 +146,7 @@ public class CacheServiceImpl implements CacheService {
             getFuture = memcached.asyncGet(key);
             getFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            logger.warn("asyncGet error:{}", e.getMessage(), e);
-            if (getFuture != null) {
-                getFuture.cancel(true);
-            }
+            handelException(e, getFuture, "asyncGet");
         }
 
         // del
@@ -174,12 +155,34 @@ public class CacheServiceImpl implements CacheService {
             delFuture = memcached.delete(key);
             delFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            logger.info("delete error:{}", e.getMessage(), e);
-            if (delFuture != null) {
-                delFuture.cancel(true);
-            }
+            handelException(e, delFuture, "delete");
         }
     }
 
+
+    private void handelException(Exception e, Future<?> future, String message) {
+        logException(e, future, "delete");
+        cancelFuture(future);
+    }
+
+    private void cancelFuture(Future<?> future) {
+        if (future != null) {
+            future.cancel(true);
+        }
+    }
+
+    private void logException(Exception ex, Future future, String message) {
+        if (ex != null) {
+            logger.warn(message + " error:{}", ex.getMessage(), ex);
+        }
+        if (future != null) {
+            try {
+                final Object o = future.get();
+                logger.info("result :{}", o);
+            } catch (Exception futureEx) {
+                logger.warn(message + " error:{}", futureEx.getMessage(), futureEx.getCause());
+            }
+        }
+    }
 
 }

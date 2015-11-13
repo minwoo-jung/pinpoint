@@ -1,36 +1,26 @@
 package com.navercorp.pinpoint.testweb.service;
 
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import net.spy.memcached.AddrUtil;
-import net.spy.memcached.CASResponse;
-import net.spy.memcached.CASValue;
 import net.spy.memcached.MemcachedClient;
-import net.spy.memcached.internal.BulkFuture;
-import net.spy.memcached.internal.OperationFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service("memcachedService")
 public class MemcachedServiceImpl implements MemcachedService {
     private static final String KEY = "pinpoint:testkey";
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    @Qualifier("memcachedClientFactory")
     private MemcachedClient memcached;
 
-    @PostConstruct
-    public void init() throws Exception {
-        memcached = new MemcachedClient(AddrUtil.getAddresses("10.99.200.15:11316,10.99.200.16:11316,10.99.200.17:11316"));
-    }
-
-    @PreDestroy
-    public void destroy() {
-        memcached.shutdown();
-    }
     
     public void set() {
         Future<Boolean> setFuture = null;
@@ -38,8 +28,7 @@ public class MemcachedServiceImpl implements MemcachedService {
             setFuture = memcached.set(KEY, 10, "Hello, pinpoint.");
             setFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            if (setFuture != null)
-                setFuture.cancel(true);
+            handelException(e, setFuture, "set");
         }
     }
 
@@ -49,8 +38,7 @@ public class MemcachedServiceImpl implements MemcachedService {
             getFuture = memcached.asyncGet(KEY);
             getFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            if (getFuture != null)
-                getFuture.cancel(true);
+            handelException(e, getFuture, "get");
         }
     }
 
@@ -62,8 +50,7 @@ public class MemcachedServiceImpl implements MemcachedService {
             delFuture = memcached.delete(KEY);
             delFuture.get(1000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            if (delFuture != null)
-                delFuture.cancel(true);
+            handelException(e, delFuture, "delete");
         }
     }
 
@@ -73,8 +60,7 @@ public class MemcachedServiceImpl implements MemcachedService {
             setFuture = memcached.set(KEY, 10, "Hello, pinpoint.");
             setFuture.get(1L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            if (setFuture != null)
-                setFuture.cancel(true);
+            handelException(e, setFuture, "set");
         }
     }
 
@@ -110,6 +96,31 @@ public class MemcachedServiceImpl implements MemcachedService {
 //            future.getValue();
 //        } catch (Exception e) {
 //        }
+    }
+
+    private void handelException(Exception e, Future<?> future, String message) {
+        logException(e, future, "delete");
+        cancelFuture(future);
+    }
+
+    private void cancelFuture(Future<?> future) {
+        if (future != null) {
+            future.cancel(true);
+        }
+    }
+
+    private void logException(Exception ex, Future future, String message) {
+        if (ex != null) {
+            logger.warn(message + " error:{}", ex.getMessage(), ex);
+        }
+        if (future != null) {
+            try {
+                final Object o = future.get();
+                logger.info("result :{}", o);
+            } catch (Exception futureEx) {
+                logger.warn(message + " error:{}", futureEx.getMessage(), futureEx.getCause());
+            }
+        }
     }
 
 }
