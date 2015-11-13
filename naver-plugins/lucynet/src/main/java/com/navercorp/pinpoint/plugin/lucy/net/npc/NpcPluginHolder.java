@@ -25,22 +25,22 @@ public class NpcPluginHolder {
 
     public void addPlugin() {
         NpcHessianConnectorPlugin npcPlugin = new NpcHessianConnectorPlugin(context, transformTemplate);
-        npcPlugin.addRecipe();
+        npcPlugin.transform();
         
         NioPlugin nioPlugin = new NioPlugin(context, transformTemplate);
-        nioPlugin.addRecipe();
+        nioPlugin.transform();
         
         LightWeightPlugin lightWeightPlugin = new LightWeightPlugin(context, transformTemplate);
-        lightWeightPlugin.addRecipe();
+        lightWeightPlugin.transform();
 
         LightWeightNpcHessianPlugin lightWeightNpcHessianPlugin = new LightWeightNpcHessianPlugin(context, transformTemplate);
-        lightWeightNpcHessianPlugin.addRecipe();
+        lightWeightNpcHessianPlugin.transform();
 
         LegacyLightWeightPlugin legacyLightWeightPlugin = new LegacyLightWeightPlugin(context, transformTemplate);
-        legacyLightWeightPlugin.addRecipe();
+        legacyLightWeightPlugin.transform();
 
         KeepAlivePlugin keepAlivePlugin = new KeepAlivePlugin(context, transformTemplate);
-        keepAlivePlugin.addRecipe();
+        keepAlivePlugin.transform();
     }
 
 

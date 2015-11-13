@@ -28,7 +28,7 @@ class LegacyLightWeightPlugin extends NpcPlugin {
     }
 
     @Override
-    public void addRecipe() {
+    public void transform() {
         transformTemplate.transform(getEditClazzName(), new TransformCallback() {
 
             @Override
