@@ -53,7 +53,7 @@ public class AsyncHTTPClientTest {
     public void bodyPart() {
         try {
             AsyncHttpClient asyncHttpClient = new AsyncHttpClient(new AsyncHttpClientConfig.Builder().setAllowPoolingConnection(true).setCompressionEnabled(true).build());
-            BoundRequestBuilder requestBuilder = asyncHttpClient.preparePost("http://dev.pinpoint.nhncorp.com");
+            BoundRequestBuilder requestBuilder = asyncHttpClient.preparePost("http://dev.pinpoint.navercorp.com");
 
             requestBuilder.addBodyPart(new StringPart("name1", "value1"));
             requestBuilder.addBodyPart(new StringPart("name2", "value2"));
@@ -69,7 +69,7 @@ public class AsyncHTTPClientTest {
     public void multiPart() {
         try {
             AsyncHttpClient asyncHttpClient = new AsyncHttpClient(new AsyncHttpClientConfig.Builder().setAllowPoolingConnection(true).setCompressionEnabled(true).build());
-            BoundRequestBuilder requestBuilder = asyncHttpClient.preparePost("http://dev.pinpoint.nhncorp.com");
+            BoundRequestBuilder requestBuilder = asyncHttpClient.preparePost("http://dev.pinpoint.navercorp.com");
 
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("header1", "header1");

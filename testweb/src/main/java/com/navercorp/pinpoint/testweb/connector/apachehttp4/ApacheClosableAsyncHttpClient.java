@@ -48,7 +48,7 @@ public class ApacheClosableAsyncHttpClient {
 
     public String post() {
         try {
-            HttpPost httpRequest = new HttpPost("http://dev.pinpoint.nhncorp.com/");
+            HttpPost httpRequest = new HttpPost("http://dev.pinpoint.navercorp.com/");
 
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("param1", "value1"));
