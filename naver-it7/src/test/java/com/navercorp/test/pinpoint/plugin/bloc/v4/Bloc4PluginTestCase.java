@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.plugin.bloc.v4;
+package com.navercorp.test.pinpoint.plugin.bloc.v4;
 
 import java.io.File;
 import java.io.IOException;
@@ -144,7 +144,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
         
         throw new RuntimeException("Failed to connect BLOC");
     }
-    
+
     @Override
     public void endTest(Process process) throws Throwable {
         Socket socket = new Socket();
