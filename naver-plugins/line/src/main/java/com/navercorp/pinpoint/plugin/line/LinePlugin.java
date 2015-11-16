@@ -45,8 +45,8 @@ public class LinePlugin implements ProfilerPlugin, TransformTemplateAware {
         transformTemplate.transform("com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler$InvokeTask", new TransformCallback() {
 
             @Override
-            public byte[] doInTransform(Instrumentor Instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = Instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
 
                 target.addField("com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor");
                 target.addField("com.navercorp.pinpoint.plugin.line.MessageEventAccessor");

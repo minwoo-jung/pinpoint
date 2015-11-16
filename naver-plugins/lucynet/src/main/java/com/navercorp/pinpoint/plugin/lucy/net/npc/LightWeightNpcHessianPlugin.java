@@ -32,8 +32,8 @@ class LightWeightNpcHessianPlugin extends NpcPlugin  {
         transformTemplate.transform(getEditClazzName(), new TransformCallback() {
 
             @Override
-            public byte[] doInTransform(Instrumentor Instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = Instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(LucyNetConstants.METADATA_NPC_SERVER_ADDRESS);
 
                 String superClazz = target.getSuperClass();

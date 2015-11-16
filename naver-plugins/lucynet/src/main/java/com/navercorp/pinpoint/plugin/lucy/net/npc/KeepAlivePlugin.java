@@ -29,8 +29,8 @@ class KeepAlivePlugin extends NpcPlugin {
         transformTemplate.transform(getEditClazzName(), new TransformCallback() {
 
             @Override
-            public byte[] doInTransform(Instrumentor Instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = Instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
 
                 for (KeepAliveVersion matchedVersion : KeepAliveVersion.values()) {
                     if (matchedVersion.checkCondition(target)) {
