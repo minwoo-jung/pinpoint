@@ -67,8 +67,14 @@ public class HttpAsyncClientController {
     @RequestMapping(value = "/httpAsyncClient/failed")
     @ResponseBody
     public String httpClient4Failed() {
-        httpService.get("http://127.0.0.1:9999", null);
-        return "OK";
+        String result = "OK";
+        try {
+            httpService.get("http://127.0.0.1:9999", null);
+        } catch(Exception ignored) {
+            result += ": " + ignored.getMessage();
+        }
+
+        return result;
     }
 
     @RequestMapping(value = "/httpAsyncClient/failedAndCallback")
@@ -80,9 +86,14 @@ public class HttpAsyncClientController {
                 logger.info("Completed callback.");
             }
         };
+        String result = "OK";
+        try {
+            httpService.get("http://127.0.0.1:9999", callback);
+        } catch(Exception ignored) {
+            result += ": " + ignored.getMessage();
+        }
 
-        httpService.get("http://127.0.0.1:9999", callback);
-        return "OK";
+        return result;
     }
 
     @RequestMapping(value = "/httpAsyncClient/getAndCallback")
