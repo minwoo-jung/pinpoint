@@ -71,10 +71,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/test/bloc4/base/repository/test/classes/com/navercorp/pinpoint/plugin/bloc/v4/module</outputDirectory>
+                            <outputDirectory>${basedir}/test/bloc4/base/repository/test/classes/com/navercorp/test/pinpoint/plugin/bloc/v4/module</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.build.testOutputDirectory}/com/navercorp/pinpoint/plugin/bloc/v4/module</directory>
+                                    <directory>${project.build.testOutputDirectory}/com/navercorp/test/pinpoint/plugin/bloc/v4/module</directory>
                                 </resource>
                             </resources>
                         </configuration>
