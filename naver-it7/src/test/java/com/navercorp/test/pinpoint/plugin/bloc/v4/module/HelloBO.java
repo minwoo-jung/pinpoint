@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.plugin.bloc.v4.module;
+package com.navercorp.test.pinpoint.plugin.bloc.v4.module;
 
 import com.nhncorp.lucy.bloc.annotation.Procedure;
 import com.nhncorp.lucy.bloc.annotation.Resource;
