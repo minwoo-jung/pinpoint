@@ -7,6 +7,8 @@ public interface MsSqlServerService {
 
     int selectOne();
 
+    int selectOneWithParam(int id);
+
     void createStatement();
 
 }

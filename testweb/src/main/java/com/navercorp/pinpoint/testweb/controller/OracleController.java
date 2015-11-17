@@ -33,6 +33,19 @@ public class OracleController {
         return "OK";
     }
 
+    @Description("preparedStatement 테스트 w/ 파라미터. resultset은 가지고 오지 않음.")
+    @RequestMapping(value = "/oracle/selectOneWithParam")
+    @ResponseBody
+    public String selectOneWithParam() {
+        logger.info("selectOneWithParam start");
+
+        int id = 99;
+        oracleService.selectOneWithParam(id);
+
+        logger.info("selectOneWithParam end. id:{}", id);
+        return "OK";
+    }
+
     @Description("statement 테스트. resultset은 가지고 오지 않음")
     @RequestMapping(value = "/oracle/createStatement")
     @ResponseBody

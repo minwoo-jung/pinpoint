@@ -7,6 +7,8 @@ public interface MySqlService {
 
     int selectOne();
 
+    int selectOneWithParam(int id);
+
     void createStatement();
 
 }

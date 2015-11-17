@@ -31,6 +31,11 @@ public class CubridDaoMyBatis implements CubridDao {
     }
 
     @Override
+    public int selectOneWithParam(int id) {
+        return (Integer) sqlMapClientTemplate.selectOne("selectOneWithParam", id);
+    }
+
+    @Override
     public boolean createStatement() {
         Connection connection = null;
         Statement statement = null;

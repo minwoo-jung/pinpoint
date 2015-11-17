@@ -7,6 +7,8 @@ public interface CubridService {
 
     int selectOne();
 
+    int selectOneWithParam(int id);
+
     void createStatement();
 
     void createErrorStatement();

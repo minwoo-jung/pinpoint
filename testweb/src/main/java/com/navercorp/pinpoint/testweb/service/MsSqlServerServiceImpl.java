@@ -22,6 +22,11 @@ public class MsSqlServerServiceImpl implements MsSqlServerService {
     }
 
     @Override
+    public int selectOneWithParam(int id) {
+        return msSqlServerDao.selectOneWithParam(id);
+    }
+    
+    @Override
     public void createStatement() {
         msSqlServerDao.createStatement();
     }

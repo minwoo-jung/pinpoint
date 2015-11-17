@@ -21,6 +21,11 @@ public class CubridServiceImpl implements CubridService {
     }
 
     @Override
+    public int selectOneWithParam(int id) {
+        return cubridDao.selectOneWithParam(id);
+    }
+
+    @Override
     public void createStatement() {
         cubridDao.createStatement();
     }

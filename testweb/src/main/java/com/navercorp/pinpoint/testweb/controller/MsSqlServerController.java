@@ -33,6 +33,19 @@ public class MsSqlServerController {
         return "OK";
     }
 
+    @Description("preparedStatement 테스트 w/ 파라미터. resultset은 가지고 오지 않음.")
+    @RequestMapping(value = "/mssqlserver/selectOneWithParam")
+    @ResponseBody
+    public String selectOneWithParam() {
+        logger.info("selectOneWithParam start");
+
+        int id = 99;
+        msSqlServerService.selectOneWithParam(id);
+
+        logger.info("selectOneWithParam end. id:{}", id);
+        return "OK";
+    }
+
     @Description("statement 테스트. resultset은 가지고 오지 않음.")
     @RequestMapping(value = "/mssqlserver/createStatement")
     @ResponseBody
