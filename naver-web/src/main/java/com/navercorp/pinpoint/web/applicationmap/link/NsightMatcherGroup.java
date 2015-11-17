@@ -37,8 +37,8 @@ public class NsightMatcherGroup extends MatcherGroup {
     
     public NsightMatcherGroup(final Map<String, String> matcherProps) {
         if (matcherProps != null) {
-            Map<String, String> keyMap = new HashMap<String, String>();
-            Map<String, String> urlMap = new HashMap<String, String>();
+            Map<String, String> keyMap = new HashMap<>();
+            Map<String, String> urlMap = new HashMap<>();
             
             for (Entry<String, String> matcherProp : matcherProps.entrySet()) {
                 if (matcherProp.getKey().startsWith(MATCHER_KEY_PREFIX)) {

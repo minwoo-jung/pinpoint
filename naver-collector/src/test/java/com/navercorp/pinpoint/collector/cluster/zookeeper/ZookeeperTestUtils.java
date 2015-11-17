@@ -33,7 +33,7 @@ final class ZookeeperTestUtils {
     }
 
     static Map<String, Object> getParams(String applicationName, String agentId, long startTimeMillis) {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
 
         properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), agentId);
         properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), applicationName);

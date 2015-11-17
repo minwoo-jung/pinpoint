@@ -26,7 +26,6 @@ import com.navercorp.pinpoint.web.vo.TransactionId;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.thrift.TException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -54,7 +53,7 @@ public class SpanServiceTest {
     private HbaseTemplate2 template2;
 
     private TSpan root;
-    private List<TSpan> deleteSpans = new LinkedList<TSpan>();
+    private List<TSpan> deleteSpans = new LinkedList<>();
     private long spanAcceptTime = System.currentTimeMillis();
 
     @Autowired
@@ -152,7 +151,7 @@ public class SpanServiceTest {
         span.setAnnotations(ano);
 
         span.setParentSpanId(-1);
-        List<TAnnotation> annotations = new ArrayList<TAnnotation>();
+        List<TAnnotation> annotations = new ArrayList<>();
         TAnnotation annotation = new TAnnotation(AnnotationKey.API.getCode());
         annotation.setValue(TAnnotationValue.stringValue(""));
         annotations.add(annotation);
@@ -180,7 +179,7 @@ public class SpanServiceTest {
         sub.setAnnotations(ano);
 
         sub.setParentSpanId(span.getSpanId());
-        List<TAnnotation> annotations = new ArrayList<TAnnotation>();
+        List<TAnnotation> annotations = new ArrayList<>();
         TAnnotation annotation = new TAnnotation(AnnotationKey.API.getCode());
         annotation.setValue(TAnnotationValue.stringValue(""));
         annotations.add(annotation);
