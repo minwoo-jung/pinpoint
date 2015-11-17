@@ -1,8 +1,6 @@
 package com.navercorp.pinpoint.testweb.service;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
@@ -14,7 +12,6 @@ import com.nhncorp.lucy.net.invoker.InvocationFutureListener;
 import com.nhncorp.lucy.net.invoker.Invoker;
 import com.nhncorp.lucy.npc.connector.ConnectionFactory;
 import com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector;
-import com.nhncorp.lucy.npc.connector.NpcCallException;
 import com.nhncorp.lucy.npc.connector.NpcConnectionFactory;
 import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
 

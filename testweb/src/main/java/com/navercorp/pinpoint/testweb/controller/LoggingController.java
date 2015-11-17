@@ -18,7 +18,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import com.navercorp.pinpoint.testweb.connector.apachehttp4.ApacheHttpClient4;
 import com.navercorp.pinpoint.testweb.connector.apachehttp4.HttpConnectorOptions;
-import com.navercorp.pinpoint.testweb.util.Description;
 
 @Controller
 public class LoggingController {

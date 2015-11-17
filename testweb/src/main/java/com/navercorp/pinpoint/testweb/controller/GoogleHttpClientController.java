@@ -1,7 +1,6 @@
 package com.navercorp.pinpoint.testweb.controller;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.slf4j.Logger;

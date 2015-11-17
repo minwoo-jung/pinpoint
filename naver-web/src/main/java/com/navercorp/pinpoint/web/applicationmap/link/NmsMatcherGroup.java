@@ -16,15 +16,9 @@
 
 package com.navercorp.pinpoint.web.applicationmap.link;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.springframework.util.StringUtils;
 
 import com.navercorp.pinpoint.web.applicationmap.ServerInstance;
-import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
-import com.navercorp.pinpoint.web.vo.AgentInfo;
 
 /**
  * @author minwoo.jung <minwoo.jung@navercorp.com>
