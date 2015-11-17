@@ -7,6 +7,8 @@ public interface OracleService {
 
     int selectOne();
 
+    int selectOneWithParam(int id);
+
     void createStatement();
 
 }

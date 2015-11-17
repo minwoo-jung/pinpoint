@@ -31,6 +31,18 @@ public class CubridController {
         return "OK";
     }
 
+    @RequestMapping(value = "/cubrid/selectOneWithParam")
+    @ResponseBody
+    public String selectOneWithParam() {
+        logger.info("selectOneWithParam start");
+
+        int id = 99;
+        cubridService.selectOneWithParam(id);
+
+        logger.info("selectOneWithParam end. id:{}", id);
+        return "OK";
+    }
+
     @RequestMapping(value = "/cubrid/createStatement")
     @ResponseBody
     public String createStatement() {

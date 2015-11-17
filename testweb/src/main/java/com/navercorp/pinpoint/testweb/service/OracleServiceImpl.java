@@ -21,6 +21,11 @@ public class OracleServiceImpl implements OracleService {
     }
 
     @Override
+    public int selectOneWithParam(int id) {
+        return oracleDao.selectOneWithParam(id);
+    }
+
+    @Override
     public void createStatement() {
         oracleDao.createStatement();
     }

@@ -7,5 +7,7 @@ public interface MySqlDao {
 
     int selectOne();
 
+    int selectOneWithParam(int id);
+
     boolean createStatement();
 }

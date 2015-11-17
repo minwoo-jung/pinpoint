@@ -22,6 +22,11 @@ public class MySqlServiceImpl implements MySqlService {
     }
 
     @Override
+    public int selectOneWithParam(int id) {
+        return mysqlDao.selectOneWithParam(id);
+    }
+
+    @Override
     public void createStatement() {
         mysqlDao.createStatement();
     }
