@@ -41,7 +41,7 @@ public class SpringController {
             public void run() {
                 try {
                     TimeUnit.SECONDS.sleep(3);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                 }
                 result.setResult("OK");
             }

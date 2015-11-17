@@ -83,7 +83,7 @@ public class NimmServiceImpl implements NimmService {
                             future.await();
                             Object returnValue = future.getReturnValue();
                             logger.info("Return {}", returnValue);
-                        } catch (Exception e) {
+                        } catch (Exception ignored) {
                         }
                         latch.countDown();
                     }

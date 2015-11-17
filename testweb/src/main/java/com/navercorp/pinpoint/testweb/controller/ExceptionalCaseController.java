@@ -29,7 +29,7 @@ public class ExceptionalCaseController {
             final int sleep = 1000 * 30;
             logger.info("sleep:{}", sleep);
             Thread.sleep(sleep);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
 
         }
     }

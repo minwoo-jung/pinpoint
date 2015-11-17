@@ -44,13 +44,13 @@ public class CubridDaoMyBatis implements CubridDao {
             if (statement != null) {
                 try {
                     statement.close();
-                } catch (SQLException e) {
+                } catch (SQLException ignored) {
                 }
             }
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (SQLException ignored) {
                 }
             }
 
@@ -71,13 +71,13 @@ public class CubridDaoMyBatis implements CubridDao {
             if (statement != null) {
                 try {
                     statement.close();
-                } catch (SQLException e) {
+                } catch (SQLException ignored) {
                 }
             }
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (SQLException ignored) {
                 }
             }
 

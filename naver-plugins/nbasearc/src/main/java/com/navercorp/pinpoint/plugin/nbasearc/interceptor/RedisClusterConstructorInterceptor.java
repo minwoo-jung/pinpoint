@@ -21,7 +21,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
-import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
 /**
  * RedisCluster(nBase-ARC client) constructor interceptor - trace endPoint

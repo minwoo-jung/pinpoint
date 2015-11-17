@@ -231,7 +231,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
                     String option = new String(value);
                     options.add(option);
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
 

@@ -103,7 +103,7 @@ public class HttpAsyncClientService {
                     InputStream is = response.getEntity().getContent();
                     result = IOUtils.toString(is);
                     logger.debug("Response {} {} {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), result);
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
         } finally {

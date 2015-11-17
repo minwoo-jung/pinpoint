@@ -62,7 +62,7 @@ public class ApacheClosableAsyncHttpClient {
                 try {
                     InputStream is = response.getEntity().getContent();
                     result = IOUtils.toString(is);
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
             }
 
