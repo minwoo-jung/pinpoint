@@ -91,7 +91,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
         try { 
             for(String message : checker.getSmsMessage()) {
                 logger.info("send SMS : {}", message);
-                List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                List<NameValuePair> nvps = new ArrayList<>();
                 nvps.add(new BasicNameValuePair("serviceId", smsServiceID));
                 nvps.add(new BasicNameValuePair("sendMdn", QUOTATATION + SENDER_NUMBER + QUOTATATION));
                 nvps.add(new BasicNameValuePair("receiveMdnList",convertToReceiverFormat(receivers)));
@@ -114,7 +114,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     }
 
     private String convertToReceiverFormat(List<String> receivers) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         
         for (String receiver : receivers) {
             result.add(QUOTATATION + receiver + QUOTATATION);

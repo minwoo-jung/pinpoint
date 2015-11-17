@@ -35,7 +35,7 @@ public class PreSplitRegionsTest {
 
     @Test
     public void acceptApplication4() {
-        List<String> regions = new ArrayList<String>();
+        List<String> regions = new ArrayList<>();
 
         OneByteSimpleHash hash = new OneByteSimpleHash(acceptApplictaion);
         for (byte[] each : hash.getAllPossiblePrefixes()) {
@@ -56,7 +56,7 @@ public class PreSplitRegionsTest {
 
     @Test
     public void metaData8() {
-        List<String> regions = new ArrayList<String>();
+        List<String> regions = new ArrayList<>();
 
         OneByteSimpleHash hash = new OneByteSimpleHash(metaDataNumber);
         for (byte[] each : hash.getAllPossiblePrefixes()) {
@@ -76,7 +76,7 @@ public class PreSplitRegionsTest {
     }
     @Test
     public void traceRegions64() {
-        List<String> regions = new ArrayList<String>();
+        List<String> regions = new ArrayList<>();
 
         OneByteSimpleHash hash = new OneByteSimpleHash(traceRegionNumber);
         for (byte[] each : hash.getAllPossiblePrefixes()) {
@@ -110,7 +110,7 @@ public class PreSplitRegionsTest {
 
     @Test
     public void applicationTraceIndexRegions() {
-        List<String> regions = new ArrayList<String>();
+        List<String> regions = new ArrayList<>();
 
         OneByteSimpleHash hash = new OneByteSimpleHash(traceIndexRegionNumber);
         int index = 1;
@@ -134,7 +134,7 @@ public class PreSplitRegionsTest {
 
     @Test
     public void agentStatRegions() {
-        List<String> regions = new ArrayList<String>();
+        List<String> regions = new ArrayList<>();
 
         OneByteSimpleHash hash = new OneByteSimpleHash(agentStatRegionNumber);
         for (byte[] each : hash.getAllPossiblePrefixes()) {

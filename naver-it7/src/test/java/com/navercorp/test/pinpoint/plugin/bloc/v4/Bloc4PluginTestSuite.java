@@ -39,7 +39,7 @@ public class Bloc4PluginTestSuite extends AbstractPinpointPluginTestSuite {
     
     @Override
     protected List<PinpointPluginTestInstance> createTestCases(PinpointPluginTestContext context) {
-        List<PinpointPluginTestInstance> runners = new ArrayList<PinpointPluginTestInstance>();
+        List<PinpointPluginTestInstance> runners = new ArrayList<>();
         
         File file = new File("test/bloc4/releases");
         

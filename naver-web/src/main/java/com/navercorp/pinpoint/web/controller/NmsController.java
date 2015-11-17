@@ -69,7 +69,7 @@ public class NmsController {
         }
         
         List<String> rsPorts = parseRsPort(rsPortResponseEntity);
-        List nmsInfos = new ArrayList<List>();
+        List nmsInfos = new ArrayList<>();
         
         for (String rsPort : rsPorts) {
             ResponseEntity<Map> responseEntity = this.restTemplate.exchange(NMS_CONN_CPS_API_URL, HttpMethod.GET, null, Map.class, hostIp, rsPort);
@@ -90,7 +90,7 @@ public class NmsController {
   }
 
     private Map<String, String> getNMSGuideMessage() {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         result.put("errorCode", "204");
         result.put("errorMessage", nmsErrorMessage);
         return result;
@@ -116,7 +116,7 @@ public class NmsController {
             }
         }
         
-        List<String> ports = new ArrayList<String>(rsPorts);
+        List<String> ports = new ArrayList<>(rsPorts);
         Collections.sort(ports, new Comparator<String>() {
             public int compare(String o1, String o2) {
                 Integer i1 = Integer.parseInt(o1);
@@ -177,7 +177,7 @@ public class NmsController {
     public Map<String, String> handleException(Exception e) {
         logger.error(" Exception occured while trying to call NMS API", e);
         
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         result.put("errorCode", "500");
         result.put("errorMessage", "Can not communicate NMS server.");
         return result;

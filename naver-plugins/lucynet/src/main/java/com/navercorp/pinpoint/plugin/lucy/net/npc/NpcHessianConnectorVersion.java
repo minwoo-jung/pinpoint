@@ -57,7 +57,7 @@ public enum NpcHessianConnectorVersion {
 
         @Override
         public boolean checkCondition(InstrumentClass target) {
-            return target.hasConstructor(new String[] { "com.nhncorp.lucy.npc.connector.NpcConnectorOption" });
+            return target.hasConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption");
         }
 
         @Override

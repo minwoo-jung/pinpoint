@@ -147,7 +147,7 @@ public class ClusterPointRouterTest {
     }
 
     private Map<Object, Object> getParams() {
-        Map<Object, Object> properties = new HashMap<Object, Object>();
+        Map<Object, Object> properties = new HashMap<>();
 
         properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
         properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
@@ -163,7 +163,7 @@ public class ClusterPointRouterTest {
 
     private TargetClusterPoint findClusterPoint(String applicationName, String agentId, long startTimeStamp, List<TargetClusterPoint> targetClusterPointList) {
 
-        List<TargetClusterPoint> result = new ArrayList<TargetClusterPoint>();
+        List<TargetClusterPoint> result = new ArrayList<>();
 
         for (TargetClusterPoint targetClusterPoint : targetClusterPointList) {
             if (!targetClusterPoint.getApplicationName().equals(applicationName)) {

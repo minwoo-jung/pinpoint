@@ -291,7 +291,7 @@ public class ZookeeperProfilerClusterServiceTest {
     }
 
     private Map<String, Object> getParams() {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
 
         properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
         properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
@@ -325,8 +325,8 @@ public class ZookeeperProfilerClusterServiceTest {
     }
 
     public static class EchoServerListener implements ServerMessageListener {
-        private final List<SendPacket> sendPacketRepository = new ArrayList<SendPacket>();
-        private final List<RequestPacket> requestPacketRepository = new ArrayList<RequestPacket>();
+        private final List<SendPacket> sendPacketRepository = new ArrayList<>();
+        private final List<RequestPacket> requestPacketRepository = new ArrayList<>();
 
         @Override
         public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {

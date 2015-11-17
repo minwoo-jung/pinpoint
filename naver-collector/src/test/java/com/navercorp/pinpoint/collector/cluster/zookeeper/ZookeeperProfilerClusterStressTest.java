@@ -51,7 +51,7 @@ public class ZookeeperProfilerClusterStressTest {
 
     @Test
     public void simpleTest1() throws Exception {
-        List<TestSocket> socketList = new ArrayList<ZookeeperProfilerClusterStressTest.TestSocket>();
+        List<TestSocket> socketList = new ArrayList<>();
 
         PinpointServerAcceptor serverAcceptor = null;
 
@@ -134,7 +134,7 @@ public class ZookeeperProfilerClusterStressTest {
 
             latch.await();
 
-            List<TestSocket> socketList = new ArrayList<ZookeeperProfilerClusterStressTest.TestSocket>();
+            List<TestSocket> socketList = new ArrayList<>();
             socketList.addAll(job1.getSocketList());
             socketList.addAll(job2.getSocketList());
 

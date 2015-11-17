@@ -117,14 +117,14 @@ public class Nelo2OpenApiCaller {
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-		MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
 		paramMap.add("code", authenticationCode);
         paramMap.add("client_id", CLIENT_ID);
         paramMap.add("client_secret", CLIENT_SECRET);
         paramMap.add("redirect_uri", REDIRECT_URI);
         paramMap.add("grant_type", GRANT_TYPE);
 
-		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<MultiValueMap<String, String>>(paramMap, header);
+		HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(paramMap, header);
 		ResponseEntity<Nelo2OpenApiToken> responseEntity = this.restTemplate.exchange(accessTokenRequestUrl, HttpMethod.POST, entity, Nelo2OpenApiToken.class);
 
 		if (responseEntity.getStatusCode() != HttpStatus.OK) {

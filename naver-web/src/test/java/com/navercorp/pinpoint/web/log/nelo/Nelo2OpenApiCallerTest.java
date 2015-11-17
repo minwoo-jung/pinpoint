@@ -23,12 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -57,8 +54,7 @@ public class Nelo2OpenApiCallerTest {
             
             if (logs != null) {
                 int i = 1;
-                for (Iterator iterator = logs.iterator(); iterator.hasNext();) {
-                    NeloRawLog neloRawLog = (NeloRawLog) iterator.next();
+                for (NeloRawLog neloRawLog : logs) {
                     System.out.println(i++ + " : " + neloRawLog.get_source() + "\n");
                 }
             }
@@ -80,8 +76,7 @@ public class Nelo2OpenApiCallerTest {
         
         if (logs != null) {
             int i = 1;
-            for (Iterator iterator = logs.iterator(); iterator.hasNext();) {
-                NeloRawLog neloRawLog = (NeloRawLog) iterator.next();
+            for (NeloRawLog neloRawLog : logs) {
                 System.out.println(i++ + " : " + neloRawLog.get_source() + "\n");
             }
         }

@@ -4,8 +4,6 @@ import org.junit.Assert;
 
 import org.junit.Test;
 
-import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
-
 public class DefaultNsightMatcherTest {
 
     @Test

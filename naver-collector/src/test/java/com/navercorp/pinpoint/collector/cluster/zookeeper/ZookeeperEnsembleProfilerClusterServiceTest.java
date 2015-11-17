@@ -263,7 +263,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
     }
 
     private Map<String, Object> getParams() {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
 
         properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
         properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");

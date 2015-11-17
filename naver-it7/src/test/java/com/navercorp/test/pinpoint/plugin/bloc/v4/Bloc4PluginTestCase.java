@@ -57,7 +57,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
 
     @Override
     public List<String> getClassPath() {
-        List<String> classpath = new ArrayList<String>();
+        List<String> classpath = new ArrayList<>();
         
         File lib = new File(blocDir, "libs");
         
