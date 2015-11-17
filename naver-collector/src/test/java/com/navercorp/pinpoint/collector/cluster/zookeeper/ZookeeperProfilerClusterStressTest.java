@@ -177,7 +177,7 @@ public class ZookeeperProfilerClusterStressTest {
                     socketList = randomJob(socketList, address);
                     try {
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignored) {
                     }
                 }
             } finally {

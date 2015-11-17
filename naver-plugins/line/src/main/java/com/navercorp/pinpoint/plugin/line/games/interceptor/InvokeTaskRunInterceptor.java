@@ -30,7 +30,6 @@ import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor;
-import com.navercorp.pinpoint.plugin.line.LineConstants;
 import com.navercorp.pinpoint.plugin.line.MessageEventAccessor;
 
 /**

@@ -238,7 +238,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             if (zookeeperCluster != null) {
                 zookeeperCluster.close();
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 

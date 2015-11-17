@@ -81,7 +81,7 @@ public class SimpleNettyServerApp {
             logger.info("TEST END. awaiting other requests.");
             try {
                 Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
     }

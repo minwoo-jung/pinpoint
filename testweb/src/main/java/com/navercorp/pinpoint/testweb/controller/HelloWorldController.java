@@ -176,7 +176,7 @@ public class HelloWorldController {
             client.execute("http://url3/", new HashMap<String, Object>());
             client.execute("http://url3/", new HashMap<String, Object>());
             client.execute("http://url3/", new HashMap<String, Object>());
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return "OK";
     }
@@ -240,7 +240,7 @@ public class HelloWorldController {
     public String slow() {
         try {
             Thread.sleep(new Random().nextInt(10) * 100);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
         return "OK";
     }

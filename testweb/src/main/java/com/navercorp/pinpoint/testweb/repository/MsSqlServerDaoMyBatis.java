@@ -44,13 +44,13 @@ public class MsSqlServerDaoMyBatis implements MsSqlServerDao {
             if (statement != null) {
                 try {
                     statement.close();
-                } catch (SQLException e) {
+                } catch (SQLException ignored) {
                 }
             }
             if (connection != null) {
                 try {
                     connection.close();
-                } catch (SQLException e) {
+                } catch (SQLException ignored) {
                 }
             }
 

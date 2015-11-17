@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
