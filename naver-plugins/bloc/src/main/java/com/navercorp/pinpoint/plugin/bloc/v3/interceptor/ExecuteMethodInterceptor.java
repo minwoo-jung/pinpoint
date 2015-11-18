@@ -73,12 +73,12 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
             final Trace trace = traceContext.continueTraceObject(traceId);
             if (trace.canSampled()) {
                 if (isDebug) {
-                    logger.debug("TraceID exist. continue trace. traceId:{}, requestUrl:{}, remoteAddr:{}", new Object[]{traceId, request.requestURI(), request.remoteAddr()});
+                    logger.debug("TraceID exist. continue trace. traceId:{}, requestUrl:{}, remoteAddr:{}", traceId, request.requestURI(), request.remoteAddr());
                 }
                 return trace;
             } else {
                 if (isDebug) {
-                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, requestUrl:{}, remoteAddr:{}", new Object[]{traceId, request.requestURI(), request.remoteAddr()});
+                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, requestUrl:{}, remoteAddr:{}", traceId, request.requestURI(), request.remoteAddr());
                 }
                 return trace;
             }

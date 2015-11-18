@@ -88,7 +88,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
                     String requestURL = request.getUri();
                     io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
                     String remoteAddr = ((SocketChannel) ctx.channel()).remoteAddress().toString();
-                    logger.debug("TraceID exist. continue trace. traceId:{}, requestUrl:{}, remoteAddr:{}", new Object[] { traceId, requestURL, remoteAddr });
+                    logger.debug("TraceID exist. continue trace. traceId:{}, requestUrl:{}, remoteAddr:{}", traceId, requestURL, remoteAddr);
                 }
                 return trace;
             } else {
@@ -96,7 +96,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
                     String requestURL = request.getUri();
                     io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
                     String remoteAddr = ((SocketChannel) ctx.channel()).remoteAddress().toString();
-                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, requestUrl:{}, remoteAddr:{}", new Object[] { traceId, requestURL, remoteAddr });
+                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, requestUrl:{}, remoteAddr:{}", traceId, requestURL, remoteAddr);
                 }
                 return trace;
             }
@@ -107,7 +107,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
                     String requestURL = request.getUri();
                     io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
                     String remoteAddr = ((SocketChannel) ctx.channel()).remoteAddress().toString();
-                    logger.debug("TraceID not exist. start new trace. requestUrl:{}, remoteAddr:{}", new Object[] { requestURL, remoteAddr });
+                    logger.debug("TraceID not exist. start new trace. requestUrl:{}, remoteAddr:{}", requestURL, remoteAddr);
                 }
                 return trace;
             } else {
@@ -115,7 +115,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
                     String requestURL = request.getUri();
                     io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
                     String remoteAddr = ((SocketChannel) ctx.channel()).remoteAddress().toString();
-                    logger.debug("TraceID not exist. camSampled is false. skip trace. requestUrl:{}, remoteAddr:{}", new Object[] { requestURL, remoteAddr });
+                    logger.debug("TraceID not exist. camSampled is false. skip trace. requestUrl:{}, remoteAddr:{}", requestURL, remoteAddr);
                 }
                 return trace;
             }

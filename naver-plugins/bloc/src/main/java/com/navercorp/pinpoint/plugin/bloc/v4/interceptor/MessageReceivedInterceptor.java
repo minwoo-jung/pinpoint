@@ -52,9 +52,8 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             // For example, if this transaction invokes rpc call, we can add
             // parameter to tell remote node 'don't sample this transaction'
             final Trace trace = traceContext.disableSampling();
-            if (isDebug) {
-                logger.debug("remotecall sampling flag found. skip trace remoteAddr:{}", new Object[] { ioSession.getRemoteAddress().toString() });
-            }
+            if (isDebug)
+                logger.debug("remotecall sampling flag found. skip trace remoteAddr:{}", new Object[]{ioSession.getRemoteAddress().toString()});
             return trace;
         }
         
@@ -62,13 +61,11 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         if (traceId != null) {
             final Trace trace = traceContext.continueTraceObject(traceId);
             if (trace.canSampled()) {
-                if (isDebug) {
-                    logger.debug("TraceID exist. continue trace. traceId:{}, remoteAddr:{}", new Object[] { traceId, ioSession.getRemoteAddress().toString() });
-                }
+                if (isDebug)
+                    logger.debug("TraceID exist. continue trace. traceId:{}, remoteAddr:{}", new Object[]{traceId, ioSession.getRemoteAddress().toString()});
             } else {
                 if (isDebug) {
-                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, remoteAddr:{}", new Object[] { traceId,
-                            ioSession.getRemoteAddress().toString() });
+                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, remoteAddr:{}", traceId, ioSession.getRemoteAddress().toString());
                 }
             }
             return trace;
@@ -76,11 +73,11 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             final Trace trace = traceContext.newTraceObject();
             if (trace.canSampled()) {
                 if (isDebug) {
-                    logger.debug("TraceID not exist. start new trace. remoteAddr:{}", new Object[] { ioSession.getRemoteAddress().toString() });
+                    logger.debug("TraceID not exist. start new trace. remoteAddr:{}", ioSession.getRemoteAddress().toString());
                 }
             } else {
                 if (isDebug) {
-                    logger.debug("TraceID not exist. camSampled is false. skip trace. remoteAddr:{}", new Object[] { ioSession.getRemoteAddress().toString() });
+                    logger.debug("TraceID not exist. camSampled is false. skip trace. remoteAddr:{}", ioSession.getRemoteAddress().toString());
                 }
             }
             return trace;

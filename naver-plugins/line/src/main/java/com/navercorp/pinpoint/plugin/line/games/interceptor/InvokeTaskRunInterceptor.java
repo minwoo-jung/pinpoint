@@ -163,14 +163,14 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
                 if (isDebug) {
                     String requestURL = request.getUri();
                     String remoteAddr = getRemoteAddress(channel);
-                    logger.debug("TraceID exist. continue trace. traceId:{}, requestUrl:{}, remoteAddr:{}", new Object[]{traceId, requestURL, remoteAddr});
+                    logger.debug("TraceID exist. continue trace. traceId:{}, requestUrl:{}, remoteAddr:{}", traceId, requestURL, remoteAddr);
                 }
                 return trace;
             } else {
                 if (isDebug) {
                     String requestURL = request.getUri();
                     String remoteAddr = getRemoteAddress(channel);
-                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, requestUrl:{}, remoteAddr:{}", new Object[]{traceId, requestURL, remoteAddr});
+                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, requestUrl:{}, remoteAddr:{}", traceId, requestURL, remoteAddr);
 
                 }
                 return trace;
@@ -181,14 +181,14 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
                 if (isDebug) {
                     String requestURL = request.getUri();
                     String remoteAddr = getRemoteAddress(channel);
-                    logger.debug("TraceID not exist. start new trace. requestUrl:{}, remoteAddr:{}", new Object[]{requestURL, remoteAddr});
+                    logger.debug("TraceID not exist. start new trace. requestUrl:{}, remoteAddr:{}", requestURL, remoteAddr);
                 }
                 return trace;
             } else {
                 if (isDebug) {
                     String requestURL = request.getUri();
                     String remoteAddr = getRemoteAddress(channel);
-                    logger.debug("TraceID not exist. camSampled is false. skip trace. requestUrl:{}, remoteAddr:{}", new Object[]{requestURL, remoteAddr});
+                    logger.debug("TraceID not exist. camSampled is false. skip trace. requestUrl:{}, remoteAddr:{}", requestURL, remoteAddr);
                 }
                 return trace;
             }
