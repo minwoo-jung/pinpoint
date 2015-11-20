@@ -227,7 +227,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
             return address.substring(1);
         } else {
             if (address.contains("/")) {
-                return address.substring(address.indexOf("/") + 1);
+                return address.substring(address.indexOf('/') + 1);
             } else {
                 return address;
             }
