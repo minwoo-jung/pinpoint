@@ -381,7 +381,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
             return null;
         }
 
-        int pos = uri.indexOf("?") + 1;
+        int pos = uri.indexOf('?') + 1;
 
         if (pos > 1 && pos < uri.length()) {
             return StringUtils.drop(uri.substring(pos), totalLimit);

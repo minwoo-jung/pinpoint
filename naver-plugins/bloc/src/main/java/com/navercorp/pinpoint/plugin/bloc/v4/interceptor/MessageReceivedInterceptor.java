@@ -321,9 +321,9 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             if (address.startsWith("/")) {
                 return address.substring(1);
             } else {
-                int delimeterIndex = address.indexOf("/");
+                int delimeterIndex = address.indexOf('/');
                 if (delimeterIndex != -1 && delimeterIndex < addressLength) {
-                    return address.substring(address.indexOf("/") + 1);
+                    return address.substring(address.indexOf('/') + 1);
                 }
             }
         }
