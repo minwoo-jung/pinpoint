@@ -12,6 +12,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
+import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
@@ -44,14 +45,29 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
             // TODO tomcat과 로직이 미묘하게 다름 차이점 알아내서 고칠것.
             // String remoteAddr = request.remoteAddr().toString();
 
-            recorder.recordEndPoint(request.protocol().toString() + ":" + request.serverName().toString() + ":" + request.getServerPort());
-            recorder.recordAttribute(AnnotationKey.HTTP_URL, request.requestURI().toString());
+            recorder.recordEndPoint(getEndPoint(request.serverName().toString(), request.getServerPort()));
+            recorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.requestURI().toString(), false));
         }
 
         if (!recorder.isRoot()) {
           recordParentInfo(recorder, request);
         }
     }
+
+    private String getEndPoint(String host, int port) {
+        if (host == null) {
+            return "unknown";
+        }
+        if (port < 0) {
+            return host;
+        }
+        StringBuilder sb = new StringBuilder(host.length() + 8);
+        sb.append(host);
+        sb.append(':');
+        sb.append(port);
+        return sb.toString();
+    }
+
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
@@ -103,9 +119,10 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
         if (recorder.canSampled()) {
             Request request = (Request) args[0];
+            // skip
             String parameters = getRequestParameter(request, 64, 512);
             if (parameters != null && parameters.length() > 0) {
-                recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                // recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
             }
 
             recorder.recordApi(methodDescriptor);
