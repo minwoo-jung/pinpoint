@@ -237,7 +237,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
                     final Charset charset = getCharset(request);
                     String bodyStr = content.toString(0, contentSize, charset);
                     if (bodyStr != null && bodyStr.length() > 0) {
-                        recorder.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
+                        // recorder.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
                     }
                 }
             } else if (reqMethod.equals(HttpMethod.GET)) {
@@ -245,7 +245,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
                 // 512);
                 String parameters = getRequestParameter(request, paramDumpSize);
                 if (parameters != null && parameters.length() > 0) {
-                    recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                    // recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                 }
             }
         }

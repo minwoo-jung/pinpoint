@@ -78,7 +78,7 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
             recorder.recordAttribute(LucyNetConstants.NIMM_METHOD_NAME, methodName);
         }
         if (params != null) {
-            recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, Arrays.toString(params));
+            // recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, Arrays.toString(params));
         }
 
     }

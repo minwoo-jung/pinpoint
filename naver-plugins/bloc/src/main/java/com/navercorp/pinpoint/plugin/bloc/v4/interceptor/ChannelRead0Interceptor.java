@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
+import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
@@ -54,7 +55,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
 
             recorder.recordEndPoint(endPoint);
             recorder.recordRemoteAddress(remoteAddress);
-            recorder.recordAttribute(AnnotationKey.HTTP_URL, request.getUri());
+            recorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.getUri(), false));
         }
 
         if (!recorder.isRoot()) {
@@ -130,10 +131,11 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
             if (HttpMethod.POST.name().equals(request.getMethod().name()) || HttpMethod.PUT.name().equals(request.getMethod().name())) {
                 // TODO record post body
             } else {
+                // skip
                 Charset uriEncoding = ((UriEncodingGetter)target)._$PINPOINT$_getUriEncoding();
                 String parameters = getRequestParameter(request, 64, 512, uriEncoding);
                 if (parameters != null && parameters.length() > 0) {
-                    recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                    // recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                 }
             }
 
