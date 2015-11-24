@@ -1,6 +1,7 @@
 package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
+import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
@@ -36,8 +37,12 @@ import com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter;
 @TargetMethod(name="channelRead0", paramTypes={"io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest"})
 public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
 
+    private final boolean traceRequestParam;
+
     public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, ChannelRead0Interceptor.class);
+        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
+        traceRequestParam = config.isTraceRequestParam();
     }
 
     @Override
@@ -55,7 +60,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
 
             recorder.recordEndPoint(endPoint);
             recorder.recordRemoteAddress(remoteAddress);
-            recorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.getUri(), false));
+            recorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.getUri(), traceRequestParam));
         }
 
         if (!recorder.isRoot()) {
@@ -126,19 +131,19 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
     @Override
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
         if (recorder.canSampled()) {
-            io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
-
-            if (HttpMethod.POST.name().equals(request.getMethod().name()) || HttpMethod.PUT.name().equals(request.getMethod().name())) {
-                // TODO record post body
-            } else {
-                // skip
-                Charset uriEncoding = ((UriEncodingGetter)target)._$PINPOINT$_getUriEncoding();
-                String parameters = getRequestParameter(request, 64, 512, uriEncoding);
-                if (parameters != null && parameters.length() > 0) {
-                    // recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+            if(this.traceRequestParam) {
+                io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
+                if (HttpMethod.POST.name().equals(request.getMethod().name()) || HttpMethod.PUT.name().equals(request.getMethod().name())) {
+                    // TODO record post body
+                } else {
+                    // skip
+                    Charset uriEncoding = ((UriEncodingGetter)target)._$PINPOINT$_getUriEncoding();
+                    String parameters = getRequestParameter(request, 64, 512, uriEncoding);
+                    if (parameters != null && parameters.length() > 0) {
+                        // recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                    }
                 }
             }
-
             recorder.recordApi(methodDescriptor);
         }
         recorder.recordException(throwable);

@@ -6,6 +6,8 @@ import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPlugin;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPluginConfig;
 import com.navercorp.pinpoint.plugin.lucy.net.NimmAddressAccessor;
 
 import java.util.Arrays;
@@ -22,12 +24,16 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
 
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
+    private final boolean param;
 
     // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고 있음.
 
     public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
+
+        LucyNetPluginConfig config = new LucyNetPluginConfig(traceContext.getProfilerConfig());
+        this.param = config.isNimmParam();
     }
 
     @Override
@@ -77,8 +83,8 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
         if (methodName != null) {
             recorder.recordAttribute(LucyNetConstants.NIMM_METHOD_NAME, methodName);
         }
-        if (params != null) {
-            // recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, Arrays.toString(params));
+        if (this.param && params != null) {
+            recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, Arrays.toString(params));
         }
 
     }

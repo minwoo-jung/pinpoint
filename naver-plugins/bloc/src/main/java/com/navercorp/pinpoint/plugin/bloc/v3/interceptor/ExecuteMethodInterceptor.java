@@ -19,6 +19,7 @@ import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
+import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import external.org.apache.coyote.Request;
 
 /**
@@ -28,8 +29,13 @@ import external.org.apache.coyote.Request;
 @TargetMethod(name="execute", paramTypes={"external.org.apache.coyote.Request", "external.org.apache.coyote.Response"})
 public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
 
+    private final boolean traceRequestParam;
+
     public ExecuteMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, ExecuteMethodInterceptor.class);
+
+        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
+        traceRequestParam = config.isTraceRequestParam();
     }
 
     @Override
@@ -46,7 +52,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
             // String remoteAddr = request.remoteAddr().toString();
 
             recorder.recordEndPoint(getEndPoint(request.serverName().toString(), request.getServerPort()));
-            recorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.requestURI().toString(), false));
+            recorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.requestURI().toString(), traceRequestParam));
         }
 
         if (!recorder.isRoot()) {
@@ -118,13 +124,14 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
     @Override
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
         if (recorder.canSampled()) {
-            Request request = (Request) args[0];
-            // skip
-            String parameters = getRequestParameter(request, 64, 512);
-            if (parameters != null && parameters.length() > 0) {
-                // recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+            if(this.traceRequestParam) {
+                Request request = (Request) args[0];
+                // skip
+                String parameters = getRequestParameter(request, 64, 512);
+                if (parameters != null && parameters.length() > 0) {
+                    recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                }
             }
-
             recorder.recordApi(methodDescriptor);
         }
         recorder.recordException(throwable);

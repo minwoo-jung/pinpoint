@@ -23,8 +23,10 @@ import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 public class LineConfig {
     private final int paramDumpSize;
     private final int entityDumpSize;
+    private final boolean param;
     
     public LineConfig(ProfilerConfig config) {
+        this.param = config.readBoolean("profiler.line.game.netty.param", false);
         this.paramDumpSize = config.readInt("profiler.line.game.netty.param.dumpsize", 512);
         this.entityDumpSize = config.readInt("profiler.line.game.netty.entity.dumpsize", 512);
     }
@@ -35,5 +37,19 @@ public class LineConfig {
 
     public int getEntityDumpSize() {
         return entityDumpSize;
+    }
+
+    public boolean isParam() {
+        return param;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LineConfig{");
+        sb.append("paramDumpSize=").append(paramDumpSize);
+        sb.append(", entityDumpSize=").append(entityDumpSize);
+        sb.append(", param=").append(param);
+        sb.append('}');
+        return sb.toString();
     }
 }
