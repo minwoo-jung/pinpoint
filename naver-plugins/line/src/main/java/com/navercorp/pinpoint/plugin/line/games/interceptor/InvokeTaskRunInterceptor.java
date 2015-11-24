@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.navercorp.pinpoint.plugin.line.LineConfig;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -48,14 +49,16 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
 
     private final int paramDumpSize;
     private final int entityDumpSize;
+    private final boolean param;
 
     public InvokeTaskRunInterceptor(TraceContext traceContext, MethodDescriptor descriptor, int paramDumpSize, int entityDumpSize) {
         super(traceContext, descriptor, InvokeTaskRunInterceptor.class);
-        
+
+        LineConfig config = new LineConfig(traceContext.getProfilerConfig());
         this.paramDumpSize = paramDumpSize;
         this.entityDumpSize = entityDumpSize;
+        this.param = config.isParam();
     }
-
 
     @Override
     public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
@@ -207,12 +210,12 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
 
         if (recorder.canSampled()) {
-            MessageEvent e = ((MessageEventAccessor)target)._$PINPOINT$_getMessageEvent();
-
-            if (e != null) {
-                recordHttpParameter2(recorder, e);
+            if(this.param) {
+                MessageEvent e = ((MessageEventAccessor)target)._$PINPOINT$_getMessageEvent();
+                if (e != null) {
+                    recordHttpParameter2(recorder, e);
+                }
             }
-
             recorder.recordApi(methodDescriptor);
         }
         recorder.recordException(throwable);
@@ -237,7 +240,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
                     final Charset charset = getCharset(request);
                     String bodyStr = content.toString(0, contentSize, charset);
                     if (bodyStr != null && bodyStr.length() > 0) {
-                        // recorder.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
+                        recorder.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
                     }
                 }
             } else if (reqMethod.equals(HttpMethod.GET)) {
@@ -245,7 +248,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
                 // 512);
                 String parameters = getRequestParameter(request, paramDumpSize);
                 if (parameters != null && parameters.length() > 0) {
-                    // recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                    recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                 }
             }
         }
