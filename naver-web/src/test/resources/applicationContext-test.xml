@@ -43,6 +43,8 @@
     <import resource="classpath:applicationContext-datasource.xml" />
     <import resource="classpath:applicationContext-dao-config.xml" />
 
+    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter" />
+
     <bean id="trace" class="com.navercorp.pinpoint.collector.dao.hbase.HbaseTraceDao"/>
     <bean class="com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentInfoDao"/>
 
