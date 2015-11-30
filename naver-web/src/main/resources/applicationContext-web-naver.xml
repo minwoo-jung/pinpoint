@@ -28,7 +28,11 @@
     
     <util:properties id="matcherInfo" location="classpath:site-matcher.properties"/>
 
-    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter" />
+    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter">
+        <property name="objectMapper">
+            <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
+        </property>
+    </bean>
     
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
         <property name="messageConverters">

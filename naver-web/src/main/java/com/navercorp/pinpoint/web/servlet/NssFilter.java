@@ -16,8 +16,11 @@
 
 package com.navercorp.pinpoint.web.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
@@ -33,8 +36,17 @@ import java.util.*;
  */
 public class NssFilter implements Filter {
 
-    public static final String UNAUTHORIZED_RESPONSE_HEADER_KEY = "Location";
-    public static final String UNAUTHORIZED_RESPONSE_HEADER_VALUE = "/not_authorized.html";
+    public static final String UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY = "errorCode";
+    public static final int UNAUTHORIZED_RESPONSE_ERROR_CODE_VALUE = HttpStatus.SC_MOVED_TEMPORARILY;
+    public static final String UNAUTHORIZED_RESPONSE_REDIRECT_KEY = "redirect";
+    public static final String UNAUTHORIZED_RESPONSE_REDIRECT_VALUE = "/not_authorized.html";
+
+    public static final Map<String, Object> UNAUTHORIZED_RESPONSE = new HashMap<>();
+
+    static {
+        UNAUTHORIZED_RESPONSE.put(UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY, UNAUTHORIZED_RESPONSE_ERROR_CODE_VALUE);
+        UNAUTHORIZED_RESPONSE.put(UNAUTHORIZED_RESPONSE_REDIRECT_KEY, UNAUTHORIZED_RESPONSE_REDIRECT_VALUE);
+    }
 
     private FilterConfig filterConfig;
 
@@ -52,6 +64,8 @@ public class NssFilter implements Filter {
 
     private Set<String> overrideIds;
     private List<String> acceptedPrefixes;
+
+    private ObjectMapper objectMapper;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -103,9 +117,9 @@ public class NssFilter implements Filter {
             if (isAllowed(userId.toUpperCase())) {
                 chain.doFilter(request, response);
             } else {
-                HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-                httpServletResponse.setStatus(HttpStatus.SC_MOVED_TEMPORARILY);
-                httpServletResponse.setHeader(UNAUTHORIZED_RESPONSE_HEADER_KEY, UNAUTHORIZED_RESPONSE_HEADER_VALUE);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(objectMapper.writeValueAsString(UNAUTHORIZED_RESPONSE));
             }
         }
     }
@@ -129,5 +143,9 @@ public class NssFilter implements Filter {
             }
             return false;
         }
+    }
+
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 }

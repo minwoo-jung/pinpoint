@@ -19,12 +19,14 @@ package com.navercorp.pinpoint.web.servlet;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -33,6 +35,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import java.util.Map;
 
 /**
  * @author HyunGil Jeong
@@ -68,6 +71,10 @@ public class NssFilterTest {
 
     @Autowired
     private Filter nssFilter;
+
+    @Autowired
+    @Qualifier("jsonObjectMapper")
+    private ObjectMapper objectMapper;
 
     @Before
     public void setUp() throws Exception {
@@ -148,12 +155,13 @@ public class NssFilterTest {
 
     private void assertAuthorized() throws Exception {
         verify(this.filterChain, times(1)).doFilter(this.request, this.response);
-        assertNull(this.response.getHeader(NssFilter.UNAUTHORIZED_RESPONSE_HEADER_KEY));
     }
 
     private void assertUnauthorized() throws Exception {
         verifyZeroInteractions(this.filterChain);
-        assertEquals(NssFilter.UNAUTHORIZED_RESPONSE_HEADER_VALUE, this.response.getHeader(NssFilter.UNAUTHORIZED_RESPONSE_HEADER_KEY));
+        Map<String, Object> response = this.objectMapper.readValue(this.response.getContentAsString(), Map.class);
+        assertEquals(NssFilter.UNAUTHORIZED_RESPONSE_ERROR_CODE_VALUE, response.get(NssFilter.UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY));
+        assertEquals(NssFilter.UNAUTHORIZED_RESPONSE_REDIRECT_VALUE, response.get(NssFilter.UNAUTHORIZED_RESPONSE_REDIRECT_KEY));
     }
 
 }
