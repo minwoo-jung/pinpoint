@@ -33,6 +33,9 @@ import java.util.*;
  */
 public class NssFilter implements Filter {
 
+    public static final String UNAUTHORIZED_RESPONSE_HEADER_KEY = "Location";
+    public static final String UNAUTHORIZED_RESPONSE_HEADER_VALUE = "/not_authorized.html";
+
     private FilterConfig filterConfig;
 
     @Value("#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}")
@@ -102,7 +105,7 @@ public class NssFilter implements Filter {
             } else {
                 HttpServletResponse httpServletResponse = (HttpServletResponse) response;
                 httpServletResponse.setStatus(HttpStatus.SC_MOVED_TEMPORARILY);
-                httpServletResponse.setHeader("Location", "/not_authorized.html");
+                httpServletResponse.setHeader(UNAUTHORIZED_RESPONSE_HEADER_KEY, UNAUTHORIZED_RESPONSE_HEADER_VALUE);
             }
         }
     }

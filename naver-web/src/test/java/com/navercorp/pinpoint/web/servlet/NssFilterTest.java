@@ -28,13 +28,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockRequestDispatcher;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.RequestDispatcher;
 
 /**
  * @author HyunGil Jeong
@@ -74,12 +72,7 @@ public class NssFilterTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        this.request = new MockHttpServletRequest() {
-            @Override
-            public RequestDispatcher getRequestDispatcher(String path) {
-                return new MockRequestDispatcher("/not_authorized.html");
-            }
-        };
+        this.request = new MockHttpServletRequest();
         this.response = new MockHttpServletResponse();
         doNothing().when(this.filterChain).doFilter(this.request, this.response);
     }
@@ -155,12 +148,12 @@ public class NssFilterTest {
 
     private void assertAuthorized() throws Exception {
         verify(this.filterChain, times(1)).doFilter(this.request, this.response);
-        assertNull(this.response.getForwardedUrl());
+        assertNull(this.response.getHeader(NssFilter.UNAUTHORIZED_RESPONSE_HEADER_KEY));
     }
 
     private void assertUnauthorized() throws Exception {
         verifyZeroInteractions(this.filterChain);
-        assertEquals("/not_authorized.html", this.response.getForwardedUrl());
+        assertEquals(NssFilter.UNAUTHORIZED_RESPONSE_HEADER_VALUE, this.response.getHeader(NssFilter.UNAUTHORIZED_RESPONSE_HEADER_KEY));
     }
 
 }
