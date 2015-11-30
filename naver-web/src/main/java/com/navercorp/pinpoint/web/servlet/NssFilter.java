@@ -17,12 +17,14 @@
 package com.navercorp.pinpoint.web.servlet;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
@@ -98,8 +100,9 @@ public class NssFilter implements Filter {
             if (isAllowed(userId.toUpperCase())) {
                 chain.doFilter(request, response);
             } else {
-                RequestDispatcher requestDispatcher = httpServletRequest.getRequestDispatcher("/not_authorized.html");
-                requestDispatcher.forward(request, response);
+                HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+                httpServletResponse.setStatus(HttpStatus.SC_MOVED_TEMPORARILY);
+                httpServletResponse.setHeader("Location", "/not_authorized.html");
             }
         }
     }
