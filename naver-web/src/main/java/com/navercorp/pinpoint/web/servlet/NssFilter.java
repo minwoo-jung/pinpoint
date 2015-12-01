@@ -16,18 +16,16 @@
 
 package com.navercorp.pinpoint.web.servlet;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
@@ -48,8 +46,6 @@ public class NssFilter implements Filter {
         UNAUTHORIZED_RESPONSE.put(UNAUTHORIZED_RESPONSE_REDIRECT_KEY, UNAUTHORIZED_RESPONSE_REDIRECT_VALUE);
     }
 
-    private FilterConfig filterConfig;
-
     @Value("#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}")
     private String userHeaderKey;
 
@@ -67,13 +63,25 @@ public class NssFilter implements Filter {
 
     private ObjectMapper objectMapper;
 
+    public String unauthorizedResponse;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
     }
 
     @PostConstruct
     public void init() {
+        try {
+            this.unauthorizedResponse = this.objectMapper.writeValueAsString(UNAUTHORIZED_RESPONSE);
+        } catch (JsonProcessingException e) {
+            StringBuilder sb = new StringBuilder("{");
+            sb.append("\"").append(UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY).append("\"").append(":");
+            sb.append(UNAUTHORIZED_RESPONSE_ERROR_CODE_VALUE).append(",");
+            sb.append("\"").append(UNAUTHORIZED_RESPONSE_REDIRECT_KEY).append("\"").append(":");
+            sb.append("\"").append(UNAUTHORIZED_RESPONSE_REDIRECT_VALUE).append("\"");
+            sb.append("}");
+            this.unauthorizedResponse = sb.toString();
+        }
         if (StringUtils.isEmpty(this.overrideIdVal)) {
             this.overrideIds = Collections.emptySet();
         } else {
@@ -83,7 +91,7 @@ public class NssFilter implements Filter {
             } else {
                 this.overrideIds = new HashSet<>(overrideIds.length);
                 for (String overrideId : overrideIds) {
-                    this.overrideIds.add(overrideId.toUpperCase());
+                    this.overrideIds.add(overrideId.trim().toUpperCase());
                 }
             }
         }
@@ -94,13 +102,14 @@ public class NssFilter implements Filter {
             final String[] prefixes = this.acceptedCorporationPrefixes.split(",");
             final String[] types = this.acceptedUserTypes.split(",");
             if (types.length == 0) {
+                this.acceptedPrefixes = Arrays.asList(prefixes);
                 for (String prefix : prefixes) {
-                    this.acceptedPrefixes.add(prefix);
+                    this.acceptedPrefixes.add(prefix.trim());
                 }
             } else {
                 for (String prefix : prefixes) {
                     for (String type : types) {
-                        this.acceptedPrefixes.add(prefix + type);
+                        this.acceptedPrefixes.add(prefix.trim() + type.trim());
                     }
                 }
             }
@@ -126,7 +135,6 @@ public class NssFilter implements Filter {
 
     @Override
     public void destroy() {
-        this.filterConfig = null;
     }
 
     private boolean isAllowed(String userId) {
