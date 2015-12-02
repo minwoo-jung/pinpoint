@@ -57,6 +57,9 @@
 			}
 		},	
 		navbar : {
+			searchPeriod : {
+				guide: "Search duration may not be greater than {{day}} days."
+			},
 			applicationSelector: {
 				mainStyle: "",
 				title: "Application List",
