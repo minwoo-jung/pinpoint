@@ -63,7 +63,7 @@ public class NssFilter implements Filter {
 
     private ObjectMapper objectMapper;
 
-    public String unauthorizedResponse;
+    private String unauthorizedResponse;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -128,7 +128,7 @@ public class NssFilter implements Filter {
             } else {
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(objectMapper.writeValueAsString(UNAUTHORIZED_RESPONSE));
+                response.getWriter().write(this.unauthorizedResponse);
             }
         }
     }
