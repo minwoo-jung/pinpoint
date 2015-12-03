@@ -172,6 +172,9 @@
                             <port>20430</port>
                             <fork>true</fork>
                             <uriEncoding>UTF-8</uriEncoding>
+                            <systemProperties>
+                                <JAVA_OPTS>-Xms256m -Xmx512m -XX:MaxPermSize=256m</JAVA_OPTS>
+                            </systemProperties>
                         </configuration>
                         <executions>
                             <execution>
