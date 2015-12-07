@@ -31,9 +31,8 @@ public final class LucyNetConstants {
 
     // NPC
     public static final String METADATA_NPC_SERVER_ADDRESS = "com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor";
+    public static final String NIMM_ADDRESS_ACCESSOR = "com.navercorp.pinpoint.plugin.lucy.net.NimmAddressAccessor";
 
-    public static final String METADATA_ASYNC_TRACE_ID = "asyncTraceId";
-    
     public static final ServiceType NPC_CLIENT = ServiceTypeFactory.of(9060, "NPC_CLIENT", RECORD_STATISTICS);
     public static final ServiceType NPC_CLIENT_INTERNAL = ServiceTypeFactory.of(9061, "NPC_CLIENT_INTERNAL", "NPC_CLIENT");
     

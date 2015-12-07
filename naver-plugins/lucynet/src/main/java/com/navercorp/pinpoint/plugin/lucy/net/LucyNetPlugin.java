@@ -101,7 +101,7 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(NimmAddressAccessor.class.getName());
+                target.addField(LucyNetConstants.NIMM_ADDRESS_ACCESSOR);
                 target.addField(AsyncTraceIdAccessor.class.getName());
 
                 InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.nimm.connector.address.NimmAddress", "com.nhncorp.lucy.nimm.connector.NimmSocket", "long");
