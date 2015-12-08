@@ -614,6 +614,12 @@
 				title: "NELO 로그 연동",
 				desc: "연동 방법은 다음 링크를 참고하세요.<a href='http://devcafe.nhncorp.com/Pinpoint/forum/2123148' target='_blank'><span class='glyphicon glyphicon-link' aria-hidden='true' style='color:yellow'></span></a>"
 			}
+		},
+		transactionList: {
+			openError: {
+				noParent: "Scatter data of parent window had been changed.\r\nso can\'t scan the data any more.",
+				noData: "There is no {{application}} scatter data in parent window."
+			}
 		}
 	};
 	pinpointApp.constant('helpContent-en', oHelp );
