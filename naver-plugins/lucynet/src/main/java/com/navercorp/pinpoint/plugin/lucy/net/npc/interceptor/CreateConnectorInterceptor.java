@@ -40,10 +40,11 @@ public class CreateConnectorInterceptor implements AroundInterceptor {
         SpanEventRecorder recorder = trace.traceBlockBegin();
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
 
-        NpcConnectorOption option = (NpcConnectorOption) args[0];
-
-        InetSocketAddress serverAddress = option.getAddress();
-
+        InetSocketAddress serverAddress = null;
+        if(args != null && args.length >= 1 && args[0] != null && args[0] instanceof NpcConnectorOption) {
+            NpcConnectorOption option = (NpcConnectorOption) args[0];
+            serverAddress = option.getAddress();
+        }
         if (serverAddress != null) {
             int port = serverAddress.getPort();
             String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");

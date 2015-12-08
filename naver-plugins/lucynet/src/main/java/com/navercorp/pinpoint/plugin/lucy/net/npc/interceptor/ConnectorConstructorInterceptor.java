@@ -47,18 +47,18 @@ public class ConnectorConstructorInterceptor implements AroundInterceptor {
              * KeepAliveNpcHessianConnector(InetSocketAddress, long, long,
              * Charset)
              */
-            if (args.length == 4) {
+            if (args != null && args.length == 4) {
                 if (args[0] instanceof InetSocketAddress) {
                     serverAddress = (InetSocketAddress) args[0];
                 }
-            } else if (args.length == 1) {
+            } else if (args != null && args.length == 1) {
                 if (args[0] instanceof NpcConnectorOption) {
                     NpcConnectorOption option = (NpcConnectorOption) args[0];
                     serverAddress = option.getAddress();
                 }
             }
         } else {
-            if (args[0] instanceof NpcConnectorOption) {
+            if (args != null && args.length >= 1 && args[0] instanceof NpcConnectorOption) {
                 NpcConnectorOption option = (NpcConnectorOption) args[0];
                 serverAddress = option.getAddress();
             }

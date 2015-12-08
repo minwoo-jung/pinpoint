@@ -45,23 +45,23 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             return false;
         }
 
-        if (args[1] == null || !(args[1] instanceof external.org.apache.mina.common.IoSession)) {
+        if (!(args[1] instanceof external.org.apache.mina.common.IoSession)) {
             if (isDebug) {
                 logger.debug("Invalid args[1]={}. Need {}", args[1], external.org.apache.mina.common.IoSession.class.getName());
             }
             return false;
         }
 
-        if (args[2] == null || !(args[2] instanceof NpcMessage)) {
+        if (!(args[2] instanceof NpcMessage)) {
             if (isDebug) {
                 logger.debug("Invalid args[2]={}. Need {}", args[2], NpcMessage.class.getName());
             }
             return false;
         }
 
+
         return true;
     }
-
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {

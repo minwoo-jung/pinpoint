@@ -58,7 +58,7 @@ public class ProcessInterceptor implements AroundInterceptor {
             recorder.recordApi(descriptor);
             recorder.recordException(throwable);
             
-            if (args != null && args.length >= 1 && args[0] != null && args[0] instanceof BlocRequest) {
+            if (args != null && args.length >= 1 && args[0] instanceof BlocRequest) {
                 BlocRequest blocRequest = (BlocRequest)args[0];
                 recorder.recordAttribute(BlocConstants.CALL_URL, blocRequest.getPath());
                 recorder.recordAttribute(BlocConstants.PROTOCOL, blocRequest.getProtocol());

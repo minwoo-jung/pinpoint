@@ -54,14 +54,14 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
             return false;
         }
 
-        if (args[0] == null || !(args[0] instanceof io.netty.channel.ChannelHandlerContext)) {
+        if (!(args[0] instanceof io.netty.channel.ChannelHandlerContext)) {
             if (isDebug) {
                 logger.debug("Invalid args[0]={}. Need {}", args[0], io.netty.channel.ChannelHandlerContext.class.getName());
             }
             return false;
         }
 
-        if (args[1] == null || !(args[1] instanceof io.netty.handler.codec.http.FullHttpRequest)) {
+        if (!(args[1] instanceof io.netty.handler.codec.http.FullHttpRequest)) {
             if (isDebug) {
                 logger.debug("Invalid args[1]={}. Need {}", args[1], io.netty.handler.codec.http.FullHttpRequest.class.getName());
             }

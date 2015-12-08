@@ -14,9 +14,8 @@ import java.net.InetSocketAddress;
 
 /**
  * based on NPC client 1.5.18
- * 
+ *
  * @author netspider
- * 
  */
 public class ConnectInterceptor implements AroundInterceptor {
 
@@ -44,23 +43,21 @@ public class ConnectInterceptor implements AroundInterceptor {
             return;
         }
 
-        com.nhncorp.lucy.npc.connector.NpcConnectorOption connectorOption = (com.nhncorp.lucy.npc.connector.NpcConnectorOption) args[0];
-
         SpanEventRecorder recorder = trace.traceBlockBegin();
         TraceId nextId = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(nextId.getSpanId());
-
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
 
-        InetSocketAddress serverAddress = connectorOption.getAddress();
-        int port = serverAddress.getPort();
-        String endpiont = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-//      DestinationId와 동일하므로 없는게 맞음.
-//        trace.recordEndPoint(endpiont);
-        recorder.recordDestinationId(endpiont);
+        if (args != null && args.length >= 1 && args[0] != null && args[0] instanceof com.nhncorp.lucy.npc.connector.NpcConnectorOption) {
+            com.nhncorp.lucy.npc.connector.NpcConnectorOption connectorOption = (com.nhncorp.lucy.npc.connector.NpcConnectorOption) args[0];
+            InetSocketAddress serverAddress = connectorOption.getAddress();
+            int port = serverAddress.getPort();
+            String endpiont = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
+            recorder.recordDestinationId(endpiont);
 
-        recorder.recordAttribute(LucyNetConstants.NPC_URL, serverAddress.toString());
-        recorder.recordAttribute(LucyNetConstants.NPC_CONNECT_OPTION, connectorOption.toString());
+            recorder.recordAttribute(LucyNetConstants.NPC_URL, serverAddress.toString());
+            recorder.recordAttribute(LucyNetConstants.NPC_CONNECT_OPTION, connectorOption.toString());
+        }
     }
 
     @Override

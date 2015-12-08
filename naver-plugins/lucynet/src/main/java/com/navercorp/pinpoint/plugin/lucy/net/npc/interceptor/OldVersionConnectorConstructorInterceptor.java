@@ -32,7 +32,7 @@ public class OldVersionConnectorConstructorInterceptor implements AroundIntercep
     public void before(Object target, Object[] args) {
         InetSocketAddress serverAddress = null;
 
-        if (args.length > 0) {
+        if (args != null && args.length > 0) {
             if (args[0] instanceof InetSocketAddress) {
                 serverAddress = (InetSocketAddress) args[0];
             }

@@ -46,7 +46,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
             }
         }
 
-        if (args[0] == null || !(args[0] instanceof Request)) {
+        if (!(args[0] instanceof Request)) {
             if (isDebug) {
                 logger.debug("Invalid args[0]={}. Need {}", args[0], Request.class.getName());
             }

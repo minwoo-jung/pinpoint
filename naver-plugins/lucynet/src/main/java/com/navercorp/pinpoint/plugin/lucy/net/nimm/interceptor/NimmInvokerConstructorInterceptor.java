@@ -35,7 +35,7 @@ public class NimmInvokerConstructorInterceptor implements AroundInterceptor {
             logger.beforeInterceptor(target, args);
         }
 
-        if (args[0] instanceof com.nhncorp.lucy.nimm.connector.address.NimmAddress) {
+        if (args != null && args.length >= 1 && args[0] instanceof com.nhncorp.lucy.nimm.connector.address.NimmAddress) {
             com.nhncorp.lucy.nimm.connector.address.NimmAddress nimmAddress = (com.nhncorp.lucy.nimm.connector.address.NimmAddress) args[0];
 
             StringBuilder address = new StringBuilder();
