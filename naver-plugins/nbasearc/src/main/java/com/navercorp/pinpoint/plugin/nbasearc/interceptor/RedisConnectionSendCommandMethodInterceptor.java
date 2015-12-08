@@ -67,7 +67,7 @@ public class RedisConnectionSendCommandMethodInterceptor implements AroundInterc
 
             final String endPoint = ((EndPointAccessor) target)._$PINPOINT$_getEndPoint();
             final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
-            if (invocation != null && invocation.getAttachment() != null) {
+            if (invocation != null && invocation.getAttachment() != null && invocation.getAttachment() instanceof CommandContext) {
                 final CommandContext commandContext = (CommandContext) invocation.getAttachment();
                 commandContext.setEndPoint(endPoint);
                 logger.debug("Set command context {}", commandContext);

@@ -44,7 +44,7 @@ public abstract class GatewayServerMetadataReadInterceptor implements AroundInte
     @Override
     public void before(Object target, Object[] args) {
         if (isDebug) {
-            logger.beforeInterceptor(target, target.getClass().getName(), methodDescriptor.getMethodName(), methodDescriptor.getParameterDescriptor(), args);
+            logger.beforeInterceptor(target, args);
         }
 
         try {

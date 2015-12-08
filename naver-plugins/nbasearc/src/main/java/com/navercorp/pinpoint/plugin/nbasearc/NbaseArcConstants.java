@@ -33,4 +33,8 @@ public final class NbaseArcConstants {
     public static final ServiceType NBASE_ARC_INTERNAL = ServiceTypeFactory.of(8251, "NBASE_ARC_INTERNAL");
     
     public static final String NBASE_ARC_SCOPE = "nBaseArcScope";
+
+    public static final String DESTINATION_ID_ACCESSOR = "com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor";
+    public static final String END_POINT_ACCESSOR = "com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor";
+
 }

@@ -63,7 +63,7 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
 
         try {
             final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
-            if (invocation != null && invocation.getAttachment() != null) {
+            if (invocation != null && invocation.getAttachment() != null && invocation.getAttachment() instanceof CommandContext) {
                 final CommandContext commandContext = (CommandContext) invocation.getAttachment();
                 if (methodDescriptor.getMethodName().equals("sendCommand")) {
                     commandContext.setWriteBeginTime(System.currentTimeMillis());
@@ -79,8 +79,8 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
-        if (isDebug) {
-            logger.afterInterceptor(target, methodDescriptor.getClassName(), methodDescriptor.getMethodName(), "", args, result, throwable);
+        if(this.isDebug) {
+            logger.afterInterceptor(target, args, result, throwable);
         }
 
         final Trace trace = traceContext.currentTraceObject();
@@ -90,7 +90,7 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
 
         try {
             final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
-            if (invocation != null && invocation.getAttachment() != null) {
+            if (invocation != null && invocation.getAttachment() != null && invocation.getAttachment() instanceof CommandContext) {
                 final CommandContext commandContext = (CommandContext) invocation.getAttachment();
                 if (methodDescriptor.getMethodName().equals("sendCommand")) {
                     commandContext.setWriteEndTime(System.currentTimeMillis());
