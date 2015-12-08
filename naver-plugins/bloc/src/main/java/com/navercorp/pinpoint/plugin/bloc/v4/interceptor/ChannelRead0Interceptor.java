@@ -34,7 +34,7 @@ import com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter;
 /**
  * @author netspider
  */
-@TargetMethod(name="channelRead0", paramTypes={"io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest"})
+@TargetMethod(name = "channelRead0", paramTypes = {"io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest"})
 public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
 
     private final boolean traceRequestParam;
@@ -45,8 +45,37 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
         traceRequestParam = config.isTraceRequestParam();
     }
 
+    // check args.
+    private boolean validate(final Object[] args) {
+        if (args == null || args.length < 2) {
+            if (isDebug) {
+                logger.debug("Invalid args={}.", args);
+            }
+            return false;
+        }
+
+        if (args[0] == null || !(args[0] instanceof io.netty.channel.ChannelHandlerContext)) {
+            if (isDebug) {
+                logger.debug("Invalid args[0]={}. Need {}", args[0], io.netty.channel.ChannelHandlerContext.class.getName());
+            }
+            return false;
+        }
+
+        if (args[1] == null || !(args[1] instanceof io.netty.handler.codec.http.FullHttpRequest)) {
+            if (isDebug) {
+                logger.debug("Invalid args[1]={}. Need {}", args[1], io.netty.handler.codec.http.FullHttpRequest.class.getName());
+            }
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
+        if (!validate(args)) {
+            return;
+        }
         io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
         io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
@@ -70,6 +99,9 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
+        if (!validate(args)) {
+            return null;
+        }
 
         final io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
@@ -130,17 +162,21 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
 
     @Override
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
+        if (!validate(args)) {
+            return;
+        }
+
         if (recorder.canSampled()) {
-            if(this.traceRequestParam) {
+            if (this.traceRequestParam) {
                 io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
                 if (HttpMethod.POST.name().equals(request.getMethod().name()) || HttpMethod.PUT.name().equals(request.getMethod().name())) {
                     // TODO record post body
                 } else {
                     // skip
-                    Charset uriEncoding = ((UriEncodingGetter)target)._$PINPOINT$_getUriEncoding();
+                    Charset uriEncoding = ((UriEncodingGetter) target)._$PINPOINT$_getUriEncoding();
                     String parameters = getRequestParameter(request, 64, 512, uriEncoding);
                     if (parameters != null && parameters.length() > 0) {
-                        // recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+                        recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                     }
                 }
             }
@@ -247,7 +283,7 @@ public class ChannelRead0Interceptor extends SpanSimpleAroundInterceptor {
 
         if (parentApplicationName != null) {
             final String host = headers.get(Header.HTTP_HOST.toString());
-            if(host != null) {
+            if (host != null) {
                 recorder.recordAcceptorHost(headers.get(Header.HTTP_HOST.toString()));
             } else {
                 // FIXME record Acceptor Host는 URL상의 host를 가져와야한다. 일단 가져올 수 있는 방법이 없어보여 IP라도 추가해둠.

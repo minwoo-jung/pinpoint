@@ -26,7 +26,7 @@ import external.org.apache.coyote.Request;
  * @author netspider
  * @author emeroad
  */
-@TargetMethod(name="execute", paramTypes={"external.org.apache.coyote.Request", "external.org.apache.coyote.Response"})
+@TargetMethod(name = "execute", paramTypes = {"external.org.apache.coyote.Request", "external.org.apache.coyote.Response"})
 public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
 
     private final boolean traceRequestParam;
@@ -38,8 +38,28 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
         traceRequestParam = config.isTraceRequestParam();
     }
 
+    // check args.
+    private boolean validate(final Object[] args) {
+        if (args == null || args.length == 0) {
+            if (isDebug) {
+                logger.debug("Invalid args={}.", args);
+            }
+        }
+
+        if (args[0] == null || !(args[0] instanceof Request)) {
+            if (isDebug) {
+                logger.debug("Invalid args[0]={}. Need {}", args[0], Request.class.getName());
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
+        if (!validate(args)) {
+            return;
+        }
 
         final Request request = (Request) args[0];
         if (recorder.canSampled()) {
@@ -56,7 +76,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
         }
 
         if (!recorder.isRoot()) {
-          recordParentInfo(recorder, request);
+            recordParentInfo(recorder, request);
         }
     }
 
@@ -77,6 +97,10 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
+        if (!validate(args)) {
+            return null;
+        }
+
         final Request request = (Request) args[0];
         final boolean sampling = samplingEnable(request);
         if (!sampling) {
@@ -123,8 +147,12 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
 
     @Override
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
+        if (!validate(args)) {
+            return;
+        }
+
         if (recorder.canSampled()) {
-            if(this.traceRequestParam) {
+            if (this.traceRequestParam) {
                 Request request = (Request) args[0];
                 // skip
                 String parameters = getRequestParameter(request, 64, 512);
@@ -171,13 +199,13 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
         Enumeration<?> attrs = request.getParameters().getParameterNames();
         final StringBuilder params = new StringBuilder(64);
         while (attrs.hasMoreElements()) {
-            if (params.length() != 0 ) {
+            if (params.length() != 0) {
                 params.append('&');
             }
             if (params.length() > totalLimit) {
                 // 데이터 사이즈가 너무 클 경우 뒷 파라미터 생략.
                 params.append("...");
-                return  params.toString();
+                return params.toString();
             }
             String key = attrs.nextElement().toString();
             params.append(StringUtils.drop(key, eachLimit));
@@ -190,12 +218,12 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
 
         return params.toString();
     }
-    
+
     private void recordParentInfo(SpanRecorder recorder, Request request) {
         String parentApplicationName = request.getHeader(Header.HTTP_PARENT_APPLICATION_NAME.toString());
         if (parentApplicationName != null) {
             final String host = request.getHeader(Header.HTTP_HOST.toString());
-            if(host != null) {
+            if (host != null) {
                 recorder.recordAcceptorHost(host);
             } else {
                 recorder.recordAcceptorHost(request.serverName().toString());
