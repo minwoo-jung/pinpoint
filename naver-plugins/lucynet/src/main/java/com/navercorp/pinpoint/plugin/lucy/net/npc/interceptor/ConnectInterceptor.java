@@ -48,7 +48,7 @@ public class ConnectInterceptor implements AroundInterceptor {
         recorder.recordNextSpanId(nextId.getSpanId());
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
 
-        if (args != null && args.length >= 1 && args[0] != null && args[0] instanceof com.nhncorp.lucy.npc.connector.NpcConnectorOption) {
+        if (args != null && args.length >= 1 && args[0] instanceof com.nhncorp.lucy.npc.connector.NpcConnectorOption) {
             com.nhncorp.lucy.npc.connector.NpcConnectorOption connectorOption = (com.nhncorp.lucy.npc.connector.NpcConnectorOption) args[0];
             InetSocketAddress serverAddress = connectorOption.getAddress();
             int port = serverAddress.getPort();

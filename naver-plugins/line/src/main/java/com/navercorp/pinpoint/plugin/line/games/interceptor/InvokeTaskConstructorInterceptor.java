@@ -27,14 +27,14 @@ public class InvokeTaskConstructorInterceptor implements AroundInterceptor {
             return false;
         }
 
-        if (args[1] == null || !(args[1] instanceof ChannelHandlerContext)) {
+        if (!(args[1] instanceof ChannelHandlerContext)) {
             if (isDebug) {
                 logger.debug("Invalid args[1]={}. Need {}", args[1], ChannelHandlerContext.class.getName());
             }
             return false;
         }
 
-        if (args[2] == null || !(args[2] instanceof MessageEvent)) {
+        if (!(args[2] instanceof MessageEvent)) {
             if (isDebug) {
                 logger.debug("Invalid args[2]={}. Need {}", args[2], MessageEvent.class.getName());
             }
