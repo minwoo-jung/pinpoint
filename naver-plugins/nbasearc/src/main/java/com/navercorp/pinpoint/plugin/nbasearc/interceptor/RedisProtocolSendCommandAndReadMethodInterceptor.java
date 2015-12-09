@@ -52,10 +52,6 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
 
     @Override
     public void before(Object target, Object[] args) {
-        if (isDebug) {
-            logger.beforeInterceptor(target, args);
-        }
-
         final Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
             return;
@@ -79,10 +75,6 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
-        if(this.isDebug) {
-            logger.afterInterceptor(target, args, result, throwable);
-        }
-
         final Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
             return;

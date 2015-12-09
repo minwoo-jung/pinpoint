@@ -51,10 +51,6 @@ public class RedisConnectionSendCommandMethodInterceptor implements AroundInterc
 
     @Override
     public void before(Object target, Object[] args) {
-        if (isDebug) {
-            logger.beforeInterceptor(target, args);
-        }
-
         final Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
             return;
