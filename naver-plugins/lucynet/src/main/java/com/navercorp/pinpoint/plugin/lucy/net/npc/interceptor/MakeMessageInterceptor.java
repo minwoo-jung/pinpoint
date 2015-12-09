@@ -52,14 +52,14 @@ public class MakeMessageInterceptor implements AroundInterceptor {
         if (trace == null || !trace.canSampled()) {
             return;
         }
-        
+
         SpanEventRecorder recorder = trace.currentSpanEventRecorder();
         TraceId id = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(id.getSpanId());
         if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {
             recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
             String endPoint = LucyNetConstants.UNKOWN_ADDRESS;
-            if (target != null && target instanceof NpcServerAddressAccessor) {
+            if (target instanceof NpcServerAddressAccessor) {
                 InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
                 if (serverAddress != null) {
                     int port = serverAddress.getPort();

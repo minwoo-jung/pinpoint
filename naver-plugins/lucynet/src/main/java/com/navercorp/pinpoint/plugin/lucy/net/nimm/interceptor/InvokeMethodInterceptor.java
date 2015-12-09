@@ -47,11 +47,6 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
             return;
         }
 
-        // final long timeoutMillis = (Long) args[0];
-        final String objectName = (String) args[1];
-        final String methodName = (String) args[2];
-        final Object[] params = (Object[]) args[3];
-
         // UUID format을 그대로.
         final boolean sampling = trace.canSampled();
         if (!sampling) {
@@ -66,7 +61,6 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
         recorder.recordServiceType(LucyNetConstants.NIMM_CLIENT);
 
         // TODO protocol은 어떻게 표기하지???
-
         String nimmAddress = "";
         if (target instanceof NimmAddressAccessor) {
             nimmAddress = ((NimmAddressAccessor) target)._$PINPOINT$_getNimmAddress();
@@ -77,13 +71,18 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
             recorder.recordDestinationId(nimmAddress);
         }
 
-        if (objectName != null) {
+        // final long timeoutMillis = (Long) args[0];
+        if (args != null && args.length >= 2 && args[1] instanceof String) {
+            final String objectName = (String) args[1];
             recorder.recordAttribute(LucyNetConstants.NIMM_OBJECT_NAME, objectName);
         }
-        if (methodName != null) {
+        if (args != null && args.length >= 3 && args[2] instanceof String) {
+            final String methodName = (String) args[2];
             recorder.recordAttribute(LucyNetConstants.NIMM_METHOD_NAME, methodName);
         }
-        if (this.param && params != null) {
+
+        if (this.param && args != null && args.length >= 4 && args[3] instanceof Object[]) {
+            final Object[] params = (Object[]) args[3];
             recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, Arrays.toString(params));
         }
 

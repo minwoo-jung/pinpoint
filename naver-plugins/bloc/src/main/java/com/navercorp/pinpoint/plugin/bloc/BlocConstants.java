@@ -34,9 +34,6 @@ public final class BlocConstants {
     public static final AnnotationKey CALL_PARAM = AnnotationKeyFactory.of(16, "CALL_PARAM", VIEW_IN_RECORD_SET);
     public static final AnnotationKey PROTOCOL = AnnotationKeyFactory.of(17, "PROTOCOL", VIEW_IN_RECORD_SET);
     
-    public static final String SERVER_TYPE_BLOC = "BLOC";
-
     public static final ServiceType BLOC = ServiceTypeFactory.of(1020, "BLOC", RECORD_STATISTICS);
     public static final ServiceType BLOC_INTERNAL_METHOD = ServiceTypeFactory.of(1021, "BLOC_INTERNAL_METHOD", "INTERNAL_METHOD");
-
 }

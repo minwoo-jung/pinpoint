@@ -41,23 +41,23 @@ public class InvokeInterceptor implements AroundInterceptor {
             return;
         }
 
-        String objectName;
-        String methodName;
-        Charset charset;
-        Object params;
+//        String objectName;
+//        String methodName;
+//        Charset charset;
+//        Object params;
 
-        if (args.length == 3) {
-            objectName = (String) args[0];
-            methodName = (String) args[1];
-            // TODO charset을 com.nhncorp.lucy.npc.connector.AbstractConnector.getDefaultCharset() 에서 조회 가능하긴 함.
-            charset = null;
-            params = args[2];
-        } else if (args.length == 4) {
-            objectName = (String) args[0];
-            methodName = (String) args[1];
-            charset = (Charset) args[2];
-            params = args[3];
-        }
+//        if (args != null && args.length == 3) {
+//            objectName = (String) args[0];
+//            methodName = (String) args[1];
+//            // TODO charset을 com.nhncorp.lucy.npc.connector.AbstractConnector.getDefaultCharset() 에서 조회 가능하긴 함.
+//            charset = null;
+//            params = args[2];
+//        } else if (args != null && args.length == 4) {
+//            objectName = (String) args[0];
+//            methodName = (String) args[1];
+//            charset = (Charset) args[2];
+//            params = args[3];
+//        }
 
         //
         // TODO add sampling logic here.

@@ -27,18 +27,48 @@ import com.nhncorp.lucy.npc.UserOptionIndex;
 import external.org.apache.mina.common.IoSession;
 
 
-@TargetMethod(name="messageReceived", paramTypes={"external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
+@TargetMethod(name = "messageReceived", paramTypes = {"external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
 public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
     private static final String NAMESPACE_URA = "URA 1.0";
     private static final String UNKNOWN_ADDRESS = "Unknown Address";
-    
+
     public MessageReceivedInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, MessageReceivedInterceptor.class);
     }
 
+    private boolean validate(final Object[] args) {
+        if (args == null || args.length < 3) {
+            if (isDebug) {
+                logger.debug("Invalid args={}.", args);
+            }
+            return false;
+        }
+
+        if (!(args[1] instanceof external.org.apache.mina.common.IoSession)) {
+            if (isDebug) {
+                logger.debug("Invalid args[1]={}. Need {}", args[1], external.org.apache.mina.common.IoSession.class.getName());
+            }
+            return false;
+        }
+
+        if (!(args[2] instanceof NpcMessage)) {
+            if (isDebug) {
+                logger.debug("Invalid args[2]={}. Need {}", args[2], NpcMessage.class.getName());
+            }
+            return false;
+        }
+
+
+        return true;
+    }
+
     @Override
     protected Trace createTrace(Object target, Object[] args) {
+        if (!validate(args)) {
+            return null;
+        }
+
         IoSession ioSession = getIOSession(args);
         NpcMessage npcMessage = getNpcMessage(args);
 
@@ -57,7 +87,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             }
             return trace;
         }
-        
+
         final TraceId traceId = populateTraceIdFromRequest(pinpointOptions);
         if (traceId != null) {
             final Trace trace = traceContext.continueTraceObject(traceId);
@@ -84,11 +114,15 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             }
             return trace;
         }
-        
+
     }
 
     @Override
     public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
+        if (!validate(args)) {
+            return;
+        }
+
         NpcMessage npcMessage = getNpcMessage(args);
 
         recorder.recordServiceType(BlocConstants.BLOC);
@@ -120,13 +154,17 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
     @Override
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
+        if (!validate(args)) {
+            return;
+        }
+
         if (recorder.canSampled()) {
             recorder.recordApi(methodDescriptor);
         }
-        
+
         recorder.recordException(throwable);
     }
-    
+
     private IoSession getIOSession(Object[] args) {
         if (args.length >= 2) {
             if (args[1] instanceof external.org.apache.mina.common.IoSession) {
@@ -144,7 +182,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         }
         return null;
     }
-    
+
     private String createRpcName(NpcMessage npcMessage) {
         // use string builder
 
@@ -168,7 +206,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
         return rpcNameBuilder.toString();
     }
-    
+
     private String getObjectName(Object payload) {
         if (payload == null || !(payload instanceof Call)) {
             return "";
@@ -177,7 +215,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         Call call = (Call) payload;
         return trimToEmpty(call.getObjectName());
     }
-    
+
     private String getMethodName(Object payload) {
         if (payload == null || !(payload instanceof Call)) {
             return "";
@@ -186,7 +224,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         Call call = (Call) payload;
         return trimToEmpty(call.getMethodName());
     }
-    
+
     private String trimToEmpty(String value) {
         if (value == null || value.length() == 0) {
             return "";
@@ -198,7 +236,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
     private List<String> getAllUserOptions(NpcMessage npcMessage) {
         return getAllOptions(npcMessage, npcMessage.getUserOptionCount(), npcMessage.getUserOptionFlagCount());
     }
-    
+
     private List<String> getAllOptions(NpcMessage npcMessage, int optionSetCount, int optionsCount) {
         // Null Pointer 날수있음
         List<String> options = new ArrayList<String>(optionsCount);
@@ -215,7 +253,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
         return options;
     }
-    
+
     private List<String> getSpecificSetOptions(NpcMessage message, int optionSetIndex) {
         int maxOptionSize = 32;
 
@@ -236,7 +274,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
         return options;
     }
-    
+
     private Map<String, String> extractPinpointOptions(List<String> userOptions) {
         Map<String, String> pinpointOptions = new HashMap<String, String>();
 
@@ -256,7 +294,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
         return pinpointOptions;
     }
-    
+
     private boolean samplingEnable(Map<String, String> pinpointOptions) {
         // optional value
         final String samplingFlag = pinpointOptions.get(Header.HTTP_SAMPLED.toString());
@@ -265,7 +303,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         }
         return SamplingFlagUtils.isSamplingFlag(samplingFlag);
     }
-    
+
     private TraceId populateTraceIdFromRequest(Map<String, String> options) {
         String transactionId = options.get(Header.HTTP_TRACE_ID.toString());
         if (transactionId != null) {
@@ -287,12 +325,12 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             return null;
         }
     }
-    
+
     private String getRemoteAddress(IoSession ioSession) {
         if (ioSession == null) {
             return UNKNOWN_ADDRESS;
         }
-        
+
         return getIpPort(ioSession.getRemoteAddress());
     }
 
@@ -308,7 +346,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         if (socketAddress == null) {
             return UNKNOWN_ADDRESS;
         }
-        
+
         if (socketAddress instanceof InetSocketAddress) {
             InetSocketAddress addr = (InetSocketAddress) socketAddress;
             return addr.getAddress().getHostAddress() + ":" + addr.getPort();
@@ -330,6 +368,6 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
         return address;
     }
-    
-    
+
+
 }

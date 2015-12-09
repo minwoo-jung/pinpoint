@@ -41,10 +41,6 @@ public class GatewayServerMetadataAttachInterceptor implements AroundInterceptor
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
-        if (isDebug) {
-            logger.beforeInterceptor(target, args);
-        }
-
         try {
             if (!validate(target, result)) {
                 return;
