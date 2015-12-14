@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.SocketUtils;
 
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class ZookeeperWebClusterServiceTest {
     private static final String PINPOINT_PROFILER_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/profiler";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final int DEFAULT_ZOOKEEPER_PORT = 22213;
-    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = 22214;
+    private static final int DEFAULT_ZOOKEEPER_PORT = SocketUtils.findAvailableTcpPort(22213);
+    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22214);
 
     private static CollectorConfiguration collectorConfig = null;
 

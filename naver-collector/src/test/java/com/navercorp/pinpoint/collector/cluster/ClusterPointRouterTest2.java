@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.SocketUtils;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -40,8 +41,8 @@ import java.util.Map;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class ClusterPointRouterTest2 {
 
-    private static final int DEFAULT_COLLECTOR_ACCEPTOR_SOCKET_PORT = 22214;
-    private static final int DEFAULT_WEB_ACCEPTOR_SOCKET_PORT = 22215;
+    private static final int DEFAULT_COLLECTOR_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22214);
+    private static final int DEFAULT_WEB_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22215);
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

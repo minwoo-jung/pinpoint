@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.SocketUtils;
 
 import java.net.InetSocketAddress;
 import java.util.*;
@@ -28,8 +29,8 @@ public class ZookeeperProfilerClusterStressTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ZookeeperProfilerClusterStressTest.class);
 
-    private static final int DEFAULT_ACCEPTOR_PORT = 22313;
-    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = 22315;
+    private static final int DEFAULT_ACCEPTOR_PORT = SocketUtils.findAvailableTcpPort(22313);
+    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22315);
 
     private static final MessageListener messageListener = ZookeeperTestUtils.getMessageListener();
 
