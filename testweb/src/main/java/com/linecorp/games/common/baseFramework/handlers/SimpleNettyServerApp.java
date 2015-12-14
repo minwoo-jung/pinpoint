@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.navercorp.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
 import com.ning.http.client.Response;
+import org.springframework.util.SocketUtils;
 
 /**
  * <pre>
@@ -34,7 +35,7 @@ import com.ning.http.client.Response;
 public class SimpleNettyServerApp {
 
     static final Logger logger = LoggerFactory.getLogger(SimpleNettyServerApp.class);
-    static final int SERVER_PORT = 2222;
+    static final int SERVER_PORT = SocketUtils.findAvailableTcpPort(52222);
     static final int CLIENT_COUNT = 1;
 
     public static void main(String[] args) {
