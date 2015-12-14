@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.SocketUtils;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class ZookeeperProfilerClusterServiceTest {
 
-    private static final int DEFAULT_ACCEPTOR_PORT = 22213;
+    private static final int DEFAULT_ACCEPTOR_PORT = SocketUtils.findAvailableTcpPort(22213);
 
     private static CollectorConfiguration collectorConfig = null;
 

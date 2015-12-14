@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.SocketUtils;
 
 import java.net.InetSocketAddress;
 import java.util.*;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class ClusterPointRouterTest {
 
-    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = 22215;
+    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22215);
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
