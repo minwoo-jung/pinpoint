@@ -58,7 +58,7 @@ public class ZookeeperWebClusterServiceTest {
             serverAcceptor.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
-            ZookeeperClient client = new ZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
+            ZookeeperClient client = new DefaultZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
 
                 @Override
                 public void process(WatchedEvent event) {
@@ -69,6 +69,7 @@ public class ZookeeperWebClusterServiceTest {
                 public boolean isConnected() {
                     return true;
                 }
+
             });
             client.createPath(PINPOINT_WEB_CLUSTER_PATH, true);
             client.createNode(PINPOINT_WEB_CLUSTER_PATH + "/" + "127.0.0.1:" + DEFAULT_ACCEPTOR_SOCKET_PORT, "127.0.0.1".getBytes());
