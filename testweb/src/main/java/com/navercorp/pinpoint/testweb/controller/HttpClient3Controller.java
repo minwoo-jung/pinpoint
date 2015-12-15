@@ -60,5 +60,15 @@ public class HttpClient3Controller {
 
         return "OK";
     }
-    
+
+    @RequestMapping(value = "/httpclient3/defaultConfig")
+    @ResponseBody
+    public String defaultConfig() {
+        logger.info("defaultConfig");
+
+        ApacheHttpClient3 client = new ApacheHttpClient3();
+        client.executeDefaultConfig();
+
+        return "OK";
+    }
 }

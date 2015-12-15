@@ -3,11 +3,7 @@ package com.navercorp.pinpoint.testweb.connector.apachehttp3;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -72,7 +68,6 @@ public class ApacheHttpClient3 {
           // Release the connection.
           method.releaseConnection();
         }  
-        
     }
 
     public void executeWithCookie(String url, HashMap<String, Object> hashMap, Object object) {
@@ -100,5 +95,26 @@ public class ApacheHttpClient3 {
           method.releaseConnection();
         }  
         
+    }
+
+    public void executeDefaultConfig() {
+        // Create an instance of HttpClient. Create a method instance.
+        HttpClient client = new HttpClient();
+
+        HostConfiguration config = new HostConfiguration();
+        config.setHost("weather.naver.com", 80, "http");
+        GetMethod method2 = new GetMethod("/rgn/cityWetrMain.nhn");
+        method2.setQueryString(new NameValuePair[] { new NameValuePair("newkey", "value") });
+
+        try {
+            // Execute the method.
+            client.executeMethod(config, method2);
+        } catch (HttpException e) {
+            logger.error("Fatal protocol violation: " + e.getMessage(), e);
+        } catch (IOException e) {
+            logger.error("Fatal transport error: " + e.getMessage(), e);
+        } finally {
+            method2.releaseConnection();
+        }
     }
 }
