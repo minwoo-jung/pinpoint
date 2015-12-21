@@ -14,7 +14,19 @@
  */
 package com.navercorp.pinpoint.plugin.jdbc.oracle;
 
+import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
+import com.navercorp.pinpoint.common.Version;
+import com.navercorp.pinpoint.common.util.PropertyUtils;
+import com.navercorp.pinpoint.test.plugin.Dependency;
+import com.navercorp.pinpoint.test.plugin.PinpointAgent;
+import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import com.navercorp.pinpoint.test.plugin.Repository;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -24,20 +36,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.Version;
-import com.navercorp.pinpoint.common.util.PropertyUtils;
-import com.navercorp.pinpoint.test.plugin.Dependency;
-import com.navercorp.pinpoint.test.plugin.PinpointAgent;
-import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
-import com.navercorp.pinpoint.test.plugin.Repository;
-
 /**
  * @author Jongho Moon
  * 
@@ -45,7 +43,7 @@ import com.navercorp.pinpoint.test.plugin.Repository;
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @Dependency({"oracle:ojdbc6:(,)"})
-@Repository("http://repo.nhncorp.com/maven2")
+@Repository("http://repo.navercorp.com/maven2")
 public class OracleIT {
     private static final String ORACLE = "ORACLE";
     private static final String ORACLE_EXECUTE_QUERY = "ORACLE_EXECUTE_QUERY";

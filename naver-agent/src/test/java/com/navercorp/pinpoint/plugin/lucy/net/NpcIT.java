@@ -14,6 +14,7 @@
  */
 package com.navercorp.pinpoint.plugin.lucy.net;
 
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
@@ -41,14 +42,12 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
-import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
-
 /**
  * @author Jongho Moon
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@Repository("http://repo.nhncorp.com/maven2")
+@Repository("http://repo.navercorp.com/maven2")
 @Dependency({"com.nhncorp.lucy:lucy-npc:[1.5.18,)"})
 public class NpcIT {
     private static final String NPC = "NPC_CLIENT";
