@@ -38,7 +38,7 @@ import com.navercorp.test.Empty;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@Repository("http://repo.nhncorp.com/maven2")
+@Repository("http://repo.navercorp.com/maven2")
 @Dependency({ "com.nhncorp.nelo2:nelo2-java-sdk-log4j:[1.3.3,)", "log4j:log4j:[1.2.16]", "org.slf4j:slf4j-api:[1.7.2]", "org.slf4j:slf4j-log4j12:[1.7.5]","org.apache.thrift:libthrift:[0.9.0]", "commons-lang:commons-lang:[2.6]"})
 @JvmVersion(7)
 @PinpointConfig("pinpoint.config")
