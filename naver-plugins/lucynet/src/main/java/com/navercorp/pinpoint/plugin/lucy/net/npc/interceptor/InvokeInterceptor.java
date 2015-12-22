@@ -10,10 +10,9 @@ import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
-import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
 
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 
 public class InvokeInterceptor implements AroundInterceptor {
 

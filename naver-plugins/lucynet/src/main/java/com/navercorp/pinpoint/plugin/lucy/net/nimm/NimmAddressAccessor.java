@@ -1,4 +1,4 @@
-package com.navercorp.pinpoint.plugin.lucy.net;
+package com.navercorp.pinpoint.plugin.lucy.net.nimm;
 
 /**
  * @Author Taejin Koo

@@ -6,7 +6,8 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.common.util.NetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
-import com.navercorp.pinpoint.plugin.lucy.net.NpcServerAddressAccessor;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetHeader;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
 import com.nhncorp.lucy.npc.DefaultNpcMessage;
 import com.nhncorp.lucy.npc.UserOptionIndex;
 
@@ -91,14 +92,14 @@ public class MakeMessageInterceptor implements AroundInterceptor {
 
     private Map<String, Object> createOption(TraceId id, String endPoint) {
         Map<String, Object> options = new HashMap<String, Object>();
-        
-        options.put(Header.HTTP_TRACE_ID.toString(), id.getTransactionId());
-        options.put(Header.HTTP_SPAN_ID.toString(), id.getSpanId());
-        options.put(Header.HTTP_PARENT_SPAN_ID.toString(), id.getParentSpanId());
-        options.put(Header.HTTP_FLAGS.toString(), String.valueOf(id.getFlags()));
-        options.put(Header.HTTP_PARENT_APPLICATION_NAME.toString(), traceContext.getApplicationName());
-        options.put(Header.HTTP_PARENT_APPLICATION_TYPE.toString(), traceContext.getServerTypeCode());
-        options.put(Header.HTTP_HOST.toString(), endPoint);
+
+        options.put(LucyNetHeader.PINPOINT_TRACE_ID.toString(), id.getTransactionId());
+        options.put(LucyNetHeader.PINPOINT_SPAN_ID.toString(), id.getSpanId());
+        options.put(LucyNetHeader.PINPOINT_PARENT_SPAN_ID.toString(), id.getParentSpanId());
+        options.put(LucyNetHeader.PINPOINT_FLAGS.toString(), String.valueOf(id.getFlags()));
+        options.put(LucyNetHeader.PINPOINT_PARENT_APPLICATION_NAME.toString(), traceContext.getApplicationName());
+        options.put(LucyNetHeader.PINPOINT_PARENT_APPLICATION_TYPE.toString(), traceContext.getServerTypeCode());
+        options.put(LucyNetHeader.PINPOINT_HOST.toString(), endPoint);
         return options;
     }
     
