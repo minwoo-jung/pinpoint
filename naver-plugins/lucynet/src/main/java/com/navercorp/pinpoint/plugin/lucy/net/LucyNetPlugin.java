@@ -4,8 +4,8 @@ import com.navercorp.pinpoint.bootstrap.async.AsyncTraceIdAccessor;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
-import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
@@ -14,7 +14,8 @@ import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.common.trace.ServiceType;
-import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcPluginHolder;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.KeepAliveVersion;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcHessianConnectorVersion;
 
 import java.security.ProtectionDomain;
 import java.util.List;
@@ -52,10 +53,14 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
         
         // nimm
         addNimmInvokerTransformer("com.nhncorp.lucy.nimm.connector.bloc.NimmInvoker");
-        
+
         // npc
-        NpcPluginHolder npcPlugin = new NpcPluginHolder(context, transformTemplate);
-        npcPlugin.addPlugin();
+        addNpcTransformer("com.nhncorp.lucy.npc.connector.NpcHessianConnector");
+        addNpcNioTransformer("com.nhncorp.lucy.npc.connector.NioNpcHessianConnector");
+        addNpcLightWeightTransformer("com.nhncorp.lucy.npc.connector.LightWeightNpcHessianConnector");
+        addNpcLegacyLightWeightTransformer("com.nhncorp.lucy.npc.connector.LightWeightConnector");
+        addNpcLegacyLightWeightTransformer("com.nhncorp.lucy.npc.connector.LightweightConnector");
+        addNpcKeepAlivePluginTransformer("com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector");
     }
 
     private void addCompositeInvocationFutureTransformer(String clazzName) {
@@ -114,6 +119,112 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
             }
 
         });
+    }
+
+    private void addNpcTransformer(String clazzName) {
+        transformTemplate.transform(clazzName, new TransformCallback() {
+
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+
+                for (NpcHessianConnectorVersion matchedVersion : NpcHessianConnectorVersion.values()) {
+                    if (matchedVersion.checkCondition(target)) {
+                        return matchedVersion.transform(target);
+                    }
+                }
+
+                return target.toBytecode();
+            }
+
+        });
+    }
+
+
+    private void addNpcNioTransformer(String clazzName) {
+        transformTemplate.transform(clazzName, new TransformCallback() {
+
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                target.addField(LucyNetConstants.METADATA_NPC_SERVER_ADDRESS);
+
+                InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption");
+                LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_CONSTRUCTOR_INTERCEPTOR);
+
+                InstrumentMethod method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
+                LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_INVOKE_INTERCEPTOR);
+
+                method = target.getDeclaredMethod("makeMessage", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
+                LucyNetPlugin.addInterceptor(method, LucyNetConstants.NET_MAKE_MESSAGE_INTERCEPTOR);
+
+                return target.toBytecode();
+            }
+
+        });
+    }
+
+    private void addNpcLightWeightTransformer(String clazzName) {
+        transformTemplate.transform(clazzName, new TransformCallback() {
+
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                target.addField(LucyNetConstants.METADATA_NPC_SERVER_ADDRESS);
+
+                String superClazz = target.getSuperClass();
+                if (superClazz != null && superClazz.equals("com.nhncorp.lucy.npc.connector.AbstractNpcHessianConnector")) {
+                    InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption");
+                    LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_CONSTRUCTOR_INTERCEPTOR);
+                }
+
+                InstrumentMethod method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.lang.Object[]");
+                LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_INVOKE_INTERCEPTOR);
+
+                return target.toBytecode();
+            }
+
+        });
+    }
+
+    private void addNpcLegacyLightWeightTransformer(String clazzName) {
+        transformTemplate.transform(clazzName, new TransformCallback() {
+
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                target.addField(LucyNetConstants.METADATA_NPC_SERVER_ADDRESS);
+
+                InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.npc.connector.NpcConnectorOption");
+                LucyNetPlugin.addInterceptor(constructor, LucyNetConstants.NPC_CONSTRUCTOR_INTERCEPTOR);
+
+                InstrumentMethod method = target.getDeclaredMethod("invoke", "java.lang.String", "java.lang.String", "java.nio.charset.Charset", "java.lang.Object[]");
+                LucyNetPlugin.addInterceptor(method, LucyNetConstants.NPC_INVOKE_INTERCEPTOR);
+
+                return target.toBytecode();
+            }
+
+        });
+    }
+
+    private void addNpcKeepAlivePluginTransformer(String clazzName) {
+        transformTemplate.transform(clazzName, new TransformCallback() {
+
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+
+                for (KeepAliveVersion matchedVersion : KeepAliveVersion.values()) {
+                    if (matchedVersion.checkCondition(target)) {
+                        return matchedVersion.transform(target);
+                    }
+                }
+
+                return target.toBytecode();
+            }
+
+        });
+
     }
 
     public static void addInterceptor(InstrumentMethod method, String interceptorClazzName, Object... args) {

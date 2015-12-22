@@ -5,7 +5,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.plugin.lucy.net.NimmAddressAccessor;
+import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
 import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
 
 /**

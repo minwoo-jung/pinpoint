@@ -6,9 +6,8 @@ import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
-import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPlugin;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPluginConfig;
-import com.navercorp.pinpoint.plugin.lucy.net.NimmAddressAccessor;
+import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
 
 import java.util.Arrays;
 
