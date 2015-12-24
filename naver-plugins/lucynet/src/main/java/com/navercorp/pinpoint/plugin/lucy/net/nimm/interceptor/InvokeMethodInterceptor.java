@@ -1,21 +1,43 @@
+/**
+ * Copyright 2015 NAVER Corp.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.async.AsyncTraceIdAccessor;
-import com.navercorp.pinpoint.bootstrap.context.*;
+import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
+import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
+import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPluginConfig;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUserOptionUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
-
-import java.util.Arrays;
 
 /**
  * target lib = com.nhncorp.lucy.lucy-nimmconnector-2.1.4
  * 
  * @author netspider
  */
+@Scope(value = LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE, executionPolicy = ExecutionPolicy.BOUNDARY)
 public class InvokeMethodInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
@@ -49,7 +71,6 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
         // UUID format을 그대로.
         final boolean sampling = trace.canSampled();
         if (!sampling) {
-            // TODO header 추가.
             return;
         }
 
@@ -57,7 +78,6 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
         TraceId nextId = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(nextId.getSpanId());
 
-        recorder.recordServiceType(LucyNetConstants.NIMM_CLIENT);
 
         // TODO protocol은 어떻게 표기하지???
         String nimmAddress = "";
@@ -71,20 +91,32 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
         }
 
         // final long timeoutMillis = (Long) args[0];
+        String objectName = null;
         if (args != null && args.length >= 2 && args[1] instanceof String) {
-            final String objectName = (String) args[1];
-            recorder.recordAttribute(LucyNetConstants.NIMM_OBJECT_NAME, objectName);
+            objectName = (String) args[1];
         }
+
+        String methodName = null;
         if (args != null && args.length >= 3 && args[2] instanceof String) {
-            final String methodName = (String) args[2];
-            recorder.recordAttribute(LucyNetConstants.NIMM_METHOD_NAME, methodName);
+            methodName = (String) args[2];
         }
+
+        recorder.recordAttribute(LucyNetConstants.NIMM_URL, bindingNimmUrl(nimmAddress, objectName, methodName));
 
         if (this.param && args != null && args.length >= 4 && args[3] instanceof Object[]) {
             final Object[] params = (Object[]) args[3];
-            recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, Arrays.toString(params));
+            recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, LucyNetUserOptionUtils.getParameterAsString(params, 32, 256));
         }
 
+        recorder.recordServiceType(LucyNetConstants.NIMM_CLIENT);
+    }
+
+    private String bindingNimmUrl(String nimmAddress, String objectName, String methodName) {
+        if (objectName != null) {
+            return nimmAddress + "/" + objectName + "/" + methodName;
+        } else {
+            return nimmAddress + "/" + methodName;
+        }
     }
 
     @Override

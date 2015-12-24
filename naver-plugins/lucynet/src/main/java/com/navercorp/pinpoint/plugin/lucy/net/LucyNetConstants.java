@@ -12,14 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.navercorp.pinpoint.plugin.lucy.net;
 
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.AnnotationKeyFactory;
+import static com.navercorp.pinpoint.common.trace.AnnotationKeyProperty.VIEW_IN_RECORD_SET;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
 
 import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.RECORD_STATISTICS;
+
+import java.nio.charset.Charset;
 
 /**
  * @author Jongho Moon
@@ -29,40 +33,48 @@ public final class LucyNetConstants {
     private LucyNetConstants() {
     }
 
+    // Common
+    public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
+    public static final String UNKOWN_ADDRESS = "Unknown Address";
+
     // NPC
     public static final String METADATA_NPC_SERVER_ADDRESS = "com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor";
     public static final String NIMM_ADDRESS_ACCESSOR = "com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor";
 
     public static final ServiceType NPC_CLIENT = ServiceTypeFactory.of(9060, "NPC_CLIENT", RECORD_STATISTICS);
     public static final ServiceType NPC_CLIENT_INTERNAL = ServiceTypeFactory.of(9061, "NPC_CLIENT_INTERNAL", "NPC_CLIENT");
-    
-    public static final AnnotationKey NPC_URL = AnnotationKeyFactory.of(60, "npc.url");
-    public static final AnnotationKey NPC_PARAM = AnnotationKeyFactory.of(61, "npc.param");
-    public static final AnnotationKey NPC_CONNECT_OPTION = AnnotationKeyFactory.of(62, "npc.connect.options");
+
+    public static final AnnotationKey NPC_URL = AnnotationKeyFactory.of(60, "npc.url", VIEW_IN_RECORD_SET);
+    public static final AnnotationKey NPC_PARAM = AnnotationKeyFactory.of(61, "npc.param", VIEW_IN_RECORD_SET);
+    public static final AnnotationKey NPC_CONNECT_OPTION = AnnotationKeyFactory.of(62, "npc.connect.options", VIEW_IN_RECORD_SET);
 
     // NIMM
     public static final ServiceType NIMM_CLIENT = ServiceTypeFactory.of(9070, "NIMM_CLIENT", RECORD_STATISTICS);
-    
-    public static final AnnotationKey NIMM_OBJECT_NAME = AnnotationKeyFactory.of(70, "nimm.objectName");
-    public static final AnnotationKey NIMM_METHOD_NAME = AnnotationKeyFactory.of(71, "nimm.methodName");
-    public static final AnnotationKey NIMM_PARAM = AnnotationKeyFactory.of(72, "nimm.param");
-    
-    // TODO 사용되는 곳이 없음. 필요 없으면 삭제하자 
-    public static final AnnotationKey NIMM_CONNECT_OPTION = AnnotationKeyFactory.of(73, "nimm.connect.options");
 
+    public static final AnnotationKey NIMM_OBJECT_NAME = AnnotationKeyFactory.of(70, "nimm.objectName", VIEW_IN_RECORD_SET);
+    public static final AnnotationKey NIMM_METHOD_NAME = AnnotationKeyFactory.of(71, "nimm.methodName", VIEW_IN_RECORD_SET);
+    public static final AnnotationKey NIMM_PARAM = AnnotationKeyFactory.of(72, "nimm.param", VIEW_IN_RECORD_SET);
+    public static final AnnotationKey NIMM_URL = AnnotationKeyFactory.of(73, "nimm.url");
+
+    public static final String NIMM_INVOKER_METHOD_SCOPE = "NimmInvokerMethodScope";
+
+    // NPC Interceptor
     public static final String NPC_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.ConnectorConstructorInterceptor";
     public static final String NPC_OLD_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.OldVersionConnectorConstructorInterceptor";
     public static final String NPC_INVOKE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InvokeInterceptor";
     public static final String NPC_CREATE_CONNECTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.CreateConnectorInterceptor";
     public static final String NPC_INIT_CONNECTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InitializeConnectorInterceptor";
 
+    // NIMM Interceptor
     public static final String NIMM_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.NimmInvokerConstructorInterceptor";
     public static final String NIMM_INVOKE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.InvokeMethodInterceptor";
+    public static final String NIMM_ENCODE_MESSAGE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.EncodeMesssageInterceptor";
 
+
+    // NET Common Interceptor
     public static final String NET_INVOCATION_FUTURE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.interceptor.DefaultInvocationFutureMethodInterceptor";
     public static final String NET_MAKE_MESSAGE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.MakeMessageInterceptor";
 
     public static final String BASIC_INTERCEPTOR = "com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor";
 
-    public static final String UNKOWN_ADDRESS = "Unknown Address";
 }

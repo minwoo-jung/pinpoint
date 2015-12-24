@@ -28,6 +28,11 @@
             <artifactId>lucy-nimmconnector</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-profiler</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 </project>

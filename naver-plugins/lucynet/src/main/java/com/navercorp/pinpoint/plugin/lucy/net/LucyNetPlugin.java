@@ -115,6 +115,9 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
                 InstrumentMethod method = target.getDeclaredMethod("invoke", "long", "java.lang.String", "java.lang.String", "java.lang.Object[]");
                 addInterceptor(method, LucyNetConstants.NIMM_INVOKE_INTERCEPTOR);
 
+                InstrumentMethod encodeMesssageMethod = target.getDeclaredMethod("encodeMessage", "java.util.Map", "com.nhncorp.lucy.net.call.Call");
+                addInterceptor(encodeMesssageMethod, LucyNetConstants.NIMM_ENCODE_MESSAGE_INTERCEPTOR);
+
                 return target.toBytecode();
             }
 

@@ -1,21 +1,37 @@
+/**
+ * Copyright 2015 NAVER Corp.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.context.*;
+import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
+import com.navercorp.pinpoint.bootstrap.context.Trace;
+import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.common.util.NetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
-import com.navercorp.pinpoint.plugin.lucy.net.LucyNetHeader;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUserOptionUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
 import com.nhncorp.lucy.npc.DefaultNpcMessage;
 import com.nhncorp.lucy.npc.UserOptionIndex;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Taejin Koo
@@ -50,30 +66,36 @@ public class MakeMessageInterceptor implements AroundInterceptor {
         }
         
         final Trace trace = traceContext.currentTraceObject();
-        if (trace == null || !trace.canSampled()) {
+        if (trace == null) {
             return;
         }
 
-        SpanEventRecorder recorder = trace.currentSpanEventRecorder();
-        TraceId id = trace.getTraceId().getNextTraceId();
-        recorder.recordNextSpanId(id.getSpanId());
-        if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {
-            recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
-            String endPoint = LucyNetConstants.UNKOWN_ADDRESS;
-            if (target instanceof NpcServerAddressAccessor) {
-                InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
-                if (serverAddress != null) {
-                    int port = serverAddress.getPort();
-                    endPoint = getHostAddress(serverAddress) + ((port > 0) ? ":" + port : "");
+        if (trace.canSampled()) {
+            SpanEventRecorder recorder = trace.currentSpanEventRecorder();
+            TraceId id = trace.getTraceId().getNextTraceId();
+            recorder.recordNextSpanId(id.getSpanId());
+            if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {
+                recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
+                String endPoint = LucyNetConstants.UNKOWN_ADDRESS;
+                if (target instanceof NpcServerAddressAccessor) {
+                    InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
+                    if (serverAddress != null) {
+                        int port = serverAddress.getPort();
+                        endPoint = getHostAddress(serverAddress) + ((port > 0) ? ":" + port : "");
+                    }
                 }
-            }
-            recorder.recordDestinationId(endPoint);
+                recorder.recordDestinationId(endPoint);
 
-            com.nhncorp.lucy.npc.DefaultNpcMessage defaultNpcMessage = (com.nhncorp.lucy.npc.DefaultNpcMessage) result;
-            Map<String, Object> options = createOption(id, endPoint);
-            putOption(defaultNpcMessage, options);
+                List<byte[]> options = LucyNetUserOptionUtils.createOptions(trace, traceContext.getApplicationName(), traceContext.getServerTypeCode(), endPoint);
+                putOption((DefaultNpcMessage) result, options);
+            } else {
+                recorder.recordDestinationId(LucyNetConstants.UNKOWN_ADDRESS);
+            }
         } else {
-            recorder.recordDestinationId(LucyNetConstants.UNKOWN_ADDRESS);
+            if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {
+                List<byte[]> options = LucyNetUserOptionUtils.createUnsampledOptions();
+                putOption((DefaultNpcMessage) result, options);
+            }
         }
     }
 
@@ -90,35 +112,14 @@ public class MakeMessageInterceptor implements AroundInterceptor {
         return inetAddress.getHostAddress();
     }
 
-    private Map<String, Object> createOption(TraceId id, String endPoint) {
-        Map<String, Object> options = new HashMap<String, Object>();
-
-        options.put(LucyNetHeader.PINPOINT_TRACE_ID.toString(), id.getTransactionId());
-        options.put(LucyNetHeader.PINPOINT_SPAN_ID.toString(), id.getSpanId());
-        options.put(LucyNetHeader.PINPOINT_PARENT_SPAN_ID.toString(), id.getParentSpanId());
-        options.put(LucyNetHeader.PINPOINT_FLAGS.toString(), String.valueOf(id.getFlags()));
-        options.put(LucyNetHeader.PINPOINT_PARENT_APPLICATION_NAME.toString(), traceContext.getApplicationName());
-        options.put(LucyNetHeader.PINPOINT_PARENT_APPLICATION_TYPE.toString(), traceContext.getServerTypeCode());
-        options.put(LucyNetHeader.PINPOINT_HOST.toString(), endPoint);
-        return options;
-    }
-    
-    private boolean putOption(DefaultNpcMessage npcMessage, Map<String, Object> options) {
-        for (Map.Entry<String, Object> entry : options.entrySet()) {
-            if (isEmpty(entry.getKey())) {
-                return false;
-            }
-            if (isEmpty(entry.getValue())) {
-                return false;
-            }
-
-            String option = entry.getKey() + "=" + entry.getValue();
+    private boolean putOption(DefaultNpcMessage npcMessage, List<byte[]> options) {
+        for (byte[] option : options) {
             UserOptionIndex optionIndex = findAvaiableOptionIndex(npcMessage);
             if (optionIndex == null) {
                 return false;
             }
-            
-            npcMessage.setUserOption(optionIndex, option.getBytes());
+
+            npcMessage.setUserOption(optionIndex, option);
         }
         return true;
     }
@@ -145,29 +146,6 @@ public class MakeMessageInterceptor implements AroundInterceptor {
         } else {
             return findAvaiableOptionIndex(npcMessage, new UserOptionIndex(optionSetIndex, flagIndex), maxUserOptionSetIndex);
         }
-    }
-    
-    private boolean isEmpty(Object value) {
-        if (value == null || value.toString().length() == 0) {
-            return true;
-        }
-        return false;
-    }
-    
-    private String getRepresentationLocalV4Ip() {
-        String ip = NetUtils.getLocalV4Ip();
-
-        if (!ip.equals(NetUtils.LOOPBACK_ADDRESS_V4)) {
-            return ip;
-        }
-
-        // local ip addresses with all LOOPBACK addresses removed
-        List<String> ipList = NetUtils.getLocalV4IpList();
-        if (ipList.size() > 0) {
-            return ipList.get(0);
-        }
-
-        return NetUtils.LOOPBACK_ADDRESS_V4;
     }
 
 }
