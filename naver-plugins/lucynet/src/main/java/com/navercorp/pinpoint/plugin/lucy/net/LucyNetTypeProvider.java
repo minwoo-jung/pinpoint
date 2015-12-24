@@ -1,4 +1,5 @@
 package com.navercorp.pinpoint.plugin.lucy.net;
+import com.navercorp.pinpoint.common.trace.AnnotationKeyMatchers;
 import com.navercorp.pinpoint.common.trace.TraceMetadataProvider;
 import com.navercorp.pinpoint.common.trace.TraceMetadataSetupContext;
 
@@ -34,7 +35,7 @@ public class LucyNetTypeProvider implements TraceMetadataProvider {
         context.addAnnotationKey(LucyNetConstants.NPC_PARAM);
         context.addAnnotationKey(LucyNetConstants.NPC_URL);
 
-        context.addServiceType(LucyNetConstants.NIMM_CLIENT);
+        context.addServiceType(LucyNetConstants.NIMM_CLIENT, AnnotationKeyMatchers.exact(LucyNetConstants.NIMM_URL));
         context.addAnnotationKey(LucyNetConstants.NIMM_OBJECT_NAME);
         context.addAnnotationKey(LucyNetConstants.NIMM_METHOD_NAME);
         context.addAnnotationKey(LucyNetConstants.NIMM_PARAM);
