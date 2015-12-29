@@ -12,6 +12,7 @@ import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
+import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetHeader;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor;
@@ -26,8 +27,12 @@ import java.util.Map;
 @TargetMethod(name = "handleResponseMessage", paramTypes = {"com.nhncorp.lucy.npc.NpcMessage", "java.lang.String"})
 public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
 
+    private final boolean traceRequestParam;
+
     public NimmHandlerInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, NimmHandlerInterceptor.class);
+        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
+        traceRequestParam = config.isTraceRequestParam();
     }
 
     @Override
@@ -151,17 +156,17 @@ public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
         }
 
         if (recorder.canSampled()) {
-            NpcMessage npcMessage = (NpcMessage) args[0];
+            if (traceRequestParam) {
+                NpcMessage npcMessage = (NpcMessage) args[0];
+                Object call = npcMessage.getPayload();
+                if (call instanceof Call) {
 
-            Object call = npcMessage.getPayload();
-            if (call instanceof Call) {
-
-                final String parameters = LucyNetUtils.getParameterAsString(((Call) call).getParameters(), 64, 512);
-                if (parameters != null && parameters.length() > 0) {
-                    recorder.recordAttribute(BlocConstants.CALL_PARAM, parameters);
+                    final String parameters = LucyNetUtils.getParameterAsString(((Call) call).getParameters(), 64, 512);
+                    if (parameters != null && parameters.length() > 0) {
+                        recorder.recordAttribute(BlocConstants.CALL_PARAM, parameters);
+                    }
                 }
             }
-
             recorder.recordApi(methodDescriptor);
         }
 
