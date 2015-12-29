@@ -1,12 +1,5 @@
 package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
@@ -20,11 +13,13 @@ import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.nhncorp.lucy.net.call.Call;
+import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
 import com.nhncorp.lucy.npc.NpcMessage;
-import com.nhncorp.lucy.npc.UserOptionIndex;
-
 import external.org.apache.mina.common.IoSession;
+
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.Map;
 
 
 @TargetMethod(name = "messageReceived", paramTypes = {"external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
@@ -72,8 +67,7 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         IoSession ioSession = getIOSession(args);
         NpcMessage npcMessage = getNpcMessage(args);
 
-        List<String> userOptions = getAllUserOptions(npcMessage);
-        Map<String, String> pinpointOptions = extractPinpointOptions(userOptions);
+        Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
 
         boolean isSampling = samplingEnable(pinpointOptions);
         if (!isSampling) {
@@ -126,15 +120,14 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         NpcMessage npcMessage = getNpcMessage(args);
 
         recorder.recordServiceType(BlocConstants.BLOC);
-        recorder.recordRpcName(createRpcName(npcMessage));
+        recorder.recordRpcName(LucyNetUtils.getRpcName(npcMessage));
 
         final IoSession ioSession = getIOSession(args);
         recorder.recordEndPoint(getLocalAddress(ioSession));
         recorder.recordRemoteAddress(getRemoteAddress(ioSession));
 
         if (!recorder.isRoot()) {
-            List<String> userOptions = getAllUserOptions(npcMessage);
-            Map<String, String> pinpointOptions = extractPinpointOptions(userOptions);
+            Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
 
             String parentApplicationName = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
             if (parentApplicationName != null) {
@@ -181,118 +174,6 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             }
         }
         return null;
-    }
-
-    private String createRpcName(NpcMessage npcMessage) {
-        // use string builder
-
-        if (npcMessage == null) {
-            return "//";
-        }
-
-        StringBuilder rpcNameBuilder = new StringBuilder("/");
-
-        String namespace = trimToEmpty(npcMessage.getNamespace());
-        String objectName = getObjectName(npcMessage.getPayload());
-        String methodName = getMethodName(npcMessage.getPayload());
-
-        if (namespace.equals(NAMESPACE_URA)) {
-            rpcNameBuilder.append(methodName);
-        } else {
-            rpcNameBuilder.append(objectName);
-            rpcNameBuilder.append('/');
-            rpcNameBuilder.append(methodName);
-        }
-
-        return rpcNameBuilder.toString();
-    }
-
-    private String getObjectName(Object payload) {
-        if (payload == null || !(payload instanceof Call)) {
-            return "";
-        }
-
-        Call call = (Call) payload;
-        return trimToEmpty(call.getObjectName());
-    }
-
-    private String getMethodName(Object payload) {
-        if (payload == null || !(payload instanceof Call)) {
-            return "";
-        }
-
-        Call call = (Call) payload;
-        return trimToEmpty(call.getMethodName());
-    }
-
-    private String trimToEmpty(String value) {
-        if (value == null || value.length() == 0) {
-            return "";
-        } else {
-            return value;
-        }
-    }
-
-    private List<String> getAllUserOptions(NpcMessage npcMessage) {
-        return getAllOptions(npcMessage, npcMessage.getUserOptionCount(), npcMessage.getUserOptionFlagCount());
-    }
-
-    private List<String> getAllOptions(NpcMessage npcMessage, int optionSetCount, int optionsCount) {
-        // Null Pointer 날수있음
-        List<String> options = new ArrayList<String>(optionsCount);
-
-        for (int i = 1; i <= optionSetCount; i++) {
-            List<String> specificSetOptions = getSpecificSetOptions(npcMessage, i);
-
-            options.addAll(specificSetOptions);
-
-            if (options.size() == optionsCount) {
-                return options;
-            }
-        }
-
-        return options;
-    }
-
-    private List<String> getSpecificSetOptions(NpcMessage message, int optionSetIndex) {
-        int maxOptionSize = 32;
-
-        List<String> options = new ArrayList<String>();
-
-        for (int i = 0; i < maxOptionSize; i++) {
-            UserOptionIndex optionIndex = new UserOptionIndex(optionSetIndex, i);
-
-            try {
-                byte[] value = message.getUserOption(optionIndex);
-                if (value != null) {
-                    String option = new String(value);
-                    options.add(option);
-                }
-            } catch (Exception ignored) {
-            }
-        }
-
-        return options;
-    }
-
-    private Map<String, String> extractPinpointOptions(List<String> userOptions) {
-        Map<String, String> pinpointOptions = new HashMap<String, String>();
-
-        for (String userOption : userOptions) {
-            String[] keyValuePair = userOption.split("=");
-
-            if (keyValuePair.length == 2) {
-                String key = keyValuePair[0];
-                String value = keyValuePair[1];
-
-                boolean isPinpointHeader = Header.hasHeader(key);
-                if (isPinpointHeader) {
-                    pinpointOptions.put(key, value);
-                }
-            }
-        }
-
-        return pinpointOptions;
     }
 
     private boolean samplingEnable(Map<String, String> pinpointOptions) {
@@ -368,6 +249,5 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
         return address;
     }
-
 
 }

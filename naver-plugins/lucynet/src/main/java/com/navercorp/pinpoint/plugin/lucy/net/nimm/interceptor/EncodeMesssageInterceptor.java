@@ -19,7 +19,9 @@ package com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Name;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
@@ -28,12 +30,13 @@ import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetHeader;
-import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUserOptionUtils;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
 import com.nhncorp.lucy.net.call.Call;
 import com.nhncorp.lucy.npc.UserOptionIndex;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +55,12 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
 
     private final TraceContext traceContext;
     private final MethodDescriptor methodDescriptor;
-    private final InterceptorScope interceptorScope;
+    private final InterceptorScope scope;
 
-    public EncodeMesssageInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorScope interceptorScope) {
+    public EncodeMesssageInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE) InterceptorScope scope) {
         this.traceContext = traceContext;
         this.methodDescriptor = methodDescriptor;
-        this.interceptorScope = interceptorScope;
+        this.scope = scope;
     }
 
     @Override
@@ -83,7 +86,6 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
             return;
         }
 
-
         Map optionMap = (Map) args[0];
         Call call = (Call) args[1];
 
@@ -97,8 +99,7 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
         }
 
         if (optionMap.size() == 0) {
-            List<byte[]> pinpointOptions = LucyNetUserOptionUtils.createOptions(trace, traceContext.getApplicationName(), traceContext.getServerTypeCode(), nimmAddress);
-            putOptions(optionMap, pinpointOptions);
+            addOption(optionMap, trace, nimmAddress, Collections.EMPTY_SET);
         } else {
             Collection optionDataSet = optionMap.values();
 
@@ -109,8 +110,7 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
                 }
             }
 
-            List<byte[]> pinpointOptions = LucyNetUserOptionUtils.createOptions(trace, traceContext.getApplicationName(), traceContext.getServerTypeCode(), nimmAddress, notIncludeOptionSet);
-            putOptions(optionMap, pinpointOptions);
+            addOption(optionMap, trace, nimmAddress, notIncludeOptionSet);
         }
     }
 
@@ -121,8 +121,19 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
         }
     }
 
-    // 생성된 핀포인트 옵션을 Option정보에 더합니다.
-    private void putOptions(Map userOptions, List<byte[]> options) {
+    // 핀포인트 옵션을 생성 및 포함합니다.
+    private void addOption(Map optionMap, Trace trace, String nimmAddress, Set<String> notIncludeOptionSet) {
+        Object attachment = scope.getCurrentInvocation().getAttachment();
+        if (trace.canSampled() && attachment instanceof TraceId) {
+            List<byte[]> pinpointOptions = LucyNetUtils.createOptions((TraceId) attachment, traceContext.getApplicationName(), traceContext.getServerTypeCode(), nimmAddress, notIncludeOptionSet);
+            addOption0(optionMap, pinpointOptions);
+        } else {
+            List<byte[]> unsampledOptions = LucyNetUtils.createUnsampledOptions();
+            addOption0(optionMap, unsampledOptions);
+        }
+    }
+
+    private void addOption0(Map userOptions, List<byte[]> options) {
         if (userOptions.size() == 0) {
             for (int i = 0; i < options.size(); i++) {
                 userOptions.put(new UserOptionIndex(1, i), options.get(i));
@@ -137,7 +148,7 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
                     break;
                 }
                 userOptions.put(avaiableOptionIndex, option);
-                userOptionIndex = LucyNetUserOptionUtils.increaseUserOptionIndex(avaiableOptionIndex);
+                userOptionIndex = LucyNetUtils.increaseUserOptionIndex(avaiableOptionIndex);
             }
         }
     }
@@ -155,13 +166,13 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
         if (isAvaiableUserOptionIndex(newOptionIndex, userOptionIndexSet)) {
             return newOptionIndex;
         } else {
-            return findAvaiableOptionIndex(userOptionIndexSet, LucyNetUserOptionUtils.increaseUserOptionIndex(newOptionIndex), maxUserOptionSetIndex);
+            return findAvaiableOptionIndex(userOptionIndexSet, LucyNetUtils.increaseUserOptionIndex(newOptionIndex), maxUserOptionSetIndex);
         }
     }
 
     private boolean isAvaiableUserOptionIndex(UserOptionIndex newUserOptionIndex, Set<UserOptionIndex> userOptionIndexSet) {
         for (UserOptionIndex userOptionIndex : userOptionIndexSet) {
-            if (LucyNetUserOptionUtils.equalsUserOptionIndex(newUserOptionIndex, userOptionIndex)) {
+            if (LucyNetUtils.equalsUserOptionIndex(newUserOptionIndex, userOptionIndex)) {
                 return false;
             }
         }

@@ -5,14 +5,14 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
-import com.nhncorp.lucy.nimm.connector.address.NimmAddress.Species;
+import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
 
 /**
  * target lib = com.nhncorp.lucy.lucy-nimmconnector-2.1.4
- * 
+ *
  * @author netspider
- * 
  */
 public class NimmInvokerConstructorInterceptor implements AroundInterceptor {
 
@@ -37,23 +37,8 @@ public class NimmInvokerConstructorInterceptor implements AroundInterceptor {
 
         if (args != null && args.length >= 1 && args[0] instanceof com.nhncorp.lucy.nimm.connector.address.NimmAddress) {
             com.nhncorp.lucy.nimm.connector.address.NimmAddress nimmAddress = (com.nhncorp.lucy.nimm.connector.address.NimmAddress) args[0];
-
-            StringBuilder address = new StringBuilder();
-            if (Species.Service.equals(nimmAddress.getSpecies())) {
-                address.append("S");
-            } else if (Species.Management.equals(nimmAddress.getSpecies())) {
-                address.append("M");
-            } else {
-                address.append("unknown");
-            }
-            address.append(":");
-            address.append(nimmAddress.getDomainId()).append(":");
-            address.append(nimmAddress.getIdcId()).append(":");
-            address.append(nimmAddress.getServerId()).append(":");
-            address.append(nimmAddress.getSocketId());
-
             if (target instanceof NimmAddressAccessor) {
-                ((NimmAddressAccessor) target)._$PINPOINT$_setNimmAddress(address.toString());
+                ((NimmAddressAccessor) target)._$PINPOINT$_setNimmAddress(addressToString(nimmAddress));
             }
         }
     }
@@ -62,4 +47,13 @@ public class NimmInvokerConstructorInterceptor implements AroundInterceptor {
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
 
     }
+
+    private String addressToString(NimmAddress nimmAddress) {
+        if (nimmAddress == null) {
+            return LucyNetConstants.UNKOWN_ADDRESS;
+        }
+
+        return nimmAddress.getDomainId() + "." + nimmAddress.getIdcId() + "." + nimmAddress.getServerId() + "."+ nimmAddress.getSocketId();
+    }
+
 }

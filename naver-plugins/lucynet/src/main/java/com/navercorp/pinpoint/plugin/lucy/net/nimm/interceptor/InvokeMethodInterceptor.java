@@ -23,13 +23,16 @@ import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Name;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
+import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
+import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvocation;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPluginConfig;
-import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUserOptionUtils;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
 
 /**
@@ -45,13 +48,16 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
 
     private final TraceContext traceContext;
     private final MethodDescriptor descriptor;
+    private final InterceptorScope scope;
+
     private final boolean param;
 
     // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고 있음.
 
-    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
+    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE) InterceptorScope scope) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
+        this.scope = scope;
 
         LucyNetPluginConfig config = new LucyNetPluginConfig(traceContext.getProfilerConfig());
         this.param = config.isNimmParam();
@@ -78,6 +84,8 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
         TraceId nextId = trace.getTraceId().getNextTraceId();
         recorder.recordNextSpanId(nextId.getSpanId());
 
+        InterceptorScopeInvocation currentTransaction = this.scope.getCurrentInvocation();
+        currentTransaction.setAttachment(nextId);
 
         // TODO protocol은 어떻게 표기하지???
         String nimmAddress = "";
@@ -105,7 +113,7 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
 
         if (this.param && args != null && args.length >= 4 && args[3] instanceof Object[]) {
             final Object[] params = (Object[]) args[3];
-            recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, LucyNetUserOptionUtils.getParameterAsString(params, 32, 256));
+            recorder.recordAttribute(LucyNetConstants.NIMM_PARAM, LucyNetUtils.getParameterAsString(params, 64, 512));
         }
 
         recorder.recordServiceType(LucyNetConstants.NIMM_CLIENT);

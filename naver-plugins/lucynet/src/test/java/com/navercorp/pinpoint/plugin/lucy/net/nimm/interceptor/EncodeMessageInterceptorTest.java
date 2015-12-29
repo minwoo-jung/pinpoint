@@ -19,6 +19,7 @@ import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
+import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvocation;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetHeader;
@@ -55,8 +56,12 @@ public class EncodeMessageInterceptorTest {
 
     @BeforeClass
     public static void setUpBeforeClass() {
+        InterceptorScopeInvocation mockInterceptorScopeInvocation = mock(InterceptorScopeInvocation.class);
+        when(mockInterceptorScopeInvocation.getAttachment()).thenReturn(new DefaultTraceId("agentId", System.currentTimeMillis(), transactionId++));
+
         methodDescriptor = mock(MethodDescriptor.class);
         scope = mock(InterceptorScope.class);
+        when(scope.getCurrentInvocation()).thenReturn(mockInterceptorScopeInvocation);
 
         call = new DefaultCall();
         call.setObjectName("objectName");
@@ -113,6 +118,13 @@ public class EncodeMessageInterceptorTest {
         encodeMessageInteceptor.before(null, new Object[]{option, call});
 
         checkOptions(option);
+
+//        for (UserOptionIndex index : option.keySet()) {
+//            byte[] bytes = option.get(index);
+//
+//            System.out.println(index.getOptionSetIndex() + ":" + index.getFlagIndex() + " " + new String(bytes));
+//
+//        }
 
         Assert.assertEquals(LucyNetHeader.values().length, checkDuplicateUserOptionIndex.size());
         Assert.assertEquals(LucyNetHeader.values().length, checkDuplicateUserOptionKey.size());

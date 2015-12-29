@@ -24,7 +24,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
-import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUserOptionUtils;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
 import com.nhncorp.lucy.npc.DefaultNpcMessage;
 import com.nhncorp.lucy.npc.UserOptionIndex;
@@ -86,14 +86,14 @@ public class MakeMessageInterceptor implements AroundInterceptor {
                 }
                 recorder.recordDestinationId(endPoint);
 
-                List<byte[]> options = LucyNetUserOptionUtils.createOptions(trace, traceContext.getApplicationName(), traceContext.getServerTypeCode(), endPoint);
+                List<byte[]> options = LucyNetUtils.createOptions(id, traceContext.getApplicationName(), traceContext.getServerTypeCode(), endPoint);
                 putOption((DefaultNpcMessage) result, options);
             } else {
                 recorder.recordDestinationId(LucyNetConstants.UNKOWN_ADDRESS);
             }
         } else {
             if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {
-                List<byte[]> options = LucyNetUserOptionUtils.createUnsampledOptions();
+                List<byte[]> options = LucyNetUtils.createUnsampledOptions();
                 putOption((DefaultNpcMessage) result, options);
             }
         }
