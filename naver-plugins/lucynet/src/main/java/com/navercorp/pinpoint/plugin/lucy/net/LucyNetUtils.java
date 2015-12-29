@@ -16,7 +16,6 @@
 
 package com.navercorp.pinpoint.plugin.lucy.net;
 
-import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
@@ -31,7 +30,7 @@ import java.util.Set;
 /**
  * @Author Taejin Koo
  */
-public final class LucyNetUserOptionUtils {
+public final class LucyNetUtils {
 
     private static final String PINPOINT_TRACE_ID = LucyNetHeader.PINPOINT_TRACE_ID.toString();
     private static final String PINPOINT_SPAN_ID = LucyNetHeader.PINPOINT_SPAN_ID.toString();
@@ -42,66 +41,62 @@ public final class LucyNetUserOptionUtils {
     private static final String PINPOINT_HOST = LucyNetHeader.PINPOINT_HOST.toString();
     private static final String PINPOINT_SAMPLED = LucyNetHeader.PINPOINT_SAMPLED.toString();
 
-    private LucyNetUserOptionUtils() {
+    private LucyNetUtils() {
     }
 
-    public static List<byte[]> createOptions(Trace trace, String applicationName, short serverTypeCode, String endPoint) {
-        return createOptions(trace, applicationName, serverTypeCode, endPoint, Collections.<String>emptySet());
+    public static List<byte[]> createOptions(TraceId nextTraceId, String applicationName, short serverTypeCode, String endPoint) {
+        return createOptions(nextTraceId, applicationName, serverTypeCode, endPoint, Collections.<String>emptySet());
     }
 
-    public static List<byte[]> createOptions(Trace trace, String applicationName, short serverTypeCode, String endPoint, Set<String> notIncludeOptions) {
+    public static List<byte[]> createOptions(TraceId nextTraceId, String applicationName, short serverTypeCode, String endPoint, Set<String> notIncludeOptions) {
         if (notIncludeOptions == null) {
             throw new NullPointerException("notIncludeOptions may not be null.");
         }
 
-        if (trace == null) {
+        if (nextTraceId == null) {
             return Collections.emptyList();
         }
 
-        if (trace.canSampled()) {
-            StringBuilder optionStringBuilder = new StringBuilder(32);
 
-            TraceId traceId = trace.getTraceId();
+        StringBuilder optionStringBuilder = new StringBuilder(32);
 
-            List<byte[]> options = new ArrayList<byte[]>(8);
+        List<byte[]> options = new ArrayList<byte[]>(8);
 
-            if (!notIncludeOptions.contains(PINPOINT_TRACE_ID)) {
-                options.add(stringToBytes(PINPOINT_TRACE_ID, traceId.getTransactionId(), optionStringBuilder));
-            }
-
-            if (!notIncludeOptions.contains(PINPOINT_SPAN_ID)) {
-                options.add(stringToBytes(PINPOINT_SPAN_ID, Long.toString(traceId.getSpanId()), optionStringBuilder));
-            }
-
-            if (!notIncludeOptions.contains(PINPOINT_PARENT_SPAN_ID)) {
-                options.add(stringToBytes(PINPOINT_PARENT_SPAN_ID, Long.toString(traceId.getParentSpanId()), optionStringBuilder));
-            }
-
-            if (!notIncludeOptions.contains(PINPOINT_FLAGS)) {
-                options.add(stringToBytes(PINPOINT_FLAGS, Short.toString(traceId.getFlags()), optionStringBuilder));
-            }
-
-            if (!notIncludeOptions.contains(PINPOINT_PARENT_APPLICATION_NAME)) {
-                options.add(stringToBytes(PINPOINT_PARENT_APPLICATION_NAME, applicationName, optionStringBuilder));
-            }
-
-            if (!notIncludeOptions.contains(PINPOINT_PARENT_APPLICATION_TYPE)) {
-                options.add(stringToBytes(PINPOINT_PARENT_APPLICATION_TYPE, Short.toString(serverTypeCode), optionStringBuilder));
-            }
-
-            if (!notIncludeOptions.contains(PINPOINT_HOST)) {
-                options.add(stringToBytes(PINPOINT_HOST, endPoint, optionStringBuilder));
-            }
-
-            if (!notIncludeOptions.contains(PINPOINT_SAMPLED)) {
-                options.add(stringToBytes(PINPOINT_SAMPLED, SamplingFlagUtils.SAMPLING_RATE_TRUE, optionStringBuilder));
-            }
-
-            return options;
-        } else {
-            return createUnsampledOptions(notIncludeOptions);
+        if (!notIncludeOptions.contains(PINPOINT_TRACE_ID)) {
+            options.add(stringToBytes(PINPOINT_TRACE_ID, nextTraceId.getTransactionId(), optionStringBuilder));
         }
+
+        if (!notIncludeOptions.contains(PINPOINT_SPAN_ID)) {
+            options.add(stringToBytes(PINPOINT_SPAN_ID, Long.toString(nextTraceId.getSpanId()), optionStringBuilder));
+        }
+
+        if (!notIncludeOptions.contains(PINPOINT_PARENT_SPAN_ID)) {
+            options.add(stringToBytes(PINPOINT_PARENT_SPAN_ID, Long.toString(nextTraceId.getParentSpanId()), optionStringBuilder));
+        }
+
+        if (!notIncludeOptions.contains(PINPOINT_FLAGS)) {
+            options.add(stringToBytes(PINPOINT_FLAGS, Short.toString(nextTraceId.getFlags()), optionStringBuilder));
+        }
+
+        if (!notIncludeOptions.contains(PINPOINT_PARENT_APPLICATION_NAME)) {
+            options.add(stringToBytes(PINPOINT_PARENT_APPLICATION_NAME, applicationName, optionStringBuilder));
+        }
+
+        if (!notIncludeOptions.contains(PINPOINT_PARENT_APPLICATION_TYPE)) {
+            options.add(stringToBytes(PINPOINT_PARENT_APPLICATION_TYPE, Short.toString(serverTypeCode), optionStringBuilder));
+        }
+
+        if (!notIncludeOptions.contains(PINPOINT_HOST)) {
+            options.add(stringToBytes(PINPOINT_HOST, endPoint, optionStringBuilder));
+        }
+
+        if (!notIncludeOptions.contains(PINPOINT_SAMPLED)) {
+            options.add(stringToBytes(PINPOINT_SAMPLED, SamplingFlagUtils.SAMPLING_RATE_TRUE, optionStringBuilder));
+        }
+
+        return options;
     }
+
 
     public static List<byte[]> createUnsampledOptions() {
         return createUnsampledOptions(Collections.<String>emptySet());

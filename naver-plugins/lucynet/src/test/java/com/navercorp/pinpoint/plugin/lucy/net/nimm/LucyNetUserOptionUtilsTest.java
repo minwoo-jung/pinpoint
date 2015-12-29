@@ -1,6 +1,6 @@
 package com.navercorp.pinpoint.plugin.lucy.net.nimm;
 
-import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUserOptionUtils;
+import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,22 +17,22 @@ public class LucyNetUserOptionUtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void checkIllegalArgumentTest1() throws Exception {
-        LucyNetUserOptionUtils.getParameterAsString(null, 1000, 100);
+        LucyNetUtils.getParameterAsString(null, 1000, 100);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void checkIllegalArgumentTest2() throws Exception {
-        LucyNetUserOptionUtils.getParameterAsString(null, -1, 100);
+        LucyNetUtils.getParameterAsString(null, -1, 100);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void checkIllegalArgumentTest3() throws Exception {
-        LucyNetUserOptionUtils.getParameterAsString(null, 1000, -1);
+        LucyNetUtils.getParameterAsString(null, 1000, -1);
     }
 
     @Test
     public void listTest1() throws Exception {
-        String parameterAsString = LucyNetUserOptionUtils.getParameterAsString(null, 10, 100);
+        String parameterAsString = LucyNetUtils.getParameterAsString(null, 10, 100);
 
         Assert.assertEquals("null", parameterAsString);
     }
@@ -48,7 +48,7 @@ public class LucyNetUserOptionUtilsTest {
             params[i] = RandomString.getRandomString(eachParamSize);
         }
 
-        String parameterAsString = LucyNetUserOptionUtils.getParameterAsString(params, 10, 100);
+        String parameterAsString = LucyNetUtils.getParameterAsString(params, 10, 100);
         System.out.println(parameterAsString);
         Assert.assertEquals((eachParamSize * objectLength + (objectLength + 1) * 2), parameterAsString.length());
     }
@@ -64,7 +64,7 @@ public class LucyNetUserOptionUtilsTest {
             params[i] = RandomString.getRandomString(eachParamSize);
         }
 
-        String parameterAsString = LucyNetUserOptionUtils.getParameterAsString(params, 10, 100);
+        String parameterAsString = LucyNetUtils.getParameterAsString(params, 10, 100);
         System.out.println(parameterAsString);
         Assert.assertTrue((eachParamSize * objectLength + (objectLength + 1) * 2) > parameterAsString.length());
     }
@@ -80,7 +80,7 @@ public class LucyNetUserOptionUtilsTest {
             params[i] = RandomString.getRandomString(eachParamSize);
         }
 
-        String parameterAsString = LucyNetUserOptionUtils.getParameterAsString(params, 10, 100);
+        String parameterAsString = LucyNetUtils.getParameterAsString(params, 10, 100);
         System.out.println(parameterAsString);
         Assert.assertTrue((eachParamSize * objectLength + (objectLength + 1) * 2) > parameterAsString.length());
         Assert.assertTrue(parameterAsString.endsWith("... ]"));
@@ -100,7 +100,7 @@ public class LucyNetUserOptionUtilsTest {
         Object[] params = new Object[1];
         params[0] = map;
 
-        String parameterAsString = LucyNetUserOptionUtils.getParameterAsString(params, 10, 100);
+        String parameterAsString = LucyNetUtils.getParameterAsString(params, 10, 100);
         System.out.println(parameterAsString);
         Assert.assertTrue(!parameterAsString.endsWith("... }"));
     }
@@ -119,7 +119,7 @@ public class LucyNetUserOptionUtilsTest {
         Object[] params = new Object[1];
         params[0] = map;
 
-        String parameterAsString = LucyNetUserOptionUtils.getParameterAsString(params, 10, 100);
+        String parameterAsString = LucyNetUtils.getParameterAsString(params, 10, 100);
         System.out.println(parameterAsString);
         Assert.assertTrue(parameterAsString.endsWith("... }"));
     }
@@ -138,7 +138,7 @@ public class LucyNetUserOptionUtilsTest {
         Object[] params = new Object[1];
         params[0] = map;
 
-        String parameterAsString = LucyNetUserOptionUtils.getParameterAsString(params, 2, 100);
+        String parameterAsString = LucyNetUtils.getParameterAsString(params, 2, 100);
         System.out.println(parameterAsString);
         Assert.assertTrue(parameterAsString.endsWith("... }"));
     }
