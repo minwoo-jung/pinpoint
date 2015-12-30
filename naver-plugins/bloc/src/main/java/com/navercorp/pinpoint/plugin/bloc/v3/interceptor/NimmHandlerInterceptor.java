@@ -1,4 +1,19 @@
-package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
+/*
+ *  Copyright 2015 NAVER Corp.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
@@ -17,6 +32,7 @@ import com.navercorp.pinpoint.plugin.bloc.LucyNetHeader;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor;
 import com.nhncorp.lucy.net.call.Call;
+import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
 import com.nhncorp.lucy.npc.NpcMessage;
 
 import java.util.Map;
@@ -24,7 +40,7 @@ import java.util.Map;
 /**
  * @Author Taejin Koo
  */
-@TargetMethod(name = "handleResponseMessage", paramTypes = {"com.nhncorp.lucy.npc.NpcMessage", "java.lang.String"})
+@TargetMethod(name = "handleResponseMessage", paramTypes = {"com.nhncorp.lucy.npc.NpcMessage", "com.nhncorp.lucy.nimm.connector.address.NimmAddress"})
 public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
 
     private final boolean traceRequestParam;
@@ -44,7 +60,8 @@ public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
         NpcMessage npcMessage = (NpcMessage) args[0];
 
         Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
-        String srcAddress = (String) args[1];
+
+        String srcAddress = LucyNetUtils.nimmAddressToString((NimmAddress) args[1]);
 
         boolean sampling = sampleEnable(pinpointOptions);
         if (!sampling) {
@@ -118,7 +135,7 @@ public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
         }
 
         NpcMessage npcMessage = (NpcMessage) args[0];
-        String srcAddress = (String) args[1];
+        String srcAddress = LucyNetUtils.nimmAddressToString((NimmAddress) args[1]);
 
         String dstAddress = BlocConstants.UNKOWN_ADDRESS;
         if (target instanceof NimmServerSocketAddressAccessor) {
@@ -188,13 +205,12 @@ public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
             return false;
         }
 
-        if (!(args[1] instanceof String)) {
+        if (!(args[1] instanceof NimmAddress)) {
             if (isDebug) {
-                logger.debug("Invalid args[1]={}. Need {}", args[1], String.class.getName());
+                logger.debug("Invalid args[1]={}. Need {}", args[1], NimmAddress.class.getName());
             }
             return false;
         }
         return true;
     }
-
 }
