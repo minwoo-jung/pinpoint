@@ -47,9 +47,6 @@
 						name: "HEAP_USAGE_RATE",
 						desc: "heap의 사용률이 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "GC_COUNT",
-						desc: " GC가 수행된 개수가 임계치를 초과한 경우 알람이 전송된다."
-					},{
 						name: "JVM_CPU_USAGE_RATE",
 						desc: "applicaiton의 CPU 사용률이 임계치를 초과한 경우 알람이 전송된다."
 					}]
