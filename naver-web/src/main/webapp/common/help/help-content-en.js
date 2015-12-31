@@ -47,9 +47,6 @@
 						name: "HEAP_USAGE_RATE",
 						desc: "Sends an alarm when the application's heap usage(%) exceeds the configured threshold."
 					},{
-						name: "GC_COUNT",
-						desc: "Sends an alarm when the number of full garbage collections exceeds the configured threshold."
-					},{
 						name: "JVM_CPU_USAGE_RATE",
 						desc: "Sends an alarm when the application's CPU usage(%) exceeds the configured threshold."
 					}]
