@@ -28,7 +28,8 @@
                                          com.navercorp.pinpoint.web.filter,
                                          com.navercorp.pinpoint.web.alarm,
                                          com.navercorp.pinpoint.web.config,
-                                         com.navercorp.pinpoint.collector.mapper.thrift" />
+                                         com.navercorp.pinpoint.collector.mapper.thrift,
+                                         com.navercorp.pinpoint.collector.dao.hbase.filter" />
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
@@ -52,6 +53,9 @@
     <bean id="trace" class="com.navercorp.pinpoint.collector.dao.hbase.HbaseTraceDao"/>
     <bean class="com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentInfoDao"/>
 
+    <bean id="sequenceSpanEventFilter" class="com.navercorp.pinpoint.collector.dao.hbase.filter.SequenceSpanEventFilter">
+        <constructor-arg index="0" value="${collector.spanEvent.sequence.limit:10000}"/>
+    </bean>
 
     <bean id="spanMapper" class="com.navercorp.pinpoint.web.mapper.SpanMapper"/>
     <bean id="annotationMapper" class="com.navercorp.pinpoint.web.mapper.AnnotationMapper"/>
