@@ -7,7 +7,7 @@
 	 * @name serverListDirective
 	 * @class
 	 */
-	pinpointApp.directive('serverListDirective', [ '$timeout', '$window', '$filter', 'helpContentTemplate', 'helpContentService', 'AjaxService', 
+	pinpointApp.directive('serverListDirective', [ '$timeout', '$window', '$filter', 'helpContentTemplate', 'helpContentService', 'SQLAjaxService', 
 	    function ($timeout, $window, $filter, helpContentTemplate, helpContentService, ajaxService) {
             return {
                 restrict: 'A',
