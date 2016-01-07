@@ -16,18 +16,18 @@
 package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetHeader;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor;
@@ -41,22 +41,39 @@ import java.util.Map;
  * @Author Taejin Koo
  */
 @TargetMethod(name = "handleResponseMessage", paramTypes = {"com.nhncorp.lucy.npc.NpcMessage", "com.nhncorp.lucy.nimm.connector.address.NimmAddress"})
-public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
-
-    private final boolean traceRequestParam;
+public class NimmHandlerInterceptor extends AbstractBlocAroundInterceptor {
 
     public NimmHandlerInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, NimmHandlerInterceptor.class);
-        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
-        traceRequestParam = config.isTraceRequestParam();
+    }
+
+    @Override
+    protected boolean validateArgument(Object[] args) {
+        if (args == null || args.length != 2) {
+            if (isDebug) {
+                logger.debug("Invalid args={}.", args);
+            }
+            return false;
+        }
+
+        if (!(args[0] instanceof NpcMessage)) {
+            if (isDebug) {
+                logger.debug("Invalid args[0]={}. Need {}", args[0], NpcMessage.class.getName());
+            }
+            return false;
+        }
+
+        if (!(args[1] instanceof NimmAddress)) {
+            if (isDebug) {
+                logger.debug("Invalid args[1]={}. Need {}", args[1], NimmAddress.class.getName());
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
-        if (!validate(args)) {
-            return null;
-        }
-
         NpcMessage npcMessage = (NpcMessage) args[0];
 
         Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
@@ -95,11 +112,11 @@ public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
             final Trace trace = traceContext.newTraceObject();
             if (trace.canSampled()) {
                 if (isDebug) {
-                    logger.debug("TraceID not exist. start new trace. traceId:{}, srcAddr:{}, dstAddr:{}, rpcName:{}", traceId, srcAddress, dstAddress, rpcName);
+                    logger.debug("TraceID not exist. start new trace. srcAddr:{}, dstAddr:{}, rpcName:{}", srcAddress, dstAddress, rpcName);
                 }
             } else {
                 if (isDebug) {
-                    logger.debug("TraceID not exist. camSampled is false. skip trace. traceId:{}, srcAddr:{}, dstAddr:{}, rpcName:{}", traceId, srcAddress, dstAddress, rpcName);
+                    logger.debug("TraceID not exist. camSampled is false. skip trace. srcAddr:{}, dstAddr:{}, rpcName:{}", srcAddress, dstAddress, rpcName);
                 }
             }
             return trace;
@@ -129,88 +146,69 @@ public class NimmHandlerInterceptor extends SpanSimpleAroundInterceptor {
     }
 
     @Override
-    protected void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
-        if (!validate(args)) {
-            return;
-        }
+    protected void doInBeforeTrace(Trace trace, Object target, Object[] args) {
+        SpanRecorder spanRecorder = trace.getSpanRecorder();
 
-        NpcMessage npcMessage = (NpcMessage) args[0];
-        String srcAddress = LucyNetUtils.nimmAddressToString((NimmAddress) args[1]);
+        try {
+            spanRecorder.recordServiceType(BlocConstants.BLOC);
 
-        String dstAddress = BlocConstants.UNKOWN_ADDRESS;
-        if (target instanceof NimmServerSocketAddressAccessor) {
-            dstAddress = ((NimmServerSocketAddressAccessor) target)._$PINPOINT$_getNimmAddress();
-        }
+            NpcMessage npcMessage = (NpcMessage) args[0];
+            spanRecorder.recordRpcName(LucyNetUtils.getRpcName(npcMessage));
 
-        recorder.recordServiceType(BlocConstants.BLOC);
-        recorder.recordRpcName(LucyNetUtils.getRpcName(npcMessage));
-        recorder.recordEndPoint(dstAddress);
-        recorder.recordRemoteAddress(srcAddress);
+            String srcAddress = LucyNetUtils.nimmAddressToString((NimmAddress) args[1]);
+            spanRecorder.recordRemoteAddress(srcAddress);
 
-        if (!recorder.isRoot()) {
-            Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
-
-            final String parentApplicationName = pinpointOptions.get(LucyNetHeader.PINPOINT_PARENT_APPLICATION_NAME.toString());
-            if (parentApplicationName != null) {
-                final String host = pinpointOptions.get(LucyNetHeader.PINPOINT_HOST.toString());
-                if (host != null) {
-                    recorder.recordAcceptorHost(host);
-                } else {
-                    recorder.recordAcceptorHost(dstAddress);
-                }
-
-                final String type = pinpointOptions.get(LucyNetHeader.PINPOINT_PARENT_APPLICATION_TYPE.toString());
-                final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
-                recorder.recordParentApplication(parentApplicationName, parentApplicationType);
+            String dstAddress = BlocConstants.UNKOWN_ADDRESS;
+            if (target instanceof NimmServerSocketAddressAccessor) {
+                dstAddress = ((NimmServerSocketAddressAccessor) target)._$PINPOINT$_getNimmAddress();
             }
+            spanRecorder.recordEndPoint(dstAddress);
+
+            if (!spanRecorder.isRoot()) {
+                Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
+
+                final String parentApplicationName = pinpointOptions.get(LucyNetHeader.PINPOINT_PARENT_APPLICATION_NAME.toString());
+                if (parentApplicationName != null) {
+                    final String host = pinpointOptions.get(LucyNetHeader.PINPOINT_HOST.toString());
+                    if (host != null) {
+                        spanRecorder.recordAcceptorHost(host);
+                    } else {
+                        spanRecorder.recordAcceptorHost(dstAddress);
+                    }
+
+                    final String type = pinpointOptions.get(LucyNetHeader.PINPOINT_PARENT_APPLICATION_TYPE.toString());
+                    final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
+                    spanRecorder.recordParentApplication(parentApplicationName, parentApplicationType);
+                }
+            }
+
+            spanRecorder.recordApi(blocMethodApiTag);
+        } finally {
+            SpanEventRecorder spanEventRecorder = trace.traceBlockBegin();
+            spanEventRecorder.recordApi(methodDescriptor);
+            spanEventRecorder.recordServiceType(BlocConstants.BLOC_INTERNAL_METHOD);
         }
     }
 
     @Override
-    protected void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
-        if (!validate(args)) {
-            return;
-        }
-
-        if (recorder.canSampled()) {
+    protected void doInAfterTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
+        SpanEventRecorder spanEventRecorder = null;
+        try {
+            spanEventRecorder = trace.currentSpanEventRecorder();
             if (traceRequestParam) {
                 NpcMessage npcMessage = (NpcMessage) args[0];
                 Object call = npcMessage.getPayload();
                 if (call instanceof Call) {
-
-                    final String parameters = LucyNetUtils.getParameterAsString(((Call) call).getParameters(), 64, 512);
-                    if (parameters != null && parameters.length() > 0) {
-                        recorder.recordAttribute(BlocConstants.CALL_PARAM, parameters);
-                    }
+                    final String parameters = LucyNetUtils.getParameterAsString(((Call) call).getParameters(), MAX_EACH_PARAMETER_SIZE, MAX_ALL_PARAMETER_SIZE);
+                    spanEventRecorder.recordAttribute(BlocConstants.CALL_PARAM, parameters);
                 }
             }
-            recorder.recordApi(methodDescriptor);
+        } finally {
+            if (spanEventRecorder != null) {
+                spanEventRecorder.recordException(throwable);
+            }
+            trace.traceBlockEnd();
         }
-
-        recorder.recordException(throwable);
     }
 
-    private boolean validate(final Object[] args) {
-        if (args == null || args.length != 2) {
-            if (isDebug) {
-                logger.debug("Invalid args={}.", args);
-            }
-            return false;
-        }
-
-        if (!(args[0] instanceof NpcMessage)) {
-            if (isDebug) {
-                logger.debug("Invalid args[0]={}. Need {}", args[0], NpcMessage.class.getName());
-            }
-            return false;
-        }
-
-        if (!(args[1] instanceof NimmAddress)) {
-            if (isDebug) {
-                logger.debug("Invalid args[1]={}. Need {}", args[1], NimmAddress.class.getName());
-            }
-            return false;
-        }
-        return true;
-    }
 }

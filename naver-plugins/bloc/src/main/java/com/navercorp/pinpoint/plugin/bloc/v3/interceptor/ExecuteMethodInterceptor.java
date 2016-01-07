@@ -1,15 +1,13 @@
 package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 
-import java.util.Enumeration;
-
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
@@ -17,29 +15,25 @@ import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-
-import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import external.org.apache.coyote.Request;
+
+import java.util.Enumeration;
 
 /**
  * @author netspider
  * @author emeroad
  */
 @TargetMethod(name = "execute", paramTypes = {"external.org.apache.coyote.Request", "external.org.apache.coyote.Response"})
-public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
-
-    private final boolean traceRequestParam;
+public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
 
     public ExecuteMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, ExecuteMethodInterceptor.class);
-
-        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
-        traceRequestParam = config.isTraceRequestParam();
     }
 
-    // check args.
-    private boolean validate(final Object[] args) {
+    @Override
+    protected boolean validateArgument(Object[] args) {
         if (args == null || args.length == 0) {
             if (isDebug) {
                 logger.debug("Invalid args={}.", args);
@@ -58,51 +52,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
     }
 
     @Override
-    public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
-        if (!validate(args)) {
-            return;
-        }
-
-        final Request request = (Request) args[0];
-        if (recorder.canSampled()) {
-            recorder.recordServiceType(BlocConstants.BLOC);
-
-            final String requestURL = request.requestURI().toString();
-            recorder.recordRpcName(requestURL);
-
-            // TODO tomcat과 로직이 미묘하게 다름 차이점 알아내서 고칠것.
-            // String remoteAddr = request.remoteAddr().toString();
-
-            recorder.recordEndPoint(getEndPoint(request.serverName().toString(), request.getServerPort()));
-            recorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.requestURI().toString(), traceRequestParam));
-        }
-
-        if (!recorder.isRoot()) {
-            recordParentInfo(recorder, request);
-        }
-    }
-
-    private String getEndPoint(String host, int port) {
-        if (host == null) {
-            return "unknown";
-        }
-        if (port < 0) {
-            return host;
-        }
-        StringBuilder sb = new StringBuilder(host.length() + 8);
-        sb.append(host);
-        sb.append(':');
-        sb.append(port);
-        return sb.toString();
-    }
-
-
-    @Override
     protected Trace createTrace(Object target, Object[] args) {
-        if (!validate(args)) {
-            return null;
-        }
-
         final Request request = (Request) args[0];
         final boolean sampling = samplingEnable(request);
         if (!sampling) {
@@ -114,7 +64,6 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
             }
             return trace;
         }
-
 
         final TraceId traceId = populateTraceIdFromRequest(request);
         if (traceId != null) {
@@ -146,27 +95,6 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
         }
     }
 
-
-    @Override
-    public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
-        if (!validate(args)) {
-            return;
-        }
-
-        if (recorder.canSampled()) {
-            if (this.traceRequestParam) {
-                Request request = (Request) args[0];
-                // skip
-                String parameters = getRequestParameter(request, 64, 512);
-                if (parameters != null && parameters.length() > 0) {
-                    recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
-                }
-            }
-            recorder.recordApi(methodDescriptor);
-        }
-        recorder.recordException(throwable);
-    }
-
     private boolean samplingEnable(Request request) {
         // optional 값.
         String samplingFlag = request.getHeader(Header.HTTP_SAMPLED.toString());
@@ -174,7 +102,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
     }
 
     /**
-     * Pupulate source trace from HTTP Header.
+     * Populate source trace from HTTP Header.
      *
      * @param request
      * @return
@@ -187,7 +115,7 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
             long spanId = NumberUtils.parseLong(request.getHeader(Header.HTTP_SPAN_ID.toString()), SpanId.NULL);
             short flags = NumberUtils.parseShort(request.getHeader(Header.HTTP_FLAGS.toString()), (short) 0);
 
-            TraceId id = this.traceContext.createTraceId(transactionId, parentSpanId, spanId, flags);
+            TraceId id = traceContext.createTraceId(transactionId, parentSpanId, spanId, flags);
             if (isDebug) {
                 logger.debug("TraceID exist. continue trace. {}", id);
             }
@@ -195,6 +123,83 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
         } else {
             return null;
         }
+    }
+
+    @Override
+    protected void doInBeforeTrace(Trace trace, Object target, Object[] args) {
+        try {
+            SpanRecorder spanRecorder = trace.getSpanRecorder();
+
+            final Request request = (Request) args[0];
+            if (request.remoteAddr() != null) {
+                spanRecorder.recordRemoteAddress(request.remoteAddr().toString());
+            }
+
+            spanRecorder.recordServiceType(BlocConstants.BLOC);
+
+            final String requestURL = request.requestURI().toString();
+            spanRecorder.recordRpcName(requestURL);
+
+            // TODO tomcat과 로직이 미묘하게 다름 차이점 알아내서 고칠것.
+            // String remoteAddr = request.remoteAddr().toString();
+            spanRecorder.recordEndPoint(getEndPoint(request.serverName().toString(), request.getServerPort()));
+            spanRecorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.requestURI().toString(), traceRequestParam));
+
+            if (!spanRecorder.isRoot()) {
+                recordParentInfo(spanRecorder, request);
+            }
+            spanRecorder.recordApi(blocMethodApiTag);
+        } finally {
+            SpanEventRecorder spanEventRecorder = trace.traceBlockBegin();
+            spanEventRecorder.recordApi(methodDescriptor);
+            spanEventRecorder.recordServiceType(BlocConstants.BLOC_INTERNAL_METHOD);
+        }
+
+    }
+
+    private String getEndPoint(String host, int port) {
+        if (host == null) {
+            return "unknown";
+        }
+        if (port < 0) {
+            return host;
+        }
+        return host + ":" + port;
+    }
+
+    private void recordParentInfo(SpanRecorder recorder, Request request) {
+        String parentApplicationName = request.getHeader(Header.HTTP_PARENT_APPLICATION_NAME.toString());
+        if (parentApplicationName != null) {
+            final String host = request.getHeader(Header.HTTP_HOST.toString());
+            if (host != null) {
+                recorder.recordAcceptorHost(host);
+            } else {
+                recorder.recordAcceptorHost(request.serverName().toString());
+            }
+            final String type = request.getHeader(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
+            final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
+            recorder.recordParentApplication(parentApplicationName, parentApplicationType);
+        }
+    }
+
+    @Override
+    protected void doInAfterTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
+        SpanEventRecorder spanEventRecorder = null;
+        try {
+            spanEventRecorder = trace.currentSpanEventRecorder();
+            if (traceRequestParam) {
+                Request request = (Request) args[0];
+                // skip
+                String parameters = getRequestParameter(request, MAX_EACH_PARAMETER_SIZE, MAX_ALL_PARAMETER_SIZE);
+                spanEventRecorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
+            }
+        } finally {
+            if (spanEventRecorder != null) {
+                spanEventRecorder.recordException(throwable);
+            }
+            trace.traceBlockEnd();
+        }
+
     }
 
     private String getRequestParameter(Request request, int eachLimit, int totalLimit) {
@@ -221,18 +226,4 @@ public class ExecuteMethodInterceptor extends SpanSimpleAroundInterceptor {
         return params.toString();
     }
 
-    private void recordParentInfo(SpanRecorder recorder, Request request) {
-        String parentApplicationName = request.getHeader(Header.HTTP_PARENT_APPLICATION_NAME.toString());
-        if (parentApplicationName != null) {
-            final String host = request.getHeader(Header.HTTP_HOST.toString());
-            if (host != null) {
-                recorder.recordAcceptorHost(host);
-            } else {
-                recorder.recordAcceptorHost(request.serverName().toString());
-            }
-            final String type = request.getHeader(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
-            final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
-            recorder.recordParentApplication(parentApplicationName, parentApplicationType);
-        }
-    }
 }

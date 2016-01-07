@@ -2,18 +2,20 @@ package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
+import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
+import com.nhncorp.lucy.net.call.Call;
 import com.nhncorp.lucy.npc.NpcMessage;
 import external.org.apache.mina.common.IoSession;
 
@@ -23,7 +25,7 @@ import java.util.Map;
 
 
 @TargetMethod(name = "messageReceived", paramTypes = {"external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
-public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
+public class MessageReceivedInterceptor extends AbstractBlocAroundInterceptor {
 
     private static final String NAMESPACE_URA = "URA 1.0";
     private static final String UNKNOWN_ADDRESS = "Unknown Address";
@@ -32,7 +34,8 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
         super(traceContext, descriptor, MessageReceivedInterceptor.class);
     }
 
-    private boolean validate(final Object[] args) {
+    @Override
+    protected boolean validateArgument(Object[] args) {
         if (args == null || args.length < 3) {
             if (isDebug) {
                 logger.debug("Invalid args={}.", args);
@@ -53,19 +56,13 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             }
             return false;
         }
-
-
         return true;
     }
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
-        if (!validate(args)) {
-            return null;
-        }
-
-        IoSession ioSession = getIOSession(args);
-        NpcMessage npcMessage = getNpcMessage(args);
+        IoSession ioSession = (IoSession) args[1];
+        NpcMessage npcMessage = (NpcMessage) args[2];
 
         Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
 
@@ -111,71 +108,6 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
     }
 
-    @Override
-    public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
-        if (!validate(args)) {
-            return;
-        }
-
-        NpcMessage npcMessage = getNpcMessage(args);
-
-        recorder.recordServiceType(BlocConstants.BLOC);
-        recorder.recordRpcName(LucyNetUtils.getRpcName(npcMessage));
-
-        final IoSession ioSession = getIOSession(args);
-        recorder.recordEndPoint(getLocalAddress(ioSession));
-        recorder.recordRemoteAddress(getRemoteAddress(ioSession));
-
-        if (!recorder.isRoot()) {
-            Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
-
-            String parentApplicationName = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
-            if (parentApplicationName != null) {
-                String remoteHost = pinpointOptions.get(Header.HTTP_HOST.toString());
-                if (remoteHost != null && remoteHost.length() > 0) {
-                    recorder.recordAcceptorHost(remoteHost);
-                } else {
-                    recorder.recordAcceptorHost(getLocalAddress(ioSession));
-                }
-
-                final String type = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
-                final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
-                recorder.recordParentApplication(parentApplicationName, parentApplicationType);
-            }
-        }
-    }
-
-    @Override
-    public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
-        if (!validate(args)) {
-            return;
-        }
-
-        if (recorder.canSampled()) {
-            recorder.recordApi(methodDescriptor);
-        }
-
-        recorder.recordException(throwable);
-    }
-
-    private IoSession getIOSession(Object[] args) {
-        if (args.length >= 2) {
-            if (args[1] instanceof external.org.apache.mina.common.IoSession) {
-                return (IoSession) args[1];
-            }
-        }
-        return null;
-    }
-
-    private NpcMessage getNpcMessage(Object[] args) {
-        if (args.length >= 3) {
-            if (args[2] instanceof NpcMessage) {
-                return (NpcMessage) args[2];
-            }
-        }
-        return null;
-    }
-
     private boolean samplingEnable(Map<String, String> pinpointOptions) {
         // optional value
         final String samplingFlag = pinpointOptions.get(Header.HTTP_SAMPLED.toString());
@@ -204,6 +136,46 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             return id;
         } else {
             return null;
+        }
+    }
+
+    @Override
+    protected void doInBeforeTrace(Trace trace, Object target, Object[] args) {
+        try {
+            SpanRecorder spanRecorder = trace.getSpanRecorder();
+
+            spanRecorder.recordServiceType(BlocConstants.BLOC);
+
+            NpcMessage npcMessage = (NpcMessage) args[2];
+            spanRecorder.recordRpcName(LucyNetUtils.getRpcName(npcMessage));
+
+            final IoSession ioSession = (IoSession) args[1];
+            spanRecorder.recordEndPoint(getLocalAddress(ioSession));
+            spanRecorder.recordRemoteAddress(getRemoteAddress(ioSession));
+
+            if (!spanRecorder.isRoot()) {
+                Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
+
+                String parentApplicationName = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
+                if (parentApplicationName != null) {
+                    String remoteHost = pinpointOptions.get(Header.HTTP_HOST.toString());
+                    if (remoteHost != null && remoteHost.length() > 0) {
+                        spanRecorder.recordAcceptorHost(remoteHost);
+                    } else {
+                        spanRecorder.recordAcceptorHost(getLocalAddress(ioSession));
+                    }
+
+                    final String type = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
+                    final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
+                    spanRecorder.recordParentApplication(parentApplicationName, parentApplicationType);
+                }
+            }
+            spanRecorder.recordApi(blocMethodApiTag);
+        } finally {
+            SpanEventRecorder spanEventRecorder = trace.traceBlockBegin();
+            spanEventRecorder.recordApi(methodDescriptor);
+            spanEventRecorder.recordServiceType(BlocConstants.BLOC_INTERNAL_METHOD);
+            getParams(args, spanEventRecorder);
         }
     }
 
@@ -240,8 +212,8 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
             if (address.startsWith("/")) {
                 return address.substring(1);
             } else {
-                int delimeterIndex = address.indexOf('/');
-                if (delimeterIndex != -1 && delimeterIndex < addressLength) {
+                int delimiterIndex = address.indexOf('/');
+                if (delimiterIndex != -1 && delimiterIndex < addressLength) {
                     return address.substring(address.indexOf('/') + 1);
                 }
             }
@@ -249,5 +221,31 @@ public class MessageReceivedInterceptor extends SpanSimpleAroundInterceptor {
 
         return address;
     }
+
+    private void getParams(Object[] args, SpanEventRecorder spanEventRecorder) {
+        if (traceRequestParam) {
+            NpcMessage npcMessage = (NpcMessage) args[2];
+            Object call = npcMessage.getPayload();
+
+            if (call instanceof Call) {
+                final String parameters = LucyNetUtils.getParameterAsString(((Call) call).getParameters(), MAX_EACH_PARAMETER_SIZE, MAX_ALL_PARAMETER_SIZE);
+                spanEventRecorder.recordAttribute(BlocConstants.CALL_PARAM, parameters);
+            }
+        }
+    }
+
+    @Override
+    protected void doInAfterTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
+        SpanEventRecorder spanEventRecorder = null;
+        try {
+            spanEventRecorder = trace.currentSpanEventRecorder();
+       } finally {
+            if (spanEventRecorder != null) {
+                spanEventRecorder.recordException(throwable);
+            }
+            trace.traceBlockEnd();
+        }
+    }
+
 
 }
