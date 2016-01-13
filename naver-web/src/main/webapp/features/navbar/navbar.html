@@ -21,7 +21,7 @@
                         <div ng-show="showStaticApplication" class="btn btn-sm disabled" style="margin-top:5px;background-color:#f5f5f5;opacity:1;filter:alpha(opacity=100);">{{applicationName}}</div>
                     </li>
                     <li class="divider-vertical"></li>
-                    <li id="navbar_depth" ng-hide="showStaticApplication">
+                    <li id="navbar_depth" class="inout-bound" ng-hide="showStaticApplication">
 						<div class="btn-group btn-group-sm input-group input-group-sm" style="margin-top:0px;width:102px;">
                             <button type="button" class="btn btn-default">
                                 <img src="images/inbound.png" width="18px" height="18px"/> {{callee}} <img src="images/outbound.png" width="18px" height="18px"/> {{caller}}
@@ -44,9 +44,9 @@
                                 </div>
                             </div>
                         </div>
-                    </li>	
-                    <li class="divider-vertical" ng-hide="showStaticApplication"></li>
-                    <li class="for-datetimepicker" id="navbar_period">
+                    </li>
+                    <li class="divider-vertical" style="margin-left:3px;margin-right:3px" ng-hide="showStaticApplication"></li>
+                    <li class="for-datetimepicker" id="navbar_period" ng-hide="showStaticApplication">
                         <div ng-show="periodType != 'range'">
                             <div class="btn-group btn-group-sm" style="margin-top:0px;width:350px;float:left;">
                                 <button type="button" class="btn btn-success" ng-click="togglePeriod('range')"><span class="glyphicon glyphicon-th-list"></span></button>
