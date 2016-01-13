@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.web.dao.hbase;
 
+import com.navercorp.pinpoint.web.vo.AgentInfo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,14 +37,14 @@ public class HbaseAgentInfoDaoTest {
         TAgentInfo agentInfo3 = createAgentInfo(30000);
         insertDao.insert(agentInfo3);
 
-        AgentInfoBo testcaseAgent1 = selectDao.getAgentInfo("testcaseAgent", 20005);
-        Assert.assertEquals(testcaseAgent1.getStartTime(), 20000);
+        AgentInfo testcaseAgent1 = selectDao.getAgentInfo("testcaseAgent", 20005);
+        Assert.assertEquals(testcaseAgent1.getStartTimestamp(), 20000);
 
-        AgentInfoBo testcaseAgent2 = selectDao.getAgentInfo("testcaseAgent", 10004);
-        Assert.assertEquals(testcaseAgent2.getStartTime(), 10000);
+        AgentInfo testcaseAgent2 = selectDao.getAgentInfo("testcaseAgent", 10004);
+        Assert.assertEquals(testcaseAgent2.getStartTimestamp(), 10000);
 
-        AgentInfoBo testcaseAgent3 = selectDao.getAgentInfo("testcaseAgent", 50000);
-        Assert.assertEquals(testcaseAgent3.getStartTime(), 30000);
+        AgentInfo testcaseAgent3 = selectDao.getAgentInfo("testcaseAgent", 50000);
+        Assert.assertEquals(testcaseAgent3.getStartTimestamp(), 30000);
 
     }
 
