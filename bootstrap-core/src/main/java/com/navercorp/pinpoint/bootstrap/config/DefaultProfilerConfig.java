@@ -16,10 +16,12 @@
 
 package com.navercorp.pinpoint.bootstrap.config;
 
-import com.navercorp.pinpoint.bootstrap.logging.BootLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+//import com.navercorp.pinpoint.bootstrap.logging.BootLoggerFactory;
+//import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.spring.PropertyPlaceholderHelper;
+import com.navercorp.pinpoint.common.logging.JavaLoggerFactory;
+import com.navercorp.pinpoint.common.logging.PLogger;
 import com.navercorp.pinpoint.common.util.PropertyUtils;
 
 import java.io.FileNotFoundException;
@@ -37,7 +39,7 @@ import java.util.Properties;
  */
 public class DefaultProfilerConfig implements ProfilerConfig {
 //    private static final Logger logger = Logger.getLogger(DefaultProfilerConfig.class.getName());
-    private static final PLogger logger = BootLoggerFactory.getLogger(DefaultProfilerConfig.class.getName());
+    private static final PLogger logger = JavaLoggerFactory.getLogger(DefaultProfilerConfig.class.getName());
     private static final String DEFAULT_IP = "127.0.0.1";
 
     private final Properties properties;

@@ -305,9 +305,6 @@ public class DefaultAgent implements Agent {
         final String binderClassName = binder.getClass().getName();
         PLogger pLogger = binder.getLogger(binder.getClass().getName());
         pLogger.info("PLoggerFactory.initialize() bind:{} cl:{}", binderClassName, binder.getClass().getClassLoader());
-        // Set binder to static LoggerFactory
-        // Should we unset binder at shutdown hook or stop()?
-        BootLoggerFactory.initialize(binder);
     }
 
     private TraceContext createTraceContext() {
