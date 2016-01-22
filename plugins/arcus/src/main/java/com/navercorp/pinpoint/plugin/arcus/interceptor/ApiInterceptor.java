@@ -30,8 +30,8 @@ import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.plugin.arcus.ArcusConstants;
 import com.navercorp.pinpoint.plugin.arcus.OperationAccessor;
 import com.navercorp.pinpoint.plugin.arcus.ServiceCodeAccessor;
@@ -42,7 +42,7 @@ import com.navercorp.pinpoint.plugin.arcus.ServiceCodeAccessor;
  */
 @Scope(ArcusConstants.ARCUS_SCOPE)
 public class ApiInterceptor implements AroundInterceptor {
-    protected final PLogger logger = PLoggerFactory.getLogger(getClass());
+    protected final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(getClass());
     protected final boolean isDebug = logger.isDebugEnabled();
 
     protected final MethodDescriptor methodDescriptor;

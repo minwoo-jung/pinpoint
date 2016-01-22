@@ -20,8 +20,8 @@ import redis.clients.jedis.Client;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.plugin.redis.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.redis.RedisConstants;
 
@@ -31,7 +31,7 @@ import com.navercorp.pinpoint.plugin.redis.RedisConstants;
  *
  */
 public abstract class JedisClientMetadataAttchInterceptor implements AroundInterceptor {
-    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
     public JedisClientMetadataAttchInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {

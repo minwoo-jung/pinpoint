@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerBinder;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.profiler.logging.Slf4jLoggerBinder;
 import com.navercorp.pinpoint.test.MockAgent;
 import com.navercorp.pinpoint.test.TestClassLoader;
@@ -90,6 +90,6 @@ public class TestContext implements Closeable {
         if (mockAgent != null) {
             mockAgent.stop(true);
         }
-        PLoggerFactory.unregister(loggerBinder);
+        SLF4jLoggerFactory.unregister(loggerBinder);
     }
 }

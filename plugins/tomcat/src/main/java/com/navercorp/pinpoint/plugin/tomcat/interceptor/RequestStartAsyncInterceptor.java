@@ -21,8 +21,8 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.plugin.tomcat.AsyncAccessor;
 import com.navercorp.pinpoint.plugin.tomcat.TomcatConstants;
 
@@ -33,7 +33,7 @@ import com.navercorp.pinpoint.plugin.tomcat.TomcatConstants;
  */
 public class RequestStartAsyncInterceptor implements AroundInterceptor {
 
-    private PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass());
     private boolean isDebug = logger.isDebugEnabled();
 
     private TraceContext traceContext;

@@ -21,15 +21,15 @@ import java.util.logging.Logger;
 /**
  * @author emeroad
  */
-public final class PLoggerFactory {
+public final class SLF4jLoggerFactory {
 
     private static PLoggerBinder loggerBinder;
 
     public static void initialize(PLoggerBinder loggerBinder) {
-        if (PLoggerFactory.loggerBinder == null) {
-            PLoggerFactory.loggerBinder = loggerBinder;
+        if (SLF4jLoggerFactory.loggerBinder == null) {
+            SLF4jLoggerFactory.loggerBinder = loggerBinder;
         } else {
-            final Logger logger = Logger.getLogger(PLoggerFactory.class.getName());
+            final Logger logger = Logger.getLogger(SLF4jLoggerFactory.class.getName());
             logger.warning("loggerBinder is not null");
         }
     }
@@ -37,12 +37,12 @@ public final class PLoggerFactory {
     public static void unregister(PLoggerBinder loggerBinder) {
         // Limited to remove only the ones already registered
         // when writing a test case, logger register/unregister logic must be located in beforeClass and afterClass
-        if (loggerBinder == PLoggerFactory.loggerBinder) {
-            PLoggerFactory.loggerBinder = null;
+        if (loggerBinder == SLF4jLoggerFactory.loggerBinder) {
+            SLF4jLoggerFactory.loggerBinder = null;
         }
     }
 
-    public static PLogger getLogger(String name) {
+    public static PLogger_제거예정 getLogger(String name) {
         if (loggerBinder == null) {
             // this prevents null exception: need to return Dummy until a Binder is assigned
             return DummyPLogger.INSTANCE;
@@ -50,7 +50,7 @@ public final class PLoggerFactory {
         return loggerBinder.getLogger(name);
     }
 
-    public static PLogger getLogger(Class clazz) {
+    public static PLogger_제거예정 getLogger(Class clazz) {
         if (clazz == null) {
             throw new NullPointerException("class must not be null");
         }

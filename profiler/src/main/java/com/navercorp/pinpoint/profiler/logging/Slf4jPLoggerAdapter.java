@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.profiler.logging;
 
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
 
 import org.slf4j.Marker;
 
@@ -30,7 +30,7 @@ import java.util.*;
 /**
  * @author emeroad
  */
-public class Slf4jPLoggerAdapter implements PLogger {
+public class Slf4jPLoggerAdapter implements PLogger_제거예정 {
     public static final int BUFFER_SIZE = 512;
 
     private static final Map<Class<?>, Class<?>> SIMPLE_TYPE = new IdentityHashMap<Class<?>, Class<?>>();

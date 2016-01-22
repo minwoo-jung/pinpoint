@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DefaultDatabaseInfo;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParser;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.StringMaker;
@@ -36,7 +36,7 @@ import com.navercorp.pinpoint.plugin.jdbc.oracle.parser.OracleNetConnectionDescr
  */
 public class OracleJdbcUrlParser extends JdbcUrlParser {
 
-    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass());
 
     @Override
     public DatabaseInfo doParse(String url) {

@@ -17,8 +17,8 @@ package com.navercorp.pinpoint.plugin.tomcat.interceptor;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.plugin.tomcat.AsyncAccessor;
 import com.navercorp.pinpoint.plugin.tomcat.TraceAccessor;
 
@@ -29,7 +29,7 @@ import com.navercorp.pinpoint.plugin.tomcat.TraceAccessor;
  */
 public class RequestRecycleInterceptor implements AroundInterceptor {
 
-    private PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass());
 
     private InstrumentMethod targetMethod;
 

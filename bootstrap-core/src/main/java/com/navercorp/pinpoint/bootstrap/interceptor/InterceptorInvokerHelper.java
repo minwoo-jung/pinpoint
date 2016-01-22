@@ -14,8 +14,8 @@
  */
 package com.navercorp.pinpoint.bootstrap.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 
 /**
  * @author Jongho Moon
@@ -23,7 +23,7 @@ import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
  */
 public class InterceptorInvokerHelper {
     private static boolean propagateException = false;
-    private static final PLogger logger = PLoggerFactory.getLogger(InterceptorInvokerHelper.class.getName());
+    private static final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(InterceptorInvokerHelper.class.getName());
     
     public static void handleException(Throwable t) {
         if (propagateException) {

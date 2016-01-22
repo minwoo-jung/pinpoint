@@ -24,8 +24,8 @@ import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvocation;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.plugin.httpclient4.HttpCallContext;
 import com.navercorp.pinpoint.plugin.httpclient4.HttpClient4Constants;
 
@@ -35,7 +35,7 @@ import com.navercorp.pinpoint.plugin.httpclient4.HttpClient4Constants;
 @Scope(value=HttpClient4Constants.HTTP_CLIENT4_SCOPE, executionPolicy=ExecutionPolicy.ALWAYS)
 public class HttpRequestExecutorDoSendRequestAndDoReceiveResponseMethodInterceptor implements AroundInterceptor {
 
-    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
     private final TraceContext traceContext;

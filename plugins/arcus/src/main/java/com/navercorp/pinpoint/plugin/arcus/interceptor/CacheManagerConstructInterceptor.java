@@ -16,8 +16,8 @@ package com.navercorp.pinpoint.plugin.arcus.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetConstructor;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.plugin.arcus.ServiceCodeAccessor;
 
 /**
@@ -28,7 +28,7 @@ import com.navercorp.pinpoint.plugin.arcus.ServiceCodeAccessor;
 @TargetConstructor({"java.lang.String", "java.lang.String", "net.spy.memcached.ConnectionFactoryBuilder", "java.util.concurrent.CountDownLatch", "int", "int"})
 public class CacheManagerConstructInterceptor implements AroundInterceptor {
 
-    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
     
     @Override

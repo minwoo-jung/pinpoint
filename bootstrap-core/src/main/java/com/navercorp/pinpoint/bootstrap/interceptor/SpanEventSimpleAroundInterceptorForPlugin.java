@@ -20,15 +20,15 @@ import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 
 /**
  * @author emeroad
  * @author jaehong.kim
  */
 public abstract class SpanEventSimpleAroundInterceptorForPlugin implements AroundInterceptor {
-    protected final PLogger logger = PLoggerFactory.getLogger(getClass());
+    protected final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(getClass());
     protected final boolean isDebug = logger.isDebugEnabled();
 
     protected final MethodDescriptor methodDescriptor;

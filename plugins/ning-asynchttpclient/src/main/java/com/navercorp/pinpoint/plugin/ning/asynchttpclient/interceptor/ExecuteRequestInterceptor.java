@@ -31,8 +31,8 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import com.navercorp.pinpoint.bootstrap.util.SimpleSampler;
@@ -57,7 +57,7 @@ import com.ning.http.client.cookie.Cookie;
 @TargetMethod(name="executeRequest", paramTypes= { "com.ning.http.client.Request", "com.ning.http.client.AsyncHandler" })
 public class ExecuteRequestInterceptor implements AroundInterceptor {
 
-    private final PLogger logger = PLoggerFactory.getLogger(ExecuteRequestInterceptor.class);
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(ExecuteRequestInterceptor.class);
     private final boolean isDebug = logger.isDebugEnabled();
 
     private final TraceContext traceContext;

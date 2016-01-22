@@ -20,8 +20,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor2;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.IgnoreMethod;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 
 /**
  * 
@@ -29,7 +29,7 @@ import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
  *
  */
 public class PostProcessorInterceptor extends AbstractSpringBeanCreationInterceptor implements AroundInterceptor2 {
-    private final PLogger logger = PLoggerFactory.getLogger(getClass());
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(getClass());
     
     public PostProcessorInterceptor(Instrumentor instrumentor, TransformCallback transformer, TargetBeanFilter filter) {
         super(instrumentor, transformer, filter);

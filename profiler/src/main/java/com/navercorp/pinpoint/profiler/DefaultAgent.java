@@ -37,9 +37,9 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.InterceptorInvokerHelper;
 import com.navercorp.pinpoint.bootstrap.logging.BootLoggerBinder;
 import com.navercorp.pinpoint.bootstrap.logging.BootLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerBinder;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.sampler.Sampler;
 import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import com.navercorp.pinpoint.common.trace.ServiceType;
@@ -294,16 +294,16 @@ public class DefaultAgent implements Agent {
 
     private void bindPLoggerFactory(PLoggerBinder binder) {
         final String binderClassName = binder.getClass().getName();
-        PLogger pLogger = binder.getLogger(binder.getClass().getName());
+        PLogger_제거예정 pLogger = binder.getLogger(binder.getClass().getName());
         pLogger.info("PLoggerFactory.initialize() bind:{} cl:{}", binderClassName, binder.getClass().getClassLoader());
         // Set binder to static LoggerFactory
         // Should we unset binder at shutdown hook or stop()?
-        PLoggerFactory.initialize(binder);
+        SLF4jLoggerFactory.initialize(binder);
     }
     
     private void bindJavaLoggerFactory(BootLoggerBinder binder) {
         final String binderClassName = binder.getClass().getName();
-        PLogger pLogger = binder.getLogger(binder.getClass().getName());
+        PLogger_제거예정 pLogger = binder.getLogger(binder.getClass().getName());
         pLogger.info("PLoggerFactory.initialize() bind:{} cl:{}", binderClassName, binder.getClass().getClassLoader());
     }
 
@@ -446,7 +446,7 @@ public class DefaultAgent implements Agent {
         closeTcpDataSender();
         // for testcase
         if (staticResourceCleanup) {
-            PLoggerFactory.unregister(this.binder);
+            SLF4jLoggerFactory.unregister(this.binder);
             this.interceptorRegistryBinder.unbind();
         }
     }

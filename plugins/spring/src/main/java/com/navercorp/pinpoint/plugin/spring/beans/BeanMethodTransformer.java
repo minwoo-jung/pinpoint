@@ -27,8 +27,8 @@ import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 
 import static com.navercorp.pinpoint.common.util.VarArgs.va;
 
@@ -41,7 +41,7 @@ public class BeanMethodTransformer implements TransformCallback {
     private static final int REJECTED_ACCESS_FLAG = Modifier.ABSTRACT |  Modifier.NATIVE | Modifier.STATIC;
     private static final MethodFilter METHOD_FILTER = MethodFilters.modifier(REQUIRED_ACCESS_FLAG, REJECTED_ACCESS_FLAG);
 
-    private final PLogger logger = PLoggerFactory.getLogger(getClass());
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(getClass());
 
     private final Object lock = new Object();
     private final AtomicInteger interceptorId = new AtomicInteger(-1);

@@ -18,15 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 
 /**
  * @author Jongho Moon
  *
  */
 public abstract class JdbcUrlParser {
-    protected final PLogger logger = PLoggerFactory.getLogger(getClass());
+    protected final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(getClass());
     private final ConcurrentMap<String, DatabaseInfo> cache = new ConcurrentHashMap<String, DatabaseInfo>();
 
     //http://www.petefreitag.com/articles/jdbc_urls/

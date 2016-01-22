@@ -17,8 +17,8 @@ package com.navercorp.pinpoint.plugin.jetty.interceptor;
 import com.navercorp.pinpoint.bootstrap.config.Filter;
 import com.navercorp.pinpoint.bootstrap.context.*;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NetworkUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
@@ -35,7 +35,7 @@ public abstract class AbstractServerHandleInterceptor implements AroundIntercept
 
     public static final JettySyncMethodDescriptor JETTY_SYNC_API_TAG = new JettySyncMethodDescriptor();
 
-    protected PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    protected PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
     private final boolean isTrace = logger.isTraceEnabled();
 

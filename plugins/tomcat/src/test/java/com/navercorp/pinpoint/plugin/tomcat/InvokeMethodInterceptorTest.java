@@ -35,7 +35,7 @@ import com.navercorp.pinpoint.bootstrap.config.SkipFilter;
 import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.plugin.tomcat.interceptor.StandardHostValveInvokeInterceptor;
 import com.navercorp.pinpoint.profiler.context.DefaultMethodDescriptor;
 import com.navercorp.pinpoint.profiler.logging.Slf4jLoggerBinder;
@@ -56,7 +56,7 @@ public class InvokeMethodInterceptorTest {
 
     @BeforeClass
     public static void before() {
-        PLoggerFactory.initialize(new Slf4jLoggerBinder());
+        SLF4jLoggerFactory.initialize(new Slf4jLoggerBinder());
     }
     
     @Before

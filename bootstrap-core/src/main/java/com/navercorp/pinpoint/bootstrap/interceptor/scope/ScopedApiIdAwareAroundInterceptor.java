@@ -17,14 +17,14 @@
 package com.navercorp.pinpoint.bootstrap.interceptor.scope;
 
 import com.navercorp.pinpoint.bootstrap.interceptor.ApiIdAwareAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 
 /**
  * @author emeroad
  */
 public class ScopedApiIdAwareAroundInterceptor implements ApiIdAwareAroundInterceptor {
-    private final PLogger logger = PLoggerFactory.getLogger(getClass());
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(getClass());
     private final boolean debugEnabled = logger.isDebugEnabled();
 
     private final ApiIdAwareAroundInterceptor delegate;

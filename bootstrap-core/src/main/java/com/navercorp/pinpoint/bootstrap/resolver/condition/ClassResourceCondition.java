@@ -16,8 +16,8 @@
 
 package com.navercorp.pinpoint.bootstrap.resolver.condition;
 
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 
 /**
  * @author HyunGil Jeong
@@ -27,7 +27,7 @@ public class ClassResourceCondition implements Condition<String> {
 
     private static final String CLASS_EXTENSION = ".class";
 
-    private final PLogger logger = PLoggerFactory.getLogger(this.getClass().getName()); 
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass().getName()); 
 
     private String getClassNameAsResource(String className) {
         String classNameAsResource = className.replace('.', '/');

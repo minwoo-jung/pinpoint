@@ -16,8 +16,8 @@
 
 package com.navercorp.pinpoint.bootstrap.resolver.condition;
 
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.common.util.SimpleProperty;
 import com.navercorp.pinpoint.common.util.SystemProperty;
 
@@ -27,7 +27,7 @@ import com.navercorp.pinpoint.common.util.SystemProperty;
  */
 public class PropertyCondition implements Condition<String>, ConditionValue<SimpleProperty> {
 
-    private final PLogger logger = PLoggerFactory.getLogger(this.getClass().getName()); 
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass().getName()); 
 
     private final SimpleProperty property;
     

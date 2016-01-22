@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.profiler.logging;
 
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerBinder;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 
 /**
  * For unit test to register/unregister loggerBinder.
@@ -29,10 +29,10 @@ public class Slf4jLoggerBinderInitializer {
     private static final PLoggerBinder loggerBinder = new Slf4jLoggerBinder();
 
     public static void beforeClass() {
-        PLoggerFactory.initialize(loggerBinder);
+        SLF4jLoggerFactory.initialize(loggerBinder);
     }
 
     public static void afterClass() {
-        PLoggerFactory.unregister(loggerBinder);
+        SLF4jLoggerFactory.unregister(loggerBinder);
     }
 }

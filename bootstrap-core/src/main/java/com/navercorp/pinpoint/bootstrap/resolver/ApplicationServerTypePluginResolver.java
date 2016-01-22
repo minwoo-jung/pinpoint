@@ -18,8 +18,8 @@ package com.navercorp.pinpoint.bootstrap.resolver;
 
 import java.util.List;
 
-import com.navercorp.pinpoint.bootstrap.logging.PLogger;
-import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger_제거예정;
+import com.navercorp.pinpoint.bootstrap.logging.SLF4jLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 
@@ -33,7 +33,7 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
  */
 public class ApplicationServerTypePluginResolver {
 
-    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final PLogger_제거예정 logger = SLF4jLoggerFactory.getLogger(this.getClass());
 
     private final List<ApplicationTypeDetector> applicationTypeDetectors;
     
