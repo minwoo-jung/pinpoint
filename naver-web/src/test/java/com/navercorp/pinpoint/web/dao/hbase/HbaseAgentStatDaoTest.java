@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.navercorp.pinpoint.web.dao.hbase.HbaseAgentStatDao;
 import com.navercorp.pinpoint.web.vo.AgentStat;
 import com.navercorp.pinpoint.web.vo.Range;
 
@@ -30,7 +29,7 @@ public class HbaseAgentStatDaoTest {
     public void selectAgentStat() {
         long timestamp = System.currentTimeMillis();
         Range range = new Range(timestamp - 100000, timestamp);
-        List<AgentStat> result = dao.scanAgentStatList("FRONT-WEB1", range);
+        List<AgentStat> result = dao.getAgentStatList("FRONT-WEB1", range);
         logger.debug("{}", result);
     }
 
