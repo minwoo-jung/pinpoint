@@ -1,11 +1,15 @@
 package com.navercorp.pinpoint.testweb.connector.apachehttp4;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -13,7 +17,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
@@ -218,5 +225,24 @@ public class ApacheHttpClient4 {
         params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
         params.setParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, "UTF-8");
         return params;
+    }
+
+    public void fileUpload(String uri) {
+        HttpPost post = new HttpPost(uri + "/fileUpload/uploadFile.pinpoint");
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("log4j.xml").getFile());
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+        builder.addBinaryBody("upfile", file, ContentType.DEFAULT_BINARY, "log4j.xml");
+        // 
+        HttpEntity entity = builder.build();
+        post.setEntity(entity);
+        
+        HttpClient httpClient = getHttpClient(getHttpParams());
+        try {
+            HttpResponse response = httpClient.execute(post);
+        } catch (Exception e) {
+            logger.error("HttpClient.execute() error. Caused:{}", e.getMessage(), e);
+        }
     }
 }

@@ -68,7 +68,6 @@ public class HttpClient4Controller {
     @RequestMapping(value = "/httpclient4/failed")
     @ResponseBody
     public String failed(HttpServletRequest request) {
-        logger.info("failed");
         ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
         HashMap<String, Object> post = new HashMap<String, Object>();
         post.put("foo", "bar");
@@ -76,5 +75,19 @@ public class HttpClient4Controller {
 
         return "OK";
     }
+    
+    @RequestMapping(value = "/httpclient4/fileUpload")
+    @ResponseBody
+    public String mutlpartFileUpload(HttpServletRequest request) {
+        ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
+        HashMap<String, Object> post = new HashMap<String, Object>();
+        client.fileUpload("http://localhost:" + request.getLocalPort());
+
+        return "OK";
+    }
+    
+
+    
+    
 
 }
