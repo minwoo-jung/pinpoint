@@ -68,6 +68,9 @@ public class HbaseTraceDao implements TracesDao {
     @Autowired
     @Qualifier("traceDistributor")
     private AbstractRowKeyDistributor rowKeyDistributor;
+    
+    @Autowired(required=false)
+    private TracesTablePartitioner tracesTablePartitioner;
 
     @Override
     public void insert(final TSpan span) {
@@ -96,7 +99,12 @@ public class HbaseTraceDao implements TracesDao {
 
         addNestedSpanEvent(put, span);
 
-        hbaseTemplate.put(TRACES, put);
+        String tableName = TRACES;
+        if (tracesTablePartitioner != null && tracesTablePartitioner.isTracesTablePartitionEnable()) {
+            tableName = tracesTablePartitioner.getTracesTablePartitionName();
+        }
+        
+        hbaseTemplate.put(tableName, put);
 
     }
 

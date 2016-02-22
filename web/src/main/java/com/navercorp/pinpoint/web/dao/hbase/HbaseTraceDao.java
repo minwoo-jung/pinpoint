@@ -33,7 +33,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author emeroad
@@ -61,6 +63,16 @@ public class HbaseTraceDao implements TraceDao {
 
     @Value("#{pinpointWebProps['web.hbase.selectAllSpans.limit'] ?: 500}")
     private int selectAllSpansLimit;
+    
+    @Autowired(required=false)
+    private TracesTablePartitioner tracesTablePartitioner;
+    
+    private final static Set<String> defaultTracesTable;
+    
+    static {
+        defaultTracesTable = new HashSet<String>();
+        defaultTracesTable.add(HBaseTables.TRACES);
+    }
 
     @Override
     public List<SpanBo> selectSpan(TransactionId transactionId) {
@@ -178,7 +190,18 @@ public class HbaseTraceDao implements TraceDao {
             }
             getList.add(get);
         }
-        return template2.get(HBaseTables.TRACES, getList, spanMapper);
+        
+        Set<String> tracesTableNames = defaultTracesTable;
+//      if (tracesTablePartitioner != null && tracesTablePartitioner.isTracesTablePartitionEnable() && startTimeOfSearchRange != 0 && endTimeOfSearchRange != 0) {
+//          tracesTableNames = tracesTablePartitioner.getTracesTablePartitionName(startTimeOfSearchRange, endTimeOfSearchRange);
+//      }
+      
+        List<List<SpanBo>> spanBoList = new ArrayList<>();
+        for (String tracesTableName : tracesTableNames) {
+            spanBoList.addAll(template2.get(tracesTableName, getList, spanMapper));
+        }
+        
+        return spanBoList;
     }
 
     @Override
