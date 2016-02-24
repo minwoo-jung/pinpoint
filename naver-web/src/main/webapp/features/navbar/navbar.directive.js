@@ -106,7 +106,9 @@
 						}
 					});
 					scope.openNotice = function() {
-						webStorage.add( "last-notice-time", aNoticeData[ aNoticeData.length - 1].createdDate );
+						if ( aNoticeData.length > 0 ) {
+							webStorage.add("last-notice-time", aNoticeData[aNoticeData.length - 1].createdDate);
+						}
 						window.open( "http://yobi.navercorp.com/Labs-public/pinpoint-issues/posts" );
 						scope.hasNotice = false;
 					};
@@ -336,7 +338,6 @@
 						oNavbarVoService.setCalleeRange( scope.callee );
 
 						if (scope.periodType === "last" && scope.readablePeriod) {
-							oNavbarVoService.setPeriodType( "last" );
 							getQueryEndTimeFromServer(function (currentServerTime) {
 								oNavbarVoService.setReadablePeriod(scope.readablePeriod);
 								oNavbarVoService.setQueryEndDateTime(moment(currentServerTime).format('YYYY-MM-DD-HH-mm-ss'));
@@ -345,18 +346,7 @@
 								setDateTime($fromPicker, oNavbarVoService.getQueryStartTime());
 								setDateTime($toPicker, oNavbarVoService.getQueryEndTime());
 							});
-						} else if ( scope.periodType === "realtime" ) {
-							oNavbarVoService.setPeriodType( "realtime" );
-							getQueryEndTimeFromServer(function (currentServerTime) {
-								oNavbarVoService.setReadablePeriod(scope.aReadablePeriodList[0]);
-								oNavbarVoService.setQueryEndDateTime(moment(currentServerTime).format('YYYY-MM-DD-HH-mm-ss'));
-								oNavbarVoService.autoCalculateByQueryEndDateTimeAndReadablePeriod();
-								emitAsChanged();
-								setDateTime($fromPicker, oNavbarVoService.getQueryStartTime());
-								setDateTime($toPicker, oNavbarVoService.getQueryEndTime());
-							});
 						} else if (getQueryStartTime() && getQueryEndTime()) {
-							oNavbarVoService.setPeriodType( "range" );
 							oNavbarVoService.setQueryStartTime(getQueryStartTime());
 							oNavbarVoService.setQueryEndTime(getQueryEndTime());
 							oNavbarVoService.autoCalcultateByQueryStartTimeAndQueryEndTime();
@@ -706,14 +696,6 @@
 						scope.periodType = type;
 						scope.autoUpdate = false;
 					};
-					scope.setRealtime = function () {
-						console.log("-----------realtime ");
-						//analyticsService.send(analyticsService.CONST.MAIN, analyticsService.CONST.TG_DATE, type);
-						scope.periodType = "realtime";
-						scope.autoUpdate = false;
-						broadcast();
-					};
-
 					scope.showConfig = function() {
 						$rootScope.$broadcast("configuration.show");
 					};
