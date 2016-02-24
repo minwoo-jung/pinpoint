@@ -91,10 +91,11 @@
             </form>
         </div>
     </div>
-    <div style="position:fixed;right:10px;top:10px;">
-    	<span class="glyphicon glyphicon-question-sign navbarTooltip" style="cursor:pointer;font-size:17px;color:#FFF;top:0px;"></span>
-    	<span class="glyphicon glyphicon-cog" ng-click="showConfig()" style="cursor:pointer;font-size:17px;color:#FFF;padding-left:8px;top:0px;"></span>
-   		<a href="http://yobi.navercorp.com/Labs-public/pinpoint-issues/issues" target="_blank"><i class="xi-yobi" style="color:#FFF;padding-left:6px;font-size:22px;"></i></a>
+    <div style="position:fixed;right:10px;top:10px;color:#FFF">
+    	<span class="glyphicon glyphicon-question-sign navbarTooltip" style="cursor:pointer;font-size:17px;top:0px;color:#FFF"></span>
+    	<span class="glyphicon glyphicon-cog" ng-click="showConfig()" style="cursor:pointer;font-size:17px;padding-left:8px;padding-right:6px;top:0px;"></span>
+   		<i class="xi-yobi" style="cursor:pointer;font-size:22px;font-weight:bold;color:#73FF00;" ng-click="openNotice()" ng-show="hasNotice"></i>
+		<i class="xi-yobi" style="cursor:pointer;font-size:22px;" ng-click="openNotice()" ng-hide="hasNotice"></i>
     </div>
     <div id="ui-datepicker-div">
         <div id="from-picker"></div>
