@@ -1,5 +1,7 @@
 package com.navercorp.pinpoint.testweb.repository;
 
+import com.navercorp.pinpoint.testweb.domain.ConcatProcedureParam;
+import com.navercorp.pinpoint.testweb.domain.SwapProcedureParam;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,6 +38,40 @@ public class OracleDaoMyBatis implements OracleDao {
     }
 
     @Override
+    public String callConcat(char a, char b) {
+        ConcatProcedureParam param = new ConcatProcedureParam();
+        param.setA(a);
+        param.setB(b);
+        sqlMapClientTemplate.update("concatCharacters", param);
+        return param.getC();
+    }
+
+    @Override
+    public int callSwapAndGetSum(int a, int b) {
+        OracleSwapProcedureParam param = new OracleSwapProcedureParam();
+        param.setA(a);
+        param.setB(b);
+        sqlMapClientTemplate.selectOne("swapAndGetSum", param);
+        int sum = param.getC();
+        if (param.getA() != b || param.getB() != a) {
+            return -1;
+        }
+        return sum;
+    }
+
+    public static class OracleSwapProcedureParam extends SwapProcedureParam {
+        private int c;
+
+        public int getC() {
+            return c;
+        }
+
+        public void setC(int c) {
+            this.c = c;
+        }
+    }
+
+    @Override
     public boolean createStatement() {
         Connection connection = null;
         Statement statement = null;
@@ -43,6 +79,7 @@ public class OracleDaoMyBatis implements OracleDao {
             connection = datasource.getConnection();
             statement = connection.createStatement();
             return statement.execute("select 1 from dual");
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
@@ -58,7 +95,38 @@ public class OracleDaoMyBatis implements OracleDao {
                 } catch (SQLException ignored) {
                 }
             }
-
         }
     }
+
+//    private String createConcatProcedure() {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("  CREATE OR REPLACE PROCEDURE concatCharacters(");
+//        sb.append("    a IN  CHAR,");
+//        sb.append("    b IN  CHAR,");
+//        sb.append("    c OUT CHAR");
+//        sb.append("  )");
+//        sb.append("  AS");
+//        sb.append("  BEGIN");
+//        sb.append("    c := a || b;");
+//        sb.append("  END concatCharacters;");
+//        return sb.toString();
+//    }
+
+//    private String createSwapAndGetSumProcedure() {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("  CREATE OR REPLACE PROCEDURE swapAndGetSum(");
+//        sb.append("    a IN OUT NUMBER,");
+//        sb.append("    b IN OUT NUMBER,");
+//        sb.append("    c OUT    NUMBER");
+//        sb.append("  )");
+//        sb.append("  AS");
+//        sb.append("  BEGIN");
+//        sb.append("    c := a;");
+//        sb.append("    a := b;");
+//        sb.append("    b := c;");
+//        sb.append("    SELECT c + a INTO c FROM DUAL;");
+//        sb.append("  END swapAndGetSum;");
+//        return sb.toString();
+//    }
+
 }

@@ -25,7 +25,17 @@ public class MsSqlServerServiceImpl implements MsSqlServerService {
     public int selectOneWithParam(int id) {
         return msSqlServerDao.selectOneWithParam(id);
     }
-    
+
+    @Override
+    public String concat(char a, char b) {
+        return msSqlServerDao.callConcat(a, b);
+    }
+
+    @Override
+    public int swapAndGetSum(int a, int b) {
+        return msSqlServerDao.callSwapAndGetSum(a, b);
+    }
+
     @Override
     public void createStatement() {
         msSqlServerDao.createStatement();

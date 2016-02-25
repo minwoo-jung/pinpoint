@@ -27,6 +27,16 @@ public class MySqlServiceImpl implements MySqlService {
     }
 
     @Override
+    public String concat(char a, char b) {
+        return mysqlDao.callConcat(a, b);
+    }
+
+    @Override
+    public int swapAndGetSum(int a, int b) {
+        return mysqlDao.callSwapAndGetSum(a, b);
+    }
+
+    @Override
     public void createStatement() {
         mysqlDao.createStatement();
     }
