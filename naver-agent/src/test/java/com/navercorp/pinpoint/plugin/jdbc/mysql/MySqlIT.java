@@ -17,13 +17,16 @@ package com.navercorp.pinpoint.plugin.jdbc.mysql;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 
 import java.lang.reflect.Method;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Properties;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -147,5 +150,118 @@ public class MySqlIT {
         
         Method commit = connectionClass.getDeclaredMethod("commit");
         verifier.verifyTrace(event(MYSQL, commit, null, DB_ADDRESS, DB_NAME));
+    }
+
+    /*  CREATE OR REPLACE PROCEDURE concatCharacters(IN  a CHAR(1), IN  b CHAR(1), OUT c CHAR(2))
+        BEGIN
+            SET c = CONCAT(a, b);
+        END                                             */
+    @Test
+    public void testStoredProcedure_with_IN_OUT_parameters() throws Exception {
+        final String param1 = "a";
+        final String param2 = "b";
+        final String storedProcedureQuery = "{ call concatCharacters(?, ?, ?) }";
+
+        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+
+        CallableStatement cs = conn.prepareCall(storedProcedureQuery);
+        cs.setString(1, param1);
+        cs.setString(2, param2);
+        cs.registerOutParameter(3, Types.VARCHAR);
+        cs.execute();
+
+        Assert.assertEquals(param1.concat(param2), cs.getString(3));
+
+        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+
+        verifier.printCache();
+        verifier.verifyTraceCount(4);
+
+        // NonRegisteringDriver#connect(String, Properties)
+        Class<?> driverClass = Class.forName("com.mysql.jdbc.NonRegisteringDriver");
+        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        verifier.verifyTrace(event(MYSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
+
+        // Connection#prepareCall(String)
+        Class<?> connectionClass = null;
+        try {
+            connectionClass = Class.forName("com.mysql.jdbc.ConnectionImpl");
+        } catch (ClassNotFoundException e) {
+            connectionClass = Class.forName("com.mysql.jdbc.Connection");
+        }
+        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        verifier.verifyTrace(event(MYSQL, prepareCall, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null)));
+
+        Class<?> callableStatement = Class.forName("com.mysql.jdbc.CallableStatement");
+        // CallableStatement#registerOutParameter(int, int)
+        Method registerOutParameter = callableStatement.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        verifier.verifyTrace(event(MYSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(3, Types.VARCHAR)));
+
+        // CallableStatement#execute
+        Method execute = callableStatement.getDeclaredMethod("execute");
+        verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, Expectations.sql(storedProcedureQuery, null, param1 + ", " + param2)));
+    }
+
+    /*
+        CREATE OR REPLACE PROCEDURE swapAndGetSum(INOUT a INT, INOUT b INT)
+        BEGIN
+            DECLARE temp INT;
+            SET temp = a;
+            SET a = b;
+            SET b = temp;
+            SELECT temp + a;
+        END
+     */
+    @Test
+    public void testStoredProcedure_with_INOUT_parameters() throws Exception {
+        final int param1 = 1;
+        final int param2 = 2;
+        final String storedProcedureQuery = "{ call swapAndGetSum(?, ?) }";
+
+        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+
+        CallableStatement cs = conn.prepareCall(storedProcedureQuery);
+        cs.setInt(1, param1);
+        cs.setInt(2, param2);
+        cs.registerOutParameter(1, Types.INTEGER);
+        cs.registerOutParameter(2, Types.INTEGER);
+        ResultSet rs = cs.executeQuery();
+
+        Assert.assertTrue(rs.next());
+        Assert.assertEquals(param1 + param2, rs.getInt(1));
+        Assert.assertEquals(param2, cs.getInt(1));
+        Assert.assertEquals(param1, cs.getInt(2));
+
+        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+
+        verifier.printCache();
+        verifier.verifyTraceCount(5);
+
+        // NonRegisteringDriver#connect(String, Properties)
+        Class<?> driverClass = Class.forName("com.mysql.jdbc.NonRegisteringDriver");
+        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        verifier.verifyTrace(event(MYSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
+
+        // Connection#prepareCall(String)
+        Class<?> connectionClass = null;
+        try {
+            connectionClass = Class.forName("com.mysql.jdbc.ConnectionImpl");
+        } catch (ClassNotFoundException e) {
+            connectionClass = Class.forName("com.mysql.jdbc.Connection");
+        }
+        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        verifier.verifyTrace(event(MYSQL, prepareCall, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null)));
+
+        // CallableStatement#registerOutParameter(int, int)
+        Class<?> callableStatement = Class.forName("com.mysql.jdbc.CallableStatement");
+        Method registerOutParameter = callableStatement.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        // param 1
+        verifier.verifyTrace(event(MYSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(1, Types.INTEGER)));
+        // param 2
+        verifier.verifyTrace(event(MYSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(2, Types.INTEGER)));
+
+        // CallableStatement#execute
+        Method execute = callableStatement.getDeclaredMethod("executeQuery");
+        verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, Expectations.sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
 }

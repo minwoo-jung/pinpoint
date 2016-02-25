@@ -17,13 +17,16 @@ package com.navercorp.pinpoint.plugin.jdbc.jtds;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 
 import java.lang.reflect.Method;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Properties;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -150,5 +153,116 @@ public class JtdsIT {
         
         Method commit = connectionClass.getDeclaredMethod("commit");
         verifier.verifyTrace(event(MSSQL, commit, null, DB_ADDRESS, DB_NAME));
+    }
+
+    /*
+        CREATE PROCEDURE concatCharacters
+            @a CHAR(1),
+            @b CHAR(1),
+            @c CHAR(2) OUTPUT
+        AS
+            SET @c = @a + @b;
+     */
+    @Test
+    public void testStoredProcedure_with_IN_OUT_parameters() throws Exception {
+        final String param1 = "a";
+        final String param2 = "b";
+        final String storedProcedureQuery = "{ call concatCharacters(?, ?, ?) }";
+
+        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+
+        CallableStatement cs = conn.prepareCall(storedProcedureQuery);
+        cs.setString(1, param1);
+        cs.setString(2, param2);
+        cs.registerOutParameter(3, Types.VARCHAR);
+        cs.execute();
+
+        Assert.assertEquals(param1.concat(param2), cs.getString(3));
+
+        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+
+        verifier.printCache();
+        verifier.verifyTraceCount(4);
+
+        // Driver#connect(String, Properties)
+        Class<?> driverClass = Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        verifier.verifyTrace(event(MSSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
+
+        // ConnectionJDBC2#prepareCall(String)
+        Class<?> connectionClass = Class.forName("net.sourceforge.jtds.jdbc.ConnectionJDBC2");
+        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        verifier.verifyTrace(event(MSSQL, prepareCall, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null)));
+
+        // JtdsCallableStatement#registerOutParameter(int, int)
+        Class<?> jtdsCallableStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsCallableStatement");
+        Method registerOutParameter = jtdsCallableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(3, Types.VARCHAR)));
+
+        // JtdsPreparedStatement#execute
+        Class<?> jtdsPreparedStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
+        Method execute = jtdsPreparedStatementClass.getDeclaredMethod("execute");
+        verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
+    }
+
+    /*
+        CREATE PROCEDURE swapAndGetSum
+            @a INT OUTPUT,
+            @b INT OUTPUT
+        AS
+            DECLARE @temp INT;
+            SET @temp = @a;
+            SET @a = @b;
+            SET @b = @temp;
+            SELECT @temp + @a;
+     */
+    @Test
+    public void testStoredProcedure_with_INOUT_parameters() throws Exception {
+        final int param1 = 1;
+        final int param2 = 2;
+        final String storedProcedureQuery = "{ call swapAndGetSum(?, ?) }";
+
+        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+
+        CallableStatement cs = conn.prepareCall(storedProcedureQuery);
+        cs.setInt(1, param1);
+        cs.setInt(2, param2);
+        cs.registerOutParameter(1, Types.INTEGER);
+        cs.registerOutParameter(2, Types.INTEGER);
+        ResultSet rs = cs.executeQuery();
+
+        Assert.assertTrue(rs.next());
+        Assert.assertEquals(param1 + param2, rs.getInt(1));
+        Assert.assertFalse(cs.getMoreResults());
+        Assert.assertEquals(param2, cs.getInt(1));
+        Assert.assertEquals(param1, cs.getInt(2));
+
+        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+
+        verifier.printCache();
+        verifier.verifyTraceCount(5);
+
+        // Driver#connect(String, Properties)
+        Class<?> driverClass = Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        verifier.verifyTrace(event(MSSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
+
+        // ConnectionJDBC2#prepareCall(String)
+        Class<?> connectionClass = Class.forName("net.sourceforge.jtds.jdbc.ConnectionJDBC2");
+        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        verifier.verifyTrace(event(MSSQL, prepareCall, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null)));
+
+        // JtdsCallableStatement#registerOutParameter(int, int)
+        Class<?> jtdsCallableStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsCallableStatement");
+        Method registerOutParameter = jtdsCallableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        // param 1
+        verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(1, Types.INTEGER)));
+        // param 2
+        verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(2, Types.INTEGER)));
+
+        // JtdsPreparedStatement#executeQuery
+        Class<?> jtdsPreparedStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
+        Method executeQuery = jtdsPreparedStatementClass.getDeclaredMethod("executeQuery");
+        verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
 }
