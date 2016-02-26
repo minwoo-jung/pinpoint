@@ -94,7 +94,8 @@
     <div style="position:fixed;right:10px;top:10px;color:#FFF">
     	<span class="glyphicon glyphicon-question-sign navbarTooltip" style="cursor:pointer;font-size:17px;top:0px;color:#FFF"></span>
     	<span class="glyphicon glyphicon-cog" ng-click="showConfig()" style="cursor:pointer;font-size:17px;padding-left:8px;padding-right:6px;top:0px;"></span>
-   		<i class="xi-yobi" style="cursor:pointer;font-size:22px;font-weight:bold;color:#73FF00;" ng-click="openNotice()" ng-show="hasNotice"></i>
+   		<i class="xi-yobi" style="cursor:pointer;font-size:22px;font-weight:bold;" ng-click="openNotice()" ng-show="hasNotice"></i>
+		<span class="glyphicon glyphicon-exclamation-sign" style="cursor:pointer;font-size:14px;top:-12px;left:-10px;color:#71FF1F" ng-show="hasNotice"></span>
 		<i class="xi-yobi" style="cursor:pointer;font-size:22px;" ng-click="openNotice()" ng-hide="hasNotice"></i>
     </div>
     <div id="ui-datepicker-div">

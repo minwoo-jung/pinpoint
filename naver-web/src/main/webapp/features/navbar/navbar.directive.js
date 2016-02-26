@@ -110,6 +110,7 @@
 							webStorage.add("last-notice-time", aNoticeData[aNoticeData.length - 1].createdDate);
 						}
 						window.open( "http://yobi.navercorp.com/Labs-public/pinpoint-issues/posts" );
+						analyticsService.send( analyticsService.CONST.MAIN, "ClickOpenYobi" );
 						scope.hasNotice = false;
 					};
 					/*=============== for Yobi Notice */
