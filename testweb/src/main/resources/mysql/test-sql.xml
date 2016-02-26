@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-    
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="MySql">
 
 
-    <select id="selectOne" resultType="int" >
+    <select id="selectOne" resultType="int">
 		select 1
 	</select>
 
-	<select id="selectOneWithParam" parameterType="int" resultType="int">
+    <select id="selectOneWithParam" parameterType="int" resultType="int">
 		select #{id}
 	</select>
+
+    <update id="concatCharacters" statementType="CALLABLE" parameterType="com.navercorp.pinpoint.testweb.domain.ConcatProcedureParam">
+        { call concatCharacters(#{a, jdbcType=CHAR, mode=IN}, #{b, jdbcType=CHAR, mode=IN}, #{c, jdbcType=CHAR, mode=OUT}) }
+    </update>
+
+    <select id="swapAndGetSum" statementType="CALLABLE" parameterType="com.navercorp.pinpoint.testweb.domain.SwapProcedureParam" resultType="int">
+        { call swapAndGetSum(#{a, jdbcType=INTEGER, mode=INOUT}, #{b, jdbcType=INTEGER, mode=INOUT}) }
+    </select>
 
 </mapper>

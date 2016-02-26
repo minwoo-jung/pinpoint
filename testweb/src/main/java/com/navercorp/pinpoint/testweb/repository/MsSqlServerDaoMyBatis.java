@@ -1,5 +1,7 @@
 package com.navercorp.pinpoint.testweb.repository;
 
+import com.navercorp.pinpoint.testweb.domain.ConcatProcedureParam;
+import com.navercorp.pinpoint.testweb.domain.SwapProcedureParam;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,6 +38,27 @@ public class MsSqlServerDaoMyBatis implements MsSqlServerDao {
     }
 
     @Override
+    public String callConcat(char a, char b) {
+        ConcatProcedureParam param = new ConcatProcedureParam();
+        param.setA(a);
+        param.setB(b);
+        sqlMapClientTemplate.update("concatCharacters", param);
+        return param.getC();
+    }
+
+    @Override
+    public int callSwapAndGetSum(int a, int b) {
+        SwapProcedureParam param = new SwapProcedureParam();
+        param.setA(a);
+        param.setB(b);
+        int sum = sqlMapClientTemplate.selectOne("swapAndGetSum", param);
+        if (param.getA() != b || param.getB() != a) {
+            return -1;
+        }
+        return sum;
+    }
+
+    @Override
     public boolean createStatement() {
         Connection connection = null;
         Statement statement = null;
@@ -61,4 +84,29 @@ public class MsSqlServerDaoMyBatis implements MsSqlServerDao {
 
         }
     }
+
+//    private String createConcatProcedure() {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("  CREATE PROCEDURE concatCharacters");
+//        sb.append("    @a CHAR(1),");
+//        sb.append("    @b CHAR(1),");
+//        sb.append("    @c CHAR(2) OUTPUT");
+//        sb.append("  AS");
+//        sb.append("    SET @c = @a + @b;");
+//        return sb.toString();
+//    }
+//
+//    private String createSwapAndGetSumProcedure() {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("  CREATE PROCEDURE swapAndGetSum");
+//        sb.append("    @a INT OUTPUT,");
+//        sb.append("    @b INT OUTPUT");
+//        sb.append("  AS");
+//        sb.append("    DECLARE @temp INT;");
+//        sb.append("    SET @temp = @a;");
+//        sb.append("    SET @a = @b;");
+//        sb.append("    SET @b = @temp;");
+//        sb.append("    SELECT @temp + @a;");
+//        return sb.toString();
+//    }
 }

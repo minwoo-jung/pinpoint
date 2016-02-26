@@ -93,6 +93,40 @@ public class MySqlController {
         return "OK";
     }
 
+    @Description("stored procedure IN, OUT 테스트")
+    @RequestMapping(value = "/mysql/callConcatCharacters")
+    @ResponseBody
+    public String callConcatCharacters() {
+        logger.info("callConcatCharacters start");
+        char a = 'a';
+        char b = 'b';
+        String concat = mySqlService.concat(a, b);
+
+        logger.info("callConcatCharacters end. concat:{}", concat);
+        if ("ab".equals(concat)) {
+            return "OK";
+        } else {
+            return "FAIL";
+        }
+    }
+
+    @Description("stored procedure INOUT 테스트")
+    @RequestMapping(value = "/mysql/callSwapAndGetSum")
+    @ResponseBody
+    public String callSwapAndGetSum() {
+        logger.info("callSwapAndGetSum start");
+        int a = 1;
+        int b = 2;
+        int sum = mySqlService.swapAndGetSum(a, b);
+
+        logger.info("callSwapAndGetSum end. sum:{}", sum);
+        if (sum != a + b) {
+            return "FAIL";
+        } else {
+            return "OK";
+        }
+    }
+
     @Description("statement 테스트. resultset은 가지고 오지 않음.")
     @RequestMapping(value = "/mysql/createStatement")
     @ResponseBody

@@ -26,6 +26,16 @@ public class OracleServiceImpl implements OracleService {
     }
 
     @Override
+    public String concat(char a, char b) {
+        return oracleDao.callConcat(a, b);
+    }
+
+    @Override
+    public int swapAndGetSum(int a, int b) {
+        return oracleDao.callSwapAndGetSum(a, b);
+    }
+
+    @Override
     public void createStatement() {
         oracleDao.createStatement();
     }
