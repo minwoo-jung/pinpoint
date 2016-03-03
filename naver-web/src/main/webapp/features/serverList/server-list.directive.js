@@ -7,8 +7,8 @@
 	 * @name serverListDirective
 	 * @class
 	 */
-	pinpointApp.directive('serverListDirective', [ '$timeout', '$window', '$filter', 'helpContentTemplate', 'helpContentService', 'SQLAjaxService', 
-	    function ($timeout, $window, $filter, helpContentTemplate, helpContentService, ajaxService) {
+	pinpointApp.directive('serverListDirective', [ '$timeout', '$window', '$filter', 'helpContentTemplate', 'helpContentService', 'CommonAjaxService',
+	    function ($timeout, $window, $filter, helpContentTemplate, helpContentService, commonAjaxService) {
             return {
                 restrict: 'A',
                 link: function postLink(scope, element) {
@@ -112,7 +112,7 @@
                 			bAjaxLoading = false;
                 		} else {
                 			$nms.attr("data-server", value);
-	                		ajaxService.getNMSData( value, function( result ) {
+	                		commonAjaxService.getNMSData( value, function( result ) {
 	                			$nms.empty();
 	                			if ( angular.isDefined(result.errorCode) ) {
 	                				$nms.html('<h4 style="text-align:center;padding-top:20%;text-decoration:red;text-decoration-color:orange">' + result.errorMessage + '</h4>');

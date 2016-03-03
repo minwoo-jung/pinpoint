@@ -9,12 +9,11 @@
 	 */
 	pinpointApp.constant('cfg', {
 		applicationUrl: '/applications.pinpoint',
-		serverTimeUrl: '/serverTime.pinpoint',
 		periodTypePrefix: '.navbar.periodType'
 	});
 
-	pinpointApp.directive('navbarDirective', [ 'cfg', '$rootScope', '$http','$document', '$timeout', '$window',  'webStorage', 'helpContentService', 'AnalyticsService', 'PreferenceService', 'TooltipService',
-		function (cfg, $rootScope, $http, $document, $timeout, $window, webStorage, helpContentService, analyticsService, preferenceService, tooltipService) {
+	pinpointApp.directive('navbarDirective', [ "cfg", "$rootScope", "$http","$document", "$timeout", "$window",  "webStorage", "helpContentService", "AnalyticsService", "PreferenceService", "TooltipService", "CommonAjaxService",
+		function (cfg, $rootScope, $http, $document, $timeout, $window, webStorage, helpContentService, analyticsService, preferenceService, tooltipService, commonAjaxService) {
 			return {
 				restrict: 'EA',
 				replace: true,
@@ -369,10 +368,8 @@
 					 * @param cb
 					 */
 					getQueryEndTimeFromServer = function (cb) {
-						$http.get(cfg.serverTimeUrl).success(function (data, status) {
-							cb(data.currentServerTime);
-						}).error(function (data, status) {
-
+						commonAjaxService.getServerTime( function( serverTime ) {
+							cb( serverTime );
 						});
 					};
 
@@ -380,7 +377,7 @@
 					 * get Application List
 					 */
 					getApplicationList = function () {
-						$http.get(cfg.applicationUrl).success(function (data, status) {
+						commonAjaxService.getApplicationList( function( data ) {
 							if (angular.isArray(data) === false || data.length === 0) {
 								scope.applications[0].text = 'Application not found.';
 								$rootScope.$broadcast("alarmRule.applications.set", scope.applications);
@@ -404,7 +401,7 @@
 								});
 							}
 							scope.hideFakeApplication = true;
-						}).error(function (data, status) {
+						}, function() {
 							scope.applications[0].text = 'Application error.';
 							scope.hideFakeApplication = true;
 						});
