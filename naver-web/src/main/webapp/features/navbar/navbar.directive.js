@@ -107,6 +107,8 @@
 								}
 							}
 						}
+					}).fail( function() {
+						//console.log( arguments );
 					});
 					scope.openNotice = function() {
 						if ( aNoticeData.length > 0 ) {

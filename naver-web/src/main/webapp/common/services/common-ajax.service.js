@@ -8,6 +8,8 @@
 	 * @class
 	 */
 	pinpointApp.constant( "CommonAjaxServiceConfig", {
+		"serverTimeUrl" : "/serverTime.pinpoint",
+		"applicationListUrl": "/applications.pinpoint"
 	});
 	
 	pinpointApp.service( "CommonAjaxService", [ "CommonAjaxServiceConfig", "$http", function( cfg, $http ) {
@@ -65,14 +67,14 @@
 			//});
 		};
 		this.getServerTime = function( cb ) {
-			$http.get( "/serverTime.pinpoint" ).success(function ( data ) {
+			$http.get( cfg.serverTimeUrl ).success(function ( data ) {
 				cb( data.currentServerTime );
 			}).error( function () {
 				cb( Date.now() );
 			});
 		};
 		this.getApplicationList = function( cbSuccess, cbFail ) {
-			$http.get(cfg.applicationUrl).success(function ( data ) {
+			$http.get( cfg.applicationListUrl ).success(function ( data ) {
 				cbSuccess( data );
 			}).error(function () {
 				cbFail();
