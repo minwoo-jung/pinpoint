@@ -7,8 +7,8 @@
 	 * @name serverListDirective
 	 * @class
 	 */
-	pinpointApp.directive('serverListDirective', [ '$timeout', '$window', '$filter', 'helpContentTemplate', 'helpContentService', 'SQLAjaxService', 
-	    function ($timeout, $window, $filter, helpContentTemplate, helpContentService, ajaxService) {
+	pinpointApp.directive('serverListDirective', [ '$timeout', '$window', '$filter', 'helpContentTemplate', 'helpContentService', 'CommonAjaxService', "AnalyticsService",
+	    function ($timeout, $window, $filter, helpContentTemplate, helpContentService, commonAjaxService, analyticsService) {
             return {
                 restrict: 'A',
                 link: function postLink(scope, element) {
@@ -103,6 +103,10 @@
                     		showChart( scope.node.sourceHistogram[instanceName], scope.node.sourceTimeSeriesHistogram[instanceName] );
                 		}
                 	};
+					scope.openInspector = function( node, instance ) {
+						analyticsService.send( analyticsService.CONST.MAIN, analyticsService.CONST.CLK_OPEN_INSPECTOR );
+						$window.open("#/inspector/" + node.applicationName + "@" + node.serviceType + "/" + scope.oNavbarVoService.getReadablePeriod() + "/" + scope.oNavbarVoService.getQueryEndDateTime() + "/" + instance.name );
+					};
                 	scope.invokeLinkAction = function( name, value ) {
                 		if ( bAjaxLoading === true ) return;
                 		bAjaxLoading = true;
@@ -112,7 +116,7 @@
                 			bAjaxLoading = false;
                 		} else {
                 			$nms.attr("data-server", value);
-	                		ajaxService.getNMSData( value, function( result ) {
+	                		commonAjaxService.getNMSData( value, function( result ) {
 	                			$nms.empty();
 	                			if ( angular.isDefined(result.errorCode) ) {
 	                				$nms.html('<h4 style="text-align:center;padding-top:20%;text-decoration:red;text-decoration-color:orange">' + result.errorMessage + '</h4>');
