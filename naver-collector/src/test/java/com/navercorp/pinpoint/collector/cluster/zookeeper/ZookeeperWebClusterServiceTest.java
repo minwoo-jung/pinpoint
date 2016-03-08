@@ -46,7 +46,7 @@ public class ZookeeperWebClusterServiceTest {
     }
 
     @Test
-    public void simpleTest1() throws Exception {
+    public void simpleTest() throws Exception {
         TestingServer ts = null;
         try {
             ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
@@ -71,6 +71,8 @@ public class ZookeeperWebClusterServiceTest {
                 }
 
             });
+            client.connect();
+
             client.createPath(PINPOINT_WEB_CLUSTER_PATH, true);
             client.createNode(PINPOINT_WEB_CLUSTER_PATH + "/" + "127.0.0.1:" + DEFAULT_ACCEPTOR_SOCKET_PORT, "127.0.0.1".getBytes());
 
