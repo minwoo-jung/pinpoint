@@ -27,7 +27,6 @@ import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetHeader;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUtils;
@@ -87,11 +86,6 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
         }
 
         Map optionMap = (Map) args[0];
-        Call call = (Call) args[1];
-
-        if (StringUtils.isEmpty(call.getObjectName())) {
-            return;
-        }
 
         String nimmAddress = LucyNetConstants.UNKOWN_ADDRESS;
         if ((target instanceof NimmAddressAccessor)) {
