@@ -716,7 +716,7 @@
 						scope.autoUpdate = false;
 					};
 					scope.setRealtime = function () {
-						analyticsService.send(analyticsService.CONST.MAIN, analyticsService.CONST.CLK_START_REALTIME, type);
+						analyticsService.send(analyticsService.CONST.MAIN, analyticsService.CONST.CLK_START_REALTIME );
 						scope.periodType = cfg.periodType.REALTIME;
 						scope.autoUpdate = false;
 						broadcast();
