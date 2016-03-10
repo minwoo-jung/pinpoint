@@ -18,7 +18,6 @@ import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
-import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
@@ -40,6 +39,7 @@ import java.net.URL;
 public class BlocIT {
     private static final int HTTP_PORT = 5098;
     private static final String BLOC = "BLOC";
+    private static final String BLOC_INTERNAL_METHOD = "BLOC_INTERNAL_METHOD";
     
     @Test
     public void testServerType() {
@@ -67,7 +67,7 @@ public class BlocIT {
         verifier.ignoreServiceType("JDK_HTTPURLCONNECTOR", "JACKSON");
 
         verifier.verifyTrace(root(BLOC, "BLOC Business Logic Process", pathWithQueryString, "127.0.0.1:" + HTTP_PORT, "127.0.0.1", annotation("http.url", pathWithQueryString)));
-        verifier.verifyTrace(event(BlocConstants.BLOC_INTERNAL_METHOD.getName(), "com.nhncorp.lucy.bloc.http.NettyInboundHandler.channelRead0(io.netty.channel.ChannelHandlerContext ctx, io.netty.handler.codec.http.FullHttpRequest msg):36", annotation("http.param", queryString)));
+        verifier.verifyTrace(event(BLOC_INTERNAL_METHOD, "com.nhncorp.lucy.bloc.http.NettyInboundHandler.channelRead0(io.netty.channel.ChannelHandlerContext ctx, io.netty.handler.codec.http.FullHttpRequest msg):36", annotation("http.param", queryString)));
 
         verifier.verifyTraceCount(0);
     }
