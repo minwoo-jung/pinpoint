@@ -66,7 +66,7 @@ public class BlocIT {
         
         verifier.ignoreServiceType("JDK_HTTPURLCONNECTOR", "JACKSON");
 
-        verifier.verifyTrace(root(BLOC, "BLOC Business Logic Process", pathWithQueryString, "127.0.0.1:" + HTTP_PORT, "127.0.0.1"));
+        verifier.verifyTrace(root(BLOC, "BLOC Business Logic Process", pathWithQueryString, "127.0.0.1:" + HTTP_PORT, "127.0.0.1", annotation("http.url", pathWithQueryString)));
         verifier.verifyTrace(event(ServiceType.INTERNAL_METHOD.getName(), "com.nhncorp.lucy.bloc.core.processor.RequestProcessor.process(com.nhncorp.lucy.bloc.core.processor.BlocRequest req):17", annotation("CALL_URL", path), annotation("PROTOCOL", "http")));
         verifier.verifyTraceCount(0);
     }
