@@ -15,14 +15,6 @@
 package com.navercorp.test.pinpoint.plugin.bloc.v4;
 
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
-import static org.junit.Assert.*;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
@@ -30,6 +22,12 @@ import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * @author Jongho Moon
@@ -67,8 +65,8 @@ public class BlocIT {
         verifier.printCache();
         
         verifier.ignoreServiceType("JDK_HTTPURLCONNECTOR", "JACKSON");
-        
-        verifier.verifyTrace(root(BLOC, "com.nhncorp.lucy.bloc.http.NettyInboundHandler.channelRead0(io.netty.channel.ChannelHandlerContext ctx, io.netty.handler.codec.http.FullHttpRequest msg):36", pathWithQueryString, "127.0.0.1:" + HTTP_PORT, "127.0.0.1", annotation("http.url", pathWithQueryString), annotation("http.param", queryString)));
+
+        verifier.verifyTrace(root(BLOC, "BLOC Business Logic Process", pathWithQueryString, "127.0.0.1:" + HTTP_PORT, "127.0.0.1"));
         verifier.verifyTrace(event(ServiceType.INTERNAL_METHOD.getName(), "com.nhncorp.lucy.bloc.core.processor.RequestProcessor.process(com.nhncorp.lucy.bloc.core.processor.BlocRequest req):17", annotation("CALL_URL", path), annotation("PROTOCOL", "http")));
         verifier.verifyTraceCount(0);
     }
