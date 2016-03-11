@@ -40,7 +40,8 @@ public class BlocIT {
     private static final int HTTP_PORT = 5098;
     private static final String BLOC = "BLOC";
     private static final String BLOC_INTERNAL_METHOD = "BLOC_INTERNAL_METHOD";
-    
+    private static final String INTERNAL_METHOD = "INTERNAL_METHOD";
+
     @Test
     public void testServerType() {
         PluginTestVerifier agent = PluginTestVerifierHolder.getInstance();
@@ -68,6 +69,7 @@ public class BlocIT {
 
         verifier.verifyTrace(root(BLOC, "BLOC Business Logic Process", pathWithQueryString, "127.0.0.1:" + HTTP_PORT, "127.0.0.1", annotation("http.url", pathWithQueryString)));
         verifier.verifyTrace(event(BLOC_INTERNAL_METHOD, "com.nhncorp.lucy.bloc.http.NettyInboundHandler.channelRead0(io.netty.channel.ChannelHandlerContext ctx, io.netty.handler.codec.http.FullHttpRequest msg):36", annotation("http.param", queryString)));
+        verifier.verifyTrace(event(INTERNAL_METHOD, "com.nhncorp.lucy.bloc.core.processor.RequestProcessor.process(com.nhncorp.lucy.bloc.core.processor.BlocRequest req):17", annotation("CALL_URL", path), annotation("PROTOCOL", "http")));
 
         verifier.verifyTraceCount(0);
     }
