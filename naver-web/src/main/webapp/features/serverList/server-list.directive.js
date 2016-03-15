@@ -123,9 +123,7 @@
 	                			} else {
 	                				$nms.html( compiledTemplate({ "datum": result }) );
 	                			}
-	                			scope.$apply(function() {
-	                				scope.showNMSList = true;
-	                			});
+                				scope.showNMSList = true;
 	                			bAjaxLoading = false;
 	                		});
                 		}
