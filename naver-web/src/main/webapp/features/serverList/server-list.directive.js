@@ -7,8 +7,8 @@
 	 * @name serverListDirective
 	 * @class
 	 */
-	pinpointApp.directive('serverListDirective', [ '$timeout', '$window', '$filter', 'helpContentTemplate', 'helpContentService', 'CommonAjaxService', "AnalyticsService",
-	    function ($timeout, $window, $filter, helpContentTemplate, helpContentService, commonAjaxService, analyticsService) {
+	pinpointApp.directive('serverListDirective', [ "$http", '$timeout', '$window', '$filter', 'helpContentTemplate', 'helpContentService', 'CommonAjaxService', "AnalyticsService",
+	    function ($http, $timeout, $window, $filter, helpContentTemplate, helpContentService, commonAjaxService, analyticsService) {
             return {
                 restrict: 'A',
                 link: function postLink(scope, element) {
@@ -116,16 +116,18 @@
                 			bAjaxLoading = false;
                 		} else {
                 			$nms.attr("data-server", value);
-	                		commonAjaxService.getNMSData( value, function( result ) {
-	                			$nms.empty();
-	                			if ( angular.isDefined(result.errorCode) ) {
-	                				$nms.html('<h4 style="text-align:center;padding-top:20%;text-decoration:red;text-decoration-color:orange">' + result.errorMessage + '</h4>');
-	                			} else {
-	                				$nms.html( compiledTemplate({ "datum": result }) );
-	                			}
-                				scope.showNMSList = true;
-	                			bAjaxLoading = false;
-	                		});
+							$http.get( value ).success( function( result ) {
+								$nms.empty();
+								if ( angular.isDefined(result.errorCode) ) {
+									$nms.html('<h4 style="text-align:center;padding-top:20%;text-decoration:red;text-decoration-color:orange">' + result.errorMessage + '</h4>');
+								} else {
+									$nms.html( compiledTemplate({ "datum": result }) );
+								}
+								scope.showNMSList = true;
+								bAjaxLoading = false;
+							}).error( function() {
+
+							});
                 		}
                 	};
                 	
