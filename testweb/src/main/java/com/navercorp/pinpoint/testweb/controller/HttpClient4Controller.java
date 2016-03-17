@@ -57,7 +57,7 @@ public class HttpClient4Controller {
     public String statusCode(HttpServletRequest request) {
         logger.info("status code");
         ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-        HashMap<String, Object> post = new HashMap<String, Object>();
+        HashMap<String, Object> post = new HashMap<>();
         post.put("test", "1");
         post.put("test2", "2");
         client.execute2("http://www.naver.com", post);
@@ -69,7 +69,7 @@ public class HttpClient4Controller {
     @ResponseBody
     public String failed(HttpServletRequest request) {
         ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-        HashMap<String, Object> post = new HashMap<String, Object>();
+        HashMap<String, Object> post = new HashMap<>();
         post.put("foo", "bar");
         client.execute("http://127.0.0.1:9999", post);
 
@@ -80,7 +80,7 @@ public class HttpClient4Controller {
     @ResponseBody
     public String mutlpartFileUpload(HttpServletRequest request) {
         ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
-        HashMap<String, Object> post = new HashMap<String, Object>();
+
         client.fileUpload("http://localhost:" + request.getLocalPort());
 
         return "OK";
