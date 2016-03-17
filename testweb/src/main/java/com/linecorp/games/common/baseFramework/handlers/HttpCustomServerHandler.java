@@ -240,7 +240,7 @@ public class HttpCustomServerHandler extends SimpleChannelUpstreamHandler {
     public void handleException(HttpRequest request, ChannelHandlerContext ctx, Exception e) {
         Channel channel = ctx.getChannel();
         if (channel.isOpen()) {
-            String body = request.getContent().readable() ? new String(request.getContent().array()) : "";
+            String body = getBody(request);
             String cause = stackTraceToStr(e.getCause());
 
             logger.error("exceptionCaught : method={} \r\nURI={}, \r\nheaders={}, \r\nbody={}, \r\ncauseBy={}", request.getMethod().getName(), request.getUri(), request.getHeaders(), body, cause);
@@ -259,6 +259,17 @@ public class HttpCustomServerHandler extends SimpleChannelUpstreamHandler {
 
             }
             channel.close();
+        }
+    }
+
+    private String getBody(HttpRequest request) {
+        final ChannelBuffer content = request.getContent();
+        final boolean readable = content.readable();
+        if(readable) {
+            // TODO encoding ??
+            return new String(content.array(), CharsetUtil.UTF_8);
+        } else {
+            return "";
         }
     }
 

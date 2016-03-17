@@ -1,9 +1,7 @@
 package com.navercorp.pinpoint.testweb.connector.apachehttp4;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
