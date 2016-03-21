@@ -152,6 +152,19 @@
                 <artifactId>maven-klocwork-plugin</artifactId>
                 <version>1.0.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.6</version>
+                <configuration>
+                    <linkXRef>true</linkXRef>
+                    <sourceEncoding>${encoding}</sourceEncoding>
+                    <targetJdk>${jdk.version}</targetJdk>
+                    <excludes>
+                        <exclude>com/navercorp/pinpoint/testweb/**/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
