@@ -17,6 +17,7 @@
         <module>lucynet</module>
         <module>nbasearc</module>
         <module>nelo</module>
+        <module>nbaset-jdbc</module>
     </modules>
 
     <dependencies>
@@ -43,6 +44,11 @@
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-nelo-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-nbaset-jdbc-driver-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
