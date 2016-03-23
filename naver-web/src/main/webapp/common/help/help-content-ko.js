@@ -620,7 +620,14 @@
                         desc: "모든 트랜잭션"
                     }]
                 }]
-            }
+            },
+			wrongApp: [
+				"<div style='font-size:12px'>해당 agent는 {{application1}}이 아닌 {{application2}}에 포함되어 있습니다.<br>",
+				"원인은 다음 중 하나입니다.<hr>",
+				"1. 해당 agent가 {{application1}}에서 {{application2}}으로 이동한 경우<br>",
+				"2.{{agentId}}의 agent가 {{application2}}에도 등록 된 경우<hr>",
+				"문제 발생시 핀포인트 개발팀에 문의 해 주세요. 해결 해 드립니다.</div>"
+			].join("")
 		},
 		callTree: {
 			column: {
