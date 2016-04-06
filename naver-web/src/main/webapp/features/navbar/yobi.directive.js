@@ -34,7 +34,7 @@
 								var aNew = aNoticeData[ aNoticeData.length - 1].createdDate.split("-");
 
 								for ( var i = 0 ; i < aOld.length ; i++ ) {
-									if  ( parseInt( aNew ) > parseInt( aOld ) ) {
+									if  ( parseInt( aNew[i] ) > parseInt( aOld[i] ) ) {
 										scope.hasNotice = true;
 										break;
 									}
