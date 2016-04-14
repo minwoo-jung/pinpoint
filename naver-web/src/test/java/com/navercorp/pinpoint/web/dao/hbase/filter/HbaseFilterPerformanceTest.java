@@ -19,13 +19,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.hadoop.hbase.HbaseConfigurationFactoryBean;
-import org.springframework.data.hadoop.hbase.HbaseSystemException;
 
 import com.navercorp.pinpoint.common.buffer.AutomaticBuffer;
 import com.navercorp.pinpoint.common.buffer.Buffer;
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
+import com.navercorp.pinpoint.common.hbase.HbaseSystemException;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
+import com.navercorp.pinpoint.common.hbase.PooledHTableFactory;
 import com.navercorp.pinpoint.common.util.SpanUtils;
 import com.navercorp.pinpoint.web.mapper.TraceIndexScatterMapper;
 import com.navercorp.pinpoint.web.vo.Range;
@@ -39,8 +39,7 @@ import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash;
 public class HbaseFilterPerformanceTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-
-    private static HbaseConfigurationFactoryBean hbaseConfigurationFactoryBean;
+    private static HbaseTemplate2 hbaseTemplate2;
     private static AbstractRowKeyDistributor traceIdRowKeyDistributor;
 
     @BeforeClass
@@ -50,18 +49,20 @@ public class HbaseFilterPerformanceTest {
         Configuration cfg = HBaseConfiguration.create();
         cfg.set("hbase.zookeeper.quorum", "dev.zk.pinpoint.navercorp.com");
         cfg.set("hbase.zookeeper.property.clientPort", "2181");
-        hbaseConfigurationFactoryBean = new HbaseConfigurationFactoryBean();
-        hbaseConfigurationFactoryBean.setConfiguration(cfg);
-        hbaseConfigurationFactoryBean.afterPropertiesSet();
+        
+        hbaseTemplate2 = new HbaseTemplate2();
+        hbaseTemplate2.setConfiguration(cfg);
+        hbaseTemplate2.setTableFactory(new PooledHTableFactory(cfg));
+        hbaseTemplate2.afterPropertiesSet();
 
         OneByteSimpleHash applicationTraceIndexHash = new com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash(32);
         traceIdRowKeyDistributor = new com.sematext.hbase.wd.RowKeyDistributorByHashPrefix(applicationTraceIndexHash);
     }
 
     @AfterClass
-    public static void afterClass() {
-        if (hbaseConfigurationFactoryBean != null) {
-            hbaseConfigurationFactoryBean.destroy();
+    public static void afterClass() throws Exception {
+        if (hbaseTemplate2 != null) {
+            hbaseTemplate2.destroy();
         }
     }
 
@@ -109,11 +110,6 @@ public class HbaseFilterPerformanceTest {
     @Test
     @Ignore
     public void usingFilter() throws Exception {
-
-        HbaseTemplate2 hbaseTemplate2 = new HbaseTemplate2();
-        hbaseTemplate2.setConfiguration(hbaseConfigurationFactoryBean.getObject());
-        hbaseTemplate2.afterPropertiesSet();
-
         try {
             long oneday = 60 * 60 * 24 * 1000;
             int fetchLimit = 1000009;
@@ -133,8 +129,6 @@ public class HbaseFilterPerformanceTest {
             logger.debug("fetched size : {}", dotListList.size());
         } catch (HbaseSystemException e) {
             e.printStackTrace();
-        } finally {
-            hbaseTemplate2.destroy();
         }
 
     }
