@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.web.dao.ApplicationConfigDao">
+
+    <insert id="insertAuthority" parameterType="ApplicationAuthority" useGeneratedKeys="true" keyProperty="ruleId">
+        INSERT INTO application_authority (application_id, user_group_id, authority)
+        VALUES (#{applicationId}, #{userGroupId}, #{authority})
+    </insert>
+    
+    <delete id="deleteAuthority" parameterType="ApplicationAuthority">
+        DELETE
+        FROM application_authority
+        WHERE application_id = #{applicationId} AND user_group_id = #{userGroupId}
+    </delete>
+    
+    <update id="updateAuthority" parameterType="ApplicationAuthority">
+        UPDATE application_authority
+        SET authority = #{authority} 
+        WHERE application_id = #{applicationId} AND user_group_id = #{userGroupId}
+    </update>
+    
+    <select id="selectAuthorityList" resultType="ApplicationAuthority">
+        SELECT *
+        FROM application_authority
+        WHERE application_id = #{applicationId}
+    </select>
+    
+</mapper>
