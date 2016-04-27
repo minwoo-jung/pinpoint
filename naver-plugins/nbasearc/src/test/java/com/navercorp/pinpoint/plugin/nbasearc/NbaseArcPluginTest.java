@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.navercorp.pinpoint.common.bo.SpanEventBo;
+import com.navercorp.pinpoint.common.server.bo.SpanEventBo;
 import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
 import com.nhncorp.redis.cluster.RedisCluster;
 import com.nhncorp.redis.cluster.RedisClusterClient;
