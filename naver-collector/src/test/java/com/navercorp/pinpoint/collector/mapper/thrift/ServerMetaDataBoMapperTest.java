@@ -12,9 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.navercorp.pinpoint.collector.mapper.thrift.ServerMetaDataBoMapper;
-import com.navercorp.pinpoint.common.bo.ServerMetaDataBo;
-import com.navercorp.pinpoint.common.bo.ServiceInfoBo;
+import com.navercorp.pinpoint.common.server.bo.ServerMetaDataBo;
+import com.navercorp.pinpoint.common.server.bo.ServiceInfoBo;
 import com.navercorp.pinpoint.thrift.dto.TServerMetaData;
 import com.navercorp.pinpoint.thrift.dto.TServiceInfo;
 
