@@ -64,7 +64,7 @@
 
     <bean id="jsonObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 
-    <bean class="com.navercorp.pinpoint.collector.util.ThreadLocalAcceptedTimeService"/>
+    <bean class="com.navercorp.pinpoint.common.server.util.ThreadLocalAcceptedTimeService"/>
 
     <bean id="rangeFactory" class="com.navercorp.pinpoint.web.vo.RangeFactory"/>
 
