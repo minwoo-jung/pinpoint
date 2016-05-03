@@ -121,6 +121,8 @@
     <bean id="jsonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper">
     </bean>
 
+    <bean  class="com.navercorp.pinpoint.common.server.util.ThreadLocalAcceptedTimeService"></bean>
+
 
     <bean id="hTable" class="com.navercorp.pinpoint.common.hbase.HBaseTables"></bean>
 
