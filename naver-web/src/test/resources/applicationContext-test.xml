@@ -28,7 +28,9 @@
                                          com.navercorp.pinpoint.web.alarm,
                                          com.navercorp.pinpoint.web.config,
                                          com.navercorp.pinpoint.collector.mapper.thrift,
-                                         com.navercorp.pinpoint.collector.dao.hbase.filter" />
+                                         com.navercorp.pinpoint.collector.dao.hbase.filter,
+                                         com.navercorp.pinpoint.common.server.bo.serializer,
+                                         com.navercorp.pinpoint.common.server.util" />
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
@@ -63,8 +65,6 @@
     </bean>
 
     <bean id="jsonObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
-
-    <bean class="com.navercorp.pinpoint.common.server.util.ThreadLocalAcceptedTimeService"/>
 
     <bean id="rangeFactory" class="com.navercorp.pinpoint.web.vo.RangeFactory"/>
 
