@@ -131,7 +131,7 @@
                 <artifactId>commons-dbcp</artifactId>
                 <version>1.4-p2</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.nhncorp.nelo2</groupId>
                 <artifactId>nelo2-java-sdk-log4j</artifactId>
@@ -142,6 +142,12 @@
                 <groupId>cubrid</groupId>
                 <artifactId>cubrid-jdbc</artifactId>
                 <version>8.4.3.1005</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.jr</groupId>
+                <artifactId>jackson-jr-objects</artifactId>
+                <version>${fastxml.jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
