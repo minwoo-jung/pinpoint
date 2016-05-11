@@ -46,7 +46,7 @@ import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@Dependency({"mysql:mysql-connector-java:[5.0.8],[5.1.36,)"})
+@Dependency({"mysql:mysql-connector-java:[5.0.8],[5.1.36,6.0.2)"})
 public class MySqlIT {
     private static final String MYSQL = "MYSQL";
     private static final String MYSQL_EXECUTE_QUERY = "MYSQL_EXECUTE_QUERY";
