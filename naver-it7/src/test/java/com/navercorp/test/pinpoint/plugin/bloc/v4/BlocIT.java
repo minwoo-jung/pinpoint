@@ -60,7 +60,7 @@ public class BlocIT {
         connection.disconnect();
         
         // give chance to run interceptor's after method. sometimes the response arrives before the method is excuted. 
-        Thread.sleep(0);
+        Thread.sleep(100);
         
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.printCache();
