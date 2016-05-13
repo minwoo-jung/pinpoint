@@ -46,7 +46,6 @@ import scala.Tuple2;
  *
  */
 public class AgentStatJob {
-    private static final String HBASE_OUTPUT_TABLE = "TtestAgentStat";
     private static final String LOCAL_OUTPUT_DIRECTORY = "agentStat";
 
     public static void main(String[] args) throws Exception {
@@ -111,7 +110,7 @@ public class AgentStatJob {
                     .values()
                     .map((v) -> {v.setCollectInterval(period); return v;});
             
-            hbaseContext.bulkPut(aggregatedRDD, HBASE_OUTPUT_TABLE, AgentStatHBaseUtils::createPut, true);
+            hbaseContext.bulkPut(aggregatedRDD, HBaseTables.AGENT_STAT_AGGR.getNameAsString(), AgentStatHBaseUtils::createPut, true);
             
             if (local && !aggregatedRDD.isEmpty()) {
                 aggregatedRDD.sortBy(AgentStat::getTimestamp, true, 1).saveAsTextFile(LOCAL_OUTPUT_DIRECTORY + "/" + scans._1 + "/" + period);
