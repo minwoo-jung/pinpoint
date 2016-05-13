@@ -16,6 +16,7 @@ package com.navercorp.test.pinpoint.plugin.bloc.v4;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.aether.resolution.ArtifactResolutionException;
@@ -39,23 +40,26 @@ public class Bloc4PluginTestSuite extends AbstractPinpointPluginTestSuite {
     
     @Override
     protected List<PinpointPluginTestInstance> createTestCases(PinpointPluginTestContext context) {
-        List<PinpointPluginTestInstance> runners = new ArrayList<>();
+        final File releaseDir = new File("test/bloc4/releases");
         
-        File file = new File("test/bloc4/releases");
-        
-        if (!file.exists()) {
-            throw new RuntimeException("Cannot find bloc releses directory: " + file.getAbsolutePath());
+        if (!releaseDir.exists()) {
+            throw new RuntimeException("Cannot find bloc releases directory: " + releaseDir.getAbsolutePath());
         }
-        
-        for (File child : file.listFiles()) {
+
+        final File[] childFiles = releaseDir.listFiles();
+        if (childFiles == null) {
+            return Collections.emptyList();
+        }
+
+        List<PinpointPluginTestInstance> runners = new ArrayList<>();
+        for (File child : childFiles) {
             if (!child.isDirectory()) {
                 continue;
             }
-            
+
             Bloc4PluginTestCase runner = new Bloc4PluginTestCase(context, child);
             runners.add(runner);
         }
-
         return runners;
     }
 }

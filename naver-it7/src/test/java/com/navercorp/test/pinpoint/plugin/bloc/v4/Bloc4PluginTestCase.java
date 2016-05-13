@@ -147,18 +147,22 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
 
     @Override
     public void endTest(Process process) throws Throwable {
-        Socket socket = new Socket();
-        
+        final Socket socket = new Socket();
+        PrintWriter writer = null;
         try {
             socket.connect(new InetSocketAddress("127.0.0.1", 9984));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            writer = new PrintWriter(socket.getOutputStream());
             writer.write("STOP!");
-            writer.close();
-            socket.close();
         } catch (IOException e) {
             System.err.println("Fail to send shutdown message");
             e.printStackTrace();
         } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (Exception ignore) {
+                }
+            }
             try {
                 socket.close();
             } catch (IOException e) {
