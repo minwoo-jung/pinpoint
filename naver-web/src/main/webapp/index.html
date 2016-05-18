@@ -26,69 +26,6 @@
 <script src="bower_components/es5-shim/es5-shim.js?v=${buildTime}"></script>
 <script src="bower_components/json3/lib/json3.min.js?v=${buildTime}"></script>
 <![endif]-->
-<div class="modal" server-list-directive="" style="top:60px;">
-	<div class="modal-dialog modal-lg" style="width:900px;">
-		<div class="modal-content">
-			<div class="modal-header" style="background-color:#B0B0B0;color:#FFFFFF">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<span class="glyphicon glyphicon-question-sign serverListTooltip" style="cursor:pointer;float:right;color:white;margin-right:20px;"></span>
-				<h4 class="modal-title" ng-show="showNodeServer"><img ng-src="{{node.serviceType | iconUrl}}"> <span style="font-size:24px;font-weight:bold">{{node.applicationName}}</span> <span style="font-size:12px;padding-left:10px;">Server List</span></h4>
-				<h4 class="modal-title" ng-show="showLinkServer"><span style="font-size:24px;font-weight:bold"><img ng-src="{{node.fromNode.serviceType | iconUrl}}"> {{node.fromNode.applicationName}} <span class="glyphicon glyphicon-arrow-right"></span> <img ng-src="{{node.fromNode.serviceType | iconUrl}}"> {{node.toNode.applicationName}}</span> <span style="font-size:12px;padding-left:10px">Server List</span></h4>
-			</div>
-			<div class="modal-body">
-				<div class="server-wrapper" style="float:left;overflow:auto;width:450px;padding:10px 10px 10px 10px;box-shadow: 0px 0px 2px 2px rgba(0,0,0,0.3);">
-					<ul class="server-list list-unstyled" ng-show="showNodeServer" >
-		                <li ng-repeat="(key, server) in serverList | orderBy:'key'"  style="padding-bottom:6px;">
-		                    <span class="glyphicon glyphicon-home"></span>
-		                    {{server.name.split(':')[0]}}
-		                    
-		                     <ul ng-if="server.linkList" style="padding:0px;margin:0px;display:inline;">	
-		                    	<li ng-repeat="link in server.linkList" style="list-style:none;padding:0px;margin:0px;display:inline;padding-left:4px;">
-		                    		<button ng-if="link.linkType == 'button'" class="btn btn-default btn-xs" type="button" ng-click="invokeLinkAction( linkName, link.linkURL )">{{link.linkName}}</button>
-		                    		<a ng-if="link.linkType == 'aTag'" class="btn btn-default btn-xs" href="{{link.linkURL}}" target="_blank">{{link.linkName}}</a>	
-		                    	</li>
-		                    </ul>
-		                    <ul class="list-unstyled" style="padding-left:4px">
-		                        <li ng-repeat="instance in server.instanceList | orderBy:'instance.name'" style="padding:3px 0px 3px 0px">
-		                        	<label class="checkbox-inline">
-			                        	<input type="radio" name="selectedServer" value="{{instance.name}}" ng-click="selectServer( instance.name )" ng-checked="$parent.$first">
-			                            <span class="glyphicon glyphicon-hdd" style="padding-left:10px;color:{{node.agentHistogram[instance.name].Error > 0 ? 'red':''}}"></span>
-			                            {{instance.name}}
-		                            </label>
-									<button style="float:right" ng-show="instance.hasInspector" class="btn btn-default btn-xs" ng-click="openInspector(node, instance)">Inspector</button>
-		                        </li>
-		                    </ul>
-		                </li>
-		            </ul>
-		            <ul class="link-list list-unstyled" ng-show="showLinkServer">
-		                <li ng-repeat="(name, histogram) in linkList | orderBy:'name'" style="padding:3px 0px 3px 0px">
-                        	<label class="checkbox-inline" style="padding-left:0px;">
-	                        	<input type="radio" name="selectedServer" value="{{name}}" ng-click="selectServer( name )" ng-checked="$first">
-			                    <span class="glyphicon glyphicon-hdd" style="padding-left:10px;color:{{histogram.Error > 0 ? 'red':''}}"></span>
-			                    {{name}}
-                            </label>
-                            <a style="float:right" class="btn btn-default btn-xs" ng-href="#/inspector/{{node.applicationName || node.filterApplicationName}}@{{node.serviceType}}/{{oNavbarVoService.getReadablePeriod()}}/{{oNavbarVoService.getQueryEndDateTime()}}/{{name}}" target="_blank" title="Inspect Agents" alt="Inspect Agents">Inspector</a>
-		                </li>
-		            </ul>
-				</div>
-				<div style="float:right;padding-right:30px">					
-					<h4>Response Summary</h4>
-					<response-time-chart-directive namespace="forServerList"></response-time-chart-directive>
-					<hr>
-	                <h4>Load</h4>
-	                <load-chart-directive namespace="forServerList"></load-chart-directive>
-				</div>
-				<div class="nms-list" ng-show="showNMSList" style="position:absolute;background-color:#FCFCFC;border:1px solid #F3880C;right:4px;padding:24px 18px 2px 1px;height:620px;overflow-y:auto;;overflow-x:hidden;box-shadow: -5px 0px 5px 0px rgba(243,136,12,0.75);width:410px;">
-					<div style="color:brown;height:20px;margin-bottom:4px;font-weight:bold;position:fixed;font-weight:bold;margin-top:-22px;right:24px"><a href="http://nms.navercorp.com" target="_blank">
-						<span class="glyphicon glyphicon-link" aria-hidden="true"></span> Network Monitor System</a>
-						<span class="glyphicon glyphicon-question-sign nmsTooltip" style="cursor:pointer;margin-right:2px;"></span>
-					</div>
-					<div class="nms"></div>
-				</div>				
-			</div>
-		</div>
-	</div>
-</div>
 <div class="modal" id="customLogPopup">
 	<div class="modal-dialog modal-lg" style="width:800px;">
 		<div class="modal-content">
