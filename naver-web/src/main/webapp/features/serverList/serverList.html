@@ -8,6 +8,15 @@
 						<div>
 							<span class="glyphicon glyphicon-home"></span> <span class="server-name">{{server.name.split(':')[0]}}</span>
 						</div>
+						<div style="text-align:right" ng-if="server.linkList">
+							<button ng-repeat="link in server.linkList" class="btn btn-xs btn-custom" ng-click="openSite(link.linkType, link.linkName, link.linkURL)">{{link.linkName}}</button>
+							<!--ul ng-if="server.linkList" style="padding:0px;margin:0px;display:inline;">
+								<li ng-repeat="link in server.linkList" style="list-style:none;padding:0px;margin:0px;display:inline;padding-left:4px;">
+									<button ng-if="link.linkType == 'button'" class="btn btn-default btn-xs" type="button" ng-click="invokeLinkAction( linkName, link.linkURL )">{{link.linkName}}</button>
+									<a ng-if="link.linkType == 'aTag'" class="btn btn-default btn-xs" href="{{link.linkURL}}" target="_blank">{{link.linkName}}</a>
+								</li>
+							</ul-->
+						</div>
 						<ul>
 							<li ng-repeat="instance in server.instanceList | orderBy:'instance.name'">
 								<label>
@@ -39,7 +48,7 @@
 	</div>
 	<div class="server-list-chart">
 		<div class="chart-header">
-			<button ng-click="hideLayer()" class="btn btn-warning btn-sm">Close <span class="glyphicon glyphicon-chevron-right"></span></button>
+			<button ng-click="hideLayer()" class="btn btn-sm"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
 		<!--scatter-directive ng-show="hasScatter"></scatter-directive-->
 		<div class="chart-list">
@@ -48,5 +57,12 @@
 			<h5>Load</h5>
 			<load-chart-directive namespace="forServerList"></load-chart-directive>
 		</div>
+	</div>
+	<div class="nms-list" ng-show="showNMSList" style="position:absolute;background-color:#FCFCFC;right: 0px;padding:24px 18px 2px 1px;height:100%;overflow-y:auto;;overflow-x:hidden;box-shadow: -5px 0px 5px 0px rgba(243,136,12,0.75);width:420px;">
+		<div style="color:brown;height:20px;margin-bottom:4px;font-weight:bold;position:fixed;font-weight:bold;margin-top:-22px;right:24px"><a href="http://nms.navercorp.com" target="_blank">
+			<span class="glyphicon glyphicon-link" aria-hidden="true"></span> Network Monitor System</a>
+			<span class="glyphicon glyphicon-question-sign nmsTooltip" style="cursor:pointer;margin-right:2px;"></span>
+		</div>
+		<div class="nms"></div>
 	</div>
 </div>
