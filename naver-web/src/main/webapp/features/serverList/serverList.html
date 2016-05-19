@@ -10,12 +10,6 @@
 						</div>
 						<div style="text-align:right" ng-if="server.linkList">
 							<button ng-repeat="link in server.linkList" class="btn btn-xs btn-custom" ng-click="openSite(link.linkType, link.linkName, link.linkURL)">{{link.linkName}}</button>
-							<!--ul ng-if="server.linkList" style="padding:0px;margin:0px;display:inline;">
-								<li ng-repeat="link in server.linkList" style="list-style:none;padding:0px;margin:0px;display:inline;padding-left:4px;">
-									<button ng-if="link.linkType == 'button'" class="btn btn-default btn-xs" type="button" ng-click="invokeLinkAction( linkName, link.linkURL )">{{link.linkName}}</button>
-									<a ng-if="link.linkType == 'aTag'" class="btn btn-default btn-xs" href="{{link.linkURL}}" target="_blank">{{link.linkName}}</a>
-								</li>
-							</ul-->
 						</div>
 						<ul>
 							<li ng-repeat="instance in server.instanceList | orderBy:'instance.name'">
@@ -50,7 +44,7 @@
 		<div class="chart-header">
 			<button ng-click="hideLayer()" class="btn btn-sm"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
-		<!--scatter-directive ng-show="hasScatter"></scatter-directive-->
+		<scatter-directive ng-show="hasScatter" namespace="forServerList"></scatter-directive>
 		<div class="chart-list">
 			<h5>Response Summary</h5>
 			<response-time-chart-directive namespace="forServerList"></response-time-chart-directive>
