@@ -23,19 +23,14 @@ import java.io.Serializable;
 public class AgentStatBucketFactory implements Serializable {
     private static final long serialVersionUID = -2747891916550405172L;
 
-    private final int period;
+    private final int interval;
 
-    public AgentStatBucketFactory(int period) {
-        this.period = period;
+    public AgentStatBucketFactory(int interval) {
+        this.interval = interval;
     }
     
     public AgentStatBucket getBucketOf(AgentStat stat) {
-        long timestamp = (stat.getTimestamp() / period) * period;
-        
-        if (stat.getTimestamp() != timestamp) {
-            timestamp += period;
-        }
-        
+        long timestamp = (stat.getTimestamp() / interval) * interval;
         return new AgentStatBucket(stat.getAgentId(), timestamp);
     }
 }
