@@ -91,11 +91,20 @@
 						'</div>'
 					].join(''));
 					function hideNmsLayer() {
+						uncheckAllNms();
 						$nms.parent().scrollTop(0);
 						scope.showNMSList = false;
 						bAjaxLoading = false;
 					}
-					scope.openSite = function( type, name, url ) {
+					function uncheckAllNms( current ) {
+						$element.find( "input[type=checkbox]" ).each(function(index, ele) {
+							if ( angular.isDefined( current ) && current == $(ele).prop("name") ) {
+							} else {
+								$(ele).removeAttr("checked");
+							}
+						});
+					}
+					scope.openSite = function( $event, type, name, url ) {
 						switch( type ) {
 							case "aTag":
 								$window.open( url );
@@ -107,6 +116,8 @@
 								if ( scope.showNMSList === true && $nms.attr("data-server") === value ) {
 									hideNmsLayer();
 								} else {
+									uncheckAllNms( url );
+
 									$nms.attr("data-server", value);
 									$http.get( value ).success( function( result ) {
 										$nms.empty();
