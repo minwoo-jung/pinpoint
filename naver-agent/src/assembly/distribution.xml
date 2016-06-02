@@ -37,6 +37,7 @@
             <exclude>com.navercorp.pinpoint:pinpoint-bootstrap</exclude>
             <exclude>com.navercorp.pinpoint:pinpoint-plugins</exclude>
             <exclude>com.navercorp.pinpoint:pinpoint-naver-plugins</exclude>
+            <exclude>*:pom</exclude>
         </excludes>
         <outputDirectory>lib</outputDirectory>
         <useProjectArtifact>false</useProjectArtifact>
