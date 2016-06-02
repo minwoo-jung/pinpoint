@@ -19,7 +19,18 @@ package com.navercorp.pinpoint.web.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.navercorp.pinpoint.common.bo.*;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.navercorp.pinpoint.common.bo.AnnotationBo;
+import com.navercorp.pinpoint.common.bo.ApiMetaDataBo;
+import com.navercorp.pinpoint.common.bo.IntStringStringValue;
+import com.navercorp.pinpoint.common.bo.SpanBo;
+import com.navercorp.pinpoint.common.bo.SpanEventBo;
+import com.navercorp.pinpoint.common.bo.SqlMetaDataBo;
+import com.navercorp.pinpoint.common.bo.StringMetaDataBo;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.util.AnnotationKeyUtils;
 import com.navercorp.pinpoint.common.util.DefaultSqlParser;
@@ -33,12 +44,9 @@ import com.navercorp.pinpoint.web.dao.ApiMetaDataDao;
 import com.navercorp.pinpoint.web.dao.SqlMetaDataDao;
 import com.navercorp.pinpoint.web.dao.StringMetaDataDao;
 import com.navercorp.pinpoint.web.dao.TraceDao;
+import com.navercorp.pinpoint.web.security.MetaDataFilter;
+import com.navercorp.pinpoint.web.security.MetaDataFilter.MetaData;
 import com.navercorp.pinpoint.web.vo.TransactionId;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author emeroad
@@ -54,6 +62,9 @@ public class SpanServiceImpl implements SpanService {
 
 //    @Autowired
     private SqlMetaDataDao sqlMetaDataDao;
+    
+    @Autowired(required=false)
+    private MetaDataFilter metaDataFilter;
 
     @Autowired
     private ApiMetaDataDao apiMetaDataDao;
@@ -116,6 +127,11 @@ public class SpanServiceImpl implements SpanService {
             public void replacement(SpanAlign spanAlign, List<AnnotationBo> annotationBoList) {
                 AnnotationBo sqlIdAnnotation = findAnnotation(annotationBoList, AnnotationKey.SQL_ID.getCode());
                 if (sqlIdAnnotation == null) {
+                    return;
+                }
+                if (metaDataFilter != null && metaDataFilter.filter(spanAlign, MetaData.SQL)) {
+                    AnnotationBo annotationBo = metaDataFilter.createAnnotationBo(spanAlign, MetaData.SQL);
+                    annotationBoList.add(annotationBo);
                     return;
                 }
 

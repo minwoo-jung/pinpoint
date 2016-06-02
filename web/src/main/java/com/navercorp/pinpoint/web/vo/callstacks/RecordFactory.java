@@ -8,6 +8,7 @@ import com.navercorp.pinpoint.common.bo.ApiMetaDataBo;
 import com.navercorp.pinpoint.common.service.AnnotationKeyRegistryService;
 import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.AnnotationUtils;
 import com.navercorp.pinpoint.common.util.ApiDescription;
 import com.navercorp.pinpoint.common.util.ApiDescriptionParser;
@@ -59,6 +60,36 @@ public class RecordFactory {
         record.setSimpleClassName(api.className);
         record.setFullApiDescription(api.description);
 
+        return record;
+    }
+    
+    public Record getFilteredRecord(final CallTreeNode node, String apiTitle) {
+        final SpanAlign align = node.getValue();
+        align.setId(getNextId());
+
+        final int parentId = getParentId(node);
+        Api api = getApi(align);
+        
+        final Record record = new Record(align.getDepth(), 
+                align.getId(), 
+                parentId, 
+                true, 
+                apiTitle, 
+                "", 
+                align.getStartTime(), 
+                align.getElapsed(), 
+                align.getGap(), 
+                "UNKNOWN", 
+                align.getApplicationId(), 
+                ServiceType.UNKNOWN,
+                "", 
+                false, 
+                false, 
+                align.getTransactionId(), 
+                align.getSpanId(), 
+                align.getExecutionMilliseconds(),  
+                0);
+        
         return record;
     }
     

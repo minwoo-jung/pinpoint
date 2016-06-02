@@ -22,6 +22,7 @@ import com.navercorp.pinpoint.web.applicationmap.rawdata.*;
 import com.navercorp.pinpoint.web.dao.HostApplicationMapDao;
 import com.navercorp.pinpoint.web.dao.MapStatisticsCalleeDao;
 import com.navercorp.pinpoint.web.dao.MapStatisticsCallerDao;
+import com.navercorp.pinpoint.web.security.ServerMapDataFilter;
 import com.navercorp.pinpoint.web.service.map.AcceptApplication;
 import com.navercorp.pinpoint.web.service.map.AcceptApplicationLocalCache;
 import com.navercorp.pinpoint.web.service.map.RpcApplication;
@@ -33,6 +34,7 @@ import com.navercorp.pinpoint.web.vo.SearchOption;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -58,8 +60,10 @@ public class BFSLinkSelector implements LinkSelector {
     private final Set<LinkData> emulationLinkMarker = new HashSet<>();
 
     private final Queue nextQueue = new Queue();
+    
+    private ServerMapDataFilter serverMapDataFilter;
 
-    public BFSLinkSelector(MapStatisticsCallerDao mapStatisticsCallerDao, MapStatisticsCalleeDao mapStatisticsCalleeDao, HostApplicationMapDao hostApplicationMapDao) {
+    public BFSLinkSelector(MapStatisticsCallerDao mapStatisticsCallerDao, MapStatisticsCalleeDao mapStatisticsCalleeDao, HostApplicationMapDao hostApplicationMapDao, ServerMapDataFilter serverMapDataFilter) {
         if (mapStatisticsCalleeDao == null) {
             throw new NullPointerException("mapStatisticsCalleeDao must not be null");
         }
@@ -72,6 +76,7 @@ public class BFSLinkSelector implements LinkSelector {
         this.mapStatisticsCalleeDao = mapStatisticsCalleeDao;
         this.mapStatisticsCallerDao = mapStatisticsCallerDao;
         this.hostApplicationMapDao = hostApplicationMapDao;
+        this.serverMapDataFilter = serverMapDataFilter;
     }
 
     /**
@@ -86,7 +91,13 @@ public class BFSLinkSelector implements LinkSelector {
         final LinkDataDuplexMap searchResult = new LinkDataDuplexMap();
 
         for (Application targetApplication : targetApplicationList) {
-            final boolean searchCallerNode = checkNextCaller(targetApplication, callerDepth);
+            boolean searchCallerNode = checkNextCaller(targetApplication, callerDepth);
+            
+            if (searchCallerNode) {
+                if (serverMapDataFilter != null && serverMapDataFilter.filter(targetApplication)) {
+                    searchCallerNode = false;
+                }
+            }
             if (searchCallerNode) {
                 final LinkDataMap caller = mapStatisticsCallerDao.selectCaller(targetApplication, range);
                 if (logger.isDebugEnabled()) {
@@ -109,12 +120,17 @@ public class BFSLinkSelector implements LinkSelector {
             }
 
             final boolean searchCalleeNode = checkNextCallee(targetApplication, calleeDepth);
+            
             if (searchCalleeNode) {
                 final LinkDataMap callee = mapStatisticsCalleeDao.selectCallee(targetApplication, range);
                 if (logger.isInfoEnabled()) {
                     logger.debug("Found Callee. count={}, callee={}, depth={}", callee.size(), targetApplication, calleeDepth.getDepth());
                 }
                 for (LinkData stat : callee.getLinkDataList()) {
+//                    if (serverMapDataFilter != null && serverMapDataFilter.filter(stat.getFromApplication())) {
+//                        continue;
+//                    }
+                    
                     searchResult.addTargetLinkData(stat);
 
                     final Application fromApplication = stat.getFromApplication();
