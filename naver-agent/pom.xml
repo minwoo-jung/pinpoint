@@ -27,6 +27,8 @@
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-profiler-optional</artifactId>
+            <type>pom</type>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
