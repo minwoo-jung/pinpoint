@@ -62,6 +62,36 @@ public class RecordFactory {
         return record;
     }
     
+    public Record getFilteredRecord(final CallTreeNode node, String apiTitle) {
+        final SpanAlign align = node.getValue();
+        align.setId(getNextId());
+
+        final int parentId = getParentId(node);
+        Api api = getApi(align);
+        
+        final Record record = new Record(align.getDepth(), 
+                align.getId(), 
+                parentId, 
+                true, 
+                apiTitle, 
+                "", 
+                align.getStartTime(), 
+                align.getElapsed(), 
+                align.getGap(), 
+                "UNKNOWN", 
+                align.getApplicationId(), 
+                ServiceType.UNKNOWN,
+                "", 
+                false, 
+                false, 
+                align.getTransactionId(), 
+                align.getSpanId(), 
+                align.getExecutionMilliseconds(),  
+                0);
+        
+        return record;
+    }
+    
     public Record getException(final int depth, final int parentId, final SpanAlign align) {
         if(!align.hasException()) {
             return null;

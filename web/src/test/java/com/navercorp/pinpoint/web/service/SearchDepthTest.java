@@ -16,6 +16,10 @@
 
 package com.navercorp.pinpoint.web.service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -38,6 +42,18 @@ public class SearchDepthTest {
         SearchDepth twoDepth = oneDepth.nextDepth();
         Assert.assertEquals(twoDepth.getDepth(), 2);
         Assert.assertTrue(twoDepth.isDepthOverflow());
+    }
+    
+    @Test
+    public void test() {
+        List<String> arrayl = new ArrayList<String>();
+        
+        arrayl.add("1a");
+        arrayl.add("2a");
+        arrayl.add("3a");
+        arrayl.add("4a");
+        arrayl.add("5a");
+        arrayl.add("6a");
     }
 
 }

@@ -16,6 +16,7 @@
         <jdk.home>${env.JAVA_7_HOME}</jdk.home>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <sniffer.artifactid>java17</sniffer.artifactid>
+        <spring.security>4.0.4.RELEASE</spring.security>
     </properties>
 
     <dependencies>

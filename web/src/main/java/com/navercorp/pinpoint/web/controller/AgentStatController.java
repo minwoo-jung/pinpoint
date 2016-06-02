@@ -134,6 +134,7 @@ public class AgentStatController {
         return this.agentInfoService.getApplicationAgentList(ApplicationAgentList.Key.HOST_NAME, applicationName);
     }
 
+    @PreAuthorize("hasPermission(#applicationName, 'application', 'inspector')")
     @RequestMapping(value = "/getAgentList", method = RequestMethod.GET, params = {"application", "from", "to"})
     @ResponseBody
     public ApplicationAgentList getAgentList(
