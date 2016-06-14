@@ -56,7 +56,8 @@ public class RecordFactory {
                 align.getTransactionId(), 
                 align.getSpanId(), 
                 align.getExecutionMilliseconds(), 
-                api.type);
+                api.type,
+                true);
         record.setSimpleClassName(api.className);
         record.setFullApiDescription(api.description);
 
@@ -88,7 +89,8 @@ public class RecordFactory {
                 align.getTransactionId(), 
                 align.getSpanId(), 
                 align.getExecutionMilliseconds(),  
-                0);
+                0,
+                false);
         
         return record;
     }
@@ -108,7 +110,8 @@ public class RecordFactory {
                 align.getTransactionId(), 
                 align.getSpanId(), 
                 align.getExecutionMilliseconds(),
-                0);
+                0,
+                true);
         
         return record;
     }
@@ -136,7 +139,7 @@ public class RecordFactory {
                         false, 
                         key.getName(), 
                         annotation.getValue().toString(), 
-                        0L, 0L, 0, null, null, null, null, false, false, null, 0, 0, 0);
+                        0L, 0L, 0, null, null, null, null, false, false, null, 0, 0, 0, annotation.isAuthorized());
                 list.add(record);
             }
         }
@@ -151,7 +154,7 @@ public class RecordFactory {
                 false, 
                 method, 
                 argument, 
-                0L, 0L, 0, null, null, null, null, false, false, null, 0, 0, 0);
+                0L, 0L, 0, null, null, null, null, false, false, null, 0, 0, 0, true);
     }
     
 

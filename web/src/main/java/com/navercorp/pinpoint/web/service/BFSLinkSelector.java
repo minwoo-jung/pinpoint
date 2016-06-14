@@ -91,13 +91,7 @@ public class BFSLinkSelector implements LinkSelector {
         final LinkDataDuplexMap searchResult = new LinkDataDuplexMap();
 
         for (Application targetApplication : targetApplicationList) {
-            boolean searchCallerNode = checkNextCaller(targetApplication, callerDepth);
-            
-            if (searchCallerNode) {
-                if (serverMapDataFilter != null && serverMapDataFilter.filter(targetApplication)) {
-                    searchCallerNode = false;
-                }
-            }
+            final boolean searchCallerNode = checkNextCaller(targetApplication, callerDepth);
             if (searchCallerNode) {
                 final LinkDataMap caller = mapStatisticsCallerDao.selectCaller(targetApplication, range);
                 if (logger.isDebugEnabled()) {
@@ -120,16 +114,12 @@ public class BFSLinkSelector implements LinkSelector {
             }
 
             final boolean searchCalleeNode = checkNextCallee(targetApplication, calleeDepth);
-            
             if (searchCalleeNode) {
                 final LinkDataMap callee = mapStatisticsCalleeDao.selectCallee(targetApplication, range);
                 if (logger.isInfoEnabled()) {
                     logger.debug("Found Callee. count={}, callee={}, depth={}", callee.size(), targetApplication, calleeDepth.getDepth());
                 }
                 for (LinkData stat : callee.getLinkDataList()) {
-//                    if (serverMapDataFilter != null && serverMapDataFilter.filter(stat.getFromApplication())) {
-//                        continue;
-//                    }
                     
                     searchResult.addTargetLinkData(stat);
 
@@ -160,6 +150,14 @@ public class BFSLinkSelector implements LinkSelector {
             return false;
         }
 
+        return filter(targetApplication);
+    }
+    
+    private boolean filter(Application targetApplication) {
+        if (serverMapDataFilter != null && serverMapDataFilter.filter(targetApplication)) {
+          return false;
+        }
+            
         return true;
     }
 
@@ -169,12 +167,13 @@ public class BFSLinkSelector implements LinkSelector {
             return false;
         }
 
+        
         if (linkVisitChecker.visitCallee(targetApplication)) {
             logger.debug("already visited callee:{}", targetApplication);
             return false;
         }
 
-        return true;
+        return filter(targetApplication);
     }
 
 
