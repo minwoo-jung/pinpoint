@@ -157,13 +157,13 @@ public class AgentStatHBaseUtils {
         Map<SlotType, Integer> countMap = agentStat.getActiveTraceCounts();
         if (countMap != null) {
             final Buffer buffer = new AutomaticBuffer();
-            buffer.put((byte)0);
-            buffer.putVar(agentStat.getHistogramSchema());
-            buffer.putVar(countMap.size());
-            buffer.putVar(countMap.get(SlotType.FAST));
-            buffer.putVar(countMap.get(SlotType.NORMAL));
-            buffer.putVar(countMap.get(SlotType.SLOW));
-            buffer.putVar(countMap.get(SlotType.VERY_SLOW));
+            buffer.putByte((byte)0);
+            buffer.putVInt(agentStat.getHistogramSchema());
+            buffer.putVInt(countMap.size());
+            buffer.putVInt(countMap.get(SlotType.FAST));
+            buffer.putVInt(countMap.get(SlotType.NORMAL));
+            buffer.putVInt(countMap.get(SlotType.SLOW));
+            buffer.putVInt(countMap.get(SlotType.VERY_SLOW));
             
             put.addColumn(AGENT_STAT_CF_STATISTICS, AGENT_STAT_COL_ACTIVE_TRACE_HISTOGRAM, buffer.getBuffer());
         }
