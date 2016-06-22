@@ -13,27 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.dao;
-
-import java.util.List;
-
-import com.navercorp.pinpoint.web.vo.AppAuthUserGroup;
+package com.navercorp.pinpoint.web.exception;
 
 /**
  * @author minwoo.jung
  */
-public interface ApplicationConfigDao {
+public class AuthorizationException extends RuntimeException {
 
-    String insertAppAuthUserGroup(AppAuthUserGroup appAuth);
+    public AuthorizationException(String message) {
+        super(message);
+    }
 
-    void deleteAppAuthUserGroup(AppAuthUserGroup appAuth);
-
-    void updateAppAuthUserGroup(AppAuthUserGroup appAuth);
-
-    String selectAppAuthConfiguration(String applicationId);
-
-    List<AppAuthUserGroup> selectAppAuthUserGroupList(String applicationId);
-
-    boolean selectExistManager(String userId);
-    
 }

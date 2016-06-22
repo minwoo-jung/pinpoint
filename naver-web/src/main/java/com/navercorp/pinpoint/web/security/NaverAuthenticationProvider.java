@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.dao;
+package com.navercorp.pinpoint.web.security;
 
-import java.util.List;
-
-import com.navercorp.pinpoint.web.vo.AppAuthUserGroup;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * @author minwoo.jung
  */
-public interface ApplicationConfigDao {
+public class NaverAuthenticationProvider implements AuthenticationProvider {
 
-    String insertAppAuthUserGroup(AppAuthUserGroup appAuth);
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        return authentication;
+    }
 
-    void deleteAppAuthUserGroup(AppAuthUserGroup appAuth);
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return PinpointAuthentication.class.equals(authentication);
+    }
 
-    void updateAppAuthUserGroup(AppAuthUserGroup appAuth);
-
-    String selectAppAuthConfiguration(String applicationId);
-
-    List<AppAuthUserGroup> selectAppAuthUserGroupList(String applicationId);
-
-    boolean selectExistManager(String userId);
-    
 }

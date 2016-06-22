@@ -1,0 +1,88 @@
+/*
+ * Copyright 2014 NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.navercorp.pinpoint.web.security;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+
+import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
+import com.navercorp.pinpoint.web.service.UserGroupService;
+import com.navercorp.pinpoint.web.service.UserService;
+import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
+import com.navercorp.pinpoint.web.vo.User;
+import com.navercorp.pinpoint.web.vo.UserGroup;
+
+/**
+ * @author minwoo.jung
+ */
+public class LocalAuthenticationProvider implements AuthenticationProvider {
+
+    @Autowired
+    UserService userService;
+    
+    @Autowired
+    UserGroupService userGroupService;
+    
+    @Autowired
+    ApplicationConfigDao configDao;
+    
+    @Override
+    public Authentication authenticate(final Authentication auth) throws AuthenticationException {
+      final String userId = String.valueOf(auth.getPrincipal());
+      User user = userService.selectUserByUserId(userId);
+      List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
+      boolean pinpointManager = configDao.selectExistManager(userId);
+      PinpointAuthentication authentication;
+
+      if (user != null) {
+          authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, null, true, pinpointManager);
+          GrantedAuthority grantedAuthority = new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return "ROLE_USER";
+            }
+          };
+          List authorities = new ArrayList<GrantedAuthority>(1);
+          authorities.add(grantedAuthority);
+          authentication.setAuthorities(authorities);
+      } else {
+          authentication = new PinpointAuthentication() {
+              @Override
+              public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
+                  return null;
+              }
+              
+              @Override
+              public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
+              }
+          };
+      }
+
+      return authentication;
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return true;
+    }
+
+}
