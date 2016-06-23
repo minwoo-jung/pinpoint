@@ -163,5 +163,5 @@ public class NssFilterTest {
         assertEquals(NssFilter.UNAUTHORIZED_RESPONSE_ERROR_CODE_VALUE, response.get(NssFilter.UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY));
         assertEquals(NssFilter.UNAUTHORIZED_RESPONSE_REDIRECT_VALUE, response.get(NssFilter.UNAUTHORIZED_RESPONSE_REDIRECT_KEY));
     }
-
+    
 }

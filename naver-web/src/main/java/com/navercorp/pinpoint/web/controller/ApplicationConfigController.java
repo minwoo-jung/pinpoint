@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
-import com.navercorp.pinpoint.web.vo.ApplicationAuthority;
+import com.navercorp.pinpoint.web.vo.AppAuthUserGroup;
 
 /**
  * @author minwoo.jung
@@ -46,16 +46,16 @@ public class ApplicationConfigController {
     
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, String> insertUserGroup(@RequestBody ApplicationAuthority appAuth) {
+    public Map<String, String> insertUserGroup(@RequestBody AppAuthUserGroup appAuth) {
         Map<String, String> result = new HashMap<>();
 
-        if (StringUtils.isEmpty(appAuth.getApplicationId()) || StringUtils.isEmpty(appAuth.getUserGroupId()) || appAuth.getAuthority() == null) {
+        if (StringUtils.isEmpty(appAuth.getApplicationId()) || StringUtils.isEmpty(appAuth.getUserGroupId()) || appAuth.getRole() == null) {
             result.put("errorCode", "500");
             result.put("errorMessage", "there is not applicationId/userGroupId/authority to insert alarm rule");
             return result;
         }
         
-        appConfigDao.insertAuthority(appAuth);
+        appConfigDao.insertAppAuthUserGroup(appAuth);
 
         result.put("result", "SUCCESS");
         return result;
@@ -63,7 +63,7 @@ public class ApplicationConfigController {
     
     @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
-    public Map<String, String> deleteUserGroup(@RequestBody ApplicationAuthority appAuth) {
+    public Map<String, String> deleteUserGroup(@RequestBody AppAuthUserGroup appAuth) {
         Map<String, String> result = new HashMap<>();
 
         if (StringUtils.isEmpty(appAuth.getApplicationId()) || StringUtils.isEmpty(appAuth.getUserGroupId())) {
@@ -72,7 +72,7 @@ public class ApplicationConfigController {
             return result;
         }
         
-        appConfigDao.deleteAuthority(appAuth);
+        appConfigDao.deleteAppAuthUserGroup(appAuth);
 
         result.put("result", "SUCCESS");
         return result;
@@ -80,16 +80,16 @@ public class ApplicationConfigController {
     
     @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
-    public Map<String, String> updateUserGroup(@RequestBody ApplicationAuthority appAuth) {
+    public Map<String, String> updateUserGroup(@RequestBody AppAuthUserGroup appAuth) {
         Map<String, String> result = new HashMap<>();
 
-        if (StringUtils.isEmpty(appAuth.getApplicationId()) || StringUtils.isEmpty(appAuth.getUserGroupId()) || appAuth.getAuthority() == null) {
+        if (StringUtils.isEmpty(appAuth.getApplicationId()) || StringUtils.isEmpty(appAuth.getUserGroupId()) || appAuth.getRole() == null) {
             result.put("errorCode", "500");
             result.put("errorMessage", "there is not applicationId/userGroupId/authority to insert alarm rule");
             return result;
         }
         
-        appConfigDao.updateAuthority(appAuth);
+        appConfigDao.updateAppAuthUserGroup(appAuth);
 
         result.put("result", "SUCCESS");
         return result;
@@ -97,7 +97,7 @@ public class ApplicationConfigController {
     
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public List<ApplicationAuthority> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId) {
-        return appConfigDao.selectAuthority(applicationId);
+    public List<AppAuthUserGroup> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId) {
+        return appConfigDao.selectAppAuthUserGroupList(applicationId);
     }
 }

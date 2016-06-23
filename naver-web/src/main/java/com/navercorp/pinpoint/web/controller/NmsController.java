@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -59,6 +60,7 @@ public class NmsController {
     @Autowired  
     private RestTemplate restTemplate;
     
+    @PreAuthorize("hasPermission(#hostIp, 'authorize_kind')")
     @RequestMapping(value = "/nms", method = RequestMethod.GET)
     @ResponseBody
     public Object nms(@RequestParam(value= "hostIp", required=true) String hostIp) throws Exception {

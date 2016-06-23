@@ -39,8 +39,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
-import com.navercorp.pinpoint.web.vo.ApplicationAuthority;
-import com.navercorp.pinpoint.web.vo.ApplicationAuthority.AuthorityLevel;
+import com.navercorp.pinpoint.web.vo.AppAuthUserGroup;
+import com.navercorp.pinpoint.web.vo.AppAuthUserGroup.RoleLevel;
 
 /**
  * @author minwoo.jung
@@ -66,8 +66,8 @@ public class ApplicationConfigControllerTest {
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
         
-        ApplicationAuthority appAuth1 = new ApplicationAuthority("", TEST_APPLICATION_ID, "tesUserGroup01", AuthorityLevel.MANAGER.getName());
-        appConfigDao.deleteAuthority(appAuth1);
+        AppAuthUserGroup appAuth1 = new AppAuthUserGroup("", TEST_APPLICATION_ID, "tesUserGroup01", RoleLevel.MANAGER.getName());
+        appConfigDao.deleteAppAuthUserGroup(appAuth1);
     }
     
     @After
@@ -76,7 +76,7 @@ public class ApplicationConfigControllerTest {
     
     @Test
     public void insertAndDeleteUserGroup() throws Exception {
-        this.mockMvc.perform(post("/application/userGroup.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + AuthorityLevel.MANAGER.getName() + "\"}"))
+        this.mockMvc.perform(post("/application/userGroup.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + RoleLevel.MANAGER.getName() + "\"}"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json;charset=UTF-8"))
                     .andExpect(jsonPath("$", hasKey("result")))
@@ -99,13 +99,13 @@ public class ApplicationConfigControllerTest {
     
     @Test
     public void updateUserGroup() throws Exception {
-        this.mockMvc.perform(post("/application/userGroup.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + AuthorityLevel.MANAGER.getName() + "\"}"))
+        this.mockMvc.perform(post("/application/userGroup.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + RoleLevel.MANAGER.getName() + "\"}"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json;charset=UTF-8"))
                     .andExpect(jsonPath("$", hasKey("result")))
                     .andReturn();
         
-        this.mockMvc.perform(put("/application/userGroup.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + AuthorityLevel.USER.getName() + "\"}"))
+        this.mockMvc.perform(put("/application/userGroup.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + RoleLevel.USER.getName() + "\"}"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json;charset=UTF-8"))
                     .andExpect(jsonPath("$", hasKey("result")))

@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.dao;
+package com.navercorp.pinpoint.web.dao.mysql;
 
-import java.util.List;
+import static org.junit.Assert.*;
 
-import com.navercorp.pinpoint.web.vo.AppAuthUserGroup;
+import org.junit.Test;
 
-/**
- * @author minwoo.jung
- */
-public interface ApplicationConfigDao {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
 
-    String insertAppAuthUserGroup(AppAuthUserGroup appAuth);
+public class MysqlApplicationConfigDaoTest {
 
-    void deleteAppAuthUserGroup(AppAuthUserGroup appAuth);
+    @Test
+    public void test() throws JsonProcessingException {
+        AppAuthConfiguration config = new AppAuthConfiguration();
+        String result = new ObjectMapper().writeValueAsString(config);
+        System.out.println(result);
+    }
 
-    void updateAppAuthUserGroup(AppAuthUserGroup appAuth);
-
-    String selectAppAuthConfiguration(String applicationId);
-
-    List<AppAuthUserGroup> selectAppAuthUserGroupList(String applicationId);
-
-    boolean selectExistManager(String userId);
-    
 }

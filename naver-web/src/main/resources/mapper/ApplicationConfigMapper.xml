@@ -3,27 +3,39 @@
 
 <mapper namespace="com.navercorp.pinpoint.web.dao.ApplicationConfigDao">
 
-    <insert id="insertAuthority" parameterType="ApplicationAuthority" useGeneratedKeys="true" keyProperty="ruleId">
-        INSERT INTO application_authority (application_id, user_group_id, authority)
+    <insert id="insertAppAuthUserGroup" parameterType="AppAuthUserGroup" useGeneratedKeys="true" keyProperty="ruleId">
+        INSERT INTO app_auth_user_group (application_id, user_group_id, authority)
         VALUES (#{applicationId}, #{userGroupId}, #{authority})
     </insert>
     
-    <delete id="deleteAuthority" parameterType="ApplicationAuthority">
+    <delete id="deleteAppAuthUserGroup" parameterType="AppAuthUserGroup">
         DELETE
-        FROM application_authority
+        FROM app_auth_user_group
         WHERE application_id = #{applicationId} AND user_group_id = #{userGroupId}
     </delete>
     
-    <update id="updateAuthority" parameterType="ApplicationAuthority">
-        UPDATE application_authority
+    <update id="updateAppAuthUserGroup" parameterType="AppAuthUserGroup">
+        UPDATE app_auth_user_group
         SET authority = #{authority} 
         WHERE application_id = #{applicationId} AND user_group_id = #{userGroupId}
     </update>
     
-    <select id="selectAuthorityList" resultType="ApplicationAuthority">
+    <select id="selectAppAuthUserGroupList" resultType="AppAuthUserGroup">
         SELECT *
-        FROM application_authority
+        FROM app_auth_user_group
         WHERE application_id = #{applicationId}
+    </select>
+    
+    <select id="selectAppAuthConfig" resultType="String">
+        SELECT configuration
+        FROM app_auth_config
+        WHERE application_id = #{applicationId}
+    </select>
+    
+    <select id="selectExistManager" resultType="Boolean">
+        SELECT IF(COUNT(*) = 0, 0, 1)
+        FROM manager
+        WHERE user_id = #{userId}
     </select>
     
 </mapper>
