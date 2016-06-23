@@ -53,7 +53,9 @@
     </http>
     
     <beans:bean id="accessDeniedHandler" class="com.navercorp.pinpoint.web.security.AccessDeniedhandlerImpl"/>
-    <beans:bean id="autoLoginAuthenticationFilter" class="com.navercorp.pinpoint.web.security.AutoLoginAuthenticationFilter"/>
+    <beans:bean id="autoLoginAuthenticationFilter" class="com.navercorp.pinpoint.web.security.AutoLoginAuthenticationFilter">
+        <beans:property name="userId" value="KR14966"/>
+    </beans:bean>
 
     <authentication-manager>
         <authentication-provider ref="naverAuthenticationProvider"/>
@@ -73,5 +75,4 @@
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
      -->
-
 </beans:beans>
