@@ -15,6 +15,8 @@
  */
 package com.navercorp.pinpoint.web.vo;
 
+import java.util.Map;
+
 /**
  * @author minwoo.jung
  *
@@ -24,7 +26,6 @@ public class AppAuthConfiguration {
     private boolean apiMetaData = false;
     private boolean sqlMetaData = false;
     private boolean paramMetaData = false;
-    private boolean inspector = false;
     private boolean serverMapData = false;
     
     public boolean getSqlMetaData() {
@@ -33,14 +34,6 @@ public class AppAuthConfiguration {
     
     public void setSqlMetaData(boolean sqlMetaData) {
         this.sqlMetaData = sqlMetaData;
-    }
-
-    public boolean getInspector() {
-        return inspector;
-    }
-    
-    public void setInspector(boolean inspector) {
-        this.inspector = inspector;
     }
 
     public boolean getServerMapData() {
@@ -66,5 +59,4 @@ public class AppAuthConfiguration {
     public void setParamMetaData(boolean paramMetaData) {
         this.paramMetaData = paramMetaData;
     }
-
 }

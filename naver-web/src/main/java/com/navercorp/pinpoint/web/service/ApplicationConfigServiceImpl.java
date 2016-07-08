@@ -15,18 +15,19 @@
  */
 package com.navercorp.pinpoint.web.service;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
-import com.navercorp.pinpoint.web.exception.AuthorizationException;
 import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
-import com.navercorp.pinpoint.web.vo.AppAuthUserGroup;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
+import com.navercorp.pinpoint.web.vo.UserGroup;
 
 /**
  * @author minwoo.jung
@@ -37,25 +38,86 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     @Autowired
     ApplicationConfigDao applicationConfigDao;
     
+    @Autowired
+    UserGroupService userGroupService;
+    
+    //추후 옵션으로 빼야함. paas 형태로 제공할때 false가 필요함
+    boolean anyOneOccupyAtfirst = true;
+    
     @Override
     public ApplicationConfiguration selectApplicationConfiguration(String applicationId) {
-        String configJson = applicationConfigDao.selectAppAuthConfiguration(applicationId);
-        AppAuthConfiguration appAuthConfig;
+        List<AppUserGroupAuth> appAuthUserGroupList = applicationConfigDao.selectAppUserGroupAuthList(applicationId);
         
-        if (configJson == null) {
-            appAuthConfig = new AppAuthConfiguration();
-        } else {
-            try {
-                appAuthConfig = new ObjectMapper().readValue(configJson, AppAuthConfiguration.class);
-            } catch (IOException e) {
-                throw new AuthorizationException("Can not load authorization configuration of application");
+        if(appAuthUserGroupList.size() == 0) {
+            AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, Role.GUEST.toString(), Role.GUEST.toString(), new AppAuthConfiguration());
+            applicationConfigDao.insertAppUserGroupAuth(appUserGroupAuth);
+            appAuthUserGroupList.add(appUserGroupAuth);
+        }
+            
+        return new ApplicationConfiguration(applicationId, appAuthUserGroupList);
+    }
+
+    @Override
+    public Role searchMyRole(ApplicationConfiguration appConfig, String userId) {
+        Map<String, AppUserGroupAuth> appUserGroupAuthes = appConfig.getAppUserGroupAuthes();
+        Map<String, UserGroup> myUserGroups = getUserGroups(userId); 
+        Role myRole = Role.GUEST; 
+        
+        for(Map.Entry<String, AppUserGroupAuth> entry : appUserGroupAuthes.entrySet()) {
+            String userGroupId = entry.getKey();
+            if (myUserGroups.containsKey(userGroupId)) {
+                if (!myRole.isHigherOrEqualLevel(entry.getValue().getRole())){
+                    myRole = entry.getValue().getRole();
+                }
             }
         }
         
-        List<AppAuthUserGroup> appAuthUserGroupList = applicationConfigDao.selectAppAuthUserGroupList(applicationId);
-        return new ApplicationConfiguration(applicationId, appAuthConfig, appAuthUserGroupList);
-        
-        
+        return myRole;
     }
+    
+    private Map<String, UserGroup> getUserGroups(String userId) {
+        List<UserGroup> userGroupList = userGroupService.selectUserGroupByUserId(userId);
+        Map<String, UserGroup> userGroups = new HashMap<String, UserGroup>(); 
+        
+        for (UserGroup userGroup : userGroupList) {
+            userGroups.put(userGroup.getId(), userGroup);
+        }
+        
+        return userGroups;
+    }
+
+    @Override
+    public boolean canEditConfiguration(String applicationId, String userId) {
+        ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
+        
+        if (appConfig.getAppUserGroupAuth().size() == 0  && anyOneOccupyAtfirst) {
+            return true;
+        }
+
+        Role myRole = searchMyRole(appConfig, userId);
+        if(myRole.equals(Role.MANAGER)) {
+            return true;
+        }
+   
+        if (existManager(appConfig) == false) {
+           return anyOneOccupyAtfirst; 
+        }
+        
+        return false;
+    }
+
+    private boolean existManager(ApplicationConfiguration appConfig) {
+        List<AppUserGroupAuth> appUserGroupAuthList = appConfig.getAppUserGroupAuth();
+        
+        for (AppUserGroupAuth auth : appUserGroupAuthList) {
+            if (Role.MANAGER.equals(auth.getRole())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    
 
 }

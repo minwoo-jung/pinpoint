@@ -63,7 +63,9 @@ public class MetaDataFilterImpl implements MetaDataFilter {
             authentication.addApplicationConfiguration(appConfig);
         }
         
-        AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
+        AppAuthConfiguration appAuthConfig = null;
+        //TODO : 개선 필요
+//        AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
         
         if (MetaData.SQL.equals(metaData) && !appAuthConfig.getSqlMetaData()) {
             return true;

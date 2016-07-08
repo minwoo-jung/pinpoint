@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.web.vo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,16 +25,14 @@ import java.util.Map;
  */
 public class ApplicationConfiguration {
     private String applicationId;
-    private AppAuthConfiguration appAuthConfig;
-    private Map<String, AppAuthUserGroup> appAuthUserGroups;
+    private Map<String, AppUserGroupAuth> appUserGroupAuthes;
 
-    public ApplicationConfiguration(String applicationId, AppAuthConfiguration appAuthConfig, List<AppAuthUserGroup> appAuthUserGroupList) {
+    public ApplicationConfiguration(String applicationId, List<AppUserGroupAuth> appUserGroupAuthList) {
         this.applicationId = applicationId;
-        this.appAuthConfig = appAuthConfig;
-        this.appAuthUserGroups = new HashMap<String, AppAuthUserGroup>();
+        this.appUserGroupAuthes = new HashMap<String, AppUserGroupAuth>();
 
-        for (AppAuthUserGroup appAuthUserGroup : appAuthUserGroupList) {
-            this.appAuthUserGroups.put(appAuthUserGroup.getUserGroupId(), appAuthUserGroup);
+        for (AppUserGroupAuth appAuthUserGroup : appUserGroupAuthList) {
+            this.appUserGroupAuthes.put(appAuthUserGroup.getUserGroupId(), appAuthUserGroup);
         }
     }
 
@@ -41,17 +40,21 @@ public class ApplicationConfiguration {
         return applicationId;
     }
 
-    public AppAuthConfiguration getAppAuthConfiguration() {
-        return this.appAuthConfig;
-    }
-
     public boolean isAffiliatedAppUserGroup(List<UserGroup> userGroupList) {
         for(UserGroup userGroup : userGroupList) {
-            if(appAuthUserGroups.get(userGroup.getId()) != null) {
+            if(appUserGroupAuthes.get(userGroup.getId()) != null) {
                 return true;
             }
         }
         
         return false;
+    }
+    
+    public Map<String, AppUserGroupAuth> getAppUserGroupAuthes() {
+        return appUserGroupAuthes;
+    }
+
+    public List<AppUserGroupAuth> getAppUserGroupAuth() {
+        return new ArrayList<>(appUserGroupAuthes.values());
     }
 }

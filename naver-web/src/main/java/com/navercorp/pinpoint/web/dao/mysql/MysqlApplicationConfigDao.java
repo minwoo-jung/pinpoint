@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
-import com.navercorp.pinpoint.web.vo.AppAuthUserGroup;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 
 /**
  * @author minwoo.jung
@@ -37,31 +37,26 @@ public class MysqlApplicationConfigDao implements ApplicationConfigDao {
     private SqlSessionTemplate sqlSessionTemplate;
     
     @Override
-    public String insertAppAuthUserGroup(AppAuthUserGroup appAuth) {
-        sqlSessionTemplate.insert(NAMESPACE + "insertAppAuthUserGroup", appAuth);
+    public String insertAppUserGroupAuth(AppUserGroupAuth appAuth) {
+        sqlSessionTemplate.insert(NAMESPACE + "insertAppUserGroupAuth", appAuth);
         return appAuth.getNumber();
     }
 
     @Override
-    public void deleteAppAuthUserGroup(AppAuthUserGroup appAuth) {
-        sqlSessionTemplate.delete(NAMESPACE + "deleteAppAuthUserGroup", appAuth);
+    public void deleteAppUserGroupAuth(AppUserGroupAuth appAuth) {
+        sqlSessionTemplate.delete(NAMESPACE + "deleteAppUserGroupAuth", appAuth);
     }
 
     @Override
-    public void updateAppAuthUserGroup(AppAuthUserGroup appAuth) {
-        sqlSessionTemplate.update(NAMESPACE + "updateAppAuthUserGroup", appAuth);
+    public void updateAppUserGroupAuth(AppUserGroupAuth appAuth) {
+        sqlSessionTemplate.update(NAMESPACE + "updateAppUserGroupAuth", appAuth);
     }
 
     @Override
-    public List<AppAuthUserGroup> selectAppAuthUserGroupList(String applicationId) {
-        return sqlSessionTemplate.selectList(NAMESPACE + "selectAppAuthUserGroupList", applicationId);
+    public List<AppUserGroupAuth> selectAppUserGroupAuthList(String applicationId) {
+        return sqlSessionTemplate.selectList(NAMESPACE + "selectAppUserGroupAuthList", applicationId);
     }
 
-    @Override
-    public String selectAppAuthConfiguration(String applicationId) {
-        return sqlSessionTemplate.selectOne(NAMESPACE + "selectAppAuthConfig", applicationId);
-    }
-    
     @Override
     public boolean selectExistManager(String userId) {
         return sqlSessionTemplate.selectOne(NAMESPACE + "selectExistManager", userId);
