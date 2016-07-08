@@ -3,32 +3,26 @@
 
 <mapper namespace="com.navercorp.pinpoint.web.dao.ApplicationConfigDao">
 
-    <insert id="insertAppAuthUserGroup" parameterType="AppAuthUserGroup" useGeneratedKeys="true" keyProperty="ruleId">
-        INSERT INTO app_auth_user_group (application_id, user_group_id, authority)
-        VALUES (#{applicationId}, #{userGroupId}, #{authority})
+    <insert id="insertAppUserGroupAuth" parameterType="AppUserGroupAuth" useGeneratedKeys="true" keyProperty="ruleId">
+        INSERT INTO app_auth_user_group (application_id, user_group_id, role, configuration)
+        VALUES (#{applicationId}, #{userGroupId}, #{role.name}, #{configuration})
     </insert>
     
-    <delete id="deleteAppAuthUserGroup" parameterType="AppAuthUserGroup">
+    <delete id="deleteAppUserGroupAuth" parameterType="AppUserGroupAuth">
         DELETE
         FROM app_auth_user_group
         WHERE application_id = #{applicationId} AND user_group_id = #{userGroupId}
     </delete>
     
-    <update id="updateAppAuthUserGroup" parameterType="AppAuthUserGroup">
+    <update id="updateAppUserGroupAuth" parameterType="AppUserGroupAuth">
         UPDATE app_auth_user_group
-        SET authority = #{authority} 
-        WHERE application_id = #{applicationId} AND user_group_id = #{userGroupId}
+        SET role = #{role.name}, configuration = #{configuration}
+        WHERE application_id = #{applicationId} AND user_group_id = #{userGroupId} 
     </update>
     
-    <select id="selectAppAuthUserGroupList" resultType="AppAuthUserGroup">
+    <select id="selectAppUserGroupAuthList" resultType="AppUserGroupAuth">
         SELECT *
         FROM app_auth_user_group
-        WHERE application_id = #{applicationId}
-    </select>
-    
-    <select id="selectAppAuthConfig" resultType="String">
-        SELECT configuration
-        FROM app_auth_config
         WHERE application_id = #{applicationId}
     </select>
     

@@ -17,22 +17,20 @@ package com.navercorp.pinpoint.web.dao;
 
 import java.util.List;
 
-import com.navercorp.pinpoint.web.vo.AppAuthUserGroup;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 
 /**
  * @author minwoo.jung
  */
 public interface ApplicationConfigDao {
 
-    String insertAppAuthUserGroup(AppAuthUserGroup appAuth);
+    String insertAppUserGroupAuth(AppUserGroupAuth appAuth);
 
-    void deleteAppAuthUserGroup(AppAuthUserGroup appAuth);
+    void deleteAppUserGroupAuth(AppUserGroupAuth appAuth);
 
-    void updateAppAuthUserGroup(AppAuthUserGroup appAuth);
+    void updateAppUserGroupAuth(AppUserGroupAuth appAuth);
 
-    String selectAppAuthConfiguration(String applicationId);
-
-    List<AppAuthUserGroup> selectAppAuthUserGroupList(String applicationId);
+    List<AppUserGroupAuth> selectAppUserGroupAuthList(String applicationId);
 
     boolean selectExistManager(String userId);
     

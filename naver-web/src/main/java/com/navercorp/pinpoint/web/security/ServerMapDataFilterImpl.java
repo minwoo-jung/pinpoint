@@ -55,7 +55,9 @@ public class ServerMapDataFilterImpl implements ServerMapDataFilter {
             authentication.addApplicationConfiguration(appConfig);
         }
         
-        AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
+        AppAuthConfiguration appAuthConfig = null;
+//        TODO : 개선 필요
+//        AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
         
         if (!appAuthConfig.getServerMapData()) {
             return true;

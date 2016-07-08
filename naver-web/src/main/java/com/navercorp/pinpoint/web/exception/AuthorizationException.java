@@ -20,8 +20,8 @@ package com.navercorp.pinpoint.web.exception;
  */
 public class AuthorizationException extends RuntimeException {
 
-    public AuthorizationException(String message) {
-        super(message);
+    public AuthorizationException(String message, Exception exception) {
+        super(message, exception);
     }
 
 }

@@ -67,11 +67,13 @@ public class NaverPermissionEvaluator implements PermissionEvaluator {
                 pinAuth.addApplicationConfiguration(appConfig);
             }
             
-            AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
+            AppAuthConfiguration appAuthConfig = null;
+            //TODO : 개선 필요
+//            AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
             
-            if (INSPECTOR.equals(permission) && !appAuthConfig.getInspector()) {
-                return true;
-            }
+//            if (INSPECTOR.equals(permission) && !appAuthConfig.getInspector()) {
+//                return true;
+//            }
             if (appConfig.isAffiliatedAppUserGroup(pinAuth.getUserGroupList())) {
                 return true;
             }
