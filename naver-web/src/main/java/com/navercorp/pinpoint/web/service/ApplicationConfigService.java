@@ -16,6 +16,7 @@
 package com.navercorp.pinpoint.web.service;
 
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 
 /**
@@ -27,5 +28,7 @@ public interface ApplicationConfigService {
 
     Role searchMyRole(ApplicationConfiguration appConfig, String userId);
 
-    boolean canEditConfiguration(String applicationId, String userId);
+    boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId);
+
+    boolean canEditConfiguration(String string, String string2);
 }

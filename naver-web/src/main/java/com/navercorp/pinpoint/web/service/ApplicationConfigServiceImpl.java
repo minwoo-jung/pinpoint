@@ -87,23 +87,35 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     }
 
     @Override
-    public boolean canEditConfiguration(String applicationId, String userId) {
-        ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
+    public boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId) {
+        ApplicationConfiguration appConfig = selectApplicationConfiguration(appUserGroupAuth.getApplicationId());
         
-        if (appConfig.getAppUserGroupAuth().size() == 0  && anyOneOccupyAtfirst) {
+        if (appConfig.getAppUserGroupAuth().size() == 0 || existManager(appConfig) == false) {
+            Map<String, UserGroup> userGroups = getUserGroups(userId);
+            if (userGroups.containsKey(appUserGroupAuth.getUserGroupId()) && Role.MANAGER.equals(appUserGroupAuth.getRole())) {
+                return anyOneOccupyAtfirst; 
+            } else {
+                return false;
+            }
+        }
+        if (canEditConfiguration(appUserGroupAuth.getApplicationId(), userId)) {
             return true;
         }
+        
+        return false;
+    }
+    
+    @Override
+    public boolean canEditConfiguration(String applicationId, String userId) {
+        ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
 
         Role myRole = searchMyRole(appConfig, userId);
         if(myRole.equals(Role.MANAGER)) {
             return true;
         }
-   
-        if (existManager(appConfig) == false) {
-           return anyOneOccupyAtfirst; 
-        }
         
         return false;
+        
     }
 
     private boolean existManager(ApplicationConfiguration appConfig) {
@@ -117,7 +129,4 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
         
         return false;
     }
-    
-    
-
 }

@@ -68,21 +68,24 @@ public class ApplicationConfigController {
             result.put("errorMessage", "there is not applicationId/userGroupId/role/configuration. params value : " + params);
             return result;
         }
-        if (canEditConfiguration(params) == false) {
+        
+        String userId = (String) params.get(USER_ID);
+        AppUserGroupAuth appUserGroupAuth = createAppUserGroupAuth(params);
+
+        if (canInsertConfiguration(appUserGroupAuth, userId) == false) {
             result.put("errorCode", "500");
             result.put("errorMessage", "user can not edit configuration . params value : " + params);
             return result;
         }
         
-        AppUserGroupAuth appUserGroupAuth = createAppUserGroupAuth(params);
         appConfigDao.insertAppUserGroupAuth(appUserGroupAuth);
 
         result.put("result", "SUCCESS");
         return result;
     }
 
-    private boolean canEditConfiguration(Map<Object, Object> params) {
-        return appConfigService.canEditConfiguration((String)params.get(APPLICATION_ID), (String)params.get(USER_ID));
+    private boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId) {
+        return appConfigService.canInsertConfiguration(appUserGroupAuth, userId);
     }
 
     private AppUserGroupAuth createAppUserGroupAuth(Map<Object, Object> params) {
@@ -157,9 +160,9 @@ public class ApplicationConfigController {
             return result;
         }
         
-        if(appConfigService.canEditConfiguration(applicationId, userId) == false) {
+        if(canEditConfiguration(params) == false) {
             result.put("errorCode", "500");
-            result.put("errorMessage", "user can not edit configuration . params value : " + params);
+            result.put("errorMessage", "User can not edit configuration. params value : " + params);
             return result;
         }
         
@@ -182,7 +185,7 @@ public class ApplicationConfigController {
         }
         if (canEditConfiguration(params) == false) {
             result.put("errorCode", "500");
-            result.put("errorMessage", "user can not edit configuration . params value : " + params);
+            result.put("errorMessage", "User can not edit configuration . params value : " + params);
             return result;
         }
         
@@ -193,6 +196,10 @@ public class ApplicationConfigController {
         return result;
     }
     
+    private boolean canEditConfiguration(Map<Object, Object> params) {
+        return appConfigService.canEditConfiguration((String)params.get(APPLICATION_ID), (String)params.get(USER_ID));
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId, @RequestParam(USER_ID) String userId) {
@@ -200,7 +207,7 @@ public class ApplicationConfigController {
 
         if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(applicationId)) {
             result.put("errorCode", "500");
-            result.put("errorMessage", "there is not userId/applicationId to insert alarm rule");
+            result.put("errorMessage", "there is not userId/applicationId.");
             return result;
         }
         
