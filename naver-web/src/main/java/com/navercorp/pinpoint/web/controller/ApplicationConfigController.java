@@ -45,7 +45,7 @@ public class ApplicationConfigController {
     private static final String USER_GROUP_ID = "userGroupId";
     private static final String USER_ID = "userId";
     private static final String ROLE = "role";
-    private static final String MY_AUTHORITY = "myAuthority";
+    private static final String MY_ROLE = "myRole";
     private static final String CONFIGURATION = "configuration";
     private static final String USER_GROUP_AUTH_LIST = "userGroupAuthList";
     
@@ -78,7 +78,7 @@ public class ApplicationConfigController {
         Role role = appConfigService.searchMyRole(applicationId, userId);
 
         result.put("result", "SUCCESS");
-        result.put(MY_AUTHORITY, role.toString());
+        result.put(MY_ROLE, role.toString());
         return result;
     }
 
@@ -174,7 +174,7 @@ public class ApplicationConfigController {
         Role role = appConfigService.searchMyRole(applicationId, userId);
         
         result.put("result", "SUCCESS");
-        result.put(MY_AUTHORITY, role.toString());
+        result.put(MY_ROLE, role.toString());
         return result;
     }
     
@@ -200,7 +200,7 @@ public class ApplicationConfigController {
         Role role = appConfigService.searchMyRole((String)params.get(APPLICATION_ID), (String)params.get(USER_ID));
 
         result.put("result", "SUCCESS");
-        result.put(MY_AUTHORITY, role.toString());
+        result.put(MY_ROLE, role.toString());
         return result;
     }
     
@@ -221,7 +221,7 @@ public class ApplicationConfigController {
         
         ApplicationConfiguration appConfig = appConfigService.selectApplicationConfiguration(applicationId);
         Role role = appConfigService.searchMyRole(applicationId, userId);
-        result.put(MY_AUTHORITY, role.toString());
+        result.put(MY_ROLE, role.toString());
         result.put(USER_GROUP_AUTH_LIST, appConfig.getAppUserGroupAuth());
         
         return result;

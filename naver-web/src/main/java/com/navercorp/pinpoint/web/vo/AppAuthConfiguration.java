@@ -15,8 +15,6 @@
  */
 package com.navercorp.pinpoint.web.vo;
 
-import java.util.Map;
-
 /**
  * @author minwoo.jung
  *
