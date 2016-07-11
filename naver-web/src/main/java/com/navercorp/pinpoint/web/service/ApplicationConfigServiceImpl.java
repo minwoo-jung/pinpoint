@@ -58,7 +58,8 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     }
 
     @Override
-    public Role searchMyRole(ApplicationConfiguration appConfig, String userId) {
+    public Role searchMyRole(String applicationId, String userId) {
+        ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
         Map<String, AppUserGroupAuth> appUserGroupAuthes = appConfig.getAppUserGroupAuthes();
         Map<String, UserGroup> myUserGroups = getUserGroups(userId); 
         Role myRole = Role.GUEST; 
@@ -107,9 +108,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     
     @Override
     public boolean canEditConfiguration(String applicationId, String userId) {
-        ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
-
-        Role myRole = searchMyRole(appConfig, userId);
+        Role myRole = searchMyRole(applicationId, userId);
         if(myRole.equals(Role.MANAGER)) {
             return true;
         }
@@ -128,5 +127,20 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
         }
         
         return false;
+    }
+
+    @Override
+    public void updateAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth) {
+        applicationConfigDao.updateAppUserGroupAuth(appUserGroupAuth);
+    }
+
+    @Override
+    public void deleteAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth) {
+        applicationConfigDao.deleteAppUserGroupAuth(appUserGroupAuth);
+    }
+
+    @Override
+    public void insertAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth) {
+        applicationConfigDao.insertAppUserGroupAuth(appUserGroupAuth);
     }
 }

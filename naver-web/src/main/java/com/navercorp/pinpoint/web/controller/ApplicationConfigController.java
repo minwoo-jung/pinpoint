@@ -17,7 +17,6 @@
 package com.navercorp.pinpoint.web.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
@@ -52,9 +50,6 @@ public class ApplicationConfigController {
     private static final String USER_GROUP_AUTH_LIST = "userGroupAuthList";
     
     @Autowired
-    ApplicationConfigDao appConfigDao;
-    
-    @Autowired
     ApplicationConfigService appConfigService;
     
     @RequestMapping(method = RequestMethod.POST)
@@ -70,6 +65,7 @@ public class ApplicationConfigController {
         }
         
         String userId = (String) params.get(USER_ID);
+        String applicationId = (String) params.get(APPLICATION_ID);
         AppUserGroupAuth appUserGroupAuth = createAppUserGroupAuth(params);
 
         if (canInsertConfiguration(appUserGroupAuth, userId) == false) {
@@ -78,9 +74,11 @@ public class ApplicationConfigController {
             return result;
         }
         
-        appConfigDao.insertAppUserGroupAuth(appUserGroupAuth);
+        appConfigService.insertAppUserGroupAuth(appUserGroupAuth);
+        Role role = appConfigService.searchMyRole(applicationId, userId);
 
         result.put("result", "SUCCESS");
+        result.put(MY_AUTHORITY, role.toString());
         return result;
     }
 
@@ -156,7 +154,7 @@ public class ApplicationConfigController {
         Map<String, String> result = new HashMap<>();
         if (StringUtils.isEmpty(applicationId) || StringUtils.isEmpty(userGroupId) || StringUtils.isEmpty(userId)) {
             result.put("errorCode", "500");
-            result.put("errorMessage", "there is not applicationId/userGroupId/userId.");
+            result.put("errorMessage", "There is not applicationId/userGroupId/userId.");
             return result;
         }
         
@@ -166,9 +164,17 @@ public class ApplicationConfigController {
             return result;
         }
         
-        appConfigDao.deleteAppUserGroupAuth(new AppUserGroupAuth(applicationId, userGroupId, "", null));
-
+        if(Role.GUEST.getName().equals(userGroupId)) {
+            result.put("errorCode", "500");
+            result.put("errorMessage", "You can't delete guest userGroup. params value : " + params);
+            return result;
+        }
+        
+        appConfigService.deleteAppUserGroupAuth(new AppUserGroupAuth(applicationId, userGroupId, "", null));
+        Role role = appConfigService.searchMyRole(applicationId, userId);
+        
         result.put("result", "SUCCESS");
+        result.put(MY_AUTHORITY, role.toString());
         return result;
     }
     
@@ -180,7 +186,7 @@ public class ApplicationConfigController {
         
         if (isvalid == false) {
             result.put("errorCode", "500");
-            result.put("errorMessage", "there is not applicationId/userGroupId/role/configuration. params value : " + params);
+            result.put("errorMessage", "There is not applicationId/userGroupId/role/configuration. params value : " + params);
             return result;
         }
         if (canEditConfiguration(params) == false) {
@@ -190,9 +196,11 @@ public class ApplicationConfigController {
         }
         
         AppUserGroupAuth appUserGroupAuth = createAppUserGroupAuth(params);
-        appConfigDao.updateAppUserGroupAuth(appUserGroupAuth);
+        appConfigService.updateAppUserGroupAuth(appUserGroupAuth);
+        Role role = appConfigService.searchMyRole((String)params.get(APPLICATION_ID), (String)params.get(USER_ID));
 
         result.put("result", "SUCCESS");
+        result.put(MY_AUTHORITY, role.toString());
         return result;
     }
     
@@ -207,12 +215,12 @@ public class ApplicationConfigController {
 
         if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(applicationId)) {
             result.put("errorCode", "500");
-            result.put("errorMessage", "there is not userId/applicationId.");
+            result.put("errorMessage", "There is not userId/applicationId.");
             return result;
         }
         
         ApplicationConfiguration appConfig = appConfigService.selectApplicationConfiguration(applicationId);
-        Role role = appConfigService.searchMyRole(appConfig, userId);
+        Role role = appConfigService.searchMyRole(applicationId, userId);
         result.put(MY_AUTHORITY, role.toString());
         result.put(USER_GROUP_AUTH_LIST, appConfig.getAppUserGroupAuth());
         

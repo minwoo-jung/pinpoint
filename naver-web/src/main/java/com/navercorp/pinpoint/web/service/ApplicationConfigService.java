@@ -26,9 +26,15 @@ public interface ApplicationConfigService {
 
     ApplicationConfiguration selectApplicationConfiguration(String applicationId);
 
-    Role searchMyRole(ApplicationConfiguration appConfig, String userId);
+    Role searchMyRole(String applicationId, String userId);
 
     boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId);
 
     boolean canEditConfiguration(String string, String string2);
+
+    void updateAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth);
+
+    void deleteAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth);
+
+    void insertAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth);
 }
