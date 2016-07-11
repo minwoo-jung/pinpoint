@@ -100,13 +100,13 @@ public class ApplicationConfigController {
             configuration.setApiMetaData((Boolean)configMap.get("apiMetaData"));
         }
         if (configMap.get("sqlMetaData") != null) {
-            configuration.setApiMetaData((Boolean)configMap.get("sqlMetaData"));
+            configuration.setSqlMetaData((Boolean)configMap.get("sqlMetaData"));
         }
         if (configMap.get("paramMetaData") != null) {
-            configuration.setApiMetaData((Boolean)configMap.get("paramMetaData"));
+            configuration.setParamMetaData((Boolean)configMap.get("paramMetaData"));
         }
         if (configMap.get("serverMapData") != null) {
-            configuration.setApiMetaData((Boolean)configMap.get("serverMapData"));
+            configuration.setServerMapData((Boolean)configMap.get("serverMapData"));
         }
         
         return configuration;
