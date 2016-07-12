@@ -121,7 +121,7 @@
 							"applicationId": currentApplicationId.split("@")[0]
 						}, function( oServerData ) {
 							console.log( oServerData );
-							if ( oServerData.errorcode ) {
+							if ( oServerData.errorCode ) {
 								showAlert( oServerData );
 							} else {
 								bIsLoaded = true;
@@ -391,7 +391,7 @@
 				return;
 			}
 			Remote.add( $http, oNewAuth, function( oServerData ) {
-				if ( oServerData.errorcode ) {
+				if ( oServerData.errorCode ) {
 					cbFail( oServerData );
 				} else {
 					oNewAuth.ruleId = oServerData.ruleId;
@@ -426,7 +426,7 @@
 				"applicationId": oAuth.applicationId,
 				"userGroupId": oAuth.userGroupId
 			}, function( oServerData ) {
-				if (oServerData.errorcode) {
+				if (oServerData.errorCode) {
 					cbFail(oServerData);
 				} else {
 					self.cancelAction(AlarmUtilService, $node);
@@ -464,7 +464,7 @@
 			// 	return;
 			// }
 			Remote.update( $http, oUpdateAuth, function( oServerData ) {
-				if (oServerData.errorcode) {
+				if (oServerData.errorCode) {
 					cbFail(oServerData);
 				} else {
 					self.cancelAction(AlarmUtilService, $node, aEditNodes, function () {});
