@@ -15,18 +15,19 @@
  */
 package com.navercorp.pinpoint.web.security;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
-import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.Application;
-import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 
 /**
  * @author minwoo.jung
  */
-public class ServerMapDataFilterImpl implements ServerMapDataFilter {
+public class ServerMapDataFilterImpl extends AppConfigOrganizer implements ServerMapDataFilter {
 
     @Autowired
     ApplicationConfigService applicationConfigService;
@@ -37,33 +38,22 @@ public class ServerMapDataFilterImpl implements ServerMapDataFilter {
     }
     
     private boolean isAuthorized(Application application) {
-        if (SecurityContextHolder.getContext().getAuthentication() == null) { 
+        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null) { 
             return false;
         }
-        
-        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.isPinpointManager()) {
+        if (isPinpointManager(authentication)) {
             return true;
         }
         
         String applicationId = application.getName();
-        ApplicationConfiguration appConfig = authentication.getApplicationConfiguration(applicationId);
+        List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
         
-        if (appConfig == null) {
-            appConfig = applicationConfigService.selectApplicationConfiguration(applicationId);
-            authentication.addApplicationConfiguration(appConfig);
-        }
-        
-        AppAuthConfiguration appAuthConfig = null;
-//        TODO : 개선 필요
-//        AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
-        
-        if (!appAuthConfig.getServerMapData()) {
-            return true;
-        }
-        if (appConfig.isAffiliatedAppUserGroup(authentication.getUserGroupList())) {
-            return true;
+        for(AppUserGroupAuth auth : userGroupAuths) {
+            if (auth.getAppAuthConfiguration().getServerMapData() == false) {
+                return true;
+            }
         }
         
         return false;

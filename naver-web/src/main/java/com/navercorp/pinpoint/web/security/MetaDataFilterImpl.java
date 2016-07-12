@@ -15,7 +15,9 @@
  */
 package com.navercorp.pinpoint.web.security;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,18 +28,18 @@ import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.web.calltree.span.CallTreeNode;
 import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
-import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
+import com.navercorp.pinpoint.web.service.UserGroupService;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
+import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.callstacks.Record;
 import com.navercorp.pinpoint.web.vo.callstacks.RecordFactory;
 
 /**
  * @author minwoo.jung
  */
-public class MetaDataFilterImpl implements MetaDataFilter {
-
-    @Autowired
-    ApplicationConfigService applicationConfigService;
+public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFilter {
     
     @Override
     public boolean filter(SpanAlign spanAlign, MetaData metaData) {
@@ -45,39 +47,40 @@ public class MetaDataFilterImpl implements MetaDataFilter {
     }
 
     private boolean isAuthorized(SpanAlign spanAlign, MetaData metaData) {
-        if (SecurityContextHolder.getContext().getAuthentication() == null) { 
+        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null) { 
             return false;
         }
-        
-        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.isPinpointManager()) {
+        if (isPinpointManager(authentication)) {
             return true;
         }
         
         String applicationId = spanAlign.getApplicationId();
-        ApplicationConfiguration appConfig = authentication.getApplicationConfiguration(applicationId);
+        List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
         
-        if (appConfig == null) {
-            appConfig = applicationConfigService.selectApplicationConfiguration(applicationId);
-            authentication.addApplicationConfiguration(appConfig);
-        }
-        
-        AppAuthConfiguration appAuthConfig = null;
-        //TODO : 개선 필요
-//        AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
-        
-        if (MetaData.SQL.equals(metaData) && !appAuthConfig.getSqlMetaData()) {
-            return true;
-        } else if (MetaData.API.equals(metaData) && !appAuthConfig.getApiMetaData()) {
-            return true;
-        } else if (MetaData.PARAM.equals(metaData) && !appAuthConfig.getParamMetaData()) {
-            return true;
+        if (MetaData.SQL.equals(metaData)) {
+            for(AppUserGroupAuth auth : userGroupAuths) {
+                if (auth.getAppAuthConfiguration().getSqlMetaData() == false) {
+                    return true;
+                }
+            }
+            return false;
+        } else if (MetaData.API.equals(metaData)) {
+            for(AppUserGroupAuth auth : userGroupAuths) {
+                if (auth.getAppAuthConfiguration().getApiMetaData() == false) {
+                    return true;
+                }
+            }
+            return false;
+        } else if (MetaData.PARAM.equals(metaData)) {
+            for(AppUserGroupAuth auth : userGroupAuths) {
+                if (auth.getAppAuthConfiguration().getParamMetaData() == false) {
+                    return true;
+                }
+            }
+            return false;
         } 
-        
-        if (appConfig.isAffiliatedAppUserGroup(authentication.getUserGroupList())) {
-            return true;
-        }
         
         return false;
     }
