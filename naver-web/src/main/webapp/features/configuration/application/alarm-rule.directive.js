@@ -247,7 +247,6 @@
 						loadRuleSet();
 					});
 					scope.$on("change.your.role", function( event, bCanModify ) {
-						console.log( "change.your.role :", bCanModify );
 						bYouCanModify = bCanModify;
 					});
 					scope.onCloseAlert = function() {
