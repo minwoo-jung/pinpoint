@@ -138,6 +138,7 @@
 						return null;
 					}
 					function showWarningAlert() {
+						AlarmUtilService.hide( $elGuide );
 						showAlert({
 							errorMessage: "권한이 없습니다."
 						});
