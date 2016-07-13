@@ -13,16 +13,16 @@
 		}],
 		"authorityList": [{
 			"key": "serverMapData",
-			"view": "ServerMap 데이터 노출"
+			"view": "ServerMap 데이터 비노출"
 		},{
 			"key": "apiMetaData",
-			"view": "API 데이터 노출"
+			"view": "API 데이터 비노출"
 		},{
 			"key": "paramMetaData",
-			"view": "Parameter 데이터 노출"
+			"view": "Parameter 데이터 비노출"
 		},{
 			"key": "sqlMetaData",
-			"view": "SQL 데이터 노출"
+			"view": "SQL 데이터 비노출"
 		}],
 		HAS_NOT_AUTHORITY: "권한이 없습니다."
 	});
@@ -142,13 +142,13 @@
 						}, showAlert );
 					}
 					function showAddArea() {
-						aEditNodes[0].find("select[name=userGroup]").prop( "disabled", "" );
+						aEditNodes[0].find("select[name=userGroup]").prop( "disabled", "" ).show();
 						aEditNodes[0].find("input").hide();
 						if ( isManager( myRole ) ) {
-							aEditNodes[0].find("select[name=role]").val( "" ).prop( "disabled", "" );
+							aEditNodes[0].find("select[name=role]").val( "" ).prop( "disabled", "" ).show();
 							aEditNodes[1].find("input[type=checkbox]").prop( "checked", false );
 						} else {
-							aEditNodes[0].find("select[name=role]").val( getManager() ).prop( "disabled", "disabled" );
+							aEditNodes[0].find("select[name=role]").val( getManager() ).prop( "disabled", "disabled" ).show();
 							aEditNodes[1].find("input[type=checkbox]").prop( "checked", true );
 						}
 						$elWrapper.find("tbody").prepend( aEditNodes[1] ).prepend( aEditNodes[0] );
