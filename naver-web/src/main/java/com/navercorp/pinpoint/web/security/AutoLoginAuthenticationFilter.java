@@ -53,7 +53,7 @@ public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private ApplicationConfigDao configDao;
     
-    private String userId = "KR14966";
+    private String userId;
     
     public void setUserId(String userId) {
         this.userId = userId;

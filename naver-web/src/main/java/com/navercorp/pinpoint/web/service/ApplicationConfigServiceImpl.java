@@ -47,14 +47,16 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     @Override
     public ApplicationConfiguration selectApplicationConfiguration(String applicationId) {
         List<AppUserGroupAuth> appAuthUserGroupList = applicationConfigDao.selectAppUserGroupAuthList(applicationId);
-        
-        if(appAuthUserGroupList.size() == 0) {
+        return new ApplicationConfiguration(applicationId, appAuthUserGroupList);
+    }
+    
+    @Override
+    public void initApplicationConfiguration(String applicationId) {
+        List<AppUserGroupAuth> appUserGroupAuthList = applicationConfigDao.selectAppUserGroupAuthList(applicationId);
+        if(appUserGroupAuthList.size() == 0) {
             AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, Role.GUEST.toString(), Role.GUEST.toString(), new AppAuthConfiguration());
             applicationConfigDao.insertAppUserGroupAuth(appUserGroupAuth);
-            appAuthUserGroupList.add(appUserGroupAuth);
         }
-            
-        return new ApplicationConfiguration(applicationId, appAuthUserGroupList);
     }
 
     @Override

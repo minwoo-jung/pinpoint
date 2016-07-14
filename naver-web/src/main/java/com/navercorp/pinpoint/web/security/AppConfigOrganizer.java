@@ -40,10 +40,6 @@ public class AppConfigOrganizer {
             }
         }
         
-        if (containedUserGroups.size() == 0) {
-            containedUserGroups.add(appUserGroupAuthes.get(Role.GUEST.getName()));
-        }
-        
         return containedUserGroups;
     }
 

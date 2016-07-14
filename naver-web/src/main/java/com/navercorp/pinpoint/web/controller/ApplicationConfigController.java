@@ -219,6 +219,7 @@ public class ApplicationConfigController {
             return result;
         }
         
+        appConfigService.initApplicationConfiguration(applicationId);
         ApplicationConfiguration appConfig = appConfigService.selectApplicationConfiguration(applicationId);
         Role role = appConfigService.searchMyRole(applicationId, userId);
         result.put(MY_ROLE, role.toString());

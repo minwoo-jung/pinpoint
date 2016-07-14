@@ -37,4 +37,6 @@ public interface ApplicationConfigService {
     void deleteAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth);
 
     void insertAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth);
+
+    void initApplicationConfiguration(String applicationId);
 }
