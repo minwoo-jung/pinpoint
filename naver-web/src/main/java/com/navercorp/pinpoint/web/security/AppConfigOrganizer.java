@@ -20,14 +20,18 @@ public class AppConfigOrganizer {
     @Autowired
     UserGroupService userGroupService;
     
-
-    protected List<AppUserGroupAuth> userGroupAuth(PinpointAuthentication authentication, String applicationId) {
+    protected ApplicationConfiguration getApplicationConfiguration(PinpointAuthentication authentication, String applicationId) {
         ApplicationConfiguration appConfig = authentication.getApplicationConfiguration(applicationId);
         
         if (appConfig == null) {
             appConfig = applicationConfigService.selectApplicationConfiguration(applicationId);
             authentication.addApplicationConfiguration(appConfig);
         }
+        
+        return appConfig;
+    }
+    protected List<AppUserGroupAuth> userGroupAuth(PinpointAuthentication authentication, String applicationId) {
+        ApplicationConfiguration appConfig = getApplicationConfiguration(authentication, applicationId);
         
         Map<String, AppUserGroupAuth> appUserGroupAuthes = appConfig.getAppUserGroupAuthes();
         List<UserGroup> userGroupList = userGroupService.selectUserGroupByUserId(authentication.getPrincipal());
@@ -41,6 +45,16 @@ public class AppConfigOrganizer {
         }
         
         return containedUserGroups;
+    }
+    
+    protected boolean isEmptyUserGroup(PinpointAuthentication authentication, String applicationId) {
+        ApplicationConfiguration appConfig = getApplicationConfiguration(authentication, applicationId);
+        
+        if (appConfig.getAppUserGroupAuthes().size() == 0) {
+            return true;
+        }
+        
+        return false;
     }
 
     protected boolean isPinpointManager(PinpointAuthentication authentication) {

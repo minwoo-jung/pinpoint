@@ -57,11 +57,11 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
         }
         
         String applicationId = spanAlign.getApplicationId();
-        List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
-        
-        if (userGroupAuths.size() == 0) {
+        if(isEmptyUserGroup(authentication, applicationId)) {
             return true;
         }
+
+        List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
         if (MetaData.SQL.equals(metaData)) {
             for(AppUserGroupAuth auth : userGroupAuths) {
                 if (auth.getAppAuthConfiguration().getSqlMetaData() == false) {
