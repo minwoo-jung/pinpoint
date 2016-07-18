@@ -33,7 +33,7 @@ public class AppConfigOrganizer {
         ApplicationConfiguration appConfig = getApplicationConfiguration(authentication, applicationId);
         
         Map<String, AppUserGroupAuth> appUserGroupAuthes = appConfig.getAppUserGroupAuthes();
-        List<UserGroup> userGroupList = userGroupService.selectUserGroupByUserId(authentication.getPrincipal());
+        List<UserGroup> userGroupList = authentication.getUserGroupList();
         
         List<AppUserGroupAuth> containedUserGroups = new ArrayList<>();
         

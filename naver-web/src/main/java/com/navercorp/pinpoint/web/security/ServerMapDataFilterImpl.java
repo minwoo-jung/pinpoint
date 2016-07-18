@@ -30,6 +30,8 @@ import com.navercorp.pinpoint.web.applicationmap.Node;
 import com.navercorp.pinpoint.web.applicationmap.ServerInstance;
 import com.navercorp.pinpoint.web.applicationmap.ServerInstanceList;
 import com.navercorp.pinpoint.web.applicationmap.histogram.NodeHistogram;
+import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallData;
+import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallDataMap;
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.Application;
@@ -84,19 +86,38 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
 
     @Override
     public ApplicationMap dataFiltering(ApplicationMap map) {
-        Collection<Node> nodes = map.getNodes();
+//        Collection<Node> nodes = map.getNodes();
 //        for(Node node : nodes) {
+//            System.out.println(node);
+//        }
 //            nodeDataFiltering(node);
 //        }
 //
-//        Collection<Link> links = map.getLinks();
-//        for(Link link : links) {
+        Collection<Link> links = map.getLinks();
+        for(Link link : links) {
+            System.out.println("!!!!!!!!!!!start!!!!!!!!!!!!!");
+            System.out.println(link);
+            LinkCallDataMap sourceLinkCallDataMap = link.getSourceLinkCallDataMap();
+            Collection<LinkCallData> linkDataList = sourceLinkCallDataMap.getLinkDataList();
+            for(LinkCallData data : linkDataList) {
+                System.out.println(data);
+            }
+            System.out.println("###########################");
+            
+            LinkCallDataMap targetLinkCallDataMap = link.getTargetLinkCallDataMap();
+            Collection<LinkCallData> dataList = targetLinkCallDataMap.getLinkDataList();
+            for(LinkCallData data : dataList) {
+                System.out.println(data);
+            }
 //            linkDataFiltering(link);
-//        }
+            System.out.println("!!!!!!!!!!!!end!!!!!!!!!!!!!!");
+        }
+        
         return map;
     }
 
     private void nodeDataFiltering(Node node) {
+        // 노드를 새롭게 생성하는 형태로 개선.
         final boolean authorized = isAuthorized(node.getApplication());
         node.setAuthorized(authorized);
         
@@ -114,8 +135,19 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
       final boolean isAuthFromApp = isAuthorized(link.getFrom().getApplication());
       final boolean isAuthToApp = isAuthorized(link.getTo().getApplication());
       
+      if (isAuthFromApp && isAuthToApp) {
+          return;
+      }
+      
+      //노드도 새로 만들어야함. 
+//      Link newLink = new Link(link.getCreateType(), link.getFrom(), link.getTo(), link.getRange());
+      Node from = link.getFrom();
+      Application fromApp = from.getApplication();
+      Node to = link.getTo();
+      Application toApp = to.getApplication();
+      
+      // 노드 변경된것 사용하도록 해야함. set으로 application 변경하면 안됨.
       if (isAuthFromApp == false) {
-          Node from = link.getFrom();
           from.setAuthorized(isAuthFromApp);
           
           Application unAuthApp = new Application(from.getApplication().getName(), ServiceType.UNAUTHORIZED);
@@ -124,9 +156,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
           from.setServerInstanceList(unAuthServerInstanceList);
           
       }
-      
       if (isAuthToApp == false) {
-          Node to = link.getTo();
           to.setAuthorized(isAuthFromApp);
           
           Application unAuthApp = new Application(to.getApplication().getName(), ServiceType.UNAUTHORIZED);
@@ -134,5 +164,44 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
           
           to.setServerInstanceList(unAuthServerInstanceList);
       }
+//      if (isAuthFromApp == false || isAuthToApp == false) {
+//          LinkCallDataMap newSourceLinkCallDataMap = createLinkCallDataMap(link.getSourceLinkCallDataMap(), isAuthFromApp, isAuthToApp);
+//          newLink.addSource(newSourceLinkCallDataMap);
+//          LinkCallDataMap newTargetLinkCallDataMap = createLinkCallDataMap(link.getTargetLinkCallDataMap(), isAuthFromApp, isAuthToApp);
+//          newLink.addTarget(newTargetLinkCallDataMap);
+//      }
+
+      
+    }
+
+    private LinkCallDataMap createLinkCallDataMap(LinkCallDataMap linkCallDataMap, final boolean isAuthFromApp, final boolean isAuthToApp) {
+        Collection<LinkCallData> sourceLinkDataList = linkCallDataMap.getLinkDataList();
+        LinkCallDataMap newLinkCallDataMap = new LinkCallDataMap(linkCallDataMap.getTimeWindow());
+
+        for (LinkCallData linkCallData : sourceLinkDataList) {
+            String fromId;
+            ServiceType fromServiceType;
+            if (isAuthFromApp) {
+                fromId = linkCallData.getSource();
+                fromServiceType = linkCallData.getSourceServiceType();
+            } else {
+                fromId = UNAUTHORIZED_AGENT;
+                fromServiceType = ServiceType.UNAUTHORIZED;
+            }
+            
+            String toId;
+            ServiceType toServiceType;
+            if (isAuthToApp) {
+                toId = linkCallData.getTarget();
+                toServiceType = linkCallData.getTargetServiceType();
+            } else {  
+                toId = UNAUTHORIZED_AGENT;
+                toServiceType = ServiceType.UNAUTHORIZED;
+            }
+            
+            newLinkCallDataMap.addCallData(fromId, fromServiceType, toId, toServiceType, linkCallData.getTimeHistogram());
+        }
+        
+        return newLinkCallDataMap;
     }
 }
