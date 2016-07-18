@@ -96,5 +96,43 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         return map;
     }
 
+    private void nodeDataFiltering(Node node) {
+        final boolean authorized = isAuthorized(node.getApplication());
+        node.setAuthorized(authorized);
+        
+        if (authorized == false) {
+            Application unAuthApp = new Application(node.getApplication().getName(), ServiceType.UNAUTHORIZED);
+            node.setApplication(unAuthApp);
+            
+            NodeHistogram nodeHistogram = node.getNodeHistogram();
+            node.setNodeHistogram(new NodeHistogram(unAuthApp, nodeHistogram.getRange()));
+        }
+    }
 
+
+    private void linkDataFiltering(Link link) {
+      final boolean isAuthFromApp = isAuthorized(link.getFrom().getApplication());
+      final boolean isAuthToApp = isAuthorized(link.getTo().getApplication());
+      
+      if (isAuthFromApp == false) {
+          Node from = link.getFrom();
+          from.setAuthorized(isAuthFromApp);
+          
+          Application unAuthApp = new Application(from.getApplication().getName(), ServiceType.UNAUTHORIZED);
+          from.setApplication(unAuthApp);
+          
+          from.setServerInstanceList(unAuthServerInstanceList);
+          
+      }
+      
+      if (isAuthToApp == false) {
+          Node to = link.getTo();
+          to.setAuthorized(isAuthFromApp);
+          
+          Application unAuthApp = new Application(to.getApplication().getName(), ServiceType.UNAUTHORIZED);
+          to.setApplication(unAuthApp);
+          
+          to.setServerInstanceList(unAuthServerInstanceList);
+      }
+    }
 }
