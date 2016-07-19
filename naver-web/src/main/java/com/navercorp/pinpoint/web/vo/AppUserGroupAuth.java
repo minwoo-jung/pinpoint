@@ -37,7 +37,7 @@ public class AppUserGroupAuth {
     
     public AppUserGroupAuth() {
     }
-    
+
     public AppUserGroupAuth(String applicationId, String userGroupId, String roleName, AppAuthConfiguration appAuthConfig) {
         this.applicationId = applicationId;
         this.userGroupId = userGroupId;
