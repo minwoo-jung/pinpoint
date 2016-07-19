@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.navercorp.pinpoint.web.exception.AuthorizationException;
+import com.navercorp.pinpoint.web.exception.AuthorityException;
 import com.navercorp.pinpoint.web.view.AppUserGroupAuthSerializer;
 
 /**
@@ -97,7 +97,7 @@ public class AppUserGroupAuth {
             try {
                 appAuthConfig = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(configuration, AppAuthConfiguration.class);
             } catch (Exception e) {
-                throw new AuthorizationException("Can not load authorization configuration of application", e);
+                throw new AuthorityException("Can not load authorization configuration of application", e);
             }
         }
         
