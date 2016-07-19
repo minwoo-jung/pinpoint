@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 import com.navercorp.pinpoint.web.vo.UserGroup;
 
@@ -40,6 +41,11 @@ public class AppConfigOrganizer {
         for(UserGroup userGroup : userGroupList) {
             if (appUserGroupAuthes.containsKey(userGroup.getId())) {
                 containedUserGroups.add(appUserGroupAuthes.get(userGroup.getId()));
+                continue;
+            }
+            if (Role.GUEST.getName().equals(userGroup.getId())) {
+                containedUserGroups.add(appUserGroupAuthes.get(userGroup.getId()));
+                continue;
             }
         }
         

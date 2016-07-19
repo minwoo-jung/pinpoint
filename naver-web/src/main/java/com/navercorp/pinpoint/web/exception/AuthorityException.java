@@ -18,10 +18,14 @@ package com.navercorp.pinpoint.web.exception;
 /**
  * @author minwoo.jung
  */
-public class AuthorizationException extends RuntimeException {
+public class AuthorityException extends RuntimeException {
 
-    public AuthorizationException(String message, Exception exception) {
+    public AuthorityException(String message, Exception exception) {
         super(message, exception);
+    }
+    
+    public AuthorityException(String message) {
+        super(message);
     }
 
 }
