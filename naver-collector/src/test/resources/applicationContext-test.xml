@@ -32,6 +32,8 @@
         </property>
     </bean>
 
+    <util:properties id="pinpoint_collector_properties" location="classpath:pinpoint-collector.properties" />
+
     <import resource="classpath:applicationContext-hbase.xml"></import>
 
     <bean id="hBaseAdminTemplate" class="com.navercorp.pinpoint.common.hbase.HBaseAdminTemplate" destroy-method="close">
