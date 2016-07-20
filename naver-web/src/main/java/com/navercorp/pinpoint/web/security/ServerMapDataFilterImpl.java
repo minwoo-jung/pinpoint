@@ -83,7 +83,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         }
         List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
         for(AppUserGroupAuth auth : userGroupAuths) {
-            if (auth.getAppAuthConfiguration().getServerMapData() == false) {
+            if (auth.getConfiguration().getServerMapData() == false) {
                 return true;
             }
         }

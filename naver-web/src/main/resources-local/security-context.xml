@@ -38,7 +38,7 @@
      -->
 
     <!-- #############인증과정 없이 권한 데이터 취득 ##############-->
-    <!--
+    <!--  
     <http pattern="/*.html" security="none" />
     <http pattern="/*.js" security="none" />
     <http pattern="/*.jpg" security="none" />

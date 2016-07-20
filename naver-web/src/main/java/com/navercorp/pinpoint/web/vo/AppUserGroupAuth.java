@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.web.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,8 +32,8 @@ public class AppUserGroupAuth {
     private String applicationId;
     private String userGroupId;
     private String roleName;
-    private String configuration;
-    private AppAuthConfiguration appAuthConfig;
+    private String configurationString;
+    private AppAuthConfiguration configuration;
     
     public AppUserGroupAuth() {
     }
@@ -43,20 +42,34 @@ public class AppUserGroupAuth {
         this.applicationId = applicationId;
         this.userGroupId = userGroupId;
         this.roleName = roleName;
-        this.appAuthConfig = appAuthConfig;
+        this.configuration = appAuthConfig;
         try {
-            this.configuration = new ObjectMapper().writeValueAsString(appAuthConfig);
+            this.configurationString = new ObjectMapper().writeValueAsString(appAuthConfig);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(String configuration) {
+    public void setConfiguration(AppAuthConfiguration configuration) {
         this.configuration = configuration;
+        try {
+            this.configurationString = new ObjectMapper().writeValueAsString(configuration);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public void setConfigurationString(String configurationString) {
+        this.configurationString = configurationString;
+        try {
+            configuration = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(configurationString, AppAuthConfiguration.class);
+        } catch (Exception e) {
+            throw new AuthorityException("Can not load authorization configuration of application", e);
+        }
+    }
+    
+    public String getConfigurationString(String configurationString) {
+        return this.configurationString;
     }
 
     public String getApplicationId() {
@@ -67,7 +80,6 @@ public class AppUserGroupAuth {
         this.applicationId = applicationId;
     }
     
-    @JsonIgnore
     public String getNumber() {
         return number;
     }
@@ -92,18 +104,9 @@ public class AppUserGroupAuth {
         this.roleName = roleName;
     }
     
-    public AppAuthConfiguration getAppAuthConfiguration(){
-        if (appAuthConfig == null) {
-            try {
-                appAuthConfig = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(configuration, AppAuthConfiguration.class);
-            } catch (Exception e) {
-                throw new AuthorityException("Can not load authorization configuration of application", e);
-            }
-        }
-        
-        return appAuthConfig;
+    public AppAuthConfiguration getConfiguration(){
+        return configuration;
     }
-
 
     public enum Role {
         GUEST("guest", 1), USER("user", 2), MANAGER("manager", 3);

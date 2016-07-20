@@ -30,7 +30,7 @@ public interface ApplicationConfigService {
 
     boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId);
 
-    boolean canEditConfiguration(String string, String string2);
+    boolean canEditConfiguration(String applicationId, String userId);
 
     void updateAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth);
 

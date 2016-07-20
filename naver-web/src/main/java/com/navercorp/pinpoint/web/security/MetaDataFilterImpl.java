@@ -64,21 +64,21 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
         List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
         if (MetaData.SQL.equals(metaData)) {
             for(AppUserGroupAuth auth : userGroupAuths) {
-                if (auth.getAppAuthConfiguration().getSqlMetaData() == false) {
+                if (auth.getConfiguration().getSqlMetaData() == false) {
                     return true;
                 }
             }
             return false;
         } else if (MetaData.API.equals(metaData)) {
             for(AppUserGroupAuth auth : userGroupAuths) {
-                if (auth.getAppAuthConfiguration().getApiMetaData() == false) {
+                if (auth.getConfiguration().getApiMetaData() == false) {
                     return true;
                 }
             }
             return false;
         } else if (MetaData.PARAM.equals(metaData)) {
             for(AppUserGroupAuth auth : userGroupAuths) {
-                if (auth.getAppAuthConfiguration().getParamMetaData() == false) {
+                if (auth.getConfiguration().getParamMetaData() == false) {
                     return true;
                 }
             }

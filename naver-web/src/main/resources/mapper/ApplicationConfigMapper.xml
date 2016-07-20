@@ -5,7 +5,7 @@
 
     <insert id="insertAppUserGroupAuth" parameterType="AppUserGroupAuth" useGeneratedKeys="true" keyProperty="ruleId">
         INSERT INTO app_auth_user_group (application_id, user_group_id, role, configuration)
-        VALUES (#{applicationId}, #{userGroupId}, #{role.name}, #{configuration})
+        VALUES (#{applicationId}, #{userGroupId}, #{role.name}, #{configurationString})
     </insert>
     
     <delete id="deleteAppUserGroupAuth" parameterType="AppUserGroupAuth">
@@ -16,12 +16,12 @@
     
     <update id="updateAppUserGroupAuth" parameterType="AppUserGroupAuth">
         UPDATE app_auth_user_group
-        SET role = #{role.name}, configuration = #{configuration}
+        SET role = #{role.name}, configuration = #{configurationString}
         WHERE application_id = #{applicationId} AND user_group_id = #{userGroupId} 
     </update>
     
     <select id="selectAppUserGroupAuthList" resultType="AppUserGroupAuth">
-        SELECT *
+        SELECT application_id, user_group_id, role, configuration AS configurationString
         FROM app_auth_user_group
         WHERE application_id = #{applicationId}
     </select>
