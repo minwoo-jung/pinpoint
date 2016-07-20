@@ -25,14 +25,14 @@
 				<tbody>
 				<tr class="_edit1 hide-me" style="background-color:#F3FBFF;">
 					<td class="col-md-5">
-						<select class="form-control" name="userGroup" style="width:95%;height: 26px;">
+						<select class="form-control" name="userGroup" style="width:95%;height: 26px;padding:2px;">
 							<option value="">Select user group</option>
 							<option ng-repeat="userGroup in userGroupList" value="{{userGroup.id}}">{{userGroup.id}}</option>
 						</select>
 						<input type="text" value="guest" class="form-control" disabled/>
 					</td>
 					<td class="col-md-5">
-						<select class="form-control" name="role" style="width:95%;height: 26px;">
+						<select class="form-control" name="role" style="width:95%;height: 26px;padding:2px;">
 							<option value="">Select user Role</option>
 							<option ng-repeat="role in roleList | limitTo: 2" value="{{role.key}}">{{role.view}}</option>
 						</select>

@@ -120,7 +120,6 @@
 							"userId": globalConfig.userId,
 							"applicationId": currentApplicationId.split("@")[0]
 						}, function( oServerData ) {
-							console.log( oServerData );
 							if ( oServerData.errorCode ) {
 								showAlert( oServerData );
 							} else {
@@ -146,11 +145,10 @@
 						aEditNodes[0].find("input").hide();
 						if ( isManager( myRole ) ) {
 							aEditNodes[0].find("select[name=role]").val( "" ).prop( "disabled", "" ).show();
-							aEditNodes[1].find("input[type=checkbox]").prop( "checked", false );
 						} else {
 							aEditNodes[0].find("select[name=role]").val( getManager() ).prop( "disabled", "disabled" ).show();
-							aEditNodes[1].find("input[type=checkbox]").prop( "checked", true );
 						}
+						aEditNodes[1].find("input[type=checkbox]").prop( "checked", false );
 						$elWrapper.find("tbody").prepend( aEditNodes[1] ).prepend( aEditNodes[0] );
 						AlarmUtilService.hide( aEditNodes[0].find( CONSTS.DIV_EDIT ) );
 						AlarmUtilService.show( aEditNodes[0].find( CONSTS.DIV_ADD ) );
