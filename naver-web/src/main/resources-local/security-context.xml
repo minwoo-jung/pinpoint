@@ -38,6 +38,7 @@
      -->
 
     <!-- #############인증과정 없이 권한 데이터 취득 ##############-->
+    <!--
     <http pattern="/*.html" security="none" />
     <http pattern="/*.js" security="none" />
     <http pattern="/*.jpg" security="none" />
@@ -73,4 +74,5 @@
     
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
+    -->
 </beans:beans>
