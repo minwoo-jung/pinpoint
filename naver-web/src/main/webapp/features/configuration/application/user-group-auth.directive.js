@@ -208,13 +208,16 @@
 						return isGuest( role );
 					};
 					scope.onViewAuth = function( $event, index ) {
-						cancelPreviousWork();
+						console.log( "onViewAuth Start : ", index );
 						var $node = AlarmUtilService.getNode( $event, "tr" );
-						if ( $workingNode !== null && isSameNode( $node ) === true ) {
+						if ( $workingNode !== null && isSameNode( $node ) === true && $elSubView.hasClass("hide-me") === false ) {
+							console.log( "null or same", $workingNode );
+							cancelPreviousWork();
 							$workingNode = null;
 							$elSubView.addClass( "hide-me" );
 							return;
 						}
+						cancelPreviousWork();
 						$workingNode = $node;
 						$workingNode.after( $elSubView );
 						for( var p in userGroupAuthList[index].configuration ) {
@@ -223,6 +226,7 @@
 						$elSubView.removeClass( "hide-me" );
 					};
 					scope.onAddAuth = function() {
+						console.log( "onAddAuth Start : " );
 						if ( currentApplicationId === "" ) {
 							showAlert({
 								errorMessage: "Application을 먼저 선택해 주세요"
@@ -241,6 +245,7 @@
 						});
 					};
 					scope.onApplyAddAuth = function() {
+						console.log( "onApplyAddAuth Start : ", $workingNode );
 						AddAuth.applyAction( AlarmUtilService, getNewAuth( false ), aEditNodes, $elLoading, function( applicationId, userGroupId ) {
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
 								var oAuth = userGroupAuthList[i];
@@ -258,23 +263,28 @@
 						}, showAlert, $http );
 					};
 					scope.onCancelAddAuth = function() {
+						console.log( "onCancelAddAuth Start: " );
 						AddAuth.cancelAction( aEditNodes, hideEditArea );
 					};
 					scope.onRemoveAuth = function( $event ) {
+						console.log( "onRemoveAuth Start :");
 						if ( hasAuthority() === false ) {
 							return;
 						}
+						cancelPreviousWork();
 						var $node = AlarmUtilService.getNode( $event, "tr" );
-						if ( $workingNode !== null && isSameNode( $node ) === false ) {
-							cancelPreviousWork( $node );
-						}
+						// if ( $workingNode !== null && isSameNode( $node ) === false ) {
+						// 	cancelPreviousWork( $node );
+						// }
 						$workingNode = $node;
 						RemoveAuth.onAction( AlarmUtilService, $workingNode );
 					};
 					scope.onCancelRemoveAuth = function() {
+						console.log( "onCancelRemoveAuth Start : ");
 						RemoveAuth.cancelAction( AlarmUtilService, $workingNode );
 					};
 					scope.onApplyRemoveAuth = function( index ) {
+						console.log( "onApplyRemoveAuth Start : ", index );
 						var oAuth = userGroupAuthList[index];
 						RemoveAuth.applyAction( AlarmUtilService, $workingNode, $elLoading, oAuth, globalConfig.userId, function( applicationId, userGroupId, newMyRole ) {
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
@@ -291,6 +301,7 @@
 						}, showAlert );
 					};
 					scope.onUpdateAuth = function( $event, index ) {
+						console.log( "onUpdateAuth Start :", index );
 						if ( hasAuthority() === false ) {
 							return;
 						}
@@ -302,9 +313,11 @@
 						});
 					};
 					scope.onCancelUpdateAuth = function() {
+						console.log( "onCancelUpdateAuth Start : " );
 						UpdateAuth.cancelAction( AlarmUtilService, $workingNode, aEditNodes, hideEditArea );
 					};
 					scope.onApplyUpdateAuth = function() {
+						console.log( "onApplyUpdateAuth Start : " );
 						UpdateAuth.applyAction( AlarmUtilService, getNewAuth( true ), aEditNodes, $workingNode, $elLoading, function( applicationId, userGroupId ) {
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
 								var oAuth = userGroupAuthList[i];
@@ -314,7 +327,6 @@
 							}
 							return false;
 						},function( oUpdateAuth, newMyRole ) {
-							console.log( "update :", oUpdateAuth );
 							hideEditArea();
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
 								if ( userGroupAuthList[i].userGroupId == oUpdateAuth.userGroupId ) {
@@ -340,6 +352,9 @@
 					scope.onCloseAlert = function() {
 						AlarmUtilService.hide( $elAlert );
 					};
+					scope.checkClickEvent = function( $event ) {
+						console.log( "checkClickEvent : ", $event );
+					}
 				}
 			};
 		}

@@ -13,7 +13,7 @@
 	</div>
 	<div class="some-list-content">
 		<div class="wrapper" style="height:207px;overflow-y:scroll;">
-			<table>
+			<table  ng-click="checkClickEvent( $event )">
 				<thead>
 				<tr>
 					<th class="col-md-5">Group name</th>
@@ -69,7 +69,7 @@
 				<tr ng-repeat="auth in userGroupAuthList" id="{{prefix + auth.userGroupId + $index}}">
 					<td class="col-md-4">{{auth.userGroupId}}</td>
 					<td class="col-md-3">{{auth.role}}</td>
-					<td class="col-md-2" style="text-align:center"><span class="glyphicon glyphicon-info-sign" ng-click="onViewAuth($event, $index)"></span></td>
+					<td class="col-md-2" style="text-align:center" ng-click="onViewAuth($event, $index)"><span class="glyphicon glyphicon-info-sign"></span></td>
 					<td class="col-md-2">
 						<div class="_normal">
 							<span class="glyphicon glyphicon-pencil edit" aria-hidden="true" ng-click="onUpdateAuth($event, $index)"></span>
