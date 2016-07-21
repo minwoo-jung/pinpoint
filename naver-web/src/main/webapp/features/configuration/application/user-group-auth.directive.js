@@ -202,7 +202,7 @@
 						};
 					}
 					function addOKRemove( $el, bView ) {
-						$el.removeClass( "glyphicon-remove glyphicon-ok" ).addClass( bView ? "glyphicon-ok" : "glyphicon-remove" );
+						$el.removeClass( "glyphicon-unchecked glyphicon-check" ).addClass( bView ? "glyphicon-check" : "glyphicon-unchecked" );
 					}
 					scope.isGuest = function( role ) {
 						return isGuest( role );
