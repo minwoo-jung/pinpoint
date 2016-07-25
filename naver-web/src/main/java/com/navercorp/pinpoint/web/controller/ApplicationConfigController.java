@@ -155,7 +155,7 @@ public class ApplicationConfigController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId, @RequestParam(USER_ID) String userId, @RequestHeader(SSO_USER) String headerUserId) {
+    public Map<String, Object> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId, @RequestHeader(SSO_USER) String userId) {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(applicationId)) {
