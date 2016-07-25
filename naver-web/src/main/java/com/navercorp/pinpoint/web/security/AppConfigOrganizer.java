@@ -37,15 +37,15 @@ public class AppConfigOrganizer {
         List<UserGroup> userGroupList = authentication.getUserGroupList();
         
         List<AppUserGroupAuth> containedUserGroups = new ArrayList<>();
-        
         for(UserGroup userGroup : userGroupList) {
             if (appUserGroupAuthes.containsKey(userGroup.getId())) {
                 containedUserGroups.add(appUserGroupAuthes.get(userGroup.getId()));
-                continue;
             }
-            if (Role.GUEST.getName().equals(userGroup.getId())) {
-                containedUserGroups.add(appUserGroupAuthes.get(userGroup.getId()));
-                continue;
+        }
+        if (containedUserGroups.size() == 0) {
+            AppUserGroupAuth appUserGroupAuth = appUserGroupAuthes.get(Role.GUEST.getName());
+            if (appUserGroupAuth != null) {
+                containedUserGroups.add(appUserGroupAuth);
             }
         }
         

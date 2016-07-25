@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +43,7 @@ import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 @RequestMapping(value={"/application/userGroupAuth"})
 public class ApplicationConfigController {
     
+    private static final String SSO_USER = "SSO_USER";
     private static final String APPLICATION_ID = "applicationId";
     private static final String USER_ID = "userId";
     private static final String MY_ROLE = "myRole";
@@ -52,7 +54,7 @@ public class ApplicationConfigController {
     
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, String> insertUserGroup(@RequestBody AppUserGroupAuthParam params) {
+    public Map<String, String> insertUserGroup(@RequestBody AppUserGroupAuthParam params, @RequestHeader(value=SSO_USER, required=false) String userId) {
         Map<String, String> result = new HashMap<>();
         boolean isvalid = ValidationCheck(params);
         
@@ -91,7 +93,7 @@ public class ApplicationConfigController {
 
     @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
-    public Map<String, String> deleteUserGroup(@RequestBody AppUserGroupAuthParam params) {
+    public Map<String, String> deleteUserGroup(@RequestBody AppUserGroupAuthParam params, @RequestHeader(value=SSO_USER, required=false) String userId) {
         Map<String, String> result = new HashMap<>();
         if (StringUtils.isEmpty(params.getApplicationId()) || StringUtils.isEmpty(params.getUserGroupId()) || StringUtils.isEmpty(params.getUserId())) {
             result.put("errorCode", "500");
@@ -121,7 +123,7 @@ public class ApplicationConfigController {
     
     @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
-    public Map<String, String> updateUserGroup(@RequestBody AppUserGroupAuthParam params) {
+    public Map<String, String> updateUserGroup(@RequestBody AppUserGroupAuthParam params, @RequestHeader(value=SSO_USER, required=false) String userId) {
         Map<String, String> result = new HashMap<>();
         boolean isvalid = ValidationCheck(params);
         
@@ -150,7 +152,7 @@ public class ApplicationConfigController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId, @RequestParam(USER_ID) String userId) {
+    public Map<String, Object> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId, @RequestParam(USER_ID) String userId, @RequestHeader(value=SSO_USER, required=false) String headerUserId) {
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(applicationId)) {

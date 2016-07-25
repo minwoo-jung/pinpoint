@@ -19,11 +19,18 @@
 package com.navercorp.pinpoint.web.security;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +51,9 @@ import com.navercorp.pinpoint.web.vo.UserGroup;
  */
 @Component
 public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
+    
+    private static final String SSO_USER = "SSO_USER";
+    
     @Autowired
     private UserService userService;
     
@@ -75,7 +85,60 @@ public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
-        chain.doFilter(request, response);
+        
+        CustomHttpServletRequest customRequest = new CustomHttpServletRequest(request);
+        customRequest.putHeader(SSO_USER, userId);
+        chain.doFilter(customRequest, response);
         SecurityContextHolder.clearContext();
     }
+    
+    final class CustomHttpServletRequest extends HttpServletRequestWrapper {
+        private final Map<String, String> headers;
+     
+        public CustomHttpServletRequest(HttpServletRequest request){
+            super(request);
+            this.headers = new HashMap<String, String>();
+        }
+        
+        public void putHeader(String name, String value){
+            this.headers.put(name, value);
+        }
+     
+        public String getHeader(String name) {
+            String headerValue = headers.get(name);
+            if (headerValue != null){
+                return headerValue;
+            }
+            return ((HttpServletRequest) getRequest()).getHeader(name);
+        }
+     
+        public Enumeration<String> getHeaderNames() {
+            Set<String> set = new HashSet<String>(headers.keySet());
+            Enumeration<String> e = ((HttpServletRequest) getRequest()).getHeaderNames();
+            while (e.hasMoreElements()) {
+                String n = e.nextElement();
+                set.add(n);
+            }
+     
+            return Collections.enumeration(set);
+        }
+        
+        public Enumeration<String> getHeaders(String name) {
+            Set<String> set = new HashSet<String>();
+            String headerValue = headers.get(name);
+            if (headerValue != null){
+                set.add(headerValue);
+            }
+            
+            Enumeration<String> headers = super.getHeaders(name);
+            while (headers.hasMoreElements()) {
+                String value = headers.nextElement();
+                set.add(value);
+            }
+            
+            return Collections.enumeration(set);
+        };
+        
+    }
+
 }

@@ -7,13 +7,8 @@
 
     <!-- #############인증과정  거쳐서 권한 데이터 취득 ##############-->
     <!-- 
-    <http pattern="/*.pinpointws" security="none" />
-    <http pattern="/*.js" security="none" />
-    <http pattern="/*.jpg" security="none" />
-    <http pattern="/*.png" security="none" />
-    <http pattern="/*.gif" security="none" />
-    
     <http auto-config="true">
+    <custom-filter position="PRE_AUTH_FILTER" ref="localAuthenticationFilter"/>
         <intercept-url pattern="/index.html" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/*.html" access="permitAll" /> 
         <intercept-url pattern="/login.pinpoint" access="permitAll" /> 
@@ -28,6 +23,8 @@
         </headers>
     </http>
 
+    <beans:bean id="localAuthenticationFilter" class="com.navercorp.pinpoint.web.security.LocalAuthenticationFilter"/>
+
     <authentication-manager>
         <authentication-provider ref="localAuthenticationProvider"/>
     </authentication-manager>
@@ -35,16 +32,10 @@
 
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
-     -->
-
+    -->
+    
     <!-- #############인증과정 없이 권한 데이터 취득 ##############-->
-    <!--  
-    <http pattern="/*.html" security="none" />
-    <http pattern="/*.js" security="none" />
-    <http pattern="/*.jpg" security="none" />
-    <http pattern="/*.png" security="none" />
-    <http pattern="/*.gif" security="none" />
-        
+    <!-- 
     <http auto-config="true">
         <custom-filter position="PRE_AUTH_FILTER" ref="autoLoginAuthenticationFilter"/>
         <intercept-url pattern="/**.pinpoint" access="permitAll" />
@@ -74,5 +65,5 @@
     
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
-    -->
+     -->
 </beans:beans>
