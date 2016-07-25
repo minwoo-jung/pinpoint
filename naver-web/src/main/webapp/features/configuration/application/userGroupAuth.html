@@ -26,7 +26,7 @@
 					<td class="col-md-5">
 						<select class="form-control" name="role" style="width:95%;height: 26px;padding:2px;">
 							<option value="">Select user Role</option>
-							<option ng-repeat="role in roleList | limitTo: 2" value="{{role.key}}">{{role.view}}</option>
+							<option ng-repeat="role in roleList | limitTo: 2" value="{{role.key}}">{{role.view.toUpperCase()}}</option>
 						</select>
 						<input type="text" value="guest" class="form-control" disabled/>
 					</td>
@@ -60,7 +60,7 @@
 				</tr>
 				<tr ng-repeat="auth in userGroupAuthList" id="{{prefix + auth.userGroupId + $index}}">
 					<td class="col-md-4">{{auth.userGroupId}}</td>
-					<td class="col-md-3">{{auth.role}}</td>
+					<td class="col-md-3">{{auth.role.toUpperCase()}}</td>
 					<td class="col-md-2" style="text-align:center" ng-click="onViewAuth($event, $index)"><span class="glyphicon glyphicon-info-sign"></span></td>
 					<td class="col-md-2">
 						<div class="_normal">

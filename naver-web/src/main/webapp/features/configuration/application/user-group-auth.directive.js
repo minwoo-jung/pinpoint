@@ -126,10 +126,33 @@
 								bIsLoaded = true;
 								setMyRole( oServerData.myRole );
 								userGroupAuthList = oServerData.userGroupAuthList;
+								sortByRole( userGroupAuthList );
 								scope.userGroupAuthList = userGroupAuthList;
 								AlarmUtilService.hide($elLoading);
 							}
 						}, showAlert);
+					}
+					var oSortPoint = {
+						"manager": 30,
+						"user": 20,
+						"guest": 10
+					};
+					function sortByRole( list ) {
+
+						list.sort(function( a, b ) {
+							return oSortPoint[b.role] - oSortPoint[a.role];
+						});
+						list.sort(function( a, b ) {
+							if ( a.role === b.role ) {
+								if ( a.userGroupId < b.userGroupId ) {
+									return -1;
+								} else if ( a.userGroupId > b.userGroupId ) {
+									return 1;
+								}
+								return 0;
+							}
+							return 0;
+						});
 					}
 					function setMyRole( newRole ) {
 						myRole = newRole;
@@ -258,6 +281,7 @@
 							// AnalyticsService.sendMain( AnalyticsService.CONST.CLK_ALARM_CREATE_RULE );
 							setMyRole( newMyRole );
 							userGroupAuthList.push( oNewAuth );
+							sortByRole( userGroupAuthList );
 							scope.userGroupAuthList = userGroupAuthList;
 							hideEditArea();
 						}, showAlert, $http );
