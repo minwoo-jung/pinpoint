@@ -3,6 +3,7 @@ package com.navercorp.pinpoint.web.dao.hbase.filter;
 import java.io.IOException;
 import java.util.List;
 
+import com.navercorp.pinpoint.common.server.util.SpanUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Scan;
@@ -26,7 +27,6 @@ import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseSystemException;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
 import com.navercorp.pinpoint.common.hbase.PooledHTableFactory;
-import com.navercorp.pinpoint.common.util.SpanUtils;
 import com.navercorp.pinpoint.web.mapper.TraceIndexScatterMapper;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.ResponseTimeRange;
