@@ -3,10 +3,12 @@ package com.navercorp.pinpoint.web.service;
 import com.navercorp.pinpoint.collector.dao.TracesDao;
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
+import com.navercorp.pinpoint.common.server.bo.SpanBo;
+import com.navercorp.pinpoint.common.server.bo.SpanFactory;
 import com.navercorp.pinpoint.common.server.util.AcceptedTimeService;
+import com.navercorp.pinpoint.common.server.util.SpanUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
-import com.navercorp.pinpoint.common.util.SpanUtils;
 import com.navercorp.pinpoint.common.util.TransactionIdUtils;
 import com.navercorp.pinpoint.thrift.dto.TAnnotation;
 import com.navercorp.pinpoint.thrift.dto.TAnnotationValue;
@@ -56,8 +58,13 @@ public class SpanServiceTest {
     @Autowired
     private AcceptedTimeService acceptedTimeService;
 
+    private SpanFactory spanFactory;
+
     @Before
     public void before() throws TException {
+        spanFactory = new SpanFactory();
+        spanFactory.setAcceptedTimeService(acceptedTimeService);
+
         TSpan span = createRootSpan();
         com.navercorp.pinpoint.common.util.TransactionId id = TransactionIdUtils.parseTransactionId(span.getTransactionId());
         logger.debug("id:{}", new TransactionId(id.getAgentId(), id.getAgentStartTime(), id.getTransactionSequence()));
@@ -120,8 +127,9 @@ public class SpanServiceTest {
         // reorder(spans);
     }
 
-    private void insert(TSpan span) throws TException {
+    private void insert(TSpan tSpan) throws TException {
         acceptedTimeService.accept(this.spanAcceptTime);
+        SpanBo span = spanFactory.buildSpanBo(tSpan);
         traceDao.insert(span);
     }
 
