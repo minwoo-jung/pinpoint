@@ -117,7 +117,6 @@
 					function loadData() {
 						AlarmUtilService.show($elLoading);
 						Remote.load( $http, {
-							"userId": globalConfig.userId,
 							"applicationId": currentApplicationId.split("@")[0]
 						}, function( oServerData ) {
 							if ( oServerData.errorCode ) {
@@ -211,7 +210,6 @@
 						var roleId = aEditNodes[0].find("select[name=role]").val();
 
 						return {
-							"userId": globalConfig.userId,
 							"applicationId": currentApplicationId.split("@")[0],
 							"userGroupId": userGroupId === "" && bIsUpdate === true ? getGuest() : userGroupId,
 							"role": roleId === "" && bIsUpdate === true ? getGuest() : roleId,
@@ -310,7 +308,7 @@
 					scope.onApplyRemoveAuth = function( index ) {
 						console.log( "onApplyRemoveAuth Start : ", index );
 						var oAuth = userGroupAuthList[index];
-						RemoveAuth.applyAction( AlarmUtilService, $workingNode, $elLoading, oAuth, globalConfig.userId, function( applicationId, userGroupId, newMyRole ) {
+						RemoveAuth.applyAction( AlarmUtilService, $workingNode, $elLoading, oAuth, function( applicationId, userGroupId, newMyRole ) {
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
 								var oAuth = userGroupAuthList[i];
 								if ( oAuth.applicationId == applicationId && oAuth.userGroupId == userGroupId ) {
@@ -455,11 +453,10 @@
 				this._bIng = false;
 			}
 		},
-		applyAction: function( AlarmUtilService, $node, $elLoading, oAuth, userId, cbSuccess, cbFail ) {
+		applyAction: function( AlarmUtilService, $node, $elLoading, oAuth, cbSuccess, cbFail ) {
 			var self = this;
 			AlarmUtilService.show( $elLoading );
 			Remote.remove( {
-				"userId": userId,
 				"applicationId": oAuth.applicationId,
 				"userGroupId": oAuth.userGroupId
 			}, function( oServerData ) {
