@@ -59,10 +59,6 @@
     </bean>
 
     <bean id="spanMapper" class="com.navercorp.pinpoint.web.mapper.SpanMapper"/>
-    <bean id="annotationMapper" class="com.navercorp.pinpoint.web.mapper.AnnotationMapper"/>
-    <bean id="spanAnnotationMapper" class="com.navercorp.pinpoint.web.mapper.SpanMapper">
-        <property name="annotationMapper" ref="annotationMapper"/>
-    </bean>
 
     <bean id="jsonObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
 
