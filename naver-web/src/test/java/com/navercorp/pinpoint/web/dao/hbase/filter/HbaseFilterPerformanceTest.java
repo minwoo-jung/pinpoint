@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.navercorp.pinpoint.common.server.util.SpanUtils;
+import com.navercorp.pinpoint.common.util.TransactionId;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Scan;
@@ -31,7 +32,7 @@ import com.navercorp.pinpoint.web.mapper.TraceIndexScatterMapper;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.ResponseTimeRange;
 import com.navercorp.pinpoint.web.vo.SelectedScatterArea;
-import com.navercorp.pinpoint.web.vo.TransactionId;
+
 import com.navercorp.pinpoint.web.vo.scatter.Dot;
 import com.sematext.hbase.wd.AbstractRowKeyDistributor;
 import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash;

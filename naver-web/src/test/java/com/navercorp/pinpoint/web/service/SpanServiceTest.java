@@ -1,12 +1,13 @@
 package com.navercorp.pinpoint.web.service;
 
-import com.navercorp.pinpoint.collector.dao.TracesDao;
+import com.navercorp.pinpoint.collector.dao.TraceDao;
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
 import com.navercorp.pinpoint.common.server.bo.SpanBo;
 import com.navercorp.pinpoint.common.server.bo.SpanFactory;
 import com.navercorp.pinpoint.common.server.util.AcceptedTimeService;
 import com.navercorp.pinpoint.common.server.util.SpanUtils;
+import com.navercorp.pinpoint.common.util.TransactionId;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.TransactionIdUtils;
@@ -15,7 +16,6 @@ import com.navercorp.pinpoint.thrift.dto.TAnnotationValue;
 import com.navercorp.pinpoint.thrift.dto.TSpan;
 import com.navercorp.pinpoint.web.calltree.span.CallTreeIterator;
 import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
-import com.navercorp.pinpoint.web.vo.TransactionId;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.thrift.TException;
 import org.junit.Before;
@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SpanServiceTest {
 
     @Autowired
-    private TracesDao traceDao;
+    private TraceDao traceDao;
 
     @Autowired
     private SpanService spanService;
@@ -66,8 +66,8 @@ public class SpanServiceTest {
         spanFactory.setAcceptedTimeService(acceptedTimeService);
 
         TSpan span = createRootSpan();
-        com.navercorp.pinpoint.common.util.TransactionId id = TransactionIdUtils.parseTransactionId(span.getTransactionId());
-        logger.debug("id:{}", new TransactionId(id.getAgentId(), id.getAgentStartTime(), id.getTransactionSequence()));
+        TransactionId transactionId = TransactionIdUtils.parseTransactionId(span.getTransactionId());
+        logger.debug("id:{}", transactionId);
         insert(span);
         deleteSpans.add(span);
 
@@ -116,10 +116,9 @@ public class SpanServiceTest {
     }
 
     private void doRead(TSpan span) {
-        com.navercorp.pinpoint.common.util.TransactionId id = TransactionIdUtils.parseTransactionId(span.getTransactionId());
-        TransactionId traceId = new TransactionId(id.getAgentId(), id.getAgentStartTime(), id.getTransactionSequence());
+        TransactionId transactionId = TransactionIdUtils.parseTransactionId(span.getTransactionId());
         // selectedHint를 좀더 정확히 수정할것.
-        SpanResult spanResult = spanService.selectSpan(traceId, spanAcceptTime);
+        SpanResult spanResult = spanService.selectSpan(transactionId, spanAcceptTime);
         CallTreeIterator iterator = spanResult.getCallTree();
         for (SpanAlign spanAlign : iterator.values()) {
             logger.info("depth:{} {}", spanAlign.getDepth(), spanAlign.getSpanBo());
@@ -139,7 +138,6 @@ public class SpanServiceTest {
         // 별도 생성기로 뽑을것.
         List<TAnnotation> ano = Collections.emptyList();
         long time = this.spanAcceptTime;
-        int andIncrement = id.getAndIncrement();
 
         TSpan span = new TSpan();
 
