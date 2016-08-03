@@ -37,7 +37,7 @@ import com.navercorp.pinpoint.common.hbase.distributor.RangeOneByteSimpleHash;
 import com.navercorp.pinpoint.common.server.bo.ActiveTraceHistogramBo;
 import com.navercorp.pinpoint.common.trace.SlotType;
 import com.navercorp.pinpoint.common.util.BytesUtils;
-import com.navercorp.pinpoint.common.util.RowKeyUtils;
+import com.navercorp.pinpoint.common.server.util.RowKeyUtils;
 import com.navercorp.pinpoint.common.util.TimeUtils;
 import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix;
 
