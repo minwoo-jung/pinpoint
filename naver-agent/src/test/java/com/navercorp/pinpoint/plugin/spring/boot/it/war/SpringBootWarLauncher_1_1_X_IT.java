@@ -20,6 +20,8 @@ import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.plugin.spring.boot.SpringBootPluginTestSuite;
+import com.navercorp.pinpoint.plugin.spring.boot.TestAppSpringBootVersion;
+import com.navercorp.pinpoint.plugin.spring.boot.TestAppVersion;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.OnClassLoader;
@@ -38,6 +40,7 @@ import java.util.List;
 @OnClassLoader(system = true, child = false)
 // exclude 1.1.2.RELEASE - https://github.com/spring-projects/spring-boot/issues/1145
 @Dependency({"org.springframework.boot:spring-boot-loader:[1.1.0.RELEASE,1.1.2.RELEASE),[1.1.3.RELEASE,1.1.max]"})
+@TestAppVersion(TestAppSpringBootVersion.PRE_1_4)
 public class SpringBootWarLauncher_1_1_X_IT extends WarLauncherItBase {
 
     @Test
@@ -45,6 +48,7 @@ public class SpringBootWarLauncher_1_1_X_IT extends WarLauncherItBase {
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.verifyServerType(SERVER_TYPE);
         List<String> expectedLibs = new ExpectedLibraries()
+                .withExecutable()
                 .withClasspathLib()
                 .withPackagedLib()
                 .getLibraries();

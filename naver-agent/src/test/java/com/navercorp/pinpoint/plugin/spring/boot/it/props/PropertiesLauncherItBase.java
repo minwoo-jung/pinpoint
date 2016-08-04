@@ -17,6 +17,9 @@
 package com.navercorp.pinpoint.plugin.spring.boot.it.props;
 
 import com.navercorp.pinpoint.plugin.spring.boot.SpringBootItBase;
+import com.navercorp.pinpoint.plugin.spring.boot.TestAppSpringBootVersion;
+
+import java.util.List;
 
 /**
  * @author HyunGil Jeong
@@ -26,13 +29,30 @@ public class PropertiesLauncherItBase extends SpringBootItBase {
     public static final String EXPECTED_CONTEXT = "Spring Boot (PropertiesLauncher)";
 
     @Override
-    protected String getExecutable() {
-        return EXECUTABLE + ".jar";
+    protected List<String> getPackagedLibs() {
+        List<String> packagedLibs = super.getPackagedLibs();
+        // 1.4+ adds BOOT-INF/classes and it's subdirectories
+        if (getTestAppSpringBootVersion() == TestAppSpringBootVersion.POST_1_4) {
+            packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes"));
+            packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com"));
+            packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com/navercorp"));
+            packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com/navercorp/pinpoint"));
+        }
+        return packagedLibs;
+    }
+
+    @Override
+    protected String getExtension() {
+        return ".jar";
     }
 
     @Override
     protected String getEntryPath() {
-        return "lib";
+        // 1.4+ creates a separate BOOT-INF directory to package libraries
+        if (getTestAppSpringBootVersion() == TestAppSpringBootVersion.POST_1_4) {
+            return BOOT_INF + "/lib";
+        } else {
+            return "lib";
+        }
     }
-
 }

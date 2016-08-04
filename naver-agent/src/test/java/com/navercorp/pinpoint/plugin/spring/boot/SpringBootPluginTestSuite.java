@@ -31,8 +31,15 @@ import java.util.List;
  */
 public abstract class SpringBootPluginTestSuite extends PinpointPluginTestSuite {
 
+    protected final TestAppVersion version;
+
     public SpringBootPluginTestSuite(Class<?> testClass) throws InitializationError, ArtifactResolutionException, DependencyResolutionException {
         super(testClass);
+        TestAppVersion version = testClass.getAnnotation(TestAppVersion.class);
+        if (version == null) {
+            throw new IllegalArgumentException("@TestAppVersion must be specified");
+        }
+        this.version = version;
     }
 
     @Override
@@ -57,9 +64,8 @@ public abstract class SpringBootPluginTestSuite extends PinpointPluginTestSuite 
 
         @Override
         protected SpringBootPluginTestCase createRunner(PinpointPluginTestContext context, PinpointPluginTestInstance delegate) {
-            return new SpringBootPluginTestCase(context, delegate, LauncherType.JAR);
+            return new SpringBootPluginTestCase(context, delegate, this.version.value(), LauncherType.JAR);
         }
-
     }
 
     public static class SpringBootPluginWarLauncherTestSuite extends SpringBootPluginTestSuite {
@@ -70,7 +76,7 @@ public abstract class SpringBootPluginTestSuite extends PinpointPluginTestSuite 
 
         @Override
         protected SpringBootPluginTestCase createRunner(PinpointPluginTestContext context, PinpointPluginTestInstance delegate) {
-            return new SpringBootPluginTestCase(context, delegate, LauncherType.WAR);
+            return new SpringBootPluginTestCase(context, delegate, this.version.value(), LauncherType.WAR);
         }
     }
 
@@ -82,7 +88,7 @@ public abstract class SpringBootPluginTestSuite extends PinpointPluginTestSuite 
 
         @Override
         protected SpringBootPluginTestCase createRunner(PinpointPluginTestContext context, PinpointPluginTestInstance delegate) {
-            return new SpringBootPluginTestCase(context, delegate, LauncherType.PROPERTIES);
+            return new SpringBootPluginTestCase(context, delegate, this.version.value(), LauncherType.PROPERTIES);
         }
     }
 }

@@ -45,7 +45,6 @@ public class SpringBootPluginTestCase implements PinpointPluginTestInstance {
 
     private static final String ARCHIVE_PATH = "test/spring-boot/archive";
     private static final String EXECUTABLE_PATH = "test/spring-boot/test-executables";
-    private static final String JAR_NAME = "spring-boot-test-1.0";
 
     private final PinpointPluginTestContext context;
     private final PinpointPluginTestInstance delegate;
@@ -56,12 +55,13 @@ public class SpringBootPluginTestCase implements PinpointPluginTestInstance {
 
     private File executableJar;
 
-    public SpringBootPluginTestCase(PinpointPluginTestContext context, PinpointPluginTestInstance delegate, LauncherType launcherType) {
+    public SpringBootPluginTestCase(PinpointPluginTestContext context, PinpointPluginTestInstance delegate, TestAppSpringBootVersion version, LauncherType launcherType) {
         this.context = context;
         this.delegate = delegate;
         this.launcherType = launcherType;
         this.testId = this.delegate.getTestId();
-        this.testJar = new File(this.launcherType.getPath(ARCHIVE_PATH), this.launcherType.getJarName(JAR_NAME));
+        String executableName = version.getExecutableName();
+        this.testJar = new File(this.launcherType.getPath(ARCHIVE_PATH), this.launcherType.getJarName(executableName));
         this.springBootBase = new File(this.launcherType.getPath(EXECUTABLE_PATH));
     }
 

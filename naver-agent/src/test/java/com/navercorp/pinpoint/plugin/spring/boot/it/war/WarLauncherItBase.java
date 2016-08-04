@@ -39,13 +39,12 @@ public class WarLauncherItBase extends SpringBootItBase {
     }
 
     @Override
-    protected String getExecutable() {
-        return EXECUTABLE + ".war";
+    protected String getExtension() {
+        return ".war";
     }
 
     @Override
     protected String getEntryPath() {
         return WEB_INF + "/lib";
     }
-
 }

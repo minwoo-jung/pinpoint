@@ -20,6 +20,8 @@ import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.plugin.spring.boot.SpringBootPluginTestSuite;
+import com.navercorp.pinpoint.plugin.spring.boot.TestAppSpringBootVersion;
+import com.navercorp.pinpoint.plugin.spring.boot.TestAppVersion;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.OnClassLoader;
@@ -37,6 +39,7 @@ import java.util.List;
 @JvmVersion(7)
 @OnClassLoader(system = true, child = false)
 @Dependency({ "org.springframework.boot:spring-boot-loader:[1.2.0.RELEASE,1.2.max]" })
+@TestAppVersion(TestAppSpringBootVersion.PRE_1_4)
 public class SpringBootPropertiesLauncher_1_2_X_IT extends PropertiesLauncherItBase {
 
     @Test
@@ -44,6 +47,7 @@ public class SpringBootPropertiesLauncher_1_2_X_IT extends PropertiesLauncherItB
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.verifyServerType(SERVER_TYPE);
         List<String> expectedLibs = new ExpectedLibraries()
+                .withExecutable()
                 .withAgentJar()
                 .withClasspathLib()
                 .withPackagedLib()

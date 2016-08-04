@@ -20,6 +20,8 @@ import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.plugin.spring.boot.SpringBootPluginTestSuite;
+import com.navercorp.pinpoint.plugin.spring.boot.TestAppSpringBootVersion;
+import com.navercorp.pinpoint.plugin.spring.boot.TestAppVersion;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.OnClassLoader;
@@ -37,6 +39,7 @@ import java.util.List;
 @JvmVersion(7)
 @OnClassLoader(system = true, child = false)
 @Dependency({ "org.springframework.boot:spring-boot-loader:[1.0.0.RELEASE,1.0.max]" })
+@TestAppVersion(TestAppSpringBootVersion.PRE_1_4)
 public class SpringBootPropertiesLauncher_1_0_X_IT extends PropertiesLauncherItBase {
 
     @Test
@@ -45,6 +48,7 @@ public class SpringBootPropertiesLauncher_1_0_X_IT extends PropertiesLauncherItB
         verifier.verifyServerType(SERVER_TYPE);
         // 1.0.x includes nested directories - https://github.com/spring-projects/spring-boot/issues/1352
         List<String> expectedLibs = new ExpectedLibraries()
+                .withExecutable()
                 .withAgentJar()
                 .withClasspathLib()
                 .withPackagedLib()

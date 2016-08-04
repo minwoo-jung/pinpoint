@@ -19,7 +19,6 @@ package com.navercorp.pinpoint.plugin.spring.boot;
 import com.navercorp.pinpoint.common.Version;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,34 +33,13 @@ public abstract class SpringBootItBase {
 
     public static final String CLASSPATH_LIB = "pinpoint-spring-boot-plugin-" + Version.VERSION + ".jar";
 
-    public static final String EXECUTABLE = "spring-boot-test-1.0";
-
-    public static final List<String> NESTED_LIBS = Arrays.asList(
-            "spring-boot-starter-1.3.3.RELEASE.jar",
-            "spring-boot-1.3.3.RELEASE.jar",
-            "spring-context-4.2.5.RELEASE.jar",
-            "spring-aop-4.2.5.RELEASE.jar",
-            "aopalliance-1.0.jar",
-            "spring-beans-4.2.5.RELEASE.jar",
-            "spring-expression-4.2.5.RELEASE.jar",
-            "spring-boot-autoconfigure-1.3.3.RELEASE.jar",
-            "spring-boot-starter-logging-1.3.3.RELEASE.jar",
-            "logback-classic-1.1.5.jar",
-            "logback-core-1.1.5.jar",
-            "slf4j-api-1.7.16.jar",
-            "jcl-over-slf4j-1.7.16.jar",
-            "jul-to-slf4j-1.7.16.jar",
-            "log4j-over-slf4j-1.7.16.jar",
-            "spring-core-4.2.5.RELEASE.jar",
-            "snakeyaml-1.16.jar"
-    );
+    public static final String BOOT_INF = "BOOT-INF";
 
     public static final String NESTED_LIB_SEPARATOR = "!/";
 
     protected List<String> getPackagedLibs() {
         List<String> packagedLibs = new ArrayList<String>();
-        packagedLibs.add(getExecutable());
-        for (String nestedLib : NESTED_LIBS) {
+        for (String nestedLib : getTestAppSpringBootVersion().getNestedLibs()) {
             packagedLibs.add(formatNestedEntry(getExecutable(), getEntryPath(), nestedLib));
         }
         return packagedLibs;
@@ -75,13 +53,27 @@ public abstract class SpringBootItBase {
         return sb.toString();
     }
 
-    protected abstract String getExecutable();
+    protected final String getExecutable() {
+        String executableName = getTestAppSpringBootVersion().getExecutableName();
+        return executableName + getExtension();
+    }
+
+    protected abstract String getExtension();
 
     protected abstract String getEntryPath();
+
+    protected final TestAppSpringBootVersion getTestAppSpringBootVersion() {
+        return this.getClass().getAnnotation(TestAppVersion.class).value();
+    }
 
     public class ExpectedLibraries {
 
         private final List<String> expectedLibraries = new ArrayList<String>();
+
+        public ExpectedLibraries withExecutable() {
+            this.expectedLibraries.add(getExecutable());
+            return this;
+        }
 
         public ExpectedLibraries withAgentJar() {
             this.expectedLibraries.add(AGENT_JAR);
