@@ -54,7 +54,16 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
       PinpointAuthentication authentication;
 
       if (user != null) {
-          authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, null, true, pinpointManager);
+          authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, null, true, pinpointManager) {
+              @Override
+              public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
+                  return null;
+              }
+              
+              @Override
+              public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
+              }
+          };
           GrantedAuthority grantedAuthority = new GrantedAuthority() {
             @Override
             public String getAuthority() {

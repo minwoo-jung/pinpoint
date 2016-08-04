@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:beans="http://www.springframework.org/schema/beans"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
     <!-- #############인증과정  거쳐서 권한 데이터 취득 ##############-->
     <!-- 
@@ -30,6 +30,9 @@
     </authentication-manager>
     <beans:bean id="localAuthenticationProvider" class="com.navercorp.pinpoint.web.security.LocalAuthenticationProvider"/>
 
+    <beans:bean id="webSocketSecurityConfig" class="com.navercorp.pinpoint.web.security.WebSocketSecurityConfig"/>
+    <beans:bean id="handshakeInterceptor" class="com.navercorp.pinpoint.web.security.WebSocketSecurityInterceptor"/>
+    
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
     -->
@@ -54,16 +57,10 @@
 
     <beans:bean id="naverAuthenticationProvider" class="com.navercorp.pinpoint.web.security.NaverAuthenticationProvider"/>
 
-    <global-method-security pre-post-annotations="enabled" proxy-target-class="true">
-        <expression-handler ref="expressionHandler"/>
-    </global-method-security>
- 
-    <beans:bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
-        <beans:property name="permissionEvaluator" ref="naverPermissionEvaluator"/>
-    </beans:bean>
-    <beans:bean id="naverPermissionEvaluator" class="com.navercorp.pinpoint.web.security.NaverPermissionEvaluator"/>
+    <beans:bean id="webSocketSecurityConfig" class="com.navercorp.pinpoint.web.security.WebSocketSecurityConfig"/>
+    <beans:bean id="handshakeInterceptor" class="com.navercorp.pinpoint.web.security.WebSocketSecurityInterceptor"/>
     
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
-     -->
+    -->
 </beans:beans>

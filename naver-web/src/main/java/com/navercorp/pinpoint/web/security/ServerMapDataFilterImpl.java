@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketSession;
 
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMap;
@@ -42,6 +44,8 @@ import com.navercorp.pinpoint.web.exception.AuthorityException;
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.Application;
+import com.navercorp.pinpoint.web.websocket.ActiveThreadCountHandler;
+import com.navercorp.pinpoint.web.websocket.message.RequestMessage;
 
 /**
  * @author minwoo.jung
@@ -63,21 +67,31 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
     
     @Override
     public boolean filter(Application application) {
-        return isAuthorized(application) ? false : true;
+        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
+        return isAuthorized(authentication, application.getName()) ? false : true;
+    }
+    
+    @Override
+    public boolean filter(WebSocketSession webSocketSession, RequestMessage requestMessage) {
+        String applicationId = (String)requestMessage.getParams().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY);
+        PinpointAuthentication authentication = (PinpointAuthentication)webSocketSession.getPrincipal();
+        
+        return isAuthorized(authentication, applicationId) ? false : true;
     }
     
     private boolean isAuthorized(Application application) {
         PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
-        
+        return isAuthorized(authentication, application.getName());
+    }
+
+    
+    private boolean isAuthorized(PinpointAuthentication authentication, String applicationId) {
         if (authentication == null) { 
             return false;
         }
         if (isPinpointManager(authentication)) {
             return true;
         }
-        
-        String applicationId = application.getName();
-        
         if(isEmptyUserGroup(authentication, applicationId)) {
             return true;
         }
@@ -218,5 +232,11 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         }
         
         return newLinkCallDataMap;
+    }
+    
+    
+    @Override
+    public CloseStatus getCloseStatus(RequestMessage requestMessage) {
+        return CloseStatus.POLICY_VIOLATION.withReason("you don't have authorization for " + requestMessage.getParams().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY) + ".");
     }
 }
