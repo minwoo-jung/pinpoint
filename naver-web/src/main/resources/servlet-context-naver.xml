@@ -21,7 +21,6 @@
 
     <import resource="classpath:servlet-context.xml" />
     
-    <!-- 
     <security:global-method-security pre-post-annotations="enabled" proxy-target-class="true">
         <security:expression-handler ref="expressionHandler"/>
     </security:global-method-security>
@@ -31,5 +30,4 @@
     </bean>
     
     <bean id="naverPermissionEvaluator" class="com.navercorp.pinpoint.web.security.NaverPermissionEvaluator"/>
-     -->
 </beans>

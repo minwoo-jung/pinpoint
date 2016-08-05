@@ -17,7 +17,6 @@
         <buildTime>${maven.build.timestamp}</buildTime>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <sniffer.artifactid>java17</sniffer.artifactid>
-        <spring.security>4.0.4.RELEASE</spring.security>
     </properties>
 
     <dependencies>
@@ -80,19 +79,6 @@
             <groupId>com.nhncorp.lucy</groupId>
             <artifactId>lucy-npc</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>${spring.security}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${spring.security}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>servlet-api</artifactId>
@@ -111,7 +97,7 @@
         <dependency>
             <groupId>org.springframework.batch</groupId>
             <artifactId>spring-batch-test</artifactId>
-            <version>${spring-batch-version}</version>
+            <version>${spring.batch.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -126,6 +112,13 @@
             <version>7.0.52</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+            <version>4.1.9.RELEASE</version>
+        </dependency>
+    
 
     </dependencies>
 

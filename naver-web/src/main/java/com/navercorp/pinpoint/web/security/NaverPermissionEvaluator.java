@@ -21,20 +21,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 
-import com.navercorp.pinpoint.web.service.ApplicationConfigService;
-import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
-import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
+import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.web.service.AgentInfoService;
+import com.navercorp.pinpoint.web.vo.AgentInfo;
+import com.navercorp.pinpoint.web.vo.AgentParam;
+import com.navercorp.pinpoint.web.vo.Application;
 
 /**
  * @author minwoo-jung
  */
-public class NaverPermissionEvaluator implements PermissionEvaluator {
+public class NaverPermissionEvaluator extends AppConfigOrganizer implements PermissionEvaluator {
     
     public static final String INSPECTOR = "inspector";
     public static final String APPLICATION = "application";
+    public static final String AGENT_PARAM = "agentParam";
     
     @Autowired
-    ApplicationConfigService applicationConfigService;
+    ServerMapDataFilter ServerMapDataFilter;
+    
+    @Autowired
+    AgentInfoService agentInfoService;
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
@@ -48,35 +54,23 @@ public class NaverPermissionEvaluator implements PermissionEvaluator {
         if (pinAuth.isPinpointManager()) {
             return true;
         }
-        
         if (INSPECTOR.equals(permission)) {
-            return hasPermissionForAppAuth(pinAuth, target, targetType, (String)permission);
+            return hasPermissionForAppAuth(target, targetType, (String)permission);
         }
+        
         return false;
     }
 
-    private boolean hasPermissionForAppAuth(PinpointAuthentication pinAuth, Serializable target, String targetType, String permission) {
-        
+    private boolean hasPermissionForAppAuth(Serializable target, String targetType, String permission) {
         if (APPLICATION.equals(targetType)) {
             String applicationId = (String)target;
-            
-            ApplicationConfiguration appConfig = pinAuth.getApplicationConfiguration(applicationId);
-            
-            if (appConfig == null) {
-                appConfig = applicationConfigService.selectApplicationConfiguration(applicationId);
-                pinAuth.addApplicationConfiguration(appConfig);
-            }
-            
-            AppAuthConfiguration appAuthConfig = null;
-            //TODO : 개선 필요
-//            AppAuthConfiguration appAuthConfig = appConfig.getAppAuthConfiguration();
-            
-//            if (INSPECTOR.equals(permission) && !appAuthConfig.getInspector()) {
-//                return true;
-//            }
-            if (appConfig.isAffiliatedAppUserGroup(pinAuth.getUserGroupList())) {
-                return true;
-            }
+            boolean filtered = ServerMapDataFilter.filter(new Application(applicationId, ServiceType.UNKNOWN));
+            return !filtered;
+        } else if (AGENT_PARAM.equals(targetType)) {
+            AgentParam agentParam = (AgentParam)target;
+            AgentInfo agentInfo = agentInfoService.getAgentInfo(agentParam.getAgentId(), agentParam.getTimeStamp());
+            boolean filtered = ServerMapDataFilter.filter(new Application(agentInfo.getApplicationName(), ServiceType.UNKNOWN));
+            return !filtered;
         }
         
         return false;
