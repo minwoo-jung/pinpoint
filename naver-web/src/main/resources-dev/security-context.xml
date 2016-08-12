@@ -11,6 +11,9 @@
         <intercept-url pattern="/**.pinpoint" access="permitAll" />
         <csrf disabled="true"/>
         <access-denied-handler ref="accessDeniedHandler"/>
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
     </http>
     
     <beans:bean id="accessDeniedHandler" class="com.navercorp.pinpoint.web.security.AccessDeniedhandlerImpl"/>

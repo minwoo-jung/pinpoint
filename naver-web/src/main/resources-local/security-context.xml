@@ -44,6 +44,9 @@
         <intercept-url pattern="/**.pinpoint" access="permitAll" />
         <csrf disabled="true"/>
         <access-denied-handler ref="accessDeniedHandler"/>
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
     </http>
     
     <beans:bean id="accessDeniedHandler" class="com.navercorp.pinpoint.web.security.AccessDeniedhandlerImpl"/>
@@ -62,5 +65,5 @@
     
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
-    -->
+     -->
 </beans:beans>
