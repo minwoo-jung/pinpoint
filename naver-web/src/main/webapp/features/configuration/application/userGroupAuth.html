@@ -1,14 +1,14 @@
 <div class="some-list some-table" style="width:615px;height:250px;margin-bottom:20px;">
 	<div class="some-list-header" style="background-color:#9A9A9A;color:#FFF;">
-		<span class="title">User group Role</span>
+		<span class="title">Authentication</span>
 		<span class="right" style="text-decoration: underline;cursor:pointer;margin-right:6px;" ng-click="onAddAuth()">+ Add</span>
 	</div>
 	<div class="some-list-content">
 		<div class="wrapper" style="height:207px;overflow-y:scroll;">
-			<table  ng-click="checkClickEvent( $event )">
+			<table  ng-click="grabAction( $event )">
 				<thead>
 				<tr>
-					<th class="col-md-5">Group name</th>
+					<th class="col-md-5">User Group</th>
 					<th class="col-md-5">Role</th>
 					<th class="col-md-2"></th>
 					<th class="col-md-2"></th>
@@ -33,12 +33,12 @@
 					<td></td>
 					<td class="col-md-2">
 						<div class="_edit" style="line-height:20px;">
-							<span class="glyphicon glyphicon-ok edit-confirm" aria-hidden="true" ng-click="onApplyUpdateAuth()"></span>
-							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" ng-click="onCancelUpdateAuth()"></span>
+							<span class="glyphicon glyphicon-remove remove edit-cancel" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-ok edit-confirm" aria-hidden="true"></span>
 						</div>
 						<div class="_add hide-me" style="line-height:20px;">
-							<span class="glyphicon glyphicon-ok edit-confirm" aria-hidden="true" ng-click="onApplyAddAuth()"></span>
-							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" ng-click="onCancelAddAuth()"></span>
+							<span class="glyphicon glyphicon-remove remove add-cancel" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-ok edit-confirm add-confirm" aria-hidden="true"></span>
 						</div>
 					</td>
 				</tr>
@@ -62,14 +62,14 @@
 					<td class="col-md-4">{{auth.userGroupId}}</td>
 					<td class="col-md-3">{{auth.role.toUpperCase()}}</td>
 					<td class="col-md-2" style="text-align:center" ng-click="onViewAuth($event, $index)"><span class="glyphicon glyphicon-info-sign"></span></td>
-					<td class="col-md-2">
+					<td class="col-md-2" data-index="{{$index}}">
 						<div class="_normal">
-							<span class="glyphicon glyphicon-pencil edit" aria-hidden="true" ng-click="onUpdateAuth($event, $index)"></span>
-							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" ng-click="onRemoveAuth($event)" style="visibility:{{isGuest(auth.role) ? 'hidden': 'visible'}}"></span>
+							<span class="glyphicon glyphicon-pencil edit" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" style="visibility:{{isGuest(auth.role) ? 'hidden': 'visible'}}"></span>
 						</div>
 						<div class="_remove hide-me">
-							<span class="glyphicon glyphicon-arrow-left remove-cancel" aria-hidden="true" ng-click="onCancelRemoveAuth()"></span>
-							<span class="glyphicon glyphicon-remove remove remove-confirm" aria-hidden="true" ng-click="onApplyRemoveAuth($index)"></span>
+							<span class="glyphicon glyphicon-arrow-left remove-cancel" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-remove remove remove-confirm" aria-hidden="true"></span>
 						</div>
 					</td>
 				</tr>

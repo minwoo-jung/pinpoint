@@ -137,7 +137,6 @@
 						"guest": 10
 					};
 					function sortByRole( list ) {
-
 						list.sort(function( a, b ) {
 							return oSortPoint[b.role] - oSortPoint[a.role];
 						});
@@ -229,7 +228,6 @@
 						return isGuest( role );
 					};
 					scope.onViewAuth = function( $event, index ) {
-						console.log( "onViewAuth Start : ", index );
 						var $node = AlarmUtilService.getNode( $event, "tr" );
 						if ( $workingNode !== null && isSameNode( $node ) === true && $elSubView.hasClass("hide-me") === false ) {
 							console.log( "null or same", $workingNode );
@@ -247,7 +245,6 @@
 						$elSubView.removeClass( "hide-me" );
 					};
 					scope.onAddAuth = function() {
-						console.log( "onAddAuth Start : " );
 						if ( currentApplicationId === "" ) {
 							showAlert({
 								errorMessage: "Application을 먼저 선택해 주세요"
@@ -265,8 +262,7 @@
 							showAddArea();
 						});
 					};
-					scope.onApplyAddAuth = function() {
-						console.log( "onApplyAddAuth Start : ", $workingNode );
+					function onApplyAddAuth() {
 						AddAuth.applyAction( AlarmUtilService, getNewAuth( false ), aEditNodes, $elLoading, function( applicationId, userGroupId ) {
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
 								var oAuth = userGroupAuthList[i];
@@ -283,30 +279,23 @@
 							scope.userGroupAuthList = userGroupAuthList;
 							hideEditArea();
 						}, showAlert, $http );
-					};
-					scope.onCancelAddAuth = function() {
-						console.log( "onCancelAddAuth Start: " );
+					}
+					function onCancelAddAuth() {
 						AddAuth.cancelAction( aEditNodes, hideEditArea );
-					};
-					scope.onRemoveAuth = function( $event ) {
-						console.log( "onRemoveAuth Start :");
+					}
+					function onRemoveAuth( $target ) {
 						if ( hasAuthority() === false ) {
 							return;
 						}
 						cancelPreviousWork();
-						var $node = AlarmUtilService.getNode( $event, "tr" );
-						// if ( $workingNode !== null && isSameNode( $node ) === false ) {
-						// 	cancelPreviousWork( $node );
-						// }
+						var $node = $target.parents("tr");
 						$workingNode = $node;
 						RemoveAuth.onAction( AlarmUtilService, $workingNode );
-					};
-					scope.onCancelRemoveAuth = function() {
-						console.log( "onCancelRemoveAuth Start : ");
+					}
+					function onCancelRemoveAuth() {
 						RemoveAuth.cancelAction( AlarmUtilService, $workingNode );
-					};
-					scope.onApplyRemoveAuth = function( index ) {
-						console.log( "onApplyRemoveAuth Start : ", index );
+					}
+					function onApplyRemoveAuth( index ) {
 						var oAuth = userGroupAuthList[index];
 						RemoveAuth.applyAction( AlarmUtilService, $workingNode, $elLoading, oAuth, function( applicationId, userGroupId, newMyRole ) {
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
@@ -321,25 +310,22 @@
 								scope.userGroupAuthList = userGroupAuthList;
 							});
 						}, showAlert );
-					};
-					scope.onUpdateAuth = function( $event, index ) {
-						console.log( "onUpdateAuth Start :", index );
+					}
+					function onUpdateAuth( $target, index ) {
 						if ( hasAuthority() === false ) {
 							return;
 						}
 						cancelPreviousWork();
-						$workingNode = AlarmUtilService.getNode( $event, "tr" );
+						$workingNode = $target.parents("tr");
 						UpdateAuth.onAction( AlarmUtilService, $workingNode, function() {
 							$workingNode.after( aEditNodes[1] ).after( aEditNodes[0] );
 							showEditArea( userGroupAuthList[index] );
 						});
-					};
-					scope.onCancelUpdateAuth = function() {
-						console.log( "onCancelUpdateAuth Start : " );
+					}
+					function onCancelUpdateAuth() {
 						UpdateAuth.cancelAction( AlarmUtilService, $workingNode, aEditNodes, hideEditArea );
-					};
-					scope.onApplyUpdateAuth = function() {
-						console.log( "onApplyUpdateAuth Start : " );
+					}
+					function onApplyUpdateAuth() {
 						UpdateAuth.applyAction( AlarmUtilService, getNewAuth( true ), aEditNodes, $workingNode, $elLoading, function( applicationId, userGroupId ) {
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
 								var oAuth = userGroupAuthList[i];
@@ -361,7 +347,7 @@
 							setMyRole( newMyRole );
 							scope.userGroupAuthList = userGroupAuthList;
 						}, showAlert, $http );
-					};
+					}
 					scope.$on("applicationGroup.sub.load", function( event, appId, invokeCount ) {
 						currentApplicationId = appId;
 						cancelPreviousWork();
@@ -374,8 +360,40 @@
 					scope.onCloseAlert = function() {
 						AlarmUtilService.hide( $elAlert );
 					};
-					scope.checkClickEvent = function( $event ) {
-						console.log( "checkClickEvent : ", $event );
+					scope.grabAction = function( $event ) {
+						if ( $event.target.tagName.toLowerCase() === "span" ) {
+							var $target = $( $event.target );
+							switch( $target.parent().attr("class") ) {
+								case "_normal":
+									if ( $target.hasClass( "edit" ) ) {
+										onUpdateAuth( $target, $target.parent().parent().attr("data-index") );
+									} else if ( $target.hasClass( "remove" ) ) {
+										onRemoveAuth( $target );
+									}
+									break;
+								case "_remove":
+									if ( $target.hasClass( "remove-cancel" ) ) {
+										onCancelRemoveAuth();
+									} else if ( $target.hasClass( "remove-confirm" ) ) {
+										onApplyRemoveAuth( $target.parent().parent().attr("data-index") );
+									}
+									break;
+								case "_edit":
+									if ( $target.hasClass( "edit-confirm" ) ) {
+										onApplyUpdateAuth();
+									} else if ( $target.hasClass( "edit-cancel" ) ) {
+										onCancelUpdateAuth();
+									}
+									break;
+								case "_add":
+									if ( $target.hasClass( "add-confirm" ) ) {
+										onApplyAddAuth();
+									} else if ( $target.hasClass( "add-cancel" ) ) {
+										onCancelAddAuth();
+									}
+									break;
+							}
+						}
 					}
 				}
 			};
