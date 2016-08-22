@@ -17,7 +17,6 @@
 package com.navercorp.pinpoint.web.service.stat;
 
 import com.navercorp.pinpoint.collector.handler.AgentStatHandler;
-import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
 import com.navercorp.pinpoint.thrift.dto.TAgentStatBatch;
 import com.navercorp.pinpoint.web.dao.stat.SampledActiveTraceDao;
 import com.navercorp.pinpoint.web.dao.stat.SampledCpuLoadDao;
@@ -29,6 +28,7 @@ import com.navercorp.pinpoint.web.util.TimeWindowSlotCentricSampler;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.chart.Chart;
 import com.navercorp.pinpoint.web.vo.stat.chart.AgentStatChartGroup;
+import com.navercorp.pinpoint.web.vo.stat.chart.JvmGcChartGroup;
 import com.navercorp.pinpoint.web.vo.stat.chart.LegacyAgentStatChartGroup;
 import org.junit.Assert;
 import org.junit.Before;
@@ -121,6 +121,7 @@ public class AgentStatChartServiceRegressionTest {
         AgentStatChartGroup cpuLoadChartGroup = cpuLoadChartService.selectAgentChart(agentId, timeWindow);
         AgentStatChartGroup transactionChartGroup =  transactionChartService.selectAgentChart(agentId, timeWindow);
         AgentStatChartGroup activeTraceChartGroup = activeTraceChartService.selectAgentChart(agentId, timeWindow);
+        Assert.assertEquals("gcType different", legacyAgentStatChartGroup.getType(), ((JvmGcChartGroup) jvmGcChartGroup).getType());
         verifyChartGroup(legacyAgentStatChartGroup, jvmGcChartGroup);
         verifyChartGroup(legacyAgentStatChartGroup, cpuLoadChartGroup);
         verifyChartGroup(legacyAgentStatChartGroup, transactionChartGroup);

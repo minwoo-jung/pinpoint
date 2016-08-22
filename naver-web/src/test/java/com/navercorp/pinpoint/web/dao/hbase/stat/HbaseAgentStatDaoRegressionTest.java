@@ -157,6 +157,7 @@ public class HbaseAgentStatDaoRegressionTest {
             AgentStat agentStat = agentStats.get(i);
             JvmGcBo jvmGcBo = jvmGcBos.get(i);
             verifyCommonFields(agentStat, jvmGcBo);
+            Assert.assertEquals("gcType different", agentStat.getGcType(), jvmGcBo.getGcType().name());
             Assert.assertEquals("heapUsed different", agentStat.getHeapUsed(), jvmGcBo.getHeapUsed());
             Assert.assertEquals("heapMax different", agentStat.getHeapMax(), jvmGcBo.getHeapMax());
             Assert.assertEquals("nonHeapUsed different", agentStat.getNonHeapUsed(), jvmGcBo.getNonHeapUsed());

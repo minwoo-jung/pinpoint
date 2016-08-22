@@ -24,6 +24,7 @@ import com.navercorp.pinpoint.thrift.dto.TAgentStatBatch;
 import com.navercorp.pinpoint.thrift.dto.TCpuLoad;
 import com.navercorp.pinpoint.thrift.dto.TJvmGc;
 import com.navercorp.pinpoint.thrift.dto.TJvmGcDetailed;
+import com.navercorp.pinpoint.thrift.dto.TJvmGcType;
 import com.navercorp.pinpoint.thrift.dto.TTransaction;
 
 import java.util.ArrayList;
@@ -117,6 +118,7 @@ public class TAgentStatBatchBuilder {
 
     private static TJvmGc createJvmGc() {
         TJvmGc jvmGc = new TJvmGc();
+        jvmGc.setType(TJvmGcType.CMS);
         jvmGc.setJvmMemoryHeapUsed(getUnsignedRandomLong());
         jvmGc.setJvmMemoryHeapMax(getUnsignedRandomLong());
         jvmGc.setJvmMemoryNonHeapUsed(getUnsignedRandomLong());

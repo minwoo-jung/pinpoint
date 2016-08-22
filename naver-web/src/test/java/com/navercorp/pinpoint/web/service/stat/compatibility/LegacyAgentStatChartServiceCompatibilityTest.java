@@ -223,6 +223,7 @@ public class LegacyAgentStatChartServiceCompatibilityTest {
     }
 
     private void verifyChartGroups(LegacyAgentStatChartGroup v1ChartGroup, LegacyAgentStatChartGroup v2ChartGroup) {
+        Assert.assertEquals("gcType different", v1ChartGroup.getType(), v2ChartGroup.getType());
         Map<AgentStatChartGroup.ChartType, Chart> v1Charts = v1ChartGroup.getCharts();
         Map<AgentStatChartGroup.ChartType, Chart> v2Charts = v2ChartGroup.getCharts();
         Assert.assertEquals("chart size different.", v1Charts.size(), v2Charts.size());
