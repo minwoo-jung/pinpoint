@@ -13,7 +13,6 @@
 					var invokeCountAfterOpen = 0;
 					$element[ attr["initState"] ]();
 
-					scope.openSource = globalConfig.openSource;
 					scope.$on( "configuration.selectMenu", function( event, selectedName ) {
 						if ( myName === selectedName ) {
 							$element.show();
@@ -31,6 +30,9 @@
 						scope.$broadcast( "change.your.role", scope.openSource ? true : bIsManager );
 						event.stopPropagation();
 					});
+					scope.isInnerMode = function() {
+						return globalConfig.openSource === false ? true : false;
+					};
 				}
 			};
 		}
