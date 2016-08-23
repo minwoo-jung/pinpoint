@@ -108,6 +108,15 @@ public class AppUserGroupAuth {
         return configuration;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("applicationId : " + applicationId + ",");
+        sb.append("userGroupId : " + userGroupId + ",");
+        sb.append("roleName : " + roleName + ",");
+        sb.append("configuration : (" + configuration + ")");
+        return sb.toString();
+    }
+
     public enum Role {
         GUEST("guest", 1), USER("user", 2), MANAGER("manager", 3);
         
