@@ -25,7 +25,7 @@ public class AppAuthConfiguration {
     private boolean sqlMetaData = false;
     private boolean paramMetaData = false;
     private boolean serverMapData = false;
-    
+
     public boolean getSqlMetaData() {
         return sqlMetaData;
     }
@@ -56,5 +56,15 @@ public class AppAuthConfiguration {
 
     public void setParamMetaData(boolean paramMetaData) {
         this.paramMetaData = paramMetaData;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("apiMetaData : " + apiMetaData + ",");
+        sb.append("sqlMetaData : " + apiMetaData + ",");
+        sb.append("paramMetaData : " + apiMetaData + ",");
+        sb.append("serverMapData : " + apiMetaData);
+        return sb.toString();
     }
 }
