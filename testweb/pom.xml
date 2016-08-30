@@ -125,6 +125,10 @@
                     <artifactId>spring-context</artifactId>
                     <groupId>org.springframework</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>zookeeper</artifactId>
+                    <groupId>org.apache.hadoop</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -260,6 +264,12 @@
             <groupId>com.nhncorp</groupId>
             <artifactId>triples-redis-client</artifactId>
             <version>1.4.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>netty</artifactId>
+                    <groupId>org.jboss.netty</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Jedis -->
