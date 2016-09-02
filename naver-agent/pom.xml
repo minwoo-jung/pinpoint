@@ -57,6 +57,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- tools -->
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-tools</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- for tests -->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
