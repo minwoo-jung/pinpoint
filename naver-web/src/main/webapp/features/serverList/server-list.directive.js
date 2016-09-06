@@ -31,9 +31,7 @@
 					var showLayer = function() {
 						$element.animate({
 							"right": 421
-						}, 500, function() {
-							console.log( "show callback");
-						});
+						}, 500, function() {});
 					};
 					var showChart = function( instanceName, histogram, timeSeriesHistogram ) {
 						scope.selectedAgent = instanceName;
@@ -54,7 +52,6 @@
 						}, delay, function() {
 							bVisible = false;
 							hideNmsLayer();
-							console.log( "hide callback");
 						});
 					};
 					scope.hasError = function( instance ) {
@@ -140,6 +137,10 @@
 					};
 					// for NMS -->
 					scope.$on('serverListDirective.initialize', function ( event, oNavbarVoService ) {
+						scope.node = null;
+						scope.oNavbarVoService = null;
+						scope.selectedAgent = "";
+						scope.hasScatter = false;
 						scope.$broadcast('scatterDirective.initialize.forServerList', oNavbarVoService);
 						scope.hideLayer( 0 );
 					});
@@ -149,7 +150,8 @@
 							return;
 						}
 						bVisible = true;
-						if ( angular.isUndefined( scope.node ) || ( scope.node.key !== node.key ) ) {
+
+						if ( angular.isUndefined( scope.node ) || scope.node === null || ( scope.node.key !== node.key ) ) {
 							scope.bIsNode = bIsNodeServer;
 							scope.node = node;
 							scope.oNavbarVoService = oNavbarVoService;
