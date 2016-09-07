@@ -51,11 +51,9 @@
             <artifactId>pinpoint-commons-hbase</artifactId>
         </dependency>
 
-        <!-- hbase 17.0 makes hbase fail -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>16.0.1</version>
         </dependency>
 
     </dependencies>
