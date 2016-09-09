@@ -41,7 +41,7 @@ public class NbasetPlugin implements ProfilerPlugin, TransformTemplateAware {
     @Override
     public void setup(ProfilerPluginSetupContext context) {
         NbasetConfig config = new NbasetConfig(context.getConfig());
-        if(!config.isEnable()) {
+        if(!config.isPluginEnable()) {
             logger.info("Disable nbase-t jdbc option. 'profiler.jdbc.nbaset=false'");
             return;
         }

@@ -25,14 +25,14 @@ public class NbasetConfig extends JdbcConfig {
     private final boolean profileSetAutoCommit;
     private final boolean profileCommit;
     private final boolean profileRollback;
-    private final boolean enable;
 
     public NbasetConfig(ProfilerConfig config) {
-        super(config.readBoolean("profiler.jdbc.nbaset.tracesqlbindvalue", config.isTraceSqlBindValue()), config.getMaxSqlBindValueSize());
+        super(config.readBoolean("profiler.jdbc.nbaset", false),
+                config.readBoolean("profiler.jdbc.nbaset.tracesqlbindvalue", config.isTraceSqlBindValue()),
+                config.getMaxSqlBindValueSize());
         this.profileSetAutoCommit = config.readBoolean("profiler.jdbc.nbaset.setautocommit", false);
         this.profileCommit = config.readBoolean("profiler.jdbc.nbaset.commit", false);
         this.profileRollback = config.readBoolean("profiler.jdbc.nbaset.rollback", false);
-        this.enable = config.readBoolean("profiler.jdbc.nbaset", true);
     }
 
     public boolean isProfileSetAutoCommit() {
@@ -47,17 +47,13 @@ public class NbasetConfig extends JdbcConfig {
         return profileRollback;
     }
 
-    public boolean isEnable() {
-        return enable;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NbasetConfig{");
         sb.append("profileSetAutoCommit=").append(profileSetAutoCommit);
         sb.append(", profileCommit=").append(profileCommit);
         sb.append(", profileRollback=").append(profileRollback);
-        sb.append(", enable=").append(enable);
+        sb.append(", enable=").append(isPluginEnable());
         sb.append('}');
         return sb.toString();
     }
