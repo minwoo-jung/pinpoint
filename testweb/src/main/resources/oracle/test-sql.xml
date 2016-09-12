@@ -14,11 +14,11 @@
         select #{id} from dual
 	</select>
 
-    <update id="concatCharacters" statementType="CALLABLE" parameterType="com.navercorp.pinpoint.testweb.domain.ConcatProcedureParam">
+    <update id="concatCharacters" statementType="CALLABLE" parameterType="com.navercorp.test.pinpoint.testweb.domain.ConcatProcedureParam">
         { call concatCharacters(#{a, jdbcType=CHAR, mode=IN}, #{b, jdbcType=CHAR, mode=IN}, #{c, jdbcType=CHAR, mode=OUT}) }
     </update>
 
-    <select id="swapAndGetSum" statementType="CALLABLE" parameterType="com.navercorp.pinpoint.testweb.repository.OracleDaoMyBatis$OracleSwapProcedureParam" resultType="int">
+    <select id="swapAndGetSum" statementType="CALLABLE" parameterType="com.navercorp.test.pinpoint.testweb.repository.OracleDaoMyBatis$OracleSwapProcedureParam" resultType="int">
         { call swapAndGetSum(#{a, jdbcType=INTEGER, mode=INOUT}, #{b, jdbcType=INTEGER, mode=INOUT}, #{c, jdbcType=INTEGER, mode=OUT}) }
     </select>
 
