@@ -56,13 +56,13 @@
         <!--         <appender-ref ref="nelo-async"/> -->
     </logger>
 
-    <logger name="com.navercorp.pinpoint.testweb" additivity="false">
+    <logger name="com.navercorp.test.pinpoint.testweb" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
         <!--         <appender-ref ref="nelo-async"/> -->
     </logger>
 
-    <logger name="com.navercorp.pinpoint.testweb.controller.LoggingController" additivity="false">
+    <logger name="com.navercorp.test.pinpoint.testweb.controller.LoggingController" additivity="false">
         <level value="INFO"/>
         <!--         <appender-ref ref="nelo-async"/> -->
     </logger>
