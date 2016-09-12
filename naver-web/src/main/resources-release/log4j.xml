@@ -4,10 +4,8 @@
 
     <appender name="console" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.EnhancedPatternLayout">
-            <!--<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-3p(%-35.35c{5}:%-3L) %m%n"/>-->
-            <!--<param name="ConversionPattern" value="%d{HH:mm:ss} %-5p(%-35.35c{5}:%-3L) %m%n"/>-->
-            <!-- %L 옵션은 라인넘버가 출력되나 속도저하가 심하다. -->
-            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35c{1.}) %m%n" />
+            <!-- %L(line number) option is extremely slow. -->
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35.35c{1.}) %m%n"/>
         </layout>
     </appender>
 
@@ -39,13 +37,13 @@
         <appender-ref ref="console"/>
         <appender-ref ref="nelo-async"/>
     </logger>
-    
+
     <logger name="com.navercorp.pinpoint.web.applicationmap" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
         <appender-ref ref="nelo-async"/>
     </logger>
-    
+
     <logger name="com.navercorp.pinpoint.web.calltree.server" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
@@ -57,13 +55,13 @@
         <appender-ref ref="console"/>
         <appender-ref ref="nelo-async"/>
     </logger>
-    
+
     <logger name="com.navercorp.pinpoint.web.service" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
         <appender-ref ref="nelo-async"/>
     </logger>
-    
+
     <logger name="com.navercorp.pinpoint.web.dao" additivity="false">
         <level value="INFO"/>
         <appender-ref ref="console"/>
@@ -106,7 +104,7 @@
     </logger>
     <logger name="org.apache.hadoop.ipc" additivity="false">
         <level value="INFO"/>
-        <appender-ref ref="console" />
+        <appender-ref ref="console"/>
     </logger>
 
     <root>
