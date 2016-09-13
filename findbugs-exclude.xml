@@ -1,5 +1,5 @@
 <FindBugsFilter>
     <Match>
-        <Package name="~com\.navercorp\.pinpoint\.testweb.*" />
+        <Package name="~com\.navercorp\.test\.pinpoint\.testweb.*" />
     </Match>
 </FindBugsFilter>

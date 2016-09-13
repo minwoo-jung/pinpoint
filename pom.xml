@@ -168,7 +168,7 @@
                     <sourceEncoding>${encoding}</sourceEncoding>
                     <targetJdk>${jdk.version}</targetJdk>
                     <excludes>
-                        <exclude>com/navercorp/pinpoint/testweb/**/*.java</exclude>
+                        <exclude>com/navercorp/test/pinpoint/testweb/**/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
