@@ -7,3 +7,7 @@
 - \com\navercorp\pinpoint\common\util\apache
 - \com\navercorp\pinpoint\profiler\util\jdk
 - \com\navercorp\pinpoint\bootstrap\util\spring
+# exclude tetweb
+- \com\navercorp\test\pinpoint\testweb
+- \com\linecorp
+- \com\nhncorp
