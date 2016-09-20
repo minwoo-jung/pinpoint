@@ -48,7 +48,7 @@ public class ArcusIT {
     private static final String KEY = "test:hello";
 
     private static ArcusClient arcusClient;
-    
+
     private final static String ARCUS = "ARCUS";
     private final static String ARCUS_FUTURE_GET = "ARCUS_FUTURE_GET";
     private final static String ARCUS_EHCACHE_FUTURE_GET = "ARCUS_EHCACHE_FUTURE_GET";
@@ -62,7 +62,7 @@ public class ArcusIT {
         builder.setMaxFrontCacheElements(100);
         arcusClient = ArcusClient.createArcusClient("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27", builder);
     }
- 
+
     public boolean set() throws Exception {
         Future<Boolean> future = arcusClient.set(KEY, 600, "Hello, Arcus!");
 
@@ -73,12 +73,12 @@ public class ArcusIT {
             throw e;
         }
     }
-     
+
     public String asyncGet() throws Exception {
         Future<Object> future = arcusClient.asyncGet(KEY);
-         
+
         try {
-            return (String)future.get(700L, TimeUnit.MILLISECONDS);
+            return (String)future.get(3000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             if (future != null) future.cancel(true);
             throw e;
