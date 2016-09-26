@@ -5,4 +5,29 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
+    <http auto-config="true">
+        <custom-filter position="PRE_AUTH_FILTER" ref="nssAuthenticationFilter"/>
+        <intercept-url pattern="/**.pinpoint" access="permitAll" />
+        <csrf disabled="true"/>
+        <access-denied-handler ref="accessDeniedHandler"/>
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
+    </http>
+
+    <beans:bean id="accessDeniedHandler" class="com.navercorp.pinpoint.web.security.AccessDeniedhandlerImpl"/>
+    <beans:bean id="nssAuthenticationFilter" class="com.navercorp.pinpoint.web.security.NssAuthenticationFilter"/>
+
+    <authentication-manager>
+        <authentication-provider ref="naverAuthenticationProvider"/>
+    </authentication-manager>
+
+    <beans:bean id="naverAuthenticationProvider" class="com.navercorp.pinpoint.web.security.NaverAuthenticationProvider"/>
+
+    <beans:bean id="webSocketSecurityConfig" class="com.navercorp.pinpoint.web.security.WebSocketSecurityConfig"/>
+    <beans:bean id="handshakeInterceptor" class="com.navercorp.pinpoint.web.security.WebSocketSecurityInterceptor"/>
+
+    <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
+    <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
+
 </beans:beans>

@@ -26,7 +26,7 @@ import com.navercorp.pinpoint.web.vo.UserGroup;
 @Component
 public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
 
-    private String userId = "KR14966";
+    private static final String SSO_USER = "SSO_USER";
     
     @Autowired
     private UserService userService;
@@ -38,6 +38,7 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
     private ApplicationConfigDao configDao;
     
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+        String userId = request.getHeaders().get(SSO_USER).get(0);
         User user = userService.selectUserByUserId(userId);
         List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
         boolean pinpointManager = configDao.selectExistManager(userId);

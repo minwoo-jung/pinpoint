@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <!-- 
+
     <http auto-config="true">
         <custom-filter position="PRE_AUTH_FILTER" ref="nssAuthenticationFilter"/>
         <intercept-url pattern="/**.pinpoint" access="permitAll" />
@@ -30,5 +30,5 @@
     
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
-    -->
+
 </beans:beans>

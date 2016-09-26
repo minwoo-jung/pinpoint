@@ -20,15 +20,13 @@
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <import resource="classpath:servlet-context.xml" />
-    <!--
     <security:global-method-security pre-post-annotations="enabled" proxy-target-class="true">
         <security:expression-handler ref="expressionHandler"/>
     </security:global-method-security>
-    
+
    <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
         <property name="permissionEvaluator" ref="naverPermissionEvaluator"/>
     </bean>
-    
+
     <bean id="naverPermissionEvaluator" class="com.navercorp.pinpoint.web.security.NaverPermissionEvaluator"/>
-    -->
 </beans>

@@ -65,10 +65,10 @@
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
     
-<!--     <filter> -->
-<!--         <filter-name>springSecurityFilterChain</filter-name> -->
-<!--         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class> -->
-<!--     </filter> -->
+     <filter>
+         <filter-name>springSecurityFilterChain</filter-name>
+         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+     </filter>
     
 
     <filter-mapping>
@@ -86,12 +86,12 @@
         <url-pattern>*.pinpoint</url-pattern>
     </filter-mapping>
     
-<!--     <filter-mapping> -->
-<!--         <filter-name>springSecurityFilterChain</filter-name> -->
-<!--         <url-pattern>*.pinpoint</url-pattern> -->
-<!--         <url-pattern>/index.html</url-pattern> -->
-<!--         <url-pattern>*.pinpointws</url-pattern> -->
-<!--     </filter-mapping> -->
+     <filter-mapping>
+         <filter-name>springSecurityFilterChain</filter-name>
+         <url-pattern>*.pinpoint</url-pattern>
+         <url-pattern>/index.html</url-pattern>
+         <url-pattern>*.pinpointws</url-pattern>
+     </filter-mapping>
 
     <servlet-mapping>
         <servlet-name>default</servlet-name>
