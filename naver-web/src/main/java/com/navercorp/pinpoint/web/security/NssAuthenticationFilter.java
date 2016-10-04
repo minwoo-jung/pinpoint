@@ -45,8 +45,7 @@ import com.navercorp.pinpoint.web.vo.UserGroup;
 @Component
 public class NssAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String NSSTOK = "nssTok";
-    private static final String EMPNO = "EMPNO";
+    private static final String SSO_USER = "SSO_USER";
     
     @Autowired
     UserService userService;
@@ -59,7 +58,7 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        if (StringUtils.isEmpty(request.getHeader(NSSTOK)) || StringUtils.isEmpty(request.getHeader(EMPNO))) {
+        if (StringUtils.isEmpty(request.getHeader(SSO_USER))) {
             HttpServletResponse httpServletResponse = response; 
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -67,7 +66,7 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String userId = request.getHeader(EMPNO);
+        String userId = request.getHeader(SSO_USER);
         User user = userService.selectUserByUserId(userId);
         List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
         boolean pinpointManager = configDao.selectExistManager(userId);
