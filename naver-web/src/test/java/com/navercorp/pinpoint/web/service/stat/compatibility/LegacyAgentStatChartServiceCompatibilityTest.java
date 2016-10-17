@@ -28,7 +28,6 @@ import com.navercorp.pinpoint.web.vo.stat.chart.LegacyAgentStatChartGroup;
 import com.navercorp.pinpoint.web.vo.stat.chart.AgentStatChartGroup;
 import com.navercorp.pinpoint.web.vo.chart.Chart;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
