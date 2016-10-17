@@ -109,7 +109,7 @@ public class AppUserGroupAuth {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("applicationId : " + applicationId + ",");
         sb.append("userGroupId : " + userGroupId + ",");
         sb.append("roleName : " + roleName + ",");
