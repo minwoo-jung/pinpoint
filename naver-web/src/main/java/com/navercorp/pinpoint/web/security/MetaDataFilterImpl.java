@@ -15,11 +15,8 @@
  */
 package com.navercorp.pinpoint.web.security;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
@@ -27,12 +24,7 @@ import com.navercorp.pinpoint.common.server.bo.AnnotationBo;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.web.calltree.span.CallTreeNode;
 import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
-import com.navercorp.pinpoint.web.service.ApplicationConfigService;
-import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
-import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
-import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.callstacks.Record;
 import com.navercorp.pinpoint.web.vo.callstacks.RecordFactory;
 

@@ -16,7 +16,6 @@ package com.navercorp.pinpoint.plugin.jdbc.nbaset;
 
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcConfig;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * @author jaehong.kim

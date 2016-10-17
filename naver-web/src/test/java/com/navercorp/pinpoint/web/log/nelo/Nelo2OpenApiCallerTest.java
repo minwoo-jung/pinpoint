@@ -19,7 +19,6 @@ package com.navercorp.pinpoint.web.log.nelo;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Ignore;
