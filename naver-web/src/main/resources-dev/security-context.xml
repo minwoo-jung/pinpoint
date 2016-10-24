@@ -7,6 +7,7 @@
 
 
     <http auto-config="true">
+        <session-management session-fixation-protection="none"/>
         <custom-filter position="PRE_AUTH_FILTER" ref="nssAuthenticationFilter"/>
         <intercept-url pattern="/**.pinpoint" access="permitAll" />
         <csrf disabled="true"/>

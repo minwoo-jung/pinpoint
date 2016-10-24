@@ -39,6 +39,7 @@
     
     <!-- #############인증과정 없이 권한 데이터 취득 ##############-->
     <http auto-config="true">
+        <session-management session-fixation-protection="none"/>
         <custom-filter position="PRE_AUTH_FILTER" ref="autoLoginAuthenticationFilter"/>
         <intercept-url pattern="/**.pinpoint" access="permitAll" />
         <csrf disabled="true"/>
