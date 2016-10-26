@@ -73,7 +73,7 @@ public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         User user = userService.selectUserByUserId(userId);
         List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-        boolean pinpointManager = configDao.selectExistManager(userId);
+        boolean pinpointManager = isManager(userId);
         Authentication authentication;
         
         if (user != null) {
@@ -90,6 +90,16 @@ public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
         customRequest.putHeader(SSO_USER, userId);
         chain.doFilter(customRequest, response);
         SecurityContextHolder.clearContext();
+    }
+
+    private boolean isManager(String userId) {
+        List<User> user = configDao.selectManagerByUserId(userId);
+
+        if (user.size() > 0) {
+            return true;
+        }
+
+        return false;
     }
     
     final class CustomHttpServletRequest extends HttpServletRequestWrapper {

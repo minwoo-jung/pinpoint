@@ -17,6 +17,7 @@ package com.navercorp.pinpoint.web.dao.mysql;
 
 import java.util.List;
 
+import com.navercorp.pinpoint.web.vo.User;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,8 +59,8 @@ public class MysqlApplicationConfigDao implements ApplicationConfigDao {
     }
 
     @Override
-    public boolean selectExistManager(String userId) {
-        return sqlSessionTemplate.selectOne(NAMESPACE + "selectExistManager", userId);
+    public List<User> selectManagerByUserId(String userId) {
+        return sqlSessionTemplate.selectList(NAMESPACE + "selectManagerByUserId", userId);
     }
     
 }

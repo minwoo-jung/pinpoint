@@ -37,7 +37,7 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
         String userId = request.getHeaders().get(SSO_USER).get(0);
         User user = userService.selectUserByUserId(userId);
         List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-        boolean pinpointManager = configDao.selectExistManager(userId);
+        boolean pinpointManager = isManager(userId);
         Authentication authentication;
         
         if (user != null) {
@@ -51,6 +51,16 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
         SecurityContextHolder.setContext(context);
         return true;
         
+    }
+
+    private boolean isManager(String userId) {
+        List<User> user = configDao.selectManagerByUserId(userId);
+
+        if (user.size() > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception ex) {

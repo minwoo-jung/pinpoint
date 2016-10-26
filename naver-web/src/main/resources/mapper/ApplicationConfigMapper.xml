@@ -26,8 +26,8 @@
         WHERE application_id = #{applicationId}
     </select>
     
-    <select id="selectExistManager" resultType="Boolean">
-        SELECT IF(COUNT(*) = 0, 0, 1)
+    <select id="selectManagerByUserId" resultType="User">
+        SELECT *
         FROM manager
         WHERE user_id = #{userId}
     </select>

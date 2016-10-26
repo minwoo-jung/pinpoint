@@ -69,7 +69,7 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
         String userId = request.getHeader(SSO_USER);
         User user = userService.selectUserByUserId(userId);
         List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-        boolean pinpointManager = configDao.selectExistManager(userId);
+        boolean pinpointManager = isManager(userId);
         Authentication authentication;
         
         if (user != null) {
@@ -84,4 +84,16 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
         SecurityContextHolder.clearContext();
     }
+
+    private boolean isManager(String userId) {
+        List<User> user = configDao.selectManagerByUserId(userId);
+
+        if (user.size() > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+
 }

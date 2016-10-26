@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.web.dao;
 import java.util.List;
 
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
+import com.navercorp.pinpoint.web.vo.User;
 
 /**
  * @author minwoo.jung
@@ -32,6 +33,6 @@ public interface ApplicationConfigDao {
 
     List<AppUserGroupAuth> selectAppUserGroupAuthList(String applicationId);
 
-    boolean selectExistManager(String userId);
+    List<User> selectManagerByUserId(String userId);
     
 }

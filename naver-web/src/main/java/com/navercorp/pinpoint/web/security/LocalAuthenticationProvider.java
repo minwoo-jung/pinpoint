@@ -50,7 +50,7 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
       final String userId = String.valueOf(auth.getPrincipal());
       User user = userService.selectUserByUserId(userId);
       List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-      boolean pinpointManager = configDao.selectExistManager(userId);
+      boolean pinpointManager = isManager(userId);
       PinpointAuthentication authentication;
 
       if (user != null) {
@@ -87,6 +87,16 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
       }
 
       return authentication;
+    }
+
+    private boolean isManager(String userId) {
+        List<User> user = configDao.selectManagerByUserId(userId);
+
+        if (user.size() > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
