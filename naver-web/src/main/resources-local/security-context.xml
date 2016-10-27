@@ -36,7 +36,9 @@
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
     -->
-    
+
+    <http pattern="/getApplicationHostInfo.pinpoint" security="none"/>
+
     <!-- #############인증과정 없이 권한 데이터 취득 ##############-->
     <http auto-config="true">
         <session-management session-fixation-protection="none"/>
