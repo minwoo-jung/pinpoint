@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
 package com.navercorp.pinpoint.plugin.bloc.v3;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
 import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
@@ -27,13 +28,15 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  *
  */
 public class Bloc3Detector implements ApplicationTypeDetector {
-    
+
     private static final String REQUIRED_MAIN_CLASS = "org.apache.catalina.startup.Bootstrap";
-    
+
     private static final String REQUIRED_SYSTEM_PROPERTY = "catalina.home";
-    
+
     private static final String REQUIRED_CLASS = "org.apache.catalina.startup.Bootstrap";
-    
+
+    private static final String BLOC3_BOOTSTRAP_JAR_PREFIX = "lucy-bloc-bootstrap";
+
     @Override
     public ServiceType getApplicationType() {
         return BlocConstants.BLOC;
@@ -48,14 +51,36 @@ public class Bloc3Detector implements ApplicationTypeDetector {
         }
         return false;
     }
-    
+
     private boolean testForBlocEnvironment(String catalinaHome) {
         File bloc3CatalinaJar = new File(catalinaHome + "/server/lib/catalina.jar");
         File bloc3ServletApiJar = new File(catalinaHome + "/common/lib/servlet-api.jar");
-        if (bloc3CatalinaJar.exists() && bloc3ServletApiJar.exists()) {
+        File bloc3Directory = new File(catalinaHome + "/bloc/server/lib");
+        boolean bloc3BootstrapJarExists = testForBloc3BootstrapJar(bloc3Directory);
+        if (bloc3CatalinaJar.exists() && bloc3ServletApiJar.exists() && bloc3BootstrapJarExists) {
             return true;
         }
         return false;
+    }
+
+    private boolean testForBloc3BootstrapJar(File bloc3Directory) {
+        File[] files = bloc3Directory.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if (name == null) {
+                    return false;
+                }
+                if (name.startsWith(BLOC3_BOOTSTRAP_JAR_PREFIX) && name.endsWith(".jar")) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        if (files == null || files.length == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }
