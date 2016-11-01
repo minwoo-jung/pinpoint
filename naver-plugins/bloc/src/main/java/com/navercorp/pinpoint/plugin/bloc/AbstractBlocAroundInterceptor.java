@@ -47,7 +47,7 @@ public abstract class AbstractBlocAroundInterceptor implements AroundInterceptor
         this.isDebug = logger.isDebugEnabled();
 
         BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
-        traceRequestParam = config.isTraceRequestParam();
+        traceRequestParam = config.isBlocTraceRequestParam();
 
         traceContext.cacheApi(blocMethodApiTag);
     }

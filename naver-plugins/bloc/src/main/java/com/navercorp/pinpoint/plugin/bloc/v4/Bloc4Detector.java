@@ -19,6 +19,9 @@ import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Jongho Moon
  * @author HyunGil Jeong
@@ -26,9 +29,19 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  */
 public class Bloc4Detector implements ApplicationTypeDetector {
     
-    private static final String REQUIRED_MAIN_CLASS = "com.nhncorp.lucy.bloc.server.BlocServer";
+    private static final String DEFAULT_BOOTSTRAP_MAIN = "com.nhncorp.lucy.bloc.server.BlocServer";
     
     private static final String REQUIRED_CLASS =  "com.nhncorp.lucy.bloc.server.Bootstrap";
+
+    private final List<String> bootstrapMains;
+
+    public Bloc4Detector(List<String> bootstrapMains) {
+        if (bootstrapMains == null || bootstrapMains.isEmpty()) {
+            this.bootstrapMains = Arrays.asList(DEFAULT_BOOTSTRAP_MAIN);
+        } else {
+            this.bootstrapMains = bootstrapMains;
+        }
+    }
     
     @Override
     public ServiceType getApplicationType() {
@@ -37,7 +50,7 @@ public class Bloc4Detector implements ApplicationTypeDetector {
 
     @Override
     public boolean detect(ConditionProvider provider) {
-        return provider.checkMainClass(REQUIRED_MAIN_CLASS) &&
+        return provider.checkMainClass(bootstrapMains) &&
                provider.checkForClass(REQUIRED_CLASS);
     }
     

@@ -16,24 +16,41 @@ package com.navercorp.pinpoint.plugin.bloc;
 
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 
+import java.util.List;
+
 /**
  * @author jaehong.kim
  */
 public class BlocPluginConfig {
-    private boolean traceRequestParam = false;
+
+    private final boolean blocEnable;
+    private final List<String> blocBootstrapMains;
+    private final boolean blocTraceRequestParam;
 
     public BlocPluginConfig(ProfilerConfig src) {
-        this.traceRequestParam = src.readBoolean("profiler.bloc.tracerequestparam", false);
+        this.blocEnable = src.readBoolean("profiler.bloc.enable", true);
+        this.blocBootstrapMains = src.readList("profiler.bloc.bootstrap.main");
+        this.blocTraceRequestParam = src.readBoolean("profiler.bloc.tracerequestparam", false);
     }
 
-    public boolean isTraceRequestParam() {
-        return traceRequestParam;
+    public boolean isBlocEnable() {
+        return blocEnable;
+    }
+
+    public List<String> getBlocBootstrapMains() {
+        return blocBootstrapMains;
+    }
+
+    public boolean isBlocTraceRequestParam() {
+        return blocTraceRequestParam;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BlocPluginConfig{");
-        sb.append("traceRequestParam=").append(traceRequestParam);
+        sb.append("blocEnable=").append(blocEnable);
+        sb.append(", blocBootstrapMains=").append(blocBootstrapMains);
+        sb.append(", blocTraceRequestParam=").append(blocTraceRequestParam);
         sb.append('}');
         return sb.toString();
     }

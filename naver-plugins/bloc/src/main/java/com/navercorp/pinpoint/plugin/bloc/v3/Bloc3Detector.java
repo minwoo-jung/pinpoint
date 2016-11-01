@@ -16,6 +16,8 @@ package com.navercorp.pinpoint.plugin.bloc.v3;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Arrays;
+import java.util.List;
 
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
 import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
@@ -29,13 +31,23 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
  */
 public class Bloc3Detector implements ApplicationTypeDetector {
 
-    private static final String REQUIRED_MAIN_CLASS = "org.apache.catalina.startup.Bootstrap";
+    private static final String DEFAULT_BOOTSTRAP_MAIN = "org.apache.catalina.startup.Bootstrap";
 
     private static final String REQUIRED_SYSTEM_PROPERTY = "catalina.home";
 
     private static final String REQUIRED_CLASS = "org.apache.catalina.startup.Bootstrap";
 
     private static final String BLOC3_BOOTSTRAP_JAR_PREFIX = "lucy-bloc-bootstrap";
+
+    private final List<String> bootstrapMains;
+
+    public Bloc3Detector(List<String> bootstrapMains) {
+        if (bootstrapMains == null || bootstrapMains.isEmpty()) {
+            this.bootstrapMains = Arrays.asList(DEFAULT_BOOTSTRAP_MAIN);
+        } else {
+            this.bootstrapMains = bootstrapMains;
+        }
+    }
 
     @Override
     public ServiceType getApplicationType() {
@@ -44,7 +56,7 @@ public class Bloc3Detector implements ApplicationTypeDetector {
 
     @Override
     public boolean detect(ConditionProvider provider) {
-        if (provider.checkMainClass(REQUIRED_MAIN_CLASS) &&
+        if (provider.checkMainClass(bootstrapMains) &&
             provider.checkForClass(REQUIRED_CLASS)) {
             String catalinaHomePath = provider.getSystemPropertyValue(REQUIRED_SYSTEM_PROPERTY);
             return testForBlocEnvironment(catalinaHomePath);
