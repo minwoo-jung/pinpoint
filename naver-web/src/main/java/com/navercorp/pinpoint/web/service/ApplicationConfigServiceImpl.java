@@ -69,6 +69,9 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
         for(Map.Entry<String, AppUserGroupAuth> entry : appUserGroupAuthes.entrySet()) {
             String userGroupId = entry.getKey();
             if (myUserGroups.containsKey(userGroupId)) {
+                if (entry.getValue().getRole() == null) {
+                    continue;
+                }
                 if (!myRole.isHigherOrEqualLevel(entry.getValue().getRole())){
                     myRole = entry.getValue().getRole();
                 }
@@ -111,7 +114,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     @Override
     public boolean canEditConfiguration(String applicationId, String userId) {
         Role myRole = searchMyRole(applicationId, userId);
-        if(myRole.equals(Role.MANAGER)) {
+        if(Role.MANAGER.equals(myRole)) {
             return true;
         }
         
