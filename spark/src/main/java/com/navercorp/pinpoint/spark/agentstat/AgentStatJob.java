@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.navercorp.pinpoint.spark.SparkHBaseTables;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Scan;
@@ -110,7 +111,7 @@ public class AgentStatJob {
                     .values()
                     .map((v) -> {v.setCollectInterval(period); return v;});
             
-            hbaseContext.bulkPut(aggregatedRDD, HBaseTables.AGENT_STAT_AGGR.getNameAsString(), AgentStatHBaseUtils::createPut, true);
+            hbaseContext.bulkPut(aggregatedRDD, SparkHBaseTables.AGENT_STAT_AGGR.getNameAsString(), AgentStatHBaseUtils::createPut, true);
             
             if (local && !aggregatedRDD.isEmpty()) {
                 aggregatedRDD.sortBy(AgentStat::getTimestamp, true, 1).saveAsTextFile(LOCAL_OUTPUT_DIRECTORY + "/" + scans._1 + "/" + period);
