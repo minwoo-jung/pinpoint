@@ -7,25 +7,37 @@ import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
+import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 
 import java.security.ProtectionDomain;
 
 public class Bloc3Plugin implements ProfilerPlugin, TransformTemplateAware {
 
+    private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+
     private TransformTemplate transformTemplate;
 
     @Override
     public void setup(ProfilerPluginSetupContext context) {
-        context.addApplicationTypeDetector(new Bloc3Detector());
+        final BlocPluginConfig config = new BlocPluginConfig(context.getConfig());
 
-        addBlocAdapterEditor(context);
-        addNimmHandlerModifider(context);
+        if (!config.isBlocEnable()) {
+            logger.info("BlocPlugin disabled");
+            return;
+        }
+        Bloc3Detector bloc3Detector = new Bloc3Detector(config.getBlocBootstrapMains());
+        context.addApplicationTypeDetector(bloc3Detector);
+
+        addBlocAdapterEditor();
+        addNimmHandlerModifider();
     }
 
-    private void addBlocAdapterEditor(ProfilerPluginSetupContext context) {
+    private void addBlocAdapterEditor() {
         transformTemplate.transform("com.nhncorp.lucy.bloc.handler.HTTPHandler$BlocAdapter", new TransformCallback() {
 
             @Override
@@ -37,7 +49,7 @@ public class Bloc3Plugin implements ProfilerPlugin, TransformTemplateAware {
         });
     }
 
-    private void addNimmHandlerModifider(ProfilerPluginSetupContext context) {
+    private void addNimmHandlerModifider() {
         transformTemplate.transform("com.nhncorp.lucy.bloc.handler.NimmHandler$ContextWorker", new TransformCallback() {
 
             @Override
