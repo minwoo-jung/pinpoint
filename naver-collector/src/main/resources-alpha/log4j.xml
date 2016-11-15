@@ -28,7 +28,7 @@
         <param name="enable" value="true"/>
         <param name="logType" value="dev"/>
         <param name="logSource" value="collector"/>
-        <param name="errorCodeTYpe" value="default"/>
+        <param name="errorCodeType" value="default"/>
         <param name="debug" value="false"/>
     </appender>
 

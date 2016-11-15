@@ -37,7 +37,7 @@
         <param name="enable" value="true"/>
         <param name="logType" value="testtest"/>
         <param name="logSource" value="test"/>
-        <param name="errorCodeTYpe" value="default"/>
+        <param name="errorCodeType" value="default"/>
         <param name="debug" value="true"/>
     </appender>
 
