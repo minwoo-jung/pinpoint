@@ -79,12 +79,12 @@ public class JtdsConnectionIT extends BasePinpointTest {
 
     @Test
     public void testModify() throws Exception {
-        logger.info("testModify");
+        logger.debug("testModify");
 
         Connection connection = connectDB();
 
-        logger.info("Connection class name:{}", connection.getClass().getName());
-        logger.info("Connection class cl:{}", connection.getClass().getClassLoader());
+        logger.debug("Connection class name:{}", connection.getClass().getName());
+        logger.debug("Connection class cl:{}", connection.getClass().getClassLoader());
 
         DatabaseInfo url = ((DatabaseInfoAccessor) connection)._$PINPOINT$_getDatabaseInfo();
         Assert.assertNotNull(url);
@@ -129,7 +129,7 @@ public class JtdsConnectionIT extends BasePinpointTest {
 
     private void preparedStatement(Connection connection) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("select 1");
-        logger.info("PreparedStatement className:" + preparedStatement.getClass().getName());
+        logger.debug("PreparedStatement className:" + preparedStatement.getClass().getName());
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.close();
         preparedStatement.close();
@@ -164,7 +164,7 @@ public class JtdsConnectionIT extends BasePinpointTest {
     private void preparedStatement4(Connection connection) throws SQLException {
 //        Statement.RETURN_GENERATED_KEYS or Statement.NO_GENERATED_KEYS
         PreparedStatement preparedStatement = connection.prepareStatement("select 1", Statement.RETURN_GENERATED_KEYS);
-        logger.info("PreparedStatement className:{}", preparedStatement.getClass().getName());
+        logger.debug("PreparedStatement className:{}", preparedStatement.getClass().getName());
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.close();
         preparedStatement.close();
