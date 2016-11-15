@@ -19,7 +19,7 @@
         <param name="enable" value="true"/>
         <param name="logType" value="test"/>
         <param name="logSource" value="web"/>
-        <param name="errorCodeTYpe" value="default"/>
+        <param name="errorCodeType" value="default"/>
         <param name="debug" value="false"/>
     </appender>
 
