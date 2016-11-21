@@ -54,7 +54,7 @@ public class AsyncHTTPClientTest {
                 }
             });
 
-            future.get(300L, TimeUnit.MILLISECONDS);
+            future.get(3000L, TimeUnit.MILLISECONDS);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -76,7 +76,7 @@ public class AsyncHTTPClientTest {
             requestBuilder.addBodyPart(new StringPart("name2", "value2"));
 
             ListenableFuture<Response> f = requestBuilder.execute();
-            f.get(500L, TimeUnit.MILLISECONDS);
+            f.get(3000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
@@ -99,7 +99,7 @@ public class AsyncHTTPClientTest {
             requestBuilder.addBodyPart(new StringPart("name5", "value5"));
 
             ListenableFuture<Response> f = requestBuilder.execute();
-            f.get(500L, TimeUnit.MILLISECONDS);
+            f.get(3000L, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }

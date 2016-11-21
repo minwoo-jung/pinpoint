@@ -56,6 +56,7 @@ public class ArcusIT {
     @BeforeClass
     public static void beforeClass() {
         System.setProperty("net.spy.log.LoggerImpl", "net.spy.memcached.compat.log.Log4JLogger");
+        System.setProperty("net.sf.ehcache.skipUpdateCheck", "true");
 
         ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
         builder.setFrontCacheExpireTime(10000);
