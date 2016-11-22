@@ -59,10 +59,17 @@ public class SimpleNettyServerApp {
                         try {
                             startLatch.await();
                             Response response = invoker.requestGet("http://localhost:" + SERVER_PORT, NingAsyncHttpClient.getDummyParams(), NingAsyncHttpClient.getDummyHeaders(), NingAsyncHttpClient.getDummyCookies());
-                            logger.info(response.getResponseBody());
+                            if(response != null) {
+                                final String body = response.getResponseBody();
+                                logger.info(body);
+                            }
 
                             Response response2 = invoker.requestPost("http://localhost:" + SERVER_PORT, NingAsyncHttpClient.getDummyHeaders(), "I_AM_BODY");
-                            logger.info(response2.getResponseBody());
+                            if(response2 != null) {
+                                final String body = response2.getResponseBody();
+                                logger.info(body);
+                            }
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         } finally {

@@ -197,7 +197,7 @@ public class HttpUtil {
 
                 HttpPost requestPost = new HttpPost(splitURL[0]);
 
-                if (jsonEntity == null) {
+                if (jsonEntity == null && splitURL != null) {
                     requestPost.setEntity(makeFormEntity(splitURL.length < 2 ? null : splitURL[1], charset));
                 } else {
                     requestPost.setEntity(new StringEntity(jsonEntity, "application/json", "UTF-8"));
@@ -213,7 +213,9 @@ public class HttpUtil {
             if (header != null && header.size() > 0) {
                 Set<Entry<String, String>> entrySet = header.entrySet();
                 for (Entry<String, String> entry : entrySet) {
-                    request.addHeader(entry.getKey(), entry.getValue());
+                    if(request != null) {
+                        request.addHeader(entry.getKey(), entry.getValue());
+                    }
                 }
             }
 
