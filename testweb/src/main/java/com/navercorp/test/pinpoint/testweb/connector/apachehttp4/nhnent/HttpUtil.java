@@ -201,7 +201,7 @@ public class HttpUtil {
                     if(splitURL != null && splitURL.length >= 2 && splitURL[1] != null) {
                         requestPost.setEntity(makeFormEntity(splitURL[1], charset));
                     } else {
-                        requestPost.setEntity(makeFormEntity(null, charset));
+                        requestPost.setEntity(makeFormEntity("", charset));
                     }
                 } else {
                     requestPost.setEntity(new StringEntity(jsonEntity, "application/json", "UTF-8"));
