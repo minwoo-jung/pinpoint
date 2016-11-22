@@ -197,8 +197,12 @@ public class HttpUtil {
 
                 HttpPost requestPost = new HttpPost(splitURL[0]);
 
-                if (jsonEntity == null && splitURL != null) {
-                    requestPost.setEntity(makeFormEntity(splitURL.length < 2 ? null : splitURL[1], charset));
+                if (jsonEntity == null) {
+                    if(splitURL != null && splitURL.length >= 2 && splitURL[1] != null) {
+                        requestPost.setEntity(makeFormEntity(splitURL[1], charset));
+                    } else {
+                        requestPost.setEntity(makeFormEntity(null, charset));
+                    }
                 } else {
                     requestPost.setEntity(new StringEntity(jsonEntity, "application/json", "UTF-8"));
                     requestPost.addHeader("Content-Type", "application/json");
