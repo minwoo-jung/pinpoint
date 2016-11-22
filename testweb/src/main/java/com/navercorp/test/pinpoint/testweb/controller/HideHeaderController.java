@@ -54,7 +54,7 @@ public class HideHeaderController {
         ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
 
         String execute = client.execute("http://localhost:" + request.getLocalPort() + "/hideHeaderNestedTest.pinpoint", new HashMap<String, Object>());
-        if (!execute.equalsIgnoreCase("ok")) {
+        if (execute != null && !execute.equalsIgnoreCase("ok")) {
             throw new RuntimeException("pinpoint-header-test fail Caused:" + execute);
         }
 

@@ -234,8 +234,10 @@ public class ApacheHttpClient4 {
 
     private HttpParams getHttpParams() {
         HttpParams params = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(params, (int) connectorOptions.getConnectionTimeout());
-        HttpConnectionParams.setSoTimeout(params, connectorOptions.getSoTimeout());
+        if(connectorOptions != null) {
+            HttpConnectionParams.setConnectionTimeout(params, (int) connectorOptions.getConnectionTimeout());
+            HttpConnectionParams.setSoTimeout(params, connectorOptions.getSoTimeout());
+        }
         params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
         params.setParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, "UTF-8");
         return params;
