@@ -13,7 +13,7 @@ public class DefaultNsightMatcherTest {
 
         Assert.assertTrue(matcher.isMatched(sampleString));
         LinkInfo linkInfo = matcher.getLinkInfo(sampleString);
-        Assert.assertEquals("http://v1.nsight.navercorp.com/dashboard_server/dev-pinpoint-workload003.ncl", linkInfo.getLinkUrl());
+        Assert.assertEquals("http://nsight.navercorp.com/dashboard_server/dev-pinpoint-workload003.ncl", linkInfo.getLinkUrl());
     }
     
 }
