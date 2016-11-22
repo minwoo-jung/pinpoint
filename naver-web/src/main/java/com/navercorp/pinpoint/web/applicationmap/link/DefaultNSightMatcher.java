@@ -24,7 +24,7 @@ import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
  */
 public class DefaultNSightMatcher implements ServerMatcher {
 
-    public static final String URL = "http://v1.nsight.navercorp.com/dashboard_server/";
+    public static final String URL = "http://nsight.navercorp.com/dashboard_server/";
     
     @Override
     public boolean isMatched(String value) {
