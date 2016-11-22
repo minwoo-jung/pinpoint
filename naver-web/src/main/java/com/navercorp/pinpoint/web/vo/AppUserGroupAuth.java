@@ -158,7 +158,7 @@ public class AppUserGroupAuth {
                     return role;
                 }
             }
-            return null;
+            throw new RuntimeException("There was no match for is roleName : " + roleName );
         }
         
     }

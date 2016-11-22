@@ -18,14 +18,8 @@ public class AppUserGroupAuthSerializer extends JsonSerializer<AppUserGroupAuth>
         jgen.writeStartObject();
         jgen.writeStringField("applicationId", appAuth.getApplicationId());
         jgen.writeStringField("userGroupId", appAuth.getUserGroupId());
+        jgen.writeStringField("role", appAuth.getRole().toString());
         jgen.writeObjectField("configuration", appAuth.getConfiguration());
-
-        Role role = appAuth.getRole();
-        if (role == null) {
-            throw new JsonGenerationException("user Role is empty");
-        }
-        jgen.writeStringField("role", role.toString());
-
         jgen.writeEndObject();
 
     }
