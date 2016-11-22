@@ -2,6 +2,7 @@ package com.navercorp.pinpoint.web.view;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -19,12 +20,11 @@ public class AppUserGroupAuthSerializer extends JsonSerializer<AppUserGroupAuth>
         jgen.writeStringField("userGroupId", appAuth.getUserGroupId());
         jgen.writeObjectField("configuration", appAuth.getConfiguration());
 
-        String roleName = "";
         Role role = appAuth.getRole();
-        if (role != null) {
-            roleName = role.toString();
+        if (role == null) {
+            throw new JsonGenerationException("user Role is empty");
         }
-        jgen.writeStringField("role", roleName);
+        jgen.writeStringField("role", role.toString());
 
         jgen.writeEndObject();
 
