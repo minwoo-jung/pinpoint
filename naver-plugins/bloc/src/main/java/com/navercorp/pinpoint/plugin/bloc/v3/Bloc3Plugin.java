@@ -54,15 +54,21 @@ public class Bloc3Plugin implements ProfilerPlugin, TransformTemplateAware {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+                final InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
                 target.addField(BlocConstants.NIMM_SERVER_SOCKET_ADDRESS_ACCESSOR);
 
-                InstrumentMethod setPrefableNetEndPoint = target.addDelegatorMethod("setPrefableNetEndPoint", "com.nhncorp.lucy.nimm.connector.NimmNetEndPoint");
+                final InstrumentMethod setPrefableNetEndPoint = target.addDelegatorMethod("setPrefableNetEndPoint", "com.nhncorp.lucy.nimm.connector.NimmNetEndPoint");
                 if (setPrefableNetEndPoint != null) {
                     setPrefableNetEndPoint.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.NimmAbstractWorkerInterceptor");
                 }
 
-                target.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v3.interceptor.NimmHandlerInterceptor");
+                final InstrumentMethod handleResponseMessageMethod = target.getDeclaredMethod("handleResponseMessage", "com.nhncorp.lucy.npc.NpcMessage", "com.nhncorp.lucy.nimm.connector.address.NimmAddress");
+                if (handleResponseMessageMethod != null) {
+                    handleResponseMessageMethod.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v3.interceptor.NimmHandlerInterceptor");
+                } else {
+                    logger.info("Bloc 3.x does not support profiling for NIMM requests in versions of NIMM 2.2.11 and earlier.");
+                }
+
                 return target.toBytecode();
             }
         });

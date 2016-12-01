@@ -79,7 +79,13 @@ public class Bloc4Plugin implements ProfilerPlugin, TransformTemplateAware {
                     setPrefableNetEndPoint.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.NimmAbstractWorkerInterceptor");
                 }
 
-                target.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.NimmHandlerInterceptor");
+                final InstrumentMethod handleResponseMessageMethod = target.getDeclaredMethod("handleResponseMessage", "com.nhncorp.lucy.npc.NpcMessage", "java.lang.String");
+                if(handleResponseMessageMethod != null) {
+                    handleResponseMessageMethod.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.NimmHandlerInterceptor");
+                } else {
+                    logger.info("Bloc 4.x does not support profiling for NIMM requests in versions of NIMM 2.2.11 and earlier.");
+                }
+
                 return target.toBytecode();
             }
         });

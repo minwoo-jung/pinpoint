@@ -40,7 +40,6 @@ import java.util.Map;
 /**
  * @Author Taejin Koo
  */
-@TargetMethod(name = "handleResponseMessage", paramTypes = {"com.nhncorp.lucy.npc.NpcMessage", "com.nhncorp.lucy.nimm.connector.address.NimmAddress"})
 public class NimmHandlerInterceptor extends AbstractBlocAroundInterceptor {
 
     public NimmHandlerInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
