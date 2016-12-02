@@ -17,6 +17,7 @@ package com.navercorp.pinpoint.flink.receiver;
 
 import com.codahale.metrics.MetricRegistry;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
@@ -39,8 +40,10 @@ public class TcpSourceFunction implements SourceFunction<String> {
         CollectorConfiguration configuration = appCtx.getBean("collectorConfiguration", CollectorConfiguration.class);
         DispatchHandler tcpDispatchHandlerWrapper = appCtx.getBean("tcpDispatchHandlerWrapper", DispatchHandler.class);
         PinpointServerAcceptor serverAcceptor = appCtx.getBean("serverAcceptor", PinpointServerAcceptor.class);
-        TCPReceiver tcpReceiver = new TCPReceiver(configuration, tcpDispatchHandlerWrapper, serverAcceptor, ctx);
-        tcpReceiver.start();
+        AgentStatBatchMapper agentStatBatchMapper = appCtx.getBean("agentStatBatchMapper", AgentStatBatchMapper.class);
+        TCPReceiver tcpReceiver = new TCPReceiver(configuration, tcpDispatchHandlerWrapper, serverAcceptor, ctx, agentStatBatchMapper);
+        tcpReceiver.afterPropertiesSet();
+         tcpReceiver.start();
         Thread.sleep(3000000L);
     }
 

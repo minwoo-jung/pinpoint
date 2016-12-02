@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * ==목표==
@@ -80,13 +81,13 @@ public class StatStreamingVer2Job implements Serializable {
             @Override
             public Tuple3<String, Integer, Long> map(String value) throws Exception {
                 String[] result = value.split(",");
-                System.out.println("@@@@@@@@@@@@@" + value);
+                //System.out.println("@@@@@@@@@@@@@" + value);
                 return new Tuple3<String, Integer, Long>(result[0], Integer.valueOf(result[2]), Long.valueOf(result[1]));
             }
         })
             .assignTimestampsAndWatermarks(new LinearTimestamp())
             .keyBy(0)
-            .window(TumblingEventTimeWindows.of(Time.seconds(1)))
+            .window(TumblingEventTimeWindows.of(Time.seconds(120)))
             .apply(new WindowFunction<Tuple3<String, Integer, Long>, Tuple4<String, Integer, Integer, Integer>, Tuple, TimeWindow>() {
                 @Override
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, Integer, Long>> values, Collector<Tuple4<String, Integer, Integer, Integer>> out) throws Exception {
@@ -94,16 +95,20 @@ public class StatStreamingVer2Job implements Serializable {
                     Integer total = 0;
                     Integer size = 0;
                     String agentName = "null";
+                    System.out.println();
+                    System.out.println("#######################################");
+                    System.out.println("timewindow : " + new Date(window.getStart()).toString() + "~" + new Date(window.getEnd()).toString()+ ")");
+
                     for(Tuple3<String, Integer, Long> value : values) {
-                        System.out.println("thread name "+ Thread.currentThread().getId() + ", value name : " + value.f0 + " int : " + value.f1  + "timewindow + (" + window.getStart() + "," + window.getEnd()+ ")");
+                        System.out.println("    - thread name : "+ Thread.currentThread().getId() + ", value name : " + value.f0 + " int : " + value.f1);
                         total = total + value.f1;
                         size++;
                         agentName = value.f0;
                     }
 
                     Integer average = total / size;
-                    System.out.println("############ " + agentName +  " ######## total : " + total + " size : " + size + "  average : " + average);
-
+                    System.out.println("summary : " + agentName +  ", total : " + total + ", size : " + size + ", average : " + average);
+                    System.out.println("#######################################");
                     out.collect(new Tuple4<>(agentName, average, total, size));
                 }
             });
@@ -126,13 +131,13 @@ public class StatStreamingVer2Job implements Serializable {
         @Override
         public long extractTimestamp(Tuple3<String, Integer, Long> value, long previousElementTimestamp) {
 
-            System.out.println("timestamp "+ Thread.currentThread().getId() + ", value name : " + value.f0 + " int : " + value.f1 + " counter : " + value.f2);
+            //System.out.println("timestamp "+ Thread.currentThread().getId() + ", value name : " + value.f0 + " int : " + value.f1 + " counter : " + value.f2);
             return value.f2;
         }
 
         @Override
         public Watermark checkAndGetNextWatermark(Tuple3<String, Integer, Long> lastElement, long extractedTimestamp) {
-            System.out.println("$$$$$$$$$$$$$$$$$$$$$" + lastElement.f2);
+            System.out.println("timestamp : " + new Date(lastElement.f2).toString() + "long value : " + lastElement.f2);
             return new Watermark(lastElement.f2);
         }
     }
@@ -174,7 +179,7 @@ public class StatStreamingVer2Job implements Serializable {
         public void writeRecord(Tuple4<String, Integer, Integer, Integer> statData) throws IOException {
             String rowKey = statData.f0 + "_" + System.currentTimeMillis();
             Put put = new Put(rowKey.getBytes());
-            String value = "agentName : " + statData.f0 +  "average : " + statData.f1 + " total + " + statData.f2 + " + size + " + statData.f3;
+            String value = "agentName : " + statData.f0 +  ", average : " + statData.f1 + ", total + " + statData.f2 + ", size : " + statData.f3;
             System.out.println(value);
             byte[] sqlBytes = Bytes.toBytes(value);
             put.addColumn(STAT_METADATA_CF, CPU_RATE, value.getBytes());

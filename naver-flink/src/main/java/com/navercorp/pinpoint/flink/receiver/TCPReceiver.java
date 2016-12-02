@@ -19,11 +19,13 @@ package com.navercorp.pinpoint.flink.receiver;
 import com.codahale.metrics.MetricRegistry;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper;
 import com.navercorp.pinpoint.collector.monitor.MonitoredExecutorService;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.collector.rpc.handler.AgentEventHandler;
 import com.navercorp.pinpoint.collector.rpc.handler.AgentLifeCycleHandler;
 import com.navercorp.pinpoint.collector.util.PacketUtils;
+import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
 import com.navercorp.pinpoint.common.server.util.AgentEventType;
 import com.navercorp.pinpoint.common.server.util.AgentLifeCycleState;
 import com.navercorp.pinpoint.common.util.ExecutorFactory;
@@ -40,6 +42,7 @@ import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
 import com.navercorp.pinpoint.rpc.server.handler.ServerStateChangeEventHandler;
 import com.navercorp.pinpoint.rpc.util.MapUtils;
 import com.navercorp.pinpoint.thrift.dto.TAgentStatBatch;
+import com.navercorp.pinpoint.thrift.dto.TResult;
 import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializer;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializerFactory;
@@ -94,9 +97,8 @@ public class TCPReceiver {
     private final DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory = new ThreadLocalHeaderTBaseDeserializerFactory<>(new HeaderTBaseDeserializerFactory());
 
     @Autowired(required=false)
-    private MetricRegistry metricRegistry;
+    private MetricRegistry metricRegistry; // 제거 가능하지 않나?
 
-//    @Resource(name="agentEventWorker")
 //    private ExecutorService agentEventWorker;
 
 //    @Resource(name="agentEventHandler")
@@ -113,9 +115,10 @@ public class TCPReceiver {
 //    }
 
     private final SourceContext<String> sourceContext;
+    private AgentStatBatchMapper agentStatBatchMapper;
 
 //    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, ZookeeperClusterService service) {
-    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, SourceContext<String> sourceContext) {
+    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, SourceContext<String> sourceContext, AgentStatBatchMapper agentStatBatchMapper) {
         if (configuration == null) {
             throw new NullPointerException("collector configuration must not be null");
         }
@@ -127,6 +130,7 @@ public class TCPReceiver {
         this.configuration = configuration;
         this.serverAcceptor = serverAcceptor;
         this.sourceContext = sourceContext;
+        this.agentStatBatchMapper = agentStatBatchMapper;
 //        this.clusterService = service;
     }
 
@@ -201,9 +205,9 @@ public class TCPReceiver {
 //                if (supportServer) {
 //                    return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
 //                } else {
-//                    return HandshakeResponseType.Success.SIMPLEX_COMMUNICATION;
+                    return HandshakeResponseType.Success.SIMPLEX_COMMUNICATION;
 //                }
-                return null;
+//                return null;
             }
 
             @Override
@@ -221,7 +225,7 @@ public class TCPReceiver {
 //                recordPing(pingPacket, pinpointServer);
             }
         });
-//        this.serverAcceptor.bind(configuration.getTcpListenIp(), configuration.getTcpListenPort());
+        this.serverAcceptor.bind(configuration.getTcpListenIp(), configuration.getTcpListenPort());
     }
 
     private void receive(SendPacket sendPacket, PinpointSocket pinpointSocket, SourceContext<String> sourceContext) {
@@ -275,9 +279,11 @@ public class TCPReceiver {
                 TBase<?, ?> tBase = SerializationUtils.deserialize(bytes, deserializerFactory);
                 if (tBase instanceof TAgentStatBatch) {
                     TAgentStatBatch statBatch = (TAgentStatBatch)tBase;
-                    String data = statBatch.getAgentId() + "," + statBatch.getAgentStats().get(0).getTimestamp() + "," + statBatch.getAgentStats().get(0).getCpuLoad();
-                    System.out.println("==========data====" + data);
-                    sourceContext.collect("statBatch.getAgentId()");
+                    AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
+                    Long cupLoad =(long)(statBatch.getAgentStats().get(0).getCpuLoad().getSystemCpuLoad() * 100);
+                    String data = statBatch.getAgentId() + "," + statBatch.getAgentStats().get(0).getTimestamp() + "," + cupLoad;
+                    //System.out.println("==========data====" + data);
+                    sourceContext.collect(data);
                 }
                 //dispatchHandler.dispatchSendMessage(tBase);
             } catch (TException e) {
@@ -332,14 +338,27 @@ public class TCPReceiver {
                     logger.debug("packet dump hex:{}", PacketUtils.dumpByteArray(bytes));
                 }
             } catch (Exception e) {
+                //TODO : (minwoo) exception 처리는 나중에 주석 풀어야함.
                 // there are cases where invalid headers are received
-                if (logger.isWarnEnabled()) {
-                    logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
-                }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("packet dump hex:{}", PacketUtils.dumpByteArray(bytes));
+//                if (logger.isWarnEnabled()) {
+//                    //logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
+//                    logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage());
+//                }
+//                if (logger.isDebugEnabled()) {
+//                    logger.debug("packet dump hex:{}", PacketUtils.dumpByteArray(bytes));
+//                }
+
+                //TODO : (minwoo)임시 코드임
+                byte[] resultBytes = new byte[0];
+                try {
+                    resultBytes = SerializationUtils.serialize(new TResult(true), serializerFactory);
+                    pinpointSocket.response(requestPacket, resultBytes);
+                } catch (TException e1) {
+                    e1.printStackTrace();
                 }
             }
+
+
         }
     }
 
