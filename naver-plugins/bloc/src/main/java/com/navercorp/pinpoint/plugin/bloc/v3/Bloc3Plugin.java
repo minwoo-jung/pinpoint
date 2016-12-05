@@ -34,6 +34,7 @@ public class Bloc3Plugin implements ProfilerPlugin, TransformTemplateAware {
         context.addApplicationTypeDetector(bloc3Detector);
 
         addBlocAdapterEditor();
+        addNpcHandlerModifier();
         addNimmHandlerModifider();
     }
 
@@ -44,6 +45,19 @@ public class Bloc3Plugin implements ProfilerPlugin, TransformTemplateAware {
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
                 target.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v3.interceptor.ExecuteMethodInterceptor");
+                return target.toBytecode();
+            }
+        });
+    }
+
+    private void addNpcHandlerModifier() {
+        transformTemplate.transform("com.nhncorp.lucy.bloc.handler.NPCHandler", new TransformCallback() {
+
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+                // BLOC3, BLOC4 모두 MINA의 IoFilterAdapter를 상속하고 있기 때문에 v4의 MessageReceivedInterceptor를 그대로 사용 합니다
+                target.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.MessageReceivedInterceptor");
                 return target.toBytecode();
             }
         });
