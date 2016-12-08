@@ -281,13 +281,13 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
 
             String key = entry.getKey();
 
-            params.append(StringUtils.drop(key, eachLimit));
+            params.append(StringUtils.abbreviate(key, eachLimit));
             params.append("=");
 
             Object value = entry.getValue().get(0);
 
             if (value != null) {
-                params.append(StringUtils.drop(StringUtils.toString(value), eachLimit));
+                params.append(StringUtils.abbreviate(StringUtils.toString(value), eachLimit));
             }
         }
 
