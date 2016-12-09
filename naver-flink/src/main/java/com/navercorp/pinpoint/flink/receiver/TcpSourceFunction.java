@@ -17,10 +17,10 @@ package com.navercorp.pinpoint.flink.receiver;
 
 import com.codahale.metrics.MetricRegistry;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.apache.thrift.TBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,20 +28,19 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 /**
  * @author minwoo.jung
  */
-public class TcpSourceFunction implements SourceFunction<String> {
+public class TcpSourceFunction implements SourceFunction<TBase> {
 
     private static final String[] SPRING_CONFIG_XML = new String[] {"applicationContext-collector.xml"};
 
     private TCPReceiver tcpReceiver;
 
     @Override
-    public void run(SourceContext<String> ctx) throws Exception {
+    public void run(SourceContext<TBase> ctx) throws Exception {
         ApplicationContext appCtx = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
         CollectorConfiguration configuration = appCtx.getBean("collectorConfiguration", CollectorConfiguration.class);
         DispatchHandler tcpDispatchHandlerWrapper = appCtx.getBean("tcpDispatchHandlerWrapper", DispatchHandler.class);
         PinpointServerAcceptor serverAcceptor = appCtx.getBean("serverAcceptor", PinpointServerAcceptor.class);
-        AgentStatBatchMapper agentStatBatchMapper = appCtx.getBean("agentStatBatchMapper", AgentStatBatchMapper.class);
-        TCPReceiver tcpReceiver = new TCPReceiver(configuration, tcpDispatchHandlerWrapper, serverAcceptor, ctx, agentStatBatchMapper);
+        TCPReceiver tcpReceiver = new TCPReceiver(configuration, tcpDispatchHandlerWrapper, serverAcceptor, ctx);
         tcpReceiver.afterPropertiesSet();
          tcpReceiver.start();
         Thread.sleep(3000000L);

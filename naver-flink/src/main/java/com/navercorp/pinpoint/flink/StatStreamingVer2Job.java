@@ -19,16 +19,22 @@ package com.navercorp.pinpoint.flink;
  * @author minwoo.jung
  */
 
-import akka.io.Tcp;
+import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper;
+import com.navercorp.pinpoint.common.buffer.AutomaticBuffer;
+import com.navercorp.pinpoint.common.buffer.Buffer;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
 import com.navercorp.pinpoint.common.hbase.PooledHTableFactory;
+import com.navercorp.pinpoint.common.server.bo.stat.*;
+import com.navercorp.pinpoint.common.server.bo.stat.join.JoinAgentStatBo;
+import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
 import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
+import com.navercorp.pinpoint.thrift.dto.TAgentStatBatch;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.io.OutputFormat;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -45,14 +51,16 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.thrift.TBase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * ==목표==
@@ -60,6 +68,7 @@ import java.util.Date;
  *    적당히 데이터를 함축해서 1달 단위로 검색이 쉽게 되도록 하자.
  */
 public class StatStreamingVer2Job implements Serializable {
+
 
     public static void main(String[] args) throws Exception {
         new StatStreamingVer2Job().start();
@@ -74,84 +83,89 @@ public class StatStreamingVer2Job implements Serializable {
         env.getConfig().setGlobalJobParameters(params);
         //DataStream<String> rawData = env.socketTextStream("10.113.132.150", 9600, "\n");
 
-        DataStream<String> rawData = env.addSource(new TcpSourceFunction());
+        DataStream<TBase> rawData = env.addSource(new TcpSourceFunction());
 
 
-        DataStream<Tuple4<String, Integer, Integer, Integer>> counts = rawData.map(new MapFunction<String, Tuple3<String, Integer, Long>>() {
+        DataStream<Tuple2<String, JoinAgentStatBo>> counts = rawData.map(new MapFunction<TBase, Tuple3<String, JoinAgentStatBo, Long>>() {
+            ////TODO : (minwoo) 동시성 처리 고민해야할듯함. 뭔가 init 처리하는게 있지 않을까 하는데... seralize 이슈하고 관련 있을듯.
+            private AgentStatBatchMapper agentStatBatchMapper = null;
             @Override
-            public Tuple3<String, Integer, Long> map(String value) throws Exception {
-                String[] result = value.split(",");
-                //System.out.println("@@@@@@@@@@@@@" + value);
-                return new Tuple3<String, Integer, Long>(result[0], Integer.valueOf(result[2]), Long.valueOf(result[1]));
+            public Tuple3<String, JoinAgentStatBo, Long> map(TBase tBase) throws Exception {
+
+                if (tBase instanceof TAgentStatBatch) {
+                    JoinAgentStatBo joinAgentStatBo = joinTAgentStatBatch((TAgentStatBatch)tBase);
+                    return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimeStamp());
+                }
+
+                return new Tuple3<String, JoinAgentStatBo, Long>();
+
+
             }
+
+            public JoinAgentStatBo joinTAgentStatBatch(TAgentStatBatch statBatch) {
+                if (agentStatBatchMapper == null) {
+                    final String[] SPRING_CONFIG_XML = new String[] {"applicationContext-collector.xml"};
+                    ApplicationContext appCtx = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
+                    agentStatBatchMapper = appCtx.getBean("agentStatBatchMapper", AgentStatBatchMapper.class);
+                }
+                AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
+                JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
+                joinAgentStatBo.setAgentId(agentStatBo.getAgentId());
+                JoinCpuLoadBo joinCpuLoadBo = joinAgentStatBo.joinCpuLoadBoLIst(agentStatBo.getCpuLoadBos());
+                joinAgentStatBo.setJoinCpuLoadBo(joinCpuLoadBo);
+                joinAgentStatBo.setTimeStamp(joinCpuLoadBo.getTimestamp());
+                //TODO : (minwoo) stat 가져올때 nullpinointexcpetion 대비해야함.
+//                JoinTransactionBo joinTransactionBo = joinAgentStatBo.joinTransactionBos(agentStatBo.getTransactionBos());
+//                JoinActiveTraceBo joinActiveTraceBo = joinAgentStatBo.joinActiveTraceBos(agentStatBo.getActiveTraceBos());
+                return joinAgentStatBo;
+            }
+
         })
             .assignTimestampsAndWatermarks(new LinearTimestamp())
             .keyBy(0)
             .window(TumblingEventTimeWindows.of(Time.seconds(120)))
-            .apply(new WindowFunction<Tuple3<String, Integer, Long>, Tuple4<String, Integer, Integer, Integer>, Tuple, TimeWindow>() {
-                @Override
-                public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, Integer, Long>> values, Collector<Tuple4<String, Integer, Integer, Integer>> out) throws Exception {
-                    System.out.println("tuple data : " + tuple);
-                    Integer total = 0;
-                    Integer size = 0;
-                    String agentName = "null";
-                    System.out.println();
-                    System.out.println("#######################################");
-                    System.out.println("timewindow : " + new Date(window.getStart()).toString() + "~" + new Date(window.getEnd()).toString()+ ")");
+            .apply(new WindowFunction<Tuple3<String, JoinAgentStatBo, Long>, Tuple2<String, JoinAgentStatBo>, Tuple, TimeWindow>() {
 
-                    for(Tuple3<String, Integer, Long> value : values) {
-                        System.out.println("    - thread name : "+ Thread.currentThread().getId() + ", value name : " + value.f0 + " int : " + value.f1);
-                        total = total + value.f1;
-                        size++;
-                        agentName = value.f0;
+                @Override
+                public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinAgentStatBo, Long>> values, Collector<Tuple2<String, JoinAgentStatBo>> out) throws Exception {
+                    JoinAgentStatBo newJoinAgentStatBo = join(values);
+                    out.collect(new Tuple2<>(newJoinAgentStatBo.getAgentId(), newJoinAgentStatBo));
+                }
+
+                private JoinAgentStatBo join(Iterable<Tuple3<String, JoinAgentStatBo, Long>> values) {
+                    List<JoinAgentStatBo> joinAgentStatBoList =  new ArrayList<JoinAgentStatBo>();
+                    for (Tuple3<String, JoinAgentStatBo, Long> value : values) {
+                        joinAgentStatBoList.add(value.f1);
                     }
 
-                    Integer average = total / size;
-                    System.out.println("summary : " + agentName +  ", total : " + total + ", size : " + size + ", average : " + average);
-                    System.out.println("#######################################");
-                    out.collect(new Tuple4<>(agentName, average, total, size));
+                    return JoinAgentStatBo.joinAgentStatBo(joinAgentStatBoList);
                 }
             });
 
-        if (params.has("output")) {
-            counts.writeAsText("F:\\workspace_intellij\\pinpointMinwoo\\output\\result11");
-        } else {
-            counts.writeUsingOutputFormat(new HBaseOutputFormat());
-        }
-
-        env.execute("Streaming WordCount");
+        counts.writeUsingOutputFormat(new HBaseOutputFormat());
+        env.execute("Aggregation Stat Data");
     }
 
-    public class LinearTimestamp implements AssignerWithPunctuatedWatermarks<Tuple3<String, Integer, Long>> {
+    public class LinearTimestamp implements AssignerWithPunctuatedWatermarks<Tuple3<String, JoinAgentStatBo, Long>> {
 
         private static final long serialVersionUID = 1L;
 
-
-        // collector에서 찔러주는 데이터가 직접 저장되되는 시간은 여기서 직접 데이터의 시간을 보고 저장하면 될듯함.
         @Override
-        public long extractTimestamp(Tuple3<String, Integer, Long> value, long previousElementTimestamp) {
-
-            //System.out.println("timestamp "+ Thread.currentThread().getId() + ", value name : " + value.f0 + " int : " + value.f1 + " counter : " + value.f2);
-            return value.f2;
-        }
-
-        @Override
-        public Watermark checkAndGetNextWatermark(Tuple3<String, Integer, Long> lastElement, long extractedTimestamp) {
+        public Watermark checkAndGetNextWatermark(Tuple3<String, JoinAgentStatBo, Long> lastElement, long extractedTimestamp) {
             System.out.println("timestamp : " + new Date(lastElement.f2).toString() + "long value : " + lastElement.f2);
             return new Watermark(lastElement.f2);
         }
+
+        @Override
+        public long extractTimestamp(Tuple3<String, JoinAgentStatBo, Long> value, long previousElementTimestamp) {
+            return value.f2;
+        }
     }
 
-    /**
-     *
-     * This class implements an OutputFormat for HBase
-     *
-     */
-    private class HBaseOutputFormat implements OutputFormat<Tuple4<String, Integer, Integer, Integer>> {
+    //TODO : (minwoo) 별도 클래스로 분리 필요함.
+    private class HBaseOutputFormat implements OutputFormat<Tuple2<String, JoinAgentStatBo>> {
 
-        //public final TableName STAT_METADATA_FLINK = TableName.valueOf("StatMetaData_flink");
-        public final byte[] STAT_METADATA_CF = Bytes.toBytes("stat");
-        public final byte[] CPU_RATE = Bytes.toBytes("cpu_rate");
+        public final byte[] STAT_METADATA_CF = Bytes.toBytes("S");
         private HbaseTemplate2 hbaseTemplate2 = null;
         private String taskNumber = null;
         private int rowNumber = 0;
@@ -176,14 +190,34 @@ public class StatStreamingVer2Job implements Serializable {
         }
 
         @Override
-        public void writeRecord(Tuple4<String, Integer, Integer, Integer> statData) throws IOException {
-            String rowKey = statData.f0 + "_" + System.currentTimeMillis();
+        public void writeRecord(Tuple2<String, JoinAgentStatBo> statData) throws IOException {
+            final JoinAgentStatBo joinAgentStatBo = statData.f1;
+            String rowKey = joinAgentStatBo.getAgentId() + "_" + AgentStatType.CPU_LOAD.getRawTypeCode() +"_" + joinAgentStatBo.getTimeStamp();
+            System.out.println("key : " + rowKey);
             Put put = new Put(rowKey.getBytes());
-            String value = "agentName : " + statData.f0 +  ", average : " + statData.f1 + ", total + " + statData.f2 + ", size : " + statData.f3;
-            System.out.println(value);
-            byte[] sqlBytes = Bytes.toBytes(value);
-            put.addColumn(STAT_METADATA_CF, CPU_RATE, value.getBytes());
-            hbaseTemplate2.put(TableName.valueOf("StatMetaData_flink"), put);
+
+            final Buffer valueBuffer = new AutomaticBuffer();
+            valueBuffer.putByte(joinAgentStatBo.getVersion());
+            valueBuffer.putDouble(joinAgentStatBo.getJoinCpuLoadBo().getJvmCpuLoad());
+            valueBuffer.putDouble(joinAgentStatBo.getJoinCpuLoadBo().getMaxJvmCpuLoad());
+            valueBuffer.putDouble(joinAgentStatBo.getJoinCpuLoadBo().getMinJvmCpuLoad());
+            valueBuffer.putDouble(joinAgentStatBo.getJoinCpuLoadBo().getSystemCpuLoad());
+            valueBuffer.putDouble(joinAgentStatBo.getJoinCpuLoadBo().getMaxSystemCpuLoad());
+            valueBuffer.putDouble(joinAgentStatBo.getJoinCpuLoadBo().getMinSystemCpuLoad());
+
+            final Buffer qualifierBuffer = new AutomaticBuffer(64);
+            qualifierBuffer.putVLong(joinAgentStatBo.getTimeStamp());
+
+            put.addColumn(STAT_METADATA_CF, Bytes.toBytes(qualifierBuffer.wrapByteBuffer()), Bytes.toBytes(valueBuffer.wrapByteBuffer()));
+            try {
+                //TODO : (minwoo) async 사용해야 하지 않을까 이게 병목이 되지 않을까 고민해보는게 좋을듯.
+                hbaseTemplate2.put(TableName.valueOf("AgentStatV2Aggre"), put);
+            } catch (Exception e) {
+                System.out.println("exception ~!" + e);
+            }
+            System.out.println("put execute!!!");
+
+            joinAgentStatBo.setAgentId("asdf");
         }
 
         @Override
@@ -196,171 +230,5 @@ public class StatStreamingVer2Job implements Serializable {
                 }
             }
         }
-    }
-
-    private Collection<Tuple2<String, Integer>> getRawData() {
-        final String AGENT_1 = "agent1";
-        final String AGENT_2 = "agent2";
-        final String AGENT_3 = "agent3";
-        final String AGENT_4 = "agent4";
-        final String AGENT_5 = "agent4";
-
-        Collection<Tuple2<String, Integer>> rawData = new ArrayList<>();
-        // window 1
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 1));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 2));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 3));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 4));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 5));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 101));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 102));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 103));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 104));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 105));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1001));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1002));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1003));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1004));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1005));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10001));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10002));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10003));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10004));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10005));
-
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100001));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100002));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100003));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100004));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100005));
-
-        //window2
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 11));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 12));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 13));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 14));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 15));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 111));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 112));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 113));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 114));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 115));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1011));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1012));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1013));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1014));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1015));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10011));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10012));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10013));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10014));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10015));
-
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100011));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100012));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100013));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100014));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100015));
-
-        //window3
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 21));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 22));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 23));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 24));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 25));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 121));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 122));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 123));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 124));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 125));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1021));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1022));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1023));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1024));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1025));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10021));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10022));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10023));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10024));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10025));
-
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100021));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100022));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100023));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100024));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100025));
-
-        //window4
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 31));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 32));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 33));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 34));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 35));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 131));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 132));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 133));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 134));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 135));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1031));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1032));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1033));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1034));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1035));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10031));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10032));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10033));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10034));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10035));
-
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100031));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100032));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100033));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100034));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100035));
-
-        //window 5
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 41));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 42));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 43));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 44));
-        rawData.add(new Tuple2<String, Integer>(AGENT_1, 45));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 141));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 142));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 143));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 144));
-        rawData.add(new Tuple2<String, Integer>(AGENT_2, 145));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1041));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1042));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1043));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1044));
-        rawData.add(new Tuple2<String, Integer>(AGENT_3, 1045));
-
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10041));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10042));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10043));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10044));
-        rawData.add(new Tuple2<String, Integer>(AGENT_4, 10045));
-
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100041));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100042));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100043));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100044));
-//        rawData.add(new Tuple2<String, Integer>(AGENT_5, 100045));
-
-        return rawData;
     }
 }

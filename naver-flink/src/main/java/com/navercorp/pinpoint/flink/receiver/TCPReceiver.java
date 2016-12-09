@@ -19,7 +19,6 @@ package com.navercorp.pinpoint.flink.receiver;
 import com.codahale.metrics.MetricRegistry;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper;
 import com.navercorp.pinpoint.collector.monitor.MonitoredExecutorService;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.collector.rpc.handler.AgentEventHandler;
@@ -114,11 +113,11 @@ public class TCPReceiver {
 //        this(configuration, dispatchHandler, new PinpointServerAcceptor(), null);
 //    }
 
-    private final SourceContext<String> sourceContext;
-    private AgentStatBatchMapper agentStatBatchMapper;
+    private final SourceContext<TBase> sourceContext;
+//    private AgentStatBatchMapper agentStatBatchMapper = new AgentStatBatchMapper();
 
 //    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, ZookeeperClusterService service) {
-    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, SourceContext<String> sourceContext, AgentStatBatchMapper agentStatBatchMapper) {
+    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, SourceContext<TBase> sourceContext) {
         if (configuration == null) {
             throw new NullPointerException("collector configuration must not be null");
         }
@@ -130,7 +129,6 @@ public class TCPReceiver {
         this.configuration = configuration;
         this.serverAcceptor = serverAcceptor;
         this.sourceContext = sourceContext;
-        this.agentStatBatchMapper = agentStatBatchMapper;
 //        this.clusterService = service;
     }
 
@@ -228,7 +226,7 @@ public class TCPReceiver {
         this.serverAcceptor.bind(configuration.getTcpListenIp(), configuration.getTcpListenPort());
     }
 
-    private void receive(SendPacket sendPacket, PinpointSocket pinpointSocket, SourceContext<String> sourceContext) {
+    private void receive(SendPacket sendPacket, PinpointSocket pinpointSocket, SourceContext<TBase> sourceContext) {
         try {
             worker.execute(new Dispatch(sendPacket.getPayload(), pinpointSocket.getRemoteAddress(), sourceContext));
         } catch (RejectedExecutionException e) {
@@ -262,9 +260,9 @@ public class TCPReceiver {
     private class Dispatch implements Runnable {
         private final byte[] bytes;
         private final SocketAddress remoteAddress;
-        private final SourceContext<String> sourceContext;
+        private final SourceContext<TBase> sourceContext;
 
-        private Dispatch(byte[] bytes, SocketAddress remoteAddress, SourceContext<String> sourceContext) {
+        private Dispatch(byte[] bytes, SocketAddress remoteAddress, SourceContext<TBase> sourceContext) {
             if (bytes == null) {
                 throw new NullPointerException("bytes");
             }
@@ -279,11 +277,12 @@ public class TCPReceiver {
                 TBase<?, ?> tBase = SerializationUtils.deserialize(bytes, deserializerFactory);
                 if (tBase instanceof TAgentStatBatch) {
                     TAgentStatBatch statBatch = (TAgentStatBatch)tBase;
-                    AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
+//                    AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
                     Long cupLoad =(long)(statBatch.getAgentStats().get(0).getCpuLoad().getSystemCpuLoad() * 100);
                     String data = statBatch.getAgentId() + "," + statBatch.getAgentStats().get(0).getTimestamp() + "," + cupLoad;
                     //System.out.println("==========data====" + data);
-                    sourceContext.collect(data);
+//                    sourceContext.collect(data);
+                    sourceContext.collect(tBase);
                 }
                 //dispatchHandler.dispatchSendMessage(tBase);
             } catch (TException e) {

@@ -29,7 +29,8 @@
     <!-- 이거 정리를 해야함 필요한것만 scan 하도록 -->
 
     <context:component-scan
-            base-package="com.navercorp.pinpoint.common.server.util" />
+            base-package="com.navercorp.pinpoint.common.server.util,
+                        com.navercorp.pinpoint.collector.mapper.thrift.stat" />
 
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -318,6 +319,4 @@
     <!--<bean id="sequenceSpanEventFilter" class="com.navercorp.pinpoint.common.server.bo.filter.SequenceSpanEventFilter">-->
     <!--<constructor-arg index="0" value="${collector.spanEvent.sequence.limit:10000}"/>-->
     <!--</bean>-->
-
-    <bean id="agentStatBatchMapper" class="com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper"/>
 </beans>
