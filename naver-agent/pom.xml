@@ -115,6 +115,12 @@
             <artifactId>arcus-client</artifactId>
             <version>1.6.4.1</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

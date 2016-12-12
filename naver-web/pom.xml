@@ -36,7 +36,7 @@
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-thrift</artifactId>
         </dependency>
-    
+
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-web</artifactId>
@@ -117,7 +117,7 @@
             <artifactId>spring-messaging</artifactId>
             <version>4.1.9.RELEASE</version>
         </dependency>
-    
+
 
     </dependencies>
 

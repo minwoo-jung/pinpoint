@@ -63,7 +63,7 @@
         <module>naver-it7</module>
         <module>naver-plugins</module>
         <module>testweb</module>
-        <module>spark</module>
+        <!--<module>spark</module>-->
     </modules>
 
 

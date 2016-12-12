@@ -122,7 +122,7 @@
         <constructor-arg ref="streamRouteHandler"/>
     </bean>
 
-    <bean id="jsonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper">
+    <bean id="jsonObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
     </bean>
 
 

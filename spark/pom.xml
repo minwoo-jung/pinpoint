@@ -30,17 +30,31 @@
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.10</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0-cdh5.7.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-client</artifactId>
+            <artifactId>hbase-shaded-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.cloudera</groupId>
-            <artifactId>spark-hbase</artifactId>
-            <version>0.0.2-clabs</version>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-spark</artifactId>
+            <version>1.2.0-cdh5.7.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.hbase</groupId>
+                    <artifactId>hbase-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.hbase</groupId>
+                    <artifactId>hbase-server</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.hbase</groupId>
+                    <artifactId>hbase-protocol</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>

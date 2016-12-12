@@ -32,12 +32,12 @@ import com.navercorp.pinpoint.spark.SparkHBaseTables;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.spark.JavaHBaseContext;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
-import com.cloudera.spark.hbase.JavaHBaseContext;
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
 
 import scala.Tuple2;
@@ -78,7 +78,7 @@ public class AgentStatJob {
         
         Scan scan = getAgentIdScan();
         
-        JavaRDD<String> agentIdRDD = hbaseContext.hbaseRDD(HBaseTables.APPLICATION_INDEX.getNameAsString(), scan,
+        JavaRDD<String> agentIdRDD = hbaseContext.hbaseRDD(HBaseTables.APPLICATION_INDEX, scan,
                 (t) -> Arrays.stream(t._2.rawCells())
                             .map((cell) -> Bytes.toString(CellUtil.cloneQualifier(cell)))
                             .collect(Collectors.toList()) 
@@ -103,7 +103,7 @@ public class AgentStatJob {
         
         AgentStatBucketFactory bucketFactory = new AgentStatBucketFactory(period);
         scanLists.parallel().forEach((scans) -> {
-            JavaRDD<List<AgentStat>>[] rdds = scans._2.stream().map((s) -> hbaseContext.hbaseRDD(HBaseTables.AGENT_STAT.getNameAsString(), s, (t) -> AgentStatHBaseUtils.toAgentStat(t._2))).toArray(JavaRDD[]::new);
+            JavaRDD<List<AgentStat>>[] rdds = scans._2.stream().map((s) -> hbaseContext.hbaseRDD(HBaseTables.AGENT_STAT, s, (t) -> AgentStatHBaseUtils.toAgentStat(t._2))).toArray(JavaRDD[]::new);
             JavaRDD<AgentStat> statRDD = sparkContext.union(rdds).flatMap((list) -> list);
             
             JavaRDD<AgentStat> aggregatedRDD = statRDD.keyBy((stat) -> bucketFactory.getBucketOf(stat))
@@ -111,7 +111,7 @@ public class AgentStatJob {
                     .values()
                     .map((v) -> {v.setCollectInterval(period); return v;});
             
-            hbaseContext.bulkPut(aggregatedRDD, SparkHBaseTables.AGENT_STAT_AGGR.getNameAsString(), AgentStatHBaseUtils::createPut, true);
+            hbaseContext.bulkPut(aggregatedRDD, SparkHBaseTables.AGENT_STAT_AGGR, AgentStatHBaseUtils::createPut);
             
             if (local && !aggregatedRDD.isEmpty()) {
                 aggregatedRDD.sortBy(AgentStat::getTimestamp, true, 1).saveAsTextFile(LOCAL_OUTPUT_DIRECTORY + "/" + scans._1 + "/" + period);

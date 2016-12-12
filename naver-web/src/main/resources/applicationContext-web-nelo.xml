@@ -17,9 +17,9 @@
 
         <property name="messageConverters">
             <list>
-                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                     <property name="objectMapper">
-                        <bean class="org.codehaus.jackson.map.ObjectMapper"/>
+                        <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
                     </property>
                     <property name="supportedMediaTypes">
                         <list>
