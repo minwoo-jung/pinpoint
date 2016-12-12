@@ -1,9 +1,13 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
-import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.rpc.MessageListener;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
-import com.navercorp.pinpoint.rpc.packet.*;
+import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
+import com.navercorp.pinpoint.rpc.packet.PingPacket;
+import com.navercorp.pinpoint.rpc.packet.RequestPacket;
+import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
 import org.apache.curator.test.TestingServer;
@@ -35,14 +39,14 @@ final class ZookeeperTestUtils {
     static Map<String, Object> getParams(String applicationName, String agentId, long startTimeMillis) {
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), agentId);
-        properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), applicationName);
-        properties.put(AgentHandshakePropertyType.HOSTNAME.getName(), "hostname");
-        properties.put(AgentHandshakePropertyType.IP.getName(), "ip");
-        properties.put(AgentHandshakePropertyType.PID.getName(), 1111);
-        properties.put(AgentHandshakePropertyType.SERVICE_TYPE.getName(), 10);
-        properties.put(AgentHandshakePropertyType.START_TIMESTAMP.getName(), startTimeMillis);
-        properties.put(AgentHandshakePropertyType.VERSION.getName(), "1.0");
+        properties.put(HandshakePropertyType.AGENT_ID.getName(), agentId);
+        properties.put(HandshakePropertyType.APPLICATION_NAME.getName(), applicationName);
+        properties.put(HandshakePropertyType.HOSTNAME.getName(), "hostname");
+        properties.put(HandshakePropertyType.IP.getName(), "ip");
+        properties.put(HandshakePropertyType.PID.getName(), 1111);
+        properties.put(HandshakePropertyType.SERVICE_TYPE.getName(), 10);
+        properties.put(HandshakePropertyType.START_TIMESTAMP.getName(), startTimeMillis);
+        properties.put(HandshakePropertyType.VERSION.getName(), "1.0");
 
         return properties;
     }
