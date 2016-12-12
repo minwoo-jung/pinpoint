@@ -4,14 +4,18 @@ import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConne
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionManager;
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionRepository;
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnector;
-import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.rpc.Future;
 import com.navercorp.pinpoint.rpc.MessageListener;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.ResponseMessage;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
-import com.navercorp.pinpoint.rpc.packet.*;
+import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
+import com.navercorp.pinpoint.rpc.packet.PingPacket;
+import com.navercorp.pinpoint.rpc.packet.RequestPacket;
+import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
@@ -178,14 +182,14 @@ public class ClusterPointRouterTest2 {
     private Map<String, Object> getParams() {
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
-        properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
-        properties.put(AgentHandshakePropertyType.HOSTNAME.getName(), "hostname");
-        properties.put(AgentHandshakePropertyType.IP.getName(), "ip");
-        properties.put(AgentHandshakePropertyType.PID.getName(), 1111);
-        properties.put(AgentHandshakePropertyType.SERVICE_TYPE.getName(), 10);
-        properties.put(AgentHandshakePropertyType.START_TIMESTAMP.getName(), currentTime);
-        properties.put(AgentHandshakePropertyType.VERSION.getName(), "1.0.3-SNAPSHOT");
+        properties.put(HandshakePropertyType.AGENT_ID.getName(), "agent");
+        properties.put(HandshakePropertyType.APPLICATION_NAME.getName(), "application");
+        properties.put(HandshakePropertyType.HOSTNAME.getName(), "hostname");
+        properties.put(HandshakePropertyType.IP.getName(), "ip");
+        properties.put(HandshakePropertyType.PID.getName(), 1111);
+        properties.put(HandshakePropertyType.SERVICE_TYPE.getName(), 10);
+        properties.put(HandshakePropertyType.START_TIMESTAMP.getName(), currentTime);
+        properties.put(HandshakePropertyType.VERSION.getName(), "1.0.3-SNAPSHOT");
 
         return properties;
     }

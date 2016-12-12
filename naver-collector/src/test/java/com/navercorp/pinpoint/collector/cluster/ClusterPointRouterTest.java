@@ -5,11 +5,19 @@ import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConne
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionRepository;
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnector;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
-import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
-import com.navercorp.pinpoint.rpc.packet.*;
-import com.navercorp.pinpoint.rpc.server.*;
+import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
+import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
+import com.navercorp.pinpoint.rpc.packet.PingPacket;
+import com.navercorp.pinpoint.rpc.packet.RequestPacket;
+import com.navercorp.pinpoint.rpc.packet.SendPacket;
+import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
+import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
+import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
 import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
 import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
@@ -28,7 +36,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.SocketUtils;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.mock;
@@ -150,14 +162,14 @@ public class ClusterPointRouterTest {
     private Map<Object, Object> getParams() {
         Map<Object, Object> properties = new HashMap<>();
 
-        properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
-        properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
-        properties.put(AgentHandshakePropertyType.HOSTNAME.getName(), "hostname");
-        properties.put(AgentHandshakePropertyType.IP.getName(), "ip");
-        properties.put(AgentHandshakePropertyType.PID.getName(), 1111);
-        properties.put(AgentHandshakePropertyType.SERVICE_TYPE.getName(), 10);
-        properties.put(AgentHandshakePropertyType.START_TIMESTAMP.getName(), currentTime);
-        properties.put(AgentHandshakePropertyType.VERSION.getName(), "1.0.3-SNAPSHOT");
+        properties.put(HandshakePropertyType.AGENT_ID.getName(), "agent");
+        properties.put(HandshakePropertyType.APPLICATION_NAME.getName(), "application");
+        properties.put(HandshakePropertyType.HOSTNAME.getName(), "hostname");
+        properties.put(HandshakePropertyType.IP.getName(), "ip");
+        properties.put(HandshakePropertyType.PID.getName(), 1111);
+        properties.put(HandshakePropertyType.SERVICE_TYPE.getName(), 10);
+        properties.put(HandshakePropertyType.START_TIMESTAMP.getName(), currentTime);
+        properties.put(HandshakePropertyType.VERSION.getName(), "1.0.3-SNAPSHOT");
 
         return properties;
     }

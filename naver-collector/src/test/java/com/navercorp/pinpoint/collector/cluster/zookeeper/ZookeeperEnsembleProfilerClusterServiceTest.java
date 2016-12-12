@@ -1,7 +1,29 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
+import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
+import com.navercorp.pinpoint.rpc.packet.ControlHandshakePacket;
+import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
+import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
+import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
+import com.navercorp.pinpoint.rpc.util.ControlMessageEncodingUtils;
+import com.navercorp.pinpoint.rpc.util.TimerFactory;
+import org.apache.curator.test.InstanceSpec;
+import org.apache.curator.test.TestingCluster;
+import org.apache.curator.test.TestingZooKeeperServer;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.util.Timer;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,31 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
-import org.junit.Assert;
-import org.apache.curator.test.InstanceSpec;
-import org.apache.curator.test.TestingCluster;
-import org.apache.curator.test.TestingZooKeeperServer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.util.Timer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
-import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.collector.receiver.tcp.AgentHandshakePropertyType;
-import com.navercorp.pinpoint.rpc.packet.ControlHandshakePacket;
-import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
-import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
-import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
-import com.navercorp.pinpoint.rpc.util.ControlMessageEncodingUtils;
-import com.navercorp.pinpoint.rpc.util.TimerFactory;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -265,14 +264,14 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
     private Map<String, Object> getParams() {
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put(AgentHandshakePropertyType.AGENT_ID.getName(), "agent");
-        properties.put(AgentHandshakePropertyType.APPLICATION_NAME.getName(), "application");
-        properties.put(AgentHandshakePropertyType.HOSTNAME.getName(), "hostname");
-        properties.put(AgentHandshakePropertyType.IP.getName(), "ip");
-        properties.put(AgentHandshakePropertyType.PID.getName(), 1111);
-        properties.put(AgentHandshakePropertyType.SERVICE_TYPE.getName(), 10);
-        properties.put(AgentHandshakePropertyType.START_TIMESTAMP.getName(), System.currentTimeMillis());
-        properties.put(AgentHandshakePropertyType.VERSION.getName(), "1.0");
+        properties.put(HandshakePropertyType.AGENT_ID.getName(), "agent");
+        properties.put(HandshakePropertyType.APPLICATION_NAME.getName(), "application");
+        properties.put(HandshakePropertyType.HOSTNAME.getName(), "hostname");
+        properties.put(HandshakePropertyType.IP.getName(), "ip");
+        properties.put(HandshakePropertyType.PID.getName(), 1111);
+        properties.put(HandshakePropertyType.SERVICE_TYPE.getName(), 10);
+        properties.put(HandshakePropertyType.START_TIMESTAMP.getName(), System.currentTimeMillis());
+        properties.put(HandshakePropertyType.VERSION.getName(), "1.0");
 
         return properties;
     }
