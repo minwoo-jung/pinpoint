@@ -175,11 +175,11 @@ public final class LucyNetUtils {
                 }
 
                 int remainSize = Math.max(maxLimit - paramsAsString.length(), 1);
-                paramsAsString.append(StringUtils.drop(String.valueOf(key), Math.min(eachLimit, remainSize)));
+                paramsAsString.append(StringUtils.abbreviate(String.valueOf(key), Math.min(eachLimit, remainSize)));
                 paramsAsString.append("=");
 
                 remainSize = Math.max(maxLimit - paramsAsString.length(), 1);
-                paramsAsString.append(StringUtils.drop(String.valueOf(map.get(key)), Math.min(eachLimit, remainSize)));
+                paramsAsString.append(StringUtils.abbreviate(String.valueOf(map.get(key)), Math.min(eachLimit, remainSize)));
             }
             paramsAsString.append(" }");
         } else {
@@ -196,7 +196,7 @@ public final class LucyNetUtils {
                 }
 
                 int remainSize = Math.max(maxLimit - paramsAsString.length(), 1);
-                paramsAsString.append(StringUtils.drop(String.valueOf(param), Math.min(eachLimit, remainSize)));
+                paramsAsString.append(StringUtils.abbreviate(String.valueOf(param), Math.min(eachLimit, remainSize)));
             }
             paramsAsString.append(" ]");
         }

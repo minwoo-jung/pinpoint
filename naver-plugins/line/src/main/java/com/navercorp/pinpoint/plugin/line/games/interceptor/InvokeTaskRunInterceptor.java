@@ -387,7 +387,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
         int pos = uri.indexOf('?') + 1;
 
         if (pos > 1 && pos < uri.length()) {
-            return StringUtils.drop(uri.substring(pos), totalLimit);
+            return StringUtils.abbreviate(uri.substring(pos), totalLimit);
         } else {
             return null;
         }
@@ -424,13 +424,13 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
             if (values.size() > 1) {
                 Iterator<String> valueIterator = values.iterator();
                 while (valueIterator.hasNext()) {
-                    params.append(StringUtils.drop(valueIterator.next(), eachLimit));
+                    params.append(StringUtils.abbreviate(valueIterator.next(), eachLimit));
                     if (valueIterator.hasNext()) {
                         params.append(",");
                     }
                 }
             } else {
-                params.append(StringUtils.drop(values.get(0), eachLimit));
+                params.append(StringUtils.abbreviate(values.get(0), eachLimit));
             }
 
             if (params.length() > totalLimit) {

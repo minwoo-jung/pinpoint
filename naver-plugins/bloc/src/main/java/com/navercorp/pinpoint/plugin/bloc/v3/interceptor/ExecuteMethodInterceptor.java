@@ -215,11 +215,11 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
                 return params.toString();
             }
             String key = attrs.nextElement().toString();
-            params.append(StringUtils.drop(key, eachLimit));
+            params.append(StringUtils.abbreviate(key, eachLimit));
             params.append("=");
             Object value = request.getParameters().getParameter(key);
             if (value != null) {
-                params.append(StringUtils.drop(StringUtils.toString(value), eachLimit));
+                params.append(StringUtils.abbreviate(StringUtils.toString(value), eachLimit));
             }
         }
 
