@@ -28,6 +28,7 @@ import com.navercorp.pinpoint.common.hbase.PooledHTableFactory;
 import com.navercorp.pinpoint.common.server.bo.stat.*;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinAgentStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
+import com.navercorp.pinpoint.flink.process.TBaseMapper;
 import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
 import com.navercorp.pinpoint.thrift.dto.TAgentStatBatch;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -86,41 +87,12 @@ public class StatStreamingVer2Job implements Serializable {
         DataStream<TBase> rawData = env.addSource(new TcpSourceFunction());
 
 
-        DataStream<Tuple2<String, JoinAgentStatBo>> counts = rawData.map(new MapFunction<TBase, Tuple3<String, JoinAgentStatBo, Long>>() {
-            ////TODO : (minwoo) 동시성 처리 고민해야할듯함. 뭔가 init 처리하는게 있지 않을까 하는데... seralize 이슈하고 관련 있을듯.
-            private AgentStatBatchMapper agentStatBatchMapper = null;
-            @Override
-            public Tuple3<String, JoinAgentStatBo, Long> map(TBase tBase) throws Exception {
-
-                if (tBase instanceof TAgentStatBatch) {
-                    JoinAgentStatBo joinAgentStatBo = joinTAgentStatBatch((TAgentStatBatch)tBase);
-                    return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimeStamp());
-                }
-
-                return new Tuple3<String, JoinAgentStatBo, Long>();
-
-
-            }
-
-            public JoinAgentStatBo joinTAgentStatBatch(TAgentStatBatch statBatch) {
-                if (agentStatBatchMapper == null) {
-                    final String[] SPRING_CONFIG_XML = new String[] {"applicationContext-collector.xml"};
-                    ApplicationContext appCtx = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
-                    agentStatBatchMapper = appCtx.getBean("agentStatBatchMapper", AgentStatBatchMapper.class);
-                }
-                AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
-                JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
-                joinAgentStatBo.setAgentId(agentStatBo.getAgentId());
-                JoinCpuLoadBo joinCpuLoadBo = joinAgentStatBo.joinCpuLoadBoLIst(agentStatBo.getCpuLoadBos());
-                joinAgentStatBo.setJoinCpuLoadBo(joinCpuLoadBo);
-                joinAgentStatBo.setTimeStamp(joinCpuLoadBo.getTimestamp());
-                //TODO : (minwoo) stat 가져올때 nullpinointexcpetion 대비해야함.
-//                JoinTransactionBo joinTransactionBo = joinAgentStatBo.joinTransactionBos(agentStatBo.getTransactionBos());
-//                JoinActiveTraceBo joinActiveTraceBo = joinAgentStatBo.joinActiveTraceBos(agentStatBo.getActiveTraceBos());
-                return joinAgentStatBo;
-            }
-
-        })
+        final String[] SPRING_CONFIG_XML = new String[]{"applicationContext-collector.xml"};
+        ApplicationContext appCtx = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
+        AgentStatBatchMapper agentStatBatchMapper = appCtx.getBean("agentStatBatchMapper", AgentStatBatchMapper.class);
+        TBaseMapper mapper = new TBaseMapper(agentStatBatchMapper);
+        System.out.println("init tbasemapper addreess : " + mapper);
+        DataStream<Tuple2<String, JoinAgentStatBo>> counts = rawData.map(mapper)
             .assignTimestampsAndWatermarks(new LinearTimestamp())
             .keyBy(0)
             .window(TumblingEventTimeWindows.of(Time.seconds(120)))
@@ -152,7 +124,9 @@ public class StatStreamingVer2Job implements Serializable {
 
         @Override
         public Watermark checkAndGetNextWatermark(Tuple3<String, JoinAgentStatBo, Long> lastElement, long extractedTimestamp) {
+            System.out.println("ThreadId(timestamp) : " + Thread.currentThread().getId());
             System.out.println("timestamp : " + new Date(lastElement.f2).toString() + "long value : " + lastElement.f2);
+            System.out.println("address" + this.toString());
             return new Watermark(lastElement.f2);
         }
 
