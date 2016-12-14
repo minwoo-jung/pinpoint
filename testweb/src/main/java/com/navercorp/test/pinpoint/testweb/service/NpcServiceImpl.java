@@ -18,6 +18,8 @@
 package com.navercorp.test.pinpoint.testweb.service;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import org.slf4j.Logger;
@@ -36,10 +38,9 @@ import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
 public class NpcServiceImpl implements NpcService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final InetSocketAddress serverAddress = new InetSocketAddress("10.113.168.201", 5000);
 
     @Override
-    public void invoke() {
+    public void invoke(InetSocketAddress serverAddress) {
         try {
             NpcHessianConnector connector = new NpcHessianConnector(serverAddress, true);
             invokeAndClose(connector, null);
@@ -49,7 +50,7 @@ public class NpcServiceImpl implements NpcService {
     }
 
     @Override
-    public void keepalive() {
+    public void keepalive(InetSocketAddress serverAddress) {
         try {
             KeepAliveNpcHessianConnector connector = new KeepAliveNpcHessianConnector(serverAddress);
             invokeAndClose(connector, null);
@@ -59,7 +60,7 @@ public class NpcServiceImpl implements NpcService {
     }
 
     @Override
-    public void factory() {
+    public void factory(InetSocketAddress serverAddress) {
         try {
             ConnectionFactory npcConnectionFactory = new NpcConnectionFactory();
 
@@ -74,7 +75,7 @@ public class NpcServiceImpl implements NpcService {
     }
 
     @Override
-    public void lightweight() {
+    public void lightweight(InetSocketAddress serverAddress) {
         try {
             ConnectionFactory npcConnectionFactory = new NpcConnectionFactory();
 
@@ -90,7 +91,7 @@ public class NpcServiceImpl implements NpcService {
     }
 
     @Override
-    public void listener(Runnable callback) {
+    public void listener(InetSocketAddress serverAddress, Runnable callback) {
         try {
             NpcHessianConnector connector = new NpcHessianConnector(serverAddress, true);
             invokeAndClose(connector, callback);
@@ -101,7 +102,9 @@ public class NpcServiceImpl implements NpcService {
 
     private void invokeAndClose(final Invoker invoker, final Runnable callback) throws Exception {
         try {
-            InvocationFuture future = invoker.invoke("welcome/test", "hello", "foo");
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("foo", "bar");
+            InvocationFuture future = invoker.invoke("welcome/com.nhncorp.lucy.bloc.welcome.EchoBO", "execute", params);
             if (callback != null) {
                 final CountDownLatch latch = new CountDownLatch(1);
                 future.addListener(new InvocationFutureListener() {

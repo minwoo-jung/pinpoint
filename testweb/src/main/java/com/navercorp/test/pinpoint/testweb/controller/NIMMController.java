@@ -20,6 +20,7 @@ package com.navercorp.test.pinpoint.testweb.controller;
 import com.navercorp.test.pinpoint.testweb.service.NimmService;
 import com.navercorp.test.pinpoint.testweb.util.Description;
 
+import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,25 +39,51 @@ public class NIMMController {
     @Autowired
     private NimmService nimmService;
 
+    public NIMMController() throws Exception {
+    }
+
     @Description("invoke and return value.")
-    @RequestMapping(value = "/nimm/invokeAndReturnValue")
+    @RequestMapping(value = "/nimm/invokeAndReturnValue/target/bloc3")
     @ResponseBody
-    public String invokeAndReturnValue() {
-        nimmService.get(null);
+    public String invokeAndReturnValueToBloc3() throws Exception {
+        nimmService.get("bloc3", null);
         return "OK";
     }
 
-    @Description("callback is InvocationFutureListener.")
-    @RequestMapping(value = "/nimm/invokeAndCallback")
+    @Description("invoke and return value.")
+    @RequestMapping(value = "/nimm/invokeAndReturnValue/target/bloc4")
     @ResponseBody
-    public String invokeAndCallabck() {
+    public String invokeAndReturnValue() throws Exception {
+        nimmService.get("bloc4", null);
+        return "OK";
+    }
+
+
+    @Description("callback is InvocationFutureListener.")
+    @RequestMapping(value = "/nimm/invokeAndCallback/target/bloc3")
+    @ResponseBody
+    public String invokeAndCallabckToBloc3() throws Exception {
         Runnable callback = new Runnable() {
             public void run() {
                 logger.info("Completed nimm listen");
             }
         };
 
-        nimmService.get(callback);
+        nimmService.get("bloc3", callback);
+        return "OK";
+    }
+
+    @Description("callback is InvocationFutureListener.")
+    @RequestMapping(value = "/nimm/invokeAndCallback/target/bloc4")
+    @ResponseBody
+    public String invokeAndCallabckToBloc4() throws Exception {
+        Runnable callback = new Runnable() {
+            public void run() {
+                logger.info("Completed nimm listen");
+            }
+        };
+
+        nimmService.get("bloc4", callback);
         return "OK";
     }
 }

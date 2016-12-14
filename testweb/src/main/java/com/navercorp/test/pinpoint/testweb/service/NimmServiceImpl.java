@@ -17,6 +17,8 @@
 
 package com.navercorp.test.pinpoint.testweb.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -37,8 +39,8 @@ import com.nhncorp.lucy.nimm.connector.bloc.NimmInvoker;
 @Service("nimmService")
 public class NimmServiceImpl implements NimmService {
     private static final String NIMM_CONFIG_FILE = "/NimmConnector.xml";
-    private static final String OBJECT_NAME = "welcome/test";
-    private static final String METHOD_NAME = "hello";
+    private static final String OBJECT_NAME = "welcome/com.nhncorp.lucy.bloc.welcome.EchoBO";
+    private static final String METHOD_NAME = "execute";
     private static final int DOMAIN_ID = 12371;
     private static final int IDC_ID = 12;
     private static final int SERVER_ID = 8742;
@@ -46,16 +48,18 @@ public class NimmServiceImpl implements NimmService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private NimmInvoker invoker;
+    private NimmSocket localSocket;
+    private Map<String, NimmInvoker> invokers = new HashMap<String, NimmInvoker>();
 
     @PostConstruct
     public void init() throws Exception {
-        logger.info("Register NIMM. config={}, bloc={}:{}:{}:{}", NIMM_CONFIG_FILE, DOMAIN_ID, IDC_ID, SERVER_ID, SOCKET_ID);
         NimmConnector.registerMMNetDriver(NIMM_CONFIG_FILE);
-        NimmAddress blocAddress = NimmAddress.createUnicastAddress(DOMAIN_ID, IDC_ID, SERVER_ID, SOCKET_ID);
-        NimmSocket localSocket = NimmConnector.createNimmSocket();
+        NimmAddress bloc3Address = NimmAddress.createUnicastAddress(12371, 12, 25249, 1);
+        NimmAddress bloc4Address = NimmAddress.createUnicastAddress(12371, 12, 46351, 1);
+        this.localSocket = NimmConnector.createNimmSocket();
 
-        invoker = new NimmInvoker(blocAddress, localSocket, 1000);
+        invokers.put("bloc3", new NimmInvoker(bloc3Address, localSocket, 1000));
+        invokers.put("bloc4", new NimmInvoker(bloc4Address, localSocket, 1000));
     }
 
     @PreDestroy
@@ -64,22 +68,33 @@ public class NimmServiceImpl implements NimmService {
     }
 
     @Override
-    public void get() {
-        invoke(null);
+    public boolean isInit() {
+        return true;
     }
-    
-    
-    
 
     @Override
-    public void get(Runnable callback) {
-        invoke(callback);
+    public void get(String address) {
+        invoke(address, null);
     }
 
-    private void invoke(final Runnable callback) {
+
+    @Override
+    public void get(String address, Runnable callback) {
+        invoke(address, callback);
+    }
+
+    private void invoke(String address, final Runnable callback) {
+        NimmInvoker invoker = invokers.get(address);
+        if(invoker == null) {
+            throw new IllegalArgumentException("not found nimm invoker " + address);
+        }
+
         try {
             logger.info("Invoke {}.{}", OBJECT_NAME, METHOD_NAME);
-            final InvocationFuture future = invoker.invoke(OBJECT_NAME, METHOD_NAME, "foo");
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("foo", "bar");
+            final InvocationFuture future = invoker.invoke(OBJECT_NAME, METHOD_NAME, params);
             if (callback != null) {
                 final CountDownLatch latch = new CountDownLatch(1);
                 future.addListener(new InvocationFutureListener() {

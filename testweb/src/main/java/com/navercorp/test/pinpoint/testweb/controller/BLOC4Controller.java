@@ -21,7 +21,6 @@ import com.navercorp.test.pinpoint.testweb.connector.apachehttp4.nhnent.HttpUtil
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -30,13 +29,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class BLOC4Controller {
 
-    private final String LOCAL_BLOC4_FORMAT = "http://%s:%s/welcome/test/hello?name=netspider";
+    private final String BLOC3_ECHO = "http://10.110.241.190:5001/welcome/com.nhncorp.lucy.bloc.welcome.EchoBO/execute?foo=bar";
+    private final String BLOC4_ECHO = "http://10.110.241.190:15001/welcome/test/hello?foo=bar";
 
-    @RequestMapping(value = "/bloc4/callLocal")
+    @RequestMapping(value = "/bloc3/call")
     @ResponseBody
-    public String requestGet(
-            @RequestParam(required = false, defaultValue = "localhost") String host,
-            @RequestParam(required = false, defaultValue = "5001") String port) {
-        return HttpUtil.url(String.format(LOCAL_BLOC4_FORMAT, host, port)).method(HttpUtil.Method.GET).connectionTimeout(10000).readTimeout(10000).getContents();
+    public String requestGetToBloc3() {
+        return HttpUtil.url(BLOC3_ECHO).method(HttpUtil.Method.GET).connectionTimeout(10000).readTimeout(10000).getContents();
+    }
+
+    @RequestMapping(value = "/bloc4/call")
+    @ResponseBody
+    public String requestGetToBloc4() {
+        return HttpUtil.url(BLOC4_ECHO).method(HttpUtil.Method.GET).connectionTimeout(10000).readTimeout(10000).getContents();
     }
 }

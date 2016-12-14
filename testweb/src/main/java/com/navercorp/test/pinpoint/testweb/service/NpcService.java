@@ -17,15 +17,17 @@
 
 package com.navercorp.test.pinpoint.testweb.service;
 
+import java.net.InetSocketAddress;
+
 public interface NpcService {
 
-    void invoke();
+    void invoke(InetSocketAddress serverAddress);
     
-    void keepalive();
+    void keepalive(InetSocketAddress serverAddress);
     
-    void factory();
+    void factory(InetSocketAddress serverAddress);
     
-    void lightweight();
+    void lightweight(InetSocketAddress serverAddress);
     
-    void listener(Runnable callback);
+    void listener(InetSocketAddress serverAddress, Runnable callback);
 }

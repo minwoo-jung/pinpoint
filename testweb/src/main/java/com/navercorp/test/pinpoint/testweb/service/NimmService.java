@@ -17,9 +17,13 @@
 
 package com.navercorp.test.pinpoint.testweb.service;
 
+import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
+
 public interface NimmService {
 
-    void get();
+    boolean isInit();
+
+    void get(String address);
     
-    void get(Runnable callback);
+    void get(String address, Runnable callback);
 }
