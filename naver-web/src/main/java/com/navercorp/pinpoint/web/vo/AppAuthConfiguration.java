@@ -60,11 +60,12 @@ public class AppAuthConfiguration {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("apiMetaData : " + apiMetaData + ",");
-        sb.append("sqlMetaData : " + apiMetaData + ",");
-        sb.append("paramMetaData : " + apiMetaData + ",");
-        sb.append("serverMapData : " + apiMetaData);
+        final StringBuilder sb = new StringBuilder("AppAuthConfiguration{");
+        sb.append("apiMetaData=").append(apiMetaData);
+        sb.append(", sqlMetaData=").append(sqlMetaData);
+        sb.append(", paramMetaData=").append(paramMetaData);
+        sb.append(", serverMapData=").append(serverMapData);
+        sb.append('}');
         return sb.toString();
     }
 }

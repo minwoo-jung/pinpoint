@@ -108,12 +108,15 @@ public class AppUserGroupAuth {
         return configuration;
     }
 
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("applicationId : " + applicationId + ",");
-        sb.append("userGroupId : " + userGroupId + ",");
-        sb.append("roleName : " + roleName + ",");
-        sb.append("configuration : (" + configuration + ")");
+        final StringBuilder sb = new StringBuilder("AppUserGroupAuth{");
+        sb.append(", applicationId='").append(applicationId).append('\'');
+        sb.append(", userGroupId='").append(userGroupId).append('\'');
+        sb.append(", roleName='").append(roleName).append('\'');
+        sb.append(", configurationString='").append(configurationString).append('\'');
+        sb.append(", configuration=").append(configuration);
+        sb.append('}');
         return sb.toString();
     }
 
