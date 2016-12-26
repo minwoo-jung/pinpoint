@@ -43,7 +43,7 @@ public class TcpSourceFunction implements SourceFunction<TBase> {
         TCPReceiver tcpReceiver = new TCPReceiver(configuration, tcpDispatchHandlerWrapper, serverAcceptor, ctx);
         tcpReceiver.afterPropertiesSet();
          tcpReceiver.start();
-        Thread.sleep(3000000L);
+        Thread.sleep(Long.MAX_VALUE);
     }
 
     @Override

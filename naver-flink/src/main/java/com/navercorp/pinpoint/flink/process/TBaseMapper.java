@@ -23,18 +23,20 @@ import com.navercorp.pinpoint.thrift.dto.TAgentStatBatch;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.thrift.TBase;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author minwoo.jung
  */
 public class TBaseMapper implements MapFunction<TBase, Tuple3<String, JoinAgentStatBo, Long>> {
-    ////TODO : (minwoo) 동시성 처리 고민해야할듯함. 뭔가 init 처리하는게 있지 않을까 하는데... seralize 이슈하고 관련 있을듯.
-    private AgentStatBatchMapper agentStatBatchMapper;
+    private static AgentStatBatchMapper agentStatBatchMapper;
 
     public TBaseMapper(AgentStatBatchMapper agentStatBatchMapper) {
-        this.agentStatBatchMapper = agentStatBatchMapper;
+        //TODO : (minwoo) AgentStatBatchMapper 를 한번만 생성해서 문제는 없으나. 더 깔끔하게 개발할 필요는 있음, serialize 로 그냥 만들어버리면 동기화 필요없음.
+        synchronized (TBaseMapper.class) {
+            if (this.agentStatBatchMapper == null) {
+                this.agentStatBatchMapper = agentStatBatchMapper;
+            }
+        }
     }
 
     @Override
@@ -42,7 +44,7 @@ public class TBaseMapper implements MapFunction<TBase, Tuple3<String, JoinAgentS
 
         if (tBase instanceof TAgentStatBatch) {
             JoinAgentStatBo joinAgentStatBo = joinTAgentStatBatch((TAgentStatBatch) tBase);
-            return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimeStamp());
+            return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimestamp());
         }
 
         return new Tuple3<String, JoinAgentStatBo, Long>();
@@ -56,8 +58,8 @@ public class TBaseMapper implements MapFunction<TBase, Tuple3<String, JoinAgentS
         JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
         joinAgentStatBo.setAgentId(agentStatBo.getAgentId());
         JoinCpuLoadBo joinCpuLoadBo = joinAgentStatBo.joinCpuLoadBoLIst(agentStatBo.getCpuLoadBos());
-        joinAgentStatBo.setJoinCpuLoadBo(joinCpuLoadBo);
-        joinAgentStatBo.setTimeStamp(joinCpuLoadBo.getTimestamp());
+//        joinAgentStatBo.setJoinCpuLoadBo(joinCpuLoadBo);
+        joinAgentStatBo.setTimestamp(joinCpuLoadBo.getTimestamp());
         //TODO : (minwoo) stat 가져올때 nullpinointexcpetion 대비해야함.
 //                JoinTransactionBo joinTransactionBo = joinAgentStatBo.joinTransactionBos(agentStatBo.getTransactionBos());
 //                JoinActiveTraceBo joinActiveTraceBo = joinAgentStatBo.joinActiveTraceBos(agentStatBo.getActiveTraceBos());

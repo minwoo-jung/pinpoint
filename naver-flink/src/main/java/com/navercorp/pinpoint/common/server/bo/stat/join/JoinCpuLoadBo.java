@@ -17,13 +17,16 @@ package com.navercorp.pinpoint.common.server.bo.stat.join;
 
 import com.navercorp.pinpoint.common.server.bo.stat.CpuLoadBo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author minwoo.jung
  */
 public class JoinCpuLoadBo {
+    private final byte version = 1;
     private String agentId;
+    //TODO : (minwoo) 명시적으로 average를 prefix로 써야하는건 아닌지?
     private double jvmCpuLoad = -1.0D;
     private double maxJvmCpuLoad = -1.0D;
     private double minJvmCpuLoad = -1.0D;
@@ -31,6 +34,20 @@ public class JoinCpuLoadBo {
     private double maxSystemCpuLoad = -1.0D;;
     private double minSystemCpuLoad = -1.0D;;
     private long timestamp;
+
+    public JoinCpuLoadBo() {
+    }
+
+    protected JoinCpuLoadBo(String agentId, double jvmCpuLoad, double maxJvmCpuLoad, double minJvmCpuLoad, double systemCpuLoad, double maxSystemCpuLoad, double minSystemCpuLoad, long timestamp) {
+        this.agentId = agentId;
+        this.jvmCpuLoad = jvmCpuLoad;
+        this.maxJvmCpuLoad = maxJvmCpuLoad;
+        this.minJvmCpuLoad = minJvmCpuLoad;
+        this.systemCpuLoad = systemCpuLoad;
+        this.maxSystemCpuLoad = maxSystemCpuLoad;
+        this.minSystemCpuLoad = minSystemCpuLoad;
+        this.timestamp = timestamp;
+    }
 
     public void setJvmCpuLoad(double jvmCpuLoad) {
         this.jvmCpuLoad = jvmCpuLoad;
@@ -56,7 +73,7 @@ public class JoinCpuLoadBo {
         return agentId;
     }
 
-    public static JoinCpuLoadBo joinCpuLoadBoList(List<JoinCpuLoadBo> joinCpuLoadBoList) {
+    public static JoinCpuLoadBo joinCpuLoadBoList(List<JoinCpuLoadBo> joinCpuLoadBoList, Long timestamp) {
         JoinCpuLoadBo newJoinCpuLoadBo = new JoinCpuLoadBo();
         int boCount = joinCpuLoadBoList.size();
 
@@ -65,7 +82,7 @@ public class JoinCpuLoadBo {
         }
         JoinCpuLoadBo initCpuLoadBo = joinCpuLoadBoList.get(0);
         newJoinCpuLoadBo.setAgentId(initCpuLoadBo.getAgentId());
-        newJoinCpuLoadBo.setTimestamp(initCpuLoadBo.getTimestamp());
+        newJoinCpuLoadBo.setTimestamp(timestamp);
 
         double sumJvmCpuLoad = 0D;
         double jvmCpuLoad = initCpuLoadBo.getJvmCpuLoad();
@@ -107,7 +124,7 @@ public class JoinCpuLoadBo {
         return timestamp;
     }
 
-    public static JoinCpuLoadBo joinCpuLoadBoLIst(List<CpuLoadBo> cpuLoadBoList) {
+    public static JoinCpuLoadBo joinCpuLoadBoListForCpuLoadBoList(List<CpuLoadBo> cpuLoadBoList) {
         JoinCpuLoadBo joinCpuLoadBo = new JoinCpuLoadBo();
         int boCount = cpuLoadBoList.size();
 
@@ -190,5 +207,30 @@ public class JoinCpuLoadBo {
 
     public double getMinSystemCpuLoad() {
         return minSystemCpuLoad;
+    }
+
+    public static JoinCpuLoadBo convertJoinCpuLoadBo(CpuLoadBo cpuLoadBo) {
+        JoinCpuLoadBo joinCpuLoadBo = new JoinCpuLoadBo();
+        joinCpuLoadBo.setAgentId(cpuLoadBo.getAgentId());
+        joinCpuLoadBo.setTimestamp(cpuLoadBo.getTimestamp());
+        joinCpuLoadBo.setJvmCpuLoad(cpuLoadBo.getJvmCpuLoad());
+        joinCpuLoadBo.setMinJvmCpuLoad(cpuLoadBo.getJvmCpuLoad());
+        joinCpuLoadBo.setMaxJvmCpuLoad(cpuLoadBo.getJvmCpuLoad());
+        joinCpuLoadBo.setSystemCpuLoad(cpuLoadBo.getSystemCpuLoad());
+        joinCpuLoadBo.setMinSystemCpuLoad(cpuLoadBo.getSystemCpuLoad());
+        joinCpuLoadBo.setMaxSystemCpuLoad(cpuLoadBo.getSystemCpuLoad());
+        return joinCpuLoadBo;
+    }
+
+    public static List<JoinCpuLoadBo> convertJoinCpuLoadBoList(List<CpuLoadBo> cpuLoadBos) {
+        List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
+        for (CpuLoadBo cpuLoadBo : cpuLoadBos) {
+            joinCpuLoadBoList.add(convertJoinCpuLoadBo(cpuLoadBo));
+        }
+        return joinCpuLoadBoList;
+    }
+
+    public byte getVersion() {
+        return version;
     }
 }

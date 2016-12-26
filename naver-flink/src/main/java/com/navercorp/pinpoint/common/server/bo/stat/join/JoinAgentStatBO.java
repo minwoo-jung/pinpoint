@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.common.server.bo.stat.join;
 
+import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.CpuLoadBo;
 
 import java.util.ArrayList;
@@ -23,42 +24,37 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public class JoinAgentStatBo {
-    private byte version = 1;
+public class JoinAgentStatBo implements JoinStatBo {
     private String agentId;
-    private long timeStamp;
-    private JoinCpuLoadBo joinCpuLoadBo;
+    private long timestamp;
+    private List<JoinCpuLoadBo> joinCpuLoadBoList;
 
     public void setAgentId(String agentId) {
         this.agentId = agentId;
     }
 
-    public void setJoinCpuLoadBo(JoinCpuLoadBo joinCpuLoadBo) {
-        this.joinCpuLoadBo = joinCpuLoadBo;
+    public void setJoinCpuLoadBoList(List<JoinCpuLoadBo> joinCpuLoadBoList) {
+        this.joinCpuLoadBoList = joinCpuLoadBoList;
     }
 
     public String getAgentId() {
         return agentId;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTimestamp(long timeStamp) {
+        this.timestamp = timeStamp;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    public JoinCpuLoadBo getJoinCpuLoadBo() {
-        return joinCpuLoadBo;
-    }
-
-    public byte getVersion() {
-        return version;
+    public List<JoinCpuLoadBo> getJoinCpuLoadBoList() {
+        return joinCpuLoadBoList;
     }
 
     public static JoinCpuLoadBo joinCpuLoadBoLIst(List<CpuLoadBo> cpuLoadBos) {
-        return JoinCpuLoadBo.joinCpuLoadBoLIst(cpuLoadBos);
+        return JoinCpuLoadBo.joinCpuLoadBoListForCpuLoadBoList(cpuLoadBos);
     }
 
     public static JoinAgentStatBo joinAgentStatBo(List<JoinAgentStatBo> joinAgentStatBoList) {
@@ -70,15 +66,42 @@ public class JoinAgentStatBo {
 
         List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
         for (JoinAgentStatBo joinAgentStatBo : joinAgentStatBoList) {
-            joinCpuLoadBoList.add(joinAgentStatBo.getJoinCpuLoadBo());
+            joinCpuLoadBoList.addAll(joinAgentStatBo.getJoinCpuLoadBoList());
         }
 
-        JoinCpuLoadBo joinCpuLoadBo = JoinCpuLoadBo.joinCpuLoadBoList(joinCpuLoadBoList);
-        newJoinAgentStatBo.setJoinCpuLoadBo(joinCpuLoadBo);
+        JoinCpuLoadBo joinCpuLoadBo = JoinCpuLoadBo.joinCpuLoadBoList(joinCpuLoadBoList, joinCpuLoadBoList.get(0).getTimestamp());
+        List<JoinCpuLoadBo> newJoinCpuLoadBoList = new ArrayList<>();
+        newJoinCpuLoadBoList.add(joinCpuLoadBo);
+        newJoinAgentStatBo.setJoinCpuLoadBoList(newJoinCpuLoadBoList);
         newJoinAgentStatBo.setAgentId(joinCpuLoadBo.getAgentId());
-        newJoinAgentStatBo.setTimeStamp(joinCpuLoadBo.getTimestamp());
+        newJoinAgentStatBo.setTimestamp(joinCpuLoadBo.getTimestamp());
 
         return newJoinAgentStatBo;
 
+    }
+
+    public static List<JoinCpuLoadBo> convertJoinCpuLoadBoList(List<CpuLoadBo> cpuLoadBos) {
+        List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
+
+        for(CpuLoadBo cpuLoadBo : cpuLoadBos) {
+            JoinCpuLoadBo joinCpuLoadBo = JoinCpuLoadBo.convertJoinCpuLoadBo(cpuLoadBo);
+            joinCpuLoadBoList.add(joinCpuLoadBo);
+        }
+
+        return joinCpuLoadBoList;
+    }
+
+    public static JoinAgentStatBo createJoinAgentStatBo(AgentStatBo agentStatBo) {
+        JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
+        joinAgentStatBo.setAgentId(agentStatBo.getAgentId());
+        JoinCpuLoadBo joinCpuLoadBo = joinAgentStatBo.joinCpuLoadBoLIst(agentStatBo.getCpuLoadBos());
+        List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<>();
+        joinCpuLoadBoList.add(joinCpuLoadBo);
+        joinAgentStatBo.setJoinCpuLoadBoList(joinCpuLoadBoList);
+        joinAgentStatBo.setTimestamp(joinCpuLoadBo.getTimestamp());
+        //TODO : (minwoo) stat 가져올때 nullpinointexcpetion 대비해야함.
+//                JoinTransactionBo joinTransactionBo = joinAgentStatBo.joinTransactionBos(agentStatBo.getTransactionBos());
+//                JoinActiveTraceBo joinActiveTraceBo = joinAgentStatBo.joinActiveTraceBos(agentStatBo.getActiveTraceBos());
+        return joinAgentStatBo;
     }
 }
