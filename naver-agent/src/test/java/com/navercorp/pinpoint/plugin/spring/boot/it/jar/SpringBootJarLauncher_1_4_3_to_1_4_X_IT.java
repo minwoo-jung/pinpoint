@@ -38,16 +38,15 @@ import java.util.List;
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @JvmVersion(7)
 @OnClassLoader(system = true, child = false)
-@Dependency({ "org.springframework.boot:spring-boot-loader:[1.4.0.RELEASE,)" })
+@Dependency({ "org.springframework.boot:spring-boot-loader:[1.4.3.RELEASE,)" })
 @TestAppVersion(TestAppSpringBootVersion.POST_1_4)
-public class SpringBootJarLauncher_1_4_X_IT extends JarLauncherItBase {
+public class SpringBootJarLauncher_1_4_3_to_1_4_X_IT extends JarLauncherItBase {
 
     @Test
     public void testBootstrap() {
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.verifyServerType(SERVER_TYPE);
         List<String> expectedLibs = new ExpectedLibraries()
-                .withExecutable()
                 .withPackagedLib()
                 .getLibraries();
         verifier.verifyService(EXPECTED_CONTEXT, expectedLibs);
