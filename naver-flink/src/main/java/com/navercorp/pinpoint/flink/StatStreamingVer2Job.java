@@ -59,8 +59,6 @@ public class StatStreamingVer2Job implements Serializable {
     }
 
     public void start() throws Exception {
-        // windows를 1분단위 로 묶고 그걸 다시 5분단위로 묶는다면 어떻게 될까... 즉 뭔가 가지를 두개로 뻗어나가게 한다면...
-        //tuple 안쓰고 model 객체를 넣어줌
         String[] SPRING_CONFIG_XML = new String[]{"applicationContext-collector.xml"};
         ApplicationContext appCtx = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
 
@@ -96,8 +94,12 @@ public class StatStreamingVer2Job implements Serializable {
             .apply(new WindowFunction<Tuple3<String, JoinStatBo, Long>, Tuple3<String, JoinStatBo, Long>, Tuple, TimeWindow>() {
                 @Override
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
-                    JoinApplicationStatBo joinApplicationStatBo = join(values);
-                    out.collect(new Tuple3<>(joinApplicationStatBo.getApplicationId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
+                    try {
+                        JoinApplicationStatBo joinApplicationStatBo = join(values);
+                        out.collect(new Tuple3<>(joinApplicationStatBo.getApplicationId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 private JoinApplicationStatBo join(Iterable<Tuple3<String, JoinStatBo, Long>> values) {
@@ -124,14 +126,18 @@ public class StatStreamingVer2Job implements Serializable {
                 return false;
             }
             })
-            .assignTimestampsAndWatermarks(new Timestamp2())
+            .assignTimestampsAndWatermarks(new Timestamp())
             .keyBy(0)
-            .window(TumblingEventTimeWindows.of(Time.seconds(120)))
+            .window(TumblingEventTimeWindows.of(Time.seconds(120)))//TODO : (minwoo) 추후 5분으로 변경필요
             .apply(new WindowFunction<Tuple3<String, JoinStatBo, Long>, Tuple3<String, JoinStatBo, Long>, Tuple, TimeWindow>() {
                 @Override
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
-                    JoinApplicationStatBo joinApplicationStatBo = join(values);
-                    out.collect(new Tuple3<>(joinApplicationStatBo.getApplicationId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
+                    try {
+                        JoinApplicationStatBo joinApplicationStatBo = join(values);
+                        out.collect(new Tuple3<>(joinApplicationStatBo.getApplicationId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
+                    } catch (Exception e) {
+                        e.printStackTrace(); // TODO : (minwoo) 로깅 추가 필요함.
+                    }
                 }
 
                 private JoinApplicationStatBo join(Iterable<Tuple3<String, JoinStatBo, Long>> values) {
@@ -146,7 +152,6 @@ public class StatStreamingVer2Job implements Serializable {
 
 
         // 2. agrregage agent stat
-//        DataStream<Tuple3<String, JoinStatBo, Long>> agentStatAggregationData = statOperator.filter(new FilterFunction<Tuple3<String, JoinStatBo, Long>>() {
         statOperator.filter(new FilterFunction<Tuple3<String, JoinStatBo, Long>>() {
                 @Override
                 public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
@@ -165,8 +170,12 @@ public class StatStreamingVer2Job implements Serializable {
 
                 @Override
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
-                    JoinAgentStatBo joinAgentStatBo = join(values);
-                    out.collect(new Tuple3<>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
+                    try {
+                        JoinAgentStatBo joinAgentStatBo = join(values);
+                        out.collect(new Tuple3<>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
+                    } catch (Exception e) {
+                        e.printStackTrace();// TODO : (minwoo) 로깅 추가 필요함.
+                    }
                 }
 
                 private JoinAgentStatBo join(Iterable<Tuple3<String, JoinStatBo, Long>> values) {

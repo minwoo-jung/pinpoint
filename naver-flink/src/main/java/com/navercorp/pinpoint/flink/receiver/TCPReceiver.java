@@ -277,11 +277,6 @@ public class TCPReceiver {
                 TBase<?, ?> tBase = SerializationUtils.deserialize(bytes, deserializerFactory);
                 if (tBase instanceof TAgentStatBatch) {
                     TAgentStatBatch statBatch = (TAgentStatBatch)tBase;
-//                    AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
-                    Long cupLoad =(long)(statBatch.getAgentStats().get(0).getCpuLoad().getSystemCpuLoad() * 100);
-                    String data = statBatch.getAgentId() + "," + statBatch.getAgentStats().get(0).getTimestamp() + "," + cupLoad;
-                    //System.out.println("==========data====" + data);
-//                    sourceContext.collect(data);
                     sourceContext.collect(tBase);
                 }
                 //dispatchHandler.dispatchSendMessage(tBase);
