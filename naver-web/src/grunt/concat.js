@@ -208,6 +208,7 @@ module.exports = function( grunt, options ) {
 				'/features/configuration/application/alarm-rule.directive.js',
 				'features/configuration/application/user-group-auth.directive.js',
 				'/features/configuration/help/help.directive.js',
+				'/features/threadDumpInfoLayer/thread-dump-info-layer.directive.js',
 				'/features/realtimeChart/realtime-chart.controller.js',
 
 				'/pages/main/main.controller.js',
