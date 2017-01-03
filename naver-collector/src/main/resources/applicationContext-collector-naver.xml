@@ -13,7 +13,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <import resource="classpath:applicationContext-collector.xml" />
-
+    <!--
     <bean id="naverPropertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="false"/>
@@ -29,11 +29,9 @@
         <constructor-arg index="1" value="${profiler.flink.tcp.port}"/>
     </bean>
 
-    <bean id="agentStatSenderV2" class="com.navercorp.pinpoint.collector.sender.AgentStatSenderV2"/>
+    <bean id="sendAgentStatService" class="com.navercorp.pinpoint.collector.service.SendAgentStatService"/>
+    -->
 
-    <!--tcpDataSender를 이용해서 데이터를 전송하는 로직 어디에 넣을지 생각해보자.-->
-    <!--flink 포트 변경해봄.-->
-    <!--그리고 다시 전송 시작 및 테스트-->
 
 
 </beans>
