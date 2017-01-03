@@ -22,6 +22,8 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import org.junit.Ignore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
@@ -45,7 +47,9 @@ public class Nelo2OpenApiCallerTest {
 
     @Autowired
     Nelo2OpenApiCaller nelo2OpenApiCaller;
-    
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 //    @Test
     public void testConnect() throws Exception {
         try {
@@ -54,11 +58,11 @@ public class Nelo2OpenApiCallerTest {
             if (logs != null) {
                 int i = 1;
                 for (NeloRawLog neloRawLog : logs) {
-                    System.out.println(i++ + " : " + neloRawLog.get_source() + "\n");
+                    logger.debug(i++ + " : " + neloRawLog.get_source() + "\n");
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to testConnect", e);
             throw e;
         }
     }
@@ -76,15 +80,15 @@ public class Nelo2OpenApiCallerTest {
         if (logs != null) {
             int i = 1;
             for (NeloRawLog neloRawLog : logs) {
-                System.out.println(i++ + " : " + neloRawLog.get_source() + "\n");
+                logger.debug(i++ + " : " + neloRawLog.get_source() + "\n");
             }
         }
     }
     
 //    @Test
     public void encodeTest() throws UnsupportedEncodingException {
-        System.out.println(URLEncoder.encode("minwoo_local_tomcat^1425368654938^10", "UTF-8"));
-        System.out.println(URLEncoder.encode("transactionid=\"minwoo_local_tomcat^1425368654938^10\"", "UTF-8"));
+        logger.debug(URLEncoder.encode("minwoo_local_tomcat^1425368654938^10", "UTF-8"));
+        logger.debug(URLEncoder.encode("transactionid=\"minwoo_local_tomcat^1425368654938^10\"", "UTF-8"));
 //        minwoo_local_tomcat%5E1425368654938%5E10
     }
 }

@@ -30,6 +30,8 @@ import java.util.Scanner;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestContext;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestInstance;
 import com.navercorp.pinpoint.test.plugin.StreamRedirector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jongho Moon
@@ -43,6 +45,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
     private final String testId;
     
     private final File blocBase = new File("test/bloc4/base");
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
  
     public Bloc4PluginTestCase(PinpointPluginTestContext context, File blocDir) {
         this.context = context;
@@ -106,7 +109,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
         String testClassLocation = context.getTestClassLocation();
         
         String urlString = "http://localhost:5098/test/test/doTest?testId=" + testId + "&testClass=" + testClass + "&testClassPath=" + testClassLocation;
-        System.out.println("Try to call: " + urlString);
+        logger.debug("Try to call: " + urlString);
         
         URL url = new URL(urlString);
 
@@ -118,7 +121,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
                 connection.connect();
 
                 int response = connection.getResponseCode();
-                System.out.println("response: " + response);
+                logger.debug("response: " + response);
                 
 //                if (response != HttpURLConnection.HTTP_OK) {
 //                    throw new RuntimeException("Failed to invoke " + url + " [" + response + "]");
@@ -127,7 +130,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
                 // connection failed. retry.
                 Thread.sleep(1000);
                 
-                System.out.println("Retry " + (i + 1) + "th time to call test servlet");
+                logger.debug("Retry " + (i + 1) + "th time to call test servlet");
                 continue;
             }
             
@@ -154,8 +157,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
             writer = new PrintWriter(socket.getOutputStream());
             writer.write("STOP!");
         } catch (IOException e) {
-            System.err.println("Fail to send shutdown message");
-            e.printStackTrace();
+            logger.error("Fail to send shutdown message", e);
         } finally {
             if (writer != null) {
                 try {
@@ -166,8 +168,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
             try {
                 socket.close();
             } catch (IOException e) {
-                System.err.println("Fail to close socket");
-                e.printStackTrace();
+                logger.error("Fail to close socket", e);
             }
         }
     }

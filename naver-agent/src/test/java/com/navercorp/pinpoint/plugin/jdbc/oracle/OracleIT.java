@@ -28,6 +28,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
@@ -57,6 +59,8 @@ public class OracleIT {
     private static String DB_ADDRESS;
     private static String DB_NAME;
     private static String JDBC_URL;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -109,7 +113,7 @@ public class OracleIT {
         ResultSet rs = select.executeQuery(selectQuery);
         
         while (rs.next()) {
-            System.out.println("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
+            logger.debug("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
         } 
         
         Statement delete = conn.createStatement();

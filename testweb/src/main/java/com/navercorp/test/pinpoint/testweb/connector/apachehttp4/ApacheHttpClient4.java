@@ -148,8 +148,7 @@ public class ApacheHttpClient4 {
             //case 2-1
             httpClient = getHttpClient(getHttpParams());
             response = httpClient.execute(post, new BasicHttpContext());
-            System.out.println("status code : " + response.getStatusLine().getStatusCode());
-            
+
             //case 2-2
             //call back 함수
             httpClient = getHttpClient(getHttpParams());

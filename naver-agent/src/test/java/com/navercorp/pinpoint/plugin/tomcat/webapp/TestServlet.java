@@ -45,11 +45,7 @@ public class TestServlet extends HttpServlet {
         String testId = req.getParameter("testId");
         String testClassName = req.getParameter("testClass");
         String[] testClassPath = req.getParameterValues("testClassPath");
-        
-        System.out.println("testId: " + testId);
-        System.out.println("testClass: " + testClassName);
-        System.out.println("testClassPath: " + Arrays.deepToString(testClassPath));
-        
+
         ClassLoader loader = getClass().getClassLoader();
         
         if (testClassPath != null) {

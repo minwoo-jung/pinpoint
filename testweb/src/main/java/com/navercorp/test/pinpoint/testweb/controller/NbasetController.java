@@ -36,7 +36,6 @@ import java.util.Map;
  */
 @Controller
 public class NbasetController {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static DataSource dsForQuery;
     private static DataSource dsForQueryAll;
@@ -50,6 +49,8 @@ public class NbasetController {
         } catch(Exception e) {
         }
     }
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @RequestMapping(value = "/nbaset/crud")
     @ResponseBody
@@ -68,7 +69,7 @@ public class NbasetController {
         return result;
     }
 
-    private static void doQuery(String ckey, int queryTimeoutSec) throws SQLException {
+    private void doQuery(String ckey, int queryTimeoutSec) throws SQLException {
         NbaseThreadLocal.setCkey(ckey);
         Connection conn = dsForQuery.getConnection();
         try {
@@ -79,7 +80,7 @@ public class NbasetController {
                 ResultSet rs = pstmt.executeQuery();
                 try {
                     while (rs.next()) {
-                        System.out.println(rs.getString("b"));
+                        logger.debug(rs.getString("b"));
                     }
                 } finally {
                     try {
@@ -101,7 +102,7 @@ public class NbasetController {
         }
     }
 
-    private static void doQueryAll(int queryTimeoutSec) throws SQLException {
+    private void doQueryAll(int queryTimeoutSec) throws SQLException {
         Connection conn = dsForQueryAll.getConnection();
         try {
             PreparedStatement pstmt = conn.prepareStatement("SELECT a,b FROM foo WHERE a=? LIMIT 100");
@@ -111,7 +112,7 @@ public class NbasetController {
                 ResultSet rs = pstmt.executeQuery();
                 try {
                     while (rs.next()) {
-                        System.out.println(rs.getString("b"));
+                        logger.debug(rs.getString("b"));
                     }
                 } finally {
                     try {
@@ -133,7 +134,7 @@ public class NbasetController {
         }
     }
 
-    private static void doQueryAllCkeyList(String ckeyList, int queryTimeoutSec) throws SQLException {
+    private void doQueryAllCkeyList(String ckeyList, int queryTimeoutSec) throws SQLException {
         NbaseThreadLocal.setCkey(ckeyList);
         Connection conn = dsForQueryAllCkeyList.getConnection();
         try {
@@ -144,7 +145,7 @@ public class NbasetController {
                 ResultSet rs = pstmt.executeQuery();
                 try {
                     while (rs.next()) {
-                        System.out.println(rs.getString("b"));
+                        logger.debug(rs.getString("b"));
                     }
                 } finally {
                     try {
@@ -191,7 +192,7 @@ public class NbasetController {
                     ResultSet rs = pstmt.executeQuery();
                     try {
                         while (rs.next()) {
-                            System.out.println(rs.getString("b"));
+                            logger.debug(rs.getString("b"));
                         }
                     } finally {
                         try {

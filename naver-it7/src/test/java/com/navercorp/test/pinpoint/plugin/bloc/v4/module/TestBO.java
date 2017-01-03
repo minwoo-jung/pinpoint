@@ -26,6 +26,8 @@ import com.navercorp.pinpoint.test.plugin.ForkedPinpointPluginTestRunner;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestRunListener;
 import com.nhncorp.lucy.bloc.annotation.Procedure;
 import com.nhncorp.lucy.bloc.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jongho Moon
@@ -33,13 +35,12 @@ import com.nhncorp.lucy.bloc.annotation.Resource;
  */
 @Resource(name="test")
 public class TestBO {
-    
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Procedure
     public String doTest(String testId, String testClass, String testClassPath) throws Exception {
-        System.out.println("testId: " + testId);
-        System.out.println("testClass: " + testClass);
-        System.out.println("testClassPath: " + testClassPath);
-        
+
         ClassLoader loader = getClass().getClassLoader();
          
         if (testClassPath != null) {

@@ -2,6 +2,8 @@ package com.navercorp.pinpoint.web.alarm.collector;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -22,7 +24,9 @@ public class MapStatisticsCallerCollectorTest {
     
     @Autowired
     HbaseMapStatisticsCallerDao callerDao;
-    
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Test
     public void test() {
         Application application = new Application("API.GATEWAY.DEV", ServiceType.STAND_ALONE);
@@ -31,17 +35,17 @@ public class MapStatisticsCallerCollectorTest {
         LinkDataMap map = callerDao.selectCaller(application, range);
 
         for (LinkData linkData : map.getLinkDataList()) {
-            System.out.println(linkData.getFromApplication() + " : " + linkData.getToApplication() );
+            logger.debug(linkData.getFromApplication() + " : " + linkData.getToApplication() );
             
             LinkCallDataMap linkCallDataMap = linkData.getLinkCallDataMap();
             for (LinkCallData linkCallData : linkCallDataMap.getLinkDataList()) {
-                System.out.println("\t"+ linkCallData.getSource() + " : " + linkCallData.getTarget());
+                logger.debug("\t"+ linkCallData.getSource() + " : " + linkCallData.getTarget());
                 for (TimeHistogram timeHistogram : linkCallData.getTimeHistogram()) {
-                    System.out.println("\t\t" + timeHistogram);
+                    logger.debug("\t\t" + timeHistogram);
                 }
             }
             
-            System.out.println(linkData.getLinkCallDataMap());
+            logger.debug(linkData.getLinkCallDataMap().toString());
         }
     }
     

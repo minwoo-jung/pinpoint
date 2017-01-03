@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -32,6 +34,7 @@ public class PreSplitRegionsTest {
     @Qualifier("applicationTraceIndexDistributor")
     private AbstractRowKeyDistributor rowKeyDistributor;
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Test
     public void acceptApplication4() {
@@ -98,14 +101,12 @@ public class PreSplitRegionsTest {
 
     @Test
     public void range() {
-        System.out.println("------------------------");
         for (int i =0 ; i< 255; i++) {
             byte[] bytes = new byte[1];
             bytes[0] = (byte) i;
             byte[] distributedKey = rowKeyDistributor.getDistributedKey(bytes);
-            System.out.println("distributedKey:" + distributedKey[0]);
+            logger.debug("distributedKey:" + distributedKey[0]);
         }
-        System.out.println("------------------------");
     }
 
     @Test
@@ -163,6 +164,6 @@ public class PreSplitRegionsTest {
         }
         sb.append("]}");
 
-        System.out.println(String.format(format, sb.toString()));
+        logger.debug(String.format(format, sb.toString()));
     }
 }

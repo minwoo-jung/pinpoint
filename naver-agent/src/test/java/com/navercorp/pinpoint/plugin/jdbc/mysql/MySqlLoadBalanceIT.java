@@ -81,8 +81,6 @@ public class MySqlLoadBalanceIT {
         // So use reflection to get currentConn field.
         InvocationHandler invocationHandler = Proxy.getInvocationHandler(connection);
         Class<? extends InvocationHandler> aClass = invocationHandler.getClass();
-        
-        System.out.println("INVOCATION HANDLER: " + aClass.getName());
 
         Field current = null;
         

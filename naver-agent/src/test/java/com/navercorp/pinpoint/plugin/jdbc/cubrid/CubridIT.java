@@ -37,6 +37,8 @@ import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jongho Moon
@@ -57,6 +59,8 @@ public class CubridIT {
     private static String DB_ADDRESS;
     private static String DB_NAME;
     private static String JDBC_URL;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -93,7 +97,7 @@ public class CubridIT {
         ResultSet rs = select.executeQuery(selectQuery);
         
         while (rs.next()) {
-            System.out.println("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
+            logger.debug("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
         }
         
         Statement delete = conn.createStatement();

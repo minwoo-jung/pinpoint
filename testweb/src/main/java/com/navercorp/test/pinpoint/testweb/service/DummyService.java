@@ -40,42 +40,36 @@ public class DummyService {
      * </pre>
      */
     public void doSomething() {
-        System.out.println("do something.");
         a();
         b();
         c();
     }
 
     private void a() {
-        System.out.println("a");
     }
 
     private void b() {
-        System.out.println("b");
         ba();
         bb();
     }
 
     private void ba() {
-        System.out.println("ba");
         baa();
     }
 
     private void bb() {
-        System.out.println("bb");
+
     }
 
     private void baa() {
-        System.out.println("baa");
+
     }
 
     private void c() {
-        System.out.println("c");
         ca();
     }
 
     private void ca() {
-        System.out.println("ca");
         ApacheHttpClient4 client = new ApacheHttpClient4(new HttpConnectorOptions());
         client.execute("http://localhost:8080/mysqlsimple.pinpoint", new HashMap<String, Object>());
     }

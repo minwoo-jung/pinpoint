@@ -27,6 +27,8 @@ import java.util.Scanner;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestInstance;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestContext;
 import com.navercorp.pinpoint.test.plugin.StreamRedirector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jongho Moon
@@ -38,7 +40,8 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
     private final PinpointPluginTestContext context;
     private final File tomcatHome;
     private final String testId;
-    private final File tomcatBase = new File("test/tomcat/base"); 
+    private final File tomcatBase = new File("test/tomcat/base");
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
  
     public TomcatPluginTestCase(PinpointPluginTestContext context, File tomcatDir) {
         this.context = context;
@@ -93,8 +96,8 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
         String testClassLocation = context.getTestClassLocation();
         
         String urlString = "http://localhost:8972/test/doTest?testId=" + testId + "&testClass=" + testClass + "&testClassPath=" + testClassLocation;
-        System.out.println("Try to call: " + urlString);
-        
+        logger.debug("Try to call: " + urlString);
+
         URL url = new URL(urlString);
 
         for (int i = 0; i < 10; i++) {
@@ -105,7 +108,7 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
                 connection.connect();
 
                 int response = connection.getResponseCode();
-                System.out.println("response: " + response);
+                logger.debug("response: " + response);
                 
                 if (response != HttpURLConnection.HTTP_OK) {
                     throw new RuntimeException("Failed to invoke " + url + " [" + response + "]");
@@ -114,7 +117,7 @@ public class TomcatPluginTestCase implements PinpointPluginTestInstance {
                 // connection failed. retry.
                 Thread.sleep(1000);
                 
-                System.out.println("Retry " + (i + 1) + "th time to call test servlet");
+                logger.debug("Retry " + (i + 1) + "th time to call test servlet");
                 continue;
             }
             

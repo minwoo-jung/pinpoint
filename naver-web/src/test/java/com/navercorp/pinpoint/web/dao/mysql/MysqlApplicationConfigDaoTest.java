@@ -20,14 +20,18 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MysqlApplicationConfigDaoTest {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Test
     public void test() throws JsonProcessingException {
         AppAuthConfiguration config = new AppAuthConfiguration();
         String result = new ObjectMapper().writeValueAsString(config);
-        System.out.println(result);
+        logger.debug(result);
     }
 
 }
