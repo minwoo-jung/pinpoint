@@ -38,6 +38,60 @@ public class VertxController {
         vertxService.request(9999, "127.0.0.1", "/");
     }
 
+    @RequestMapping(value="/vertx/server")
+    @ResponseBody
+    public void server(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/");
+    }
+
+    @RequestMapping(value="/vertx/server/request")
+    @ResponseBody
+    public void serverRequest(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/request");
+    }
+
+    @RequestMapping(value="/vertx/server/executeBlocking")
+    @ResponseBody
+    public void serverExecuteBlocking(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/executeBlocking");
+    }
+
+    @RequestMapping(value="/vertx/server/executeBlocking/request")
+    @ResponseBody
+    public void serverExecuteBlockingRequest(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/executeBlocking/request");
+    }
+
+    @RequestMapping(value="/vertx/server/runOnContext")
+    @ResponseBody
+    public void serverRunOnContext(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/runOnContext");
+    }
+
+    @RequestMapping(value="/vertx/server/runOnContext/request")
+    @ResponseBody
+    public void serverRunOnContextRequest(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/runOnContext/request");
+    }
+
+    @RequestMapping(value="/vertx/server/noresponse")
+    @ResponseBody
+    public void serverNoResponse(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/noresponse");
+    }
+
+    @RequestMapping(value="/vertx/server/close")
+    @ResponseBody
+    public void serverClose(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/close");
+    }
+
+    @RequestMapping(value="/vertx/server/connection/close")
+    @ResponseBody
+    public void serverConnectionClose(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/connection/close");
+    }
+
     private String getLocalAddress(final HttpServletRequest request) {
         return request.getLocalAddr() + ":" + request.getLocalPort();
     }

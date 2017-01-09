@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface VertxService {
+    public static final int LISTEN_PORT = 40010;
 
     void request(int port, String host, String uri);
-
-
 }
