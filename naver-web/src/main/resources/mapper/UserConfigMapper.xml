@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.web.dao.UserConfigDao">
+
+    <insert id="insertUserConfiguration" useGeneratedKeys="true" keyProperty="number">
+        INSERT INTO user_configuration (user_id, configuration)
+        VALUES (#{userId}, #{configuration})
+    </insert>
+
+    <update id="updateUserConfiguration">
+        UPDATE user_configuration
+        SET configuration = #{configuration}
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteUserConfiguration">
+        DELETE
+        FROM user_configuration
+        WHERE user_id = #{userId}
+    </delete>
+
+    <select id="selectUserConfiguration" resultType="String">
+        SELECT configuration
+        FROM user_configuration
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>

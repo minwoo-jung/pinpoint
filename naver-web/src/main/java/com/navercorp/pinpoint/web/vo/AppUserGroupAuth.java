@@ -28,6 +28,7 @@ import com.navercorp.pinpoint.web.view.AppUserGroupAuthSerializer;
  */
 @JsonSerialize(using = AppUserGroupAuthSerializer.class)
 public class AppUserGroupAuth {
+    private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private String number;
     private String applicationId;
     private String userGroupId;
@@ -44,7 +45,7 @@ public class AppUserGroupAuth {
         this.roleName = roleName;
         this.configuration = appAuthConfig;
         try {
-            this.configurationString = new ObjectMapper().writeValueAsString(appAuthConfig);
+            this.configurationString = OBJECT_MAPPER.writeValueAsString(appAuthConfig);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -53,7 +54,7 @@ public class AppUserGroupAuth {
     public void setConfiguration(AppAuthConfiguration configuration) {
         this.configuration = configuration;
         try {
-            this.configurationString = new ObjectMapper().writeValueAsString(configuration);
+            this.configurationString = OBJECT_MAPPER.writeValueAsString(configuration);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -62,7 +63,7 @@ public class AppUserGroupAuth {
     public void setConfigurationString(String configurationString) {
         this.configurationString = configurationString;
         try {
-            configuration = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(configurationString, AppAuthConfiguration.class);
+            configuration = OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(configurationString, AppAuthConfiguration.class);
         } catch (Exception e) {
             throw new AuthorityException("Can not load authorization configuration of application", e);
         }
