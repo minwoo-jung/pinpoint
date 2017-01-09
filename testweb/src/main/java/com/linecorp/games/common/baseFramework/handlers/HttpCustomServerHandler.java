@@ -186,19 +186,19 @@ public class HttpCustomServerHandler extends SimpleChannelUpstreamHandler {
         response.setContent(ChannelBuffers.copiedBuffer(resultContents.toString(), CharsetUtil.UTF_8));
 
         // response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
-        response.setHeader(CONTENT_TYPE, "application/json");
+        response.headers().set(CONTENT_TYPE, "application/json");
 
-        response.setHeader(CONTENT_LENGTH, response.getContent().readableBytes());
+        response.headers().set(CONTENT_LENGTH, response.getContent().readableBytes());
         if (keepAlive) {
-            response.setHeader(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+            response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
         for (Entry<String, String> header : reponseHeader) {
-            response.setHeader(header.getKey(), header.getValue());
+            response.headers().set(header.getKey(), header.getValue());
         }
 
         // Encode the cookie.
-        String cookieString = request.getHeader(COOKIE);
+        String cookieString = request.headers().get(COOKIE);
         if (cookieString != null) {
             CookieDecoder cookieDecoder = new CookieDecoder();
             Set<Cookie> cookies = cookieDecoder.decode(cookieString);
@@ -206,7 +206,7 @@ public class HttpCustomServerHandler extends SimpleChannelUpstreamHandler {
                 CookieEncoder cookieEncoder = new CookieEncoder(true);
                 for (Cookie cookie : cookies) {
                     cookieEncoder.addCookie(cookie);
-                    response.addHeader(SET_COOKIE, cookieEncoder.encode());
+                    response.headers().set(SET_COOKIE, cookieEncoder.encode());
                 }
             }
         }
@@ -243,13 +243,13 @@ public class HttpCustomServerHandler extends SimpleChannelUpstreamHandler {
             String body = getBody(request);
             String cause = stackTraceToStr(e.getCause());
 
-            logger.error("exceptionCaught : method={} \r\nURI={}, \r\nheaders={}, \r\nbody={}, \r\ncauseBy={}", request.getMethod().getName(), request.getUri(), request.getHeaders(), body, cause);
+            logger.error("exceptionCaught : method={} \r\nURI={}, \r\nheaders={}, \r\nbody={}, \r\ncauseBy={}", request.getMethod().getName(), request.getUri(), request.headers(), body, cause);
 
             if (channel.isWritable() && !(e.getCause() instanceof java.io.IOException)) {
 
                 HttpResponse response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
 
-                response.setHeader(CONTENT_TYPE, "application/json; charset=UTF-8");
+                response.headers().set(CONTENT_TYPE, "application/json; charset=UTF-8");
                 response.setContent(ChannelBuffers.copiedBuffer(this.getResultString(500, "Internal Server Error", e.getCause().toString()), CharsetUtil.UTF_8));
 
                 channel.write(response);
