@@ -9,9 +9,8 @@
     </insert>
 
     <update id="updateUserConfiguration">
-        UPDATE user_configuration
-        SET configuration = #{configuration}
-        WHERE user_id = #{userId}
+        INSERT INTO user_configuration (user_id, configuration) VALUES (#{userId}, #{configuration})
+        ON DUPLICATE KEY UPDATE user_id = #{userId}, configuration = #{configuration};
     </update>
 
     <delete id="deleteUserConfiguration">
