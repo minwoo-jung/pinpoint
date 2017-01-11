@@ -20,14 +20,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author minwoo.jung
  */
 public class UserConfiguration {
-    private String userId;
-    private List<ApplicationModel> favoriteApplications;
+    private final static List<ApplicationModel> EMPTY_LIST = new ArrayList<>(0);
+    private String userId = "";
+    private List<ApplicationModel> favoriteApplications = EMPTY_LIST;
+
     public String getUserId() {
         return userId;
     }

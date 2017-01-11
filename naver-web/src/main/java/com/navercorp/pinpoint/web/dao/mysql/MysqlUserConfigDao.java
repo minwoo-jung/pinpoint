@@ -60,6 +60,10 @@ public class MysqlUserConfigDao implements UserConfigDao {
     public UserConfiguration selectUserConfiguration(String userId) {
         String configuration = sqlSessionTemplate.selectOne(NAMESPACE + "selectUserConfiguration", userId);
 
+        if (configuration == null) {
+            configuration = "{}";
+        }
+
         return convertUserConfiguration(configuration);
     }
 
