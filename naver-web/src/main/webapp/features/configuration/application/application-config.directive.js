@@ -1,8 +1,8 @@
 (function( $ ) {
 	"use strict";
 
-	pinpointApp.directive( "applicationConfigDirective", [ "globalConfig",
-		function ( globalConfig ) {
+	pinpointApp.directive( "applicationConfigDirective", [ "SystemConfigurationService",
+		function ( SystemConfigService ) {
 			return {
 				restrict: "EA",
 				replace: true,
@@ -31,7 +31,7 @@
 						event.stopPropagation();
 					});
 					scope.isInnerMode = function() {
-						return globalConfig.openSource === false ? true : false;
+						return SystemConfigService.get("openSource") === false ? true : false;
 					};
 				}
 			};

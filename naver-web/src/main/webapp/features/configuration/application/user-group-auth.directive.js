@@ -28,8 +28,8 @@
 	});
 
 
-	pinpointApp.directive( "userGroupAuthDirective", [ "userGroupAuthDirectiveConfig", "$http", "AlarmUtilService", "AnalyticsService", "globalConfig",
-		function ( $cfg, $http, AlarmUtilService, AnalyticsService, globalConfig ) {
+	pinpointApp.directive( "userGroupAuthDirective", [ "userGroupAuthDirectiveConfig", "$http", "AlarmUtilService",
+		function ( $cfg, $http, AlarmUtilService ) {
 			return {
 				restrict: 'EA',
 				replace: true,
