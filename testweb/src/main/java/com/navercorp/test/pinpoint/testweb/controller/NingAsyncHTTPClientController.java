@@ -18,11 +18,11 @@
 package com.navercorp.test.pinpoint.testweb.controller;
 
 import com.navercorp.test.pinpoint.testweb.connector.ningasync.NingAsyncHttpClient;
-import com.ning.http.client.Part;
 import com.ning.http.client.Response;
 import com.ning.http.client.cookie.Cookie;
-import com.ning.http.multipart.StringPart;
 
+import com.ning.http.client.multipart.Part;
+import com.ning.http.client.multipart.StringPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,8 +72,8 @@ public class NingAsyncHTTPClientController {
         headers.put("header2", "header2");
 
         List<Cookie> cookies = new ArrayList<Cookie>();
-        cookies.add(new Cookie("cookieName1", "cookieValue1", "cookieRawValue1", "", "/", 10, 10, false, false));
-        cookies.add(new Cookie("cookieName2", "cookieValue2", "cookieRawValue2", "", "/", 10, 10, false, false));
+        cookies.add(new Cookie("cookieName1", "cookieValue1", false, "", "/", 10, false, false));
+        cookies.add(new Cookie("cookieName2", "cookieValue2", false, "", "/", 10, false, false));
 
         Response r = httpInvoker.requestGet("http://search.naver.com/search.naver?where=nexearch", params, headers, cookies);
         logger.debug("r={}" + r.toString());
@@ -109,10 +110,10 @@ public class NingAsyncHTTPClientController {
         headers.put("header2", "header2");
 
         List<Part> parts = new ArrayList<Part>();
-        parts.add(new com.ning.http.client.ByteArrayPart("name1", "filename1", "data".getBytes(), "plain/text", "utf-8"));
-        parts.add(new com.ning.http.client.FilePart("name2", new File("./test"), "mimeType", "utf-8"));
-        parts.add(new com.ning.http.client.StringPart("name3", "value3"));
-        parts.add(new com.ning.http.multipart.FilePart("name4", new File("./test")));
+        parts.add(new com.ning.http.client.multipart.ByteArrayPart("name1", "data".getBytes(), "plain/text", Charset.forName("utf-8"), "filename1"));
+        parts.add(new com.ning.http.client.multipart.FilePart("name2", new File("./test"), "mimeType", Charset.forName("utf-8")));
+        parts.add(new com.ning.http.client.multipart.StringPart("name3", "value3"));
+        parts.add(new com.ning.http.client.multipart.FilePart("name4", new File("./test")));
         parts.add(new StringPart("name5", "value5"));
 
         Response r = httpInvoker.requestMultipart("http://www.naver.com", headers, parts);

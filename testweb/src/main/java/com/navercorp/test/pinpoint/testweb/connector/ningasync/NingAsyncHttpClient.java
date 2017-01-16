@@ -25,13 +25,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.ning.http.client.multipart.Part;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.Part;
 import com.ning.http.client.Response;
 import com.ning.http.client.cookie.Cookie;
 import org.springframework.stereotype.Component;
@@ -52,7 +52,7 @@ public class NingAsyncHttpClient {
     private String defaultUserAgent;
 
     public NingAsyncHttpClient() {
-        asyncHttpClient = new AsyncHttpClient(new AsyncHttpClientConfig.Builder().setAllowPoolingConnection(true).setCompressionEnabled(true).build());
+        asyncHttpClient = new AsyncHttpClient(new AsyncHttpClientConfig.Builder().setAllowPoolingConnections(true).setCompressionEnforced(true).build());
         defaultUserAgent = "pinpoint/test";
         logger.debug("init HttpClient : defaultAgent={}", defaultUserAgent);
     }
@@ -133,7 +133,7 @@ public class NingAsyncHttpClient {
 
         if (queries != null) {
             for (Entry<String, String> entry : queries.entrySet()) {
-                requestBuilder.addParameter(entry.getKey(), entry.getValue());
+                requestBuilder.addQueryParam(entry.getKey(), entry.getValue());
             }
         }
 
@@ -172,8 +172,8 @@ public class NingAsyncHttpClient {
 
     public static List<Cookie> getDummyCookies() {
         List<Cookie> cookies = new ArrayList<Cookie>();
-        cookies.add(new Cookie("cookieName1", "cookieValue1", "cookieRawValue1", "", "/", 10, 10, false, false));
-        cookies.add(new Cookie("cookieName2", "cookieValue2", "cookieRawValue2", "", "/", 10, 10, false, false));
+        cookies.add(new Cookie("cookieName1", "cookieValue1", false, "", "/", 10, false, false));
+        cookies.add(new Cookie("cookieName2", "cookieValue2", false, "", "/", 10, false, false));
         return cookies;
     }
 }

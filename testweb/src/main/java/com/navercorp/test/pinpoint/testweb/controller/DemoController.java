@@ -151,8 +151,8 @@ public class DemoController {
         headers.put("header2", "header2");
 
         List<Cookie> cookies = new ArrayList<Cookie>();
-        cookies.add(new Cookie("cookieName1", "cookieValue1", "cookieRawValue1", "", "/", 10, 10, false, false));
-        cookies.add(new Cookie("cookieName2", "cookieValue2", "cookieRawValue2", "", "/", 10, 10, false, false));
+        cookies.add(new Cookie("cookieName1", "cookieValue1", false, "", "/", 10, false, false));
+        cookies.add(new Cookie("cookieName2", "cookieValue2", false, "", "/", 10, false, false));
 
         ningAsyncHttpClient.requestGet("http://search.naver.com/search.naver?where=nexearch", params, headers, cookies);
     }

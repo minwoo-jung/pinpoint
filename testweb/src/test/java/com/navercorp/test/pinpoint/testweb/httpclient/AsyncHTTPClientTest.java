@@ -19,12 +19,14 @@ package com.navercorp.test.pinpoint.testweb.httpclient;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.ning.http.client.multipart.StringPart;
 import org.junit.Assert;
 
 import org.junit.Test;
@@ -36,7 +38,6 @@ import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
 import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.providers.netty.NettyAsyncHttpProvider;
-import com.ning.http.multipart.StringPart;
 
 public class AsyncHTTPClientTest {
 
@@ -55,8 +56,6 @@ public class AsyncHTTPClientTest {
             });
 
             future.get(3000L, TimeUnit.MILLISECONDS);
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -69,7 +68,7 @@ public class AsyncHTTPClientTest {
     @Test
     public void bodyPart() {
         try {
-            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(new AsyncHttpClientConfig.Builder().setAllowPoolingConnection(true).setCompressionEnabled(true).build());
+            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(new AsyncHttpClientConfig.Builder().setAllowPoolingConnections(true).setCompressionEnforced(true).build());
             BoundRequestBuilder requestBuilder = asyncHttpClient.preparePost("http://dev.pinpoint.navercorp.com");
 
             requestBuilder.addBodyPart(new StringPart("name1", "value1"));
@@ -85,17 +84,17 @@ public class AsyncHTTPClientTest {
     @Test
     public void multiPart() {
         try {
-            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(new AsyncHttpClientConfig.Builder().setAllowPoolingConnection(true).setCompressionEnabled(true).build());
+            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(new AsyncHttpClientConfig.Builder().setAllowPoolingConnections(true).setCompressionEnforced(true).build());
             BoundRequestBuilder requestBuilder = asyncHttpClient.preparePost("http://dev.pinpoint.navercorp.com");
 
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("header1", "header1");
             headers.put("header2", "header2");
 
-            requestBuilder.addBodyPart(new com.ning.http.client.ByteArrayPart("name1", "filename1", "data".getBytes(), "plain/text", "utf-8"));
-            requestBuilder.addBodyPart(new com.ning.http.client.FilePart("name2", new File("pom.xml"), "mimeType", "utf-8"));
-            requestBuilder.addBodyPart(new com.ning.http.client.StringPart("name3", "value3"));
-            requestBuilder.addBodyPart(new com.ning.http.multipart.FilePart("name4", new File("pom.xml")));
+            requestBuilder.addBodyPart(new com.ning.http.client.multipart.ByteArrayPart("name1", "data".getBytes(), "plain/text", Charset.forName("utf-8"), "filename1"));
+            requestBuilder.addBodyPart(new com.ning.http.client.multipart.FilePart("name2", new File("pom.xml"), "mimeType", Charset.forName("utf-8")));
+            requestBuilder.addBodyPart(new com.ning.http.client.multipart.StringPart("name3", "value3"));
+            requestBuilder.addBodyPart(new com.ning.http.client.multipart.FilePart("name4", new File("pom.xml")));
             requestBuilder.addBodyPart(new StringPart("name5", "value5"));
 
             ListenableFuture<Response> f = requestBuilder.execute();
