@@ -20,3 +20,12 @@ CREATE TABLE `agent_statistics` (
   `date_time` DATETIME NOT NULL,
   PRIMARY KEY (`date_time`)
 );
+
+CREATE TABLE `user_configuration` (
+  `number` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(30) NOT NULL,
+  `configuration` text NOT NULL,
+  PRIMARY KEY (`number`)
+);
+
+ALTER TABLE user_configuration ADD UNIQUE KEY user_id_idx (user_id);
