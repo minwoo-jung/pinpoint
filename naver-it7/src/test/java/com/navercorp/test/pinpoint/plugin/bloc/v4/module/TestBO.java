@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Runner;
@@ -26,8 +27,6 @@ import com.navercorp.pinpoint.test.plugin.ForkedPinpointPluginTestRunner;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestRunListener;
 import com.nhncorp.lucy.bloc.annotation.Procedure;
 import com.nhncorp.lucy.bloc.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Jongho Moon
@@ -35,16 +34,16 @@ import org.slf4j.LoggerFactory;
  */
 @Resource(name="test")
 public class TestBO {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Procedure
     public String doTest(String testId, String testClass, String testClassPath) throws Exception {
 
+        final String decodeTestClassPath = URLDecoder.decode(testClassPath, "utf-8");
+        System.out.println("testClassPath=" + decodeTestClassPath);
+
         ClassLoader loader = getClass().getClassLoader();
          
-        if (testClassPath != null) {
-            URL url = new File(testClassPath).toURI().toURL();
+        if (decodeTestClassPath != null) {
+            URL url = new File(decodeTestClassPath).toURI().toURL();
             URL[] urls = new URL[] { url };
             loader = new URLClassLoader(urls, loader);
         }

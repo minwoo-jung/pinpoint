@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +31,6 @@ import java.util.Scanner;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestContext;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestInstance;
 import com.navercorp.pinpoint.test.plugin.StreamRedirector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Jongho Moon
@@ -45,8 +44,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
     private final String testId;
     
     private final File blocBase = new File("test/bloc4/base");
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
- 
+
     public Bloc4PluginTestCase(PinpointPluginTestContext context, File blocDir) {
         this.context = context;
         this.blocDir = blocDir;
@@ -107,9 +105,10 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
 
         String testClass = context.getTestClass().getName();
         String testClassLocation = context.getTestClassLocation();
-        
-        String urlString = "http://localhost:5098/test/test/doTest?testId=" + testId + "&testClass=" + testClass + "&testClassPath=" + testClassLocation;
-        logger.debug("Try to call: " + urlString);
+
+        final String encodeTestClassLocation = URLEncoder.encode(testClassLocation, "utf-8");
+        String urlString = "http://localhost:5098/test/test/doTest?testId=" + testId + "&testClass=" + testClass + "&testClassPath=" + encodeTestClassLocation;
+        System.out.println("Try to call: " + urlString);
         
         URL url = new URL(urlString);
 
@@ -121,7 +120,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
                 connection.connect();
 
                 int response = connection.getResponseCode();
-                logger.debug("response: " + response);
+                System.out.println("response: " + response);
                 
 //                if (response != HttpURLConnection.HTTP_OK) {
 //                    throw new RuntimeException("Failed to invoke " + url + " [" + response + "]");
@@ -130,7 +129,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
                 // connection failed. retry.
                 Thread.sleep(1000);
                 
-                logger.debug("Retry " + (i + 1) + "th time to call test servlet");
+                System.out.println("Retry " + (i + 1) + "th time to call test servlet");
                 continue;
             }
             
@@ -139,7 +138,9 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
             Scanner scanner = new Scanner(is, encoding == null ? ENCODING : encoding);
             String response = scanner.nextLine();
             scanner.close();
-            
+
+            System.out.println("Response " + response);
+
             String modified = response.substring(1, response.length() - 1).replace("\\n", "\n");
             
             return new Scanner(modified);
@@ -157,7 +158,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
             writer = new PrintWriter(socket.getOutputStream());
             writer.write("STOP!");
         } catch (IOException e) {
-            logger.error("Fail to send shutdown message", e);
+            System.err.println("Fail to send shutdown message " +  e.getMessage());
         } finally {
             if (writer != null) {
                 try {
@@ -168,7 +169,7 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.error("Fail to close socket", e);
+                System.err.println("Fail to close socket " +  e.getMessage());
             }
         }
     }
