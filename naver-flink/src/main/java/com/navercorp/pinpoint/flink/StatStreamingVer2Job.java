@@ -20,6 +20,8 @@ package com.navercorp.pinpoint.flink;
  */
 
 import com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper;
+import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
+import com.navercorp.pinpoint.common.hbase.PooledHTableFactory;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinAgentStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinApplicationStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
@@ -40,6 +42,7 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindo
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.thrift.TBase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -64,12 +67,20 @@ public class StatStreamingVer2Job implements Serializable {
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.getConfig().setGlobalJobParameters(params);
 
-        final StatisticsDao statisticsDao = new StatisticsDao();
+        org.apache.hadoop.conf.Configuration conf = HBaseConfiguration.create();
+        conf.set("hbase.zookeeper.quorum", "alpha.zk.pinpoint.navercorp.com");
+        conf.set("hbase.zookeeper.property.clientPort", "2181");
+
+        HbaseTemplate2 hbaseTemplate2 = new HbaseTemplate2();
+        hbaseTemplate2.setConfiguration(conf);
+        hbaseTemplate2.setTableFactory(new PooledHTableFactory(conf));
+        hbaseTemplate2.afterPropertiesSet();
+        final StatisticsDao statisticsDao = new StatisticsDao(hbaseTemplate2);
 
         final DataStream<TBase> rawData = env.addSource(new TcpSourceFunction());
 
         AgentStatBatchMapper agentStatBatchMapper = appCtx.getBean("agentStatBatchMapper", AgentStatBatchMapper.class);
-        final TbaseFlatMapper flatMapper = new TbaseFlatMapper(agentStatBatchMapper);
+        final TbaseFlatMapper flatMapper = new TbaseFlatMapper(agentStatBatchMapper, hbaseTemplate2);
 
         // 0. generation rawdata
         final SingleOutputStreamOperator<Tuple3<String, JoinStatBo, Long>> statOperator = rawData.flatMap(flatMapper);

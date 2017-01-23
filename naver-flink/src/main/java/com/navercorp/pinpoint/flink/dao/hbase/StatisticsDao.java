@@ -39,22 +39,26 @@ import java.util.List;
 public class StatisticsDao implements OutputFormat<Tuple3<String, JoinStatBo, Long>> {
 
     public final byte[] STAT_METADATA_CF = Bytes.toBytes("S");
-    private HbaseTemplate2 hbaseTemplate2 = null;
+    private static HbaseTemplate2 hbaseTemplate2 = null;
     private String taskNumber = null;
     private int rowNumber = 0;
 
     private static final long serialVersionUID = 1L;
 
+    public StatisticsDao(HbaseTemplate2 hbaseTemplate2) {
+        this.hbaseTemplate2 = hbaseTemplate2;
+    }
+
     @Override
     public void configure(Configuration parameters) {
-        org.apache.hadoop.conf.Configuration conf = HBaseConfiguration.create();
-        conf.set("hbase.zookeeper.quorum", "alpha.zk.pinpoint.navercorp.com");
-        conf.set("hbase.zookeeper.property.clientPort", "2181");
-
-        hbaseTemplate2 = new HbaseTemplate2();
-        hbaseTemplate2.setConfiguration(conf);
-        hbaseTemplate2.setTableFactory(new PooledHTableFactory(conf));
-        hbaseTemplate2.afterPropertiesSet();
+//        org.apache.hadoop.conf.Configuration conf = HBaseConfiguration.create();
+//        conf.set("hbase.zookeeper.quorum", "alpha.zk.pinpoint.navercorp.com");
+//        conf.set("hbase.zookeeper.property.clientPort", "2181");
+//
+//        hbaseTemplate2 = new HbaseTemplate2();
+//        hbaseTemplate2.setConfiguration(conf);
+//        hbaseTemplate2.setTableFactory(new PooledHTableFactory(conf));
+//        hbaseTemplate2.afterPropertiesSet();
     }
 
     @Override

@@ -26,9 +26,9 @@ import java.util.List;
  */
 public class JoinAgentStatBo implements JoinStatBo {
     private String agentId;
+    private long agentStartTimestamp;
     private long timestamp;
     private List<JoinCpuLoadBo> joinCpuLoadBoList;
-
     public void setAgentId(String agentId) {
         this.agentId = agentId;
     }
@@ -55,6 +55,14 @@ public class JoinAgentStatBo implements JoinStatBo {
 
     public static JoinCpuLoadBo joinCpuLoadBoLIst(List<CpuLoadBo> cpuLoadBos) {
         return JoinCpuLoadBo.joinCpuLoadBoListForCpuLoadBoList(cpuLoadBos);
+    }
+
+    public long getAgentStartTimestamp() {
+        return agentStartTimestamp;
+    }
+
+    public void setAgentStartTimestamp(long agentStartTimestamp) {
+        this.agentStartTimestamp = agentStartTimestamp;
     }
 
     public static JoinAgentStatBo joinAgentStatBo(List<JoinAgentStatBo> joinAgentStatBoList) {
@@ -91,7 +99,7 @@ public class JoinAgentStatBo implements JoinStatBo {
         return joinCpuLoadBoList;
     }
 
-    public static JoinAgentStatBo createJoinAgentStatBo(AgentStatBo agentStatBo) {
+    public static JoinAgentStatBo createJoinAgentStatBo(AgentStatBo agentStatBo, long agentStartTimestamp) {
         JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
         joinAgentStatBo.setAgentId(agentStatBo.getAgentId());
         JoinCpuLoadBo joinCpuLoadBo = joinAgentStatBo.joinCpuLoadBoLIst(agentStatBo.getCpuLoadBos());
@@ -99,6 +107,7 @@ public class JoinAgentStatBo implements JoinStatBo {
         joinCpuLoadBoList.add(joinCpuLoadBo);
         joinAgentStatBo.setJoinCpuLoadBoList(joinCpuLoadBoList);
         joinAgentStatBo.setTimestamp(joinCpuLoadBo.getTimestamp());
+        joinAgentStatBo.setAgentStartTimestamp(agentStartTimestamp);
         //TODO : (minwoo) stat 가져올때 nullpinointexcpetion 대비해야함.
 //                JoinTransactionBo joinTransactionBo = joinAgentStatBo.joinTransactionBos(agentStatBo.getTransactionBos());
 //                JoinActiveTraceBo joinActiveTraceBo = joinAgentStatBo.joinActiveTraceBos(agentStatBo.getActiveTraceBos());
