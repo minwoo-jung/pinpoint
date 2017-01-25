@@ -27,8 +27,9 @@ import org.apache.thrift.TBase;
 /**
  * @author minwoo.jung
  */
+//TODO : (minwoo) 추후 사용하는데 없으면 삭제 필요
 public class TBaseMapper implements MapFunction<TBase, Tuple3<String, JoinAgentStatBo, Long>> {
-    private static AgentStatBatchMapper agentStatBatchMapper;
+    private AgentStatBatchMapper agentStatBatchMapper;
 
     public TBaseMapper(AgentStatBatchMapper agentStatBatchMapper) {
         //TODO : (minwoo) AgentStatBatchMapper 를 한번만 생성해서 문제는 없으나. 더 깔끔하게 개발할 필요는 있음, serialize 로 그냥 만들어버리면 동기화 필요없음.
@@ -41,19 +42,15 @@ public class TBaseMapper implements MapFunction<TBase, Tuple3<String, JoinAgentS
 
     @Override
     public Tuple3<String, JoinAgentStatBo, Long> map(TBase tBase) throws Exception {
-
         if (tBase instanceof TAgentStatBatch) {
             JoinAgentStatBo joinAgentStatBo = joinTAgentStatBatch((TAgentStatBatch) tBase);
             return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimestamp());
         }
 
-        return new Tuple3<String, JoinAgentStatBo, Long>();
+        return null;
     }
 
     public JoinAgentStatBo joinTAgentStatBatch(TAgentStatBatch statBatch) {
-        System.out.println("ThreadId(mapper) : " + Thread.currentThread().getId());
-        System.out.println("this aapper address : " + this.toString());
-        System.out.println("stat mapper address : " + this.agentStatBatchMapper);
         AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
         JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
         joinAgentStatBo.setAgentId(agentStatBo.getAgentId());
