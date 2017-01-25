@@ -49,9 +49,17 @@
         <property name="properties" ref="pinpoint_collector_properties"/>
     </bean>
 
-    <!--
-        <import resource="classpath:applicationContext-hbase.xml"/>
-    -->
+    <bean id="tbaseFlatMapper" class="com.navercorp.pinpoint.flink.process.TbaseFlatMapper">
+        <property name="agentStatBatchMapper" ref="agentStatBatchMapper"/>
+        <property name="applicationCache" ref="applicationCache"/>
+    </bean>
+
+    <bean id="applicationCache" class="com.navercorp.pinpoint.flink.process.ApplicationCache">
+        <property name="hbaseTemplate2" ref="hbaseTemplate"/>
+    </bean>
+
+
+    <import resource="classpath:applicationContext-hbase.xml"/>
 
     <!--
         <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">

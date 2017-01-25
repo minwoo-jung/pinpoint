@@ -27,6 +27,7 @@ import com.navercorp.pinpoint.common.server.bo.stat.join.JoinApplicationStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 import com.navercorp.pinpoint.flink.dao.hbase.StatisticsDao;
 import com.navercorp.pinpoint.flink.function.Timestamp;
+import com.navercorp.pinpoint.flink.process.ApplicationCache;
 import com.navercorp.pinpoint.flink.process.TbaseFlatMapper;
 import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -44,6 +45,8 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.thrift.TBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -52,35 +55,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StatStreamingVer2Job implements Serializable {
+    private static Logger logger = LoggerFactory.getLogger(StatStreamingVer2Job.class);
 
+    public static ApplicationContext appCtx;
 
     public static void main(String[] args) throws Exception {
         new StatStreamingVer2Job().start();
     }
 
     public void start() throws Exception {
-        String[] SPRING_CONFIG_XML = new String[]{"applicationContext-collector.xml"};
-        ApplicationContext appCtx = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
+        logger.info("start job");
+        String[] SPRING_CONFIG_XML = new String[]{"applicationContext-collector.xml", "applicationContext-cache.xml"};
+        appCtx = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
 
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
         final ParameterTool params = ParameterTool.fromArgs(new String[0]);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.getConfig().setGlobalJobParameters(params);
 
-        org.apache.hadoop.conf.Configuration conf = HBaseConfiguration.create();
-        conf.set("hbase.zookeeper.quorum", "alpha.zk.pinpoint.navercorp.com");
-        conf.set("hbase.zookeeper.property.clientPort", "2181");
-
-        HbaseTemplate2 hbaseTemplate2 = new HbaseTemplate2();
-        hbaseTemplate2.setConfiguration(conf);
-        hbaseTemplate2.setTableFactory(new PooledHTableFactory(conf));
-        hbaseTemplate2.afterPropertiesSet();
+        final HbaseTemplate2 hbaseTemplate2 = appCtx.getBean("hbaseTemplate", HbaseTemplate2.class);
+        //TODO : (minwoo) statisticsDao도 spring bean으로 빼자.
         final StatisticsDao statisticsDao = new StatisticsDao(hbaseTemplate2);
-
         final DataStream<TBase> rawData = env.addSource(new TcpSourceFunction());
-
-        AgentStatBatchMapper agentStatBatchMapper = appCtx.getBean("agentStatBatchMapper", AgentStatBatchMapper.class);
-        final TbaseFlatMapper flatMapper = new TbaseFlatMapper(agentStatBatchMapper, hbaseTemplate2);
+        final TbaseFlatMapper flatMapper = appCtx.getBean("tbaseFlatMapper", TbaseFlatMapper.class);
 
         // 0. generation rawdata
         final SingleOutputStreamOperator<Tuple3<String, JoinStatBo, Long>> statOperator = rawData.flatMap(flatMapper);

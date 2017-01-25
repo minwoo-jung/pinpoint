@@ -28,6 +28,8 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Date;
@@ -37,8 +39,8 @@ import java.util.List;
  * @author minwoo.jung
  */
 public class StatisticsDao implements OutputFormat<Tuple3<String, JoinStatBo, Long>> {
-
-    public final byte[] STAT_METADATA_CF = Bytes.toBytes("S");
+    private final static Logger logger = LoggerFactory.getLogger(StatisticsDao.class);
+    private final byte[] STAT_METADATA_CF = Bytes.toBytes("S");
     private static HbaseTemplate2 hbaseTemplate2 = null;
     private String taskNumber = null;
     private int rowNumber = 0;
@@ -80,9 +82,9 @@ public class StatisticsDao implements OutputFormat<Tuple3<String, JoinStatBo, Lo
         List<JoinCpuLoadBo> joinCpuLoadBoList = joinApplicationStatBo.getJoinCpuLoadBoList();
         //TODO : (minwoo) 여러개의 raw가 아니라 30초 씩 묶어서 하나의 raw 에 저장하는것도 방법일듯.
         if (joinApplicationStatBo.getStatType() == StatType.APP_CPU_LOAD_AGGRE) {
-            System.out.println("insert application aggre : " + new Date(joinApplicationStatBo.getTimestamp()));
+            logger.info("insert application aggre : " + new Date(joinApplicationStatBo.getTimestamp()));
         } else {
-            System.out.println("insert application raw data : " + new Date(joinApplicationStatBo.getTimestamp()));
+            logger.info("insert application raw data : " + new Date(joinApplicationStatBo.getTimestamp()));
         }
         for (JoinCpuLoadBo joinCpuLoadBo : joinCpuLoadBoList) {
 
@@ -107,7 +109,7 @@ public class StatisticsDao implements OutputFormat<Tuple3<String, JoinStatBo, Lo
     }
 
     private void insertJoinAgentStatBo(JoinAgentStatBo joinAgentStatBo) {
-        System.out.println("insert agent data : " + new Date(joinAgentStatBo.getTimestamp()));
+        logger.info("insert agent data : " + new Date(joinAgentStatBo.getTimestamp()));
         String rowKey = joinAgentStatBo.getAgentId() + "_" + AgentStatType.CPU_LOAD.getRawTypeCode() +"_" + joinAgentStatBo.getTimestamp();
         Put put = new Put(rowKey.getBytes());
 
