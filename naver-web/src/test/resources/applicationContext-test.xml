@@ -46,12 +46,6 @@
     <import resource="classpath:applicationContext-datasource.xml" />
     <import resource="classpath:applicationContext-dao-config.xml" />
 
-    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter">
-        <property name="objectMapper">
-            <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
-        </property>
-    </bean>
-
     <bean id="trace" class="com.navercorp.pinpoint.collector.dao.hbase.HbaseTraceDao"/>
     <bean class="com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentInfoDao"/>
 
@@ -127,6 +121,12 @@
     <bean id="sqlMetaDataMapper2" class="com.navercorp.pinpoint.web.mapper.SqlMetaDataMapper">
         <property name="rowKeyDistributorByHashPrefix" ref="metadataRowKeyDistributor2"></property>
     </bean>
+
+    <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao"/>
+
+    <bean id="nssAuthDaoFactory" class="com.navercorp.pinpoint.web.dao.NssAuthDaoFactory"/>
+
+    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter"/>
     
     <!--  Web Socket  -->
     <bean id="handlerRegister" class="com.navercorp.pinpoint.web.websocket.PinpointWebSocketHandlerManager">

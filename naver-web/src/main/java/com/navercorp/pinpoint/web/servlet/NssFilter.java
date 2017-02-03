@@ -18,10 +18,14 @@ package com.navercorp.pinpoint.web.servlet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.navercorp.pinpoint.web.service.NssAuthService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.StringUtils;
+import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.*;
@@ -39,40 +43,40 @@ public class NssFilter implements Filter {
     public static final String UNAUTHORIZED_RESPONSE_REDIRECT_KEY = "redirect";
     public static final String UNAUTHORIZED_RESPONSE_REDIRECT_VALUE = "/not_authorized.html";
 
-    public static final Map<String, Object> UNAUTHORIZED_RESPONSE = new HashMap<>();
+    private static final Map<String, Object> UNAUTHORIZED_RESPONSE = new HashMap<>();
 
     static {
         UNAUTHORIZED_RESPONSE.put(UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY, UNAUTHORIZED_RESPONSE_ERROR_CODE_VALUE);
         UNAUTHORIZED_RESPONSE.put(UNAUTHORIZED_RESPONSE_REDIRECT_KEY, UNAUTHORIZED_RESPONSE_REDIRECT_VALUE);
     }
 
-    @Value("#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}")
-    private String userHeaderKey;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("#{pinpointWebProps['nss.override.id'] ?: ''}")
-    private String overrideIdVal;
+    private final String userHeaderKey;
+    private final NssAuthService nssAuthService;
+    private final String unauthorizedResponse;
+    private volatile List<String> authorizedPrefixes = Collections.emptyList();
+    private volatile Set<String> overrideIds = Collections.emptySet();
 
-    @Value("#{pinpointWebProps['nss.corportaion.prefix'] ?: ''}")
-    private String acceptedCorporationPrefixes;
-
-    @Value("#{pinpointWebProps['nss.user.type'] ?: ''}")
-    private String acceptedUserTypes;
-
-    private Set<String> overrideIds;
-    private List<String> acceptedPrefixes;
-
-    private ObjectMapper objectMapper;
-
-    private String unauthorizedResponse;
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    @Autowired
+    public NssFilter(
+            @Value("#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}") String userHeaderKey,
+            NssAuthService nssAuthService,
+            ObjectMapper objectMapper) {
+        Assert.hasLength(userHeaderKey, "userHeaderKey must not be empty");
+        Assert.notNull(nssAuthService, "nssAuthService must not be null");
+        Assert.notNull(objectMapper, "objectMapper must not be null");
+        this.userHeaderKey = userHeaderKey;
+        this.nssAuthService = nssAuthService;
+        this.unauthorizedResponse = createUnauthorizedResponse(objectMapper);
     }
 
-    @PostConstruct
-    public void init() {
+    private String createUnauthorizedResponse(ObjectMapper objectMapper) {
+        Map<String, Object> unauthorizedResponseMap = new HashMap<>();
+        unauthorizedResponseMap.put(UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY, UNAUTHORIZED_RESPONSE_ERROR_CODE_VALUE);
+        unauthorizedResponseMap.put(UNAUTHORIZED_RESPONSE_REDIRECT_KEY, UNAUTHORIZED_RESPONSE_REDIRECT_VALUE);
         try {
-            this.unauthorizedResponse = this.objectMapper.writeValueAsString(UNAUTHORIZED_RESPONSE);
+            return objectMapper.writeValueAsString(unauthorizedResponseMap);
         } catch (JsonProcessingException e) {
             StringBuilder sb = new StringBuilder("{");
             sb.append("\"").append(UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY).append("\"").append(":");
@@ -80,40 +84,17 @@ public class NssFilter implements Filter {
             sb.append("\"").append(UNAUTHORIZED_RESPONSE_REDIRECT_KEY).append("\"").append(":");
             sb.append("\"").append(UNAUTHORIZED_RESPONSE_REDIRECT_VALUE).append("\"");
             sb.append("}");
-            this.unauthorizedResponse = sb.toString();
+            return sb.toString();
         }
-        if (StringUtils.isEmpty(this.overrideIdVal)) {
-            this.overrideIds = Collections.emptySet();
-        } else {
-            String[] overrideIds = this.overrideIdVal.split(",");
-            if (overrideIds.length == 0) {
-                this.overrideIds = Collections.emptySet();
-            } else {
-                this.overrideIds = new HashSet<>(overrideIds.length);
-                for (String overrideId : overrideIds) {
-                    this.overrideIds.add(overrideId.trim().toUpperCase());
-                }
-            }
-        }
-        if (StringUtils.isEmpty(this.acceptedCorporationPrefixes)) {
-            this.acceptedPrefixes = Collections.emptyList();
-        } else {
-            this.acceptedPrefixes = new ArrayList<>();
-            final String[] prefixes = this.acceptedCorporationPrefixes.split(",");
-            final String[] types = this.acceptedUserTypes.split(",");
-            if (types.length == 0) {
-                this.acceptedPrefixes = Arrays.asList(prefixes);
-                for (String prefix : prefixes) {
-                    this.acceptedPrefixes.add(prefix.trim());
-                }
-            } else {
-                for (String prefix : prefixes) {
-                    for (String type : types) {
-                        this.acceptedPrefixes.add(prefix.trim() + type.trim());
-                    }
-                }
-            }
-        }
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+
+    @PostConstruct
+    public void init() {
+        update();
     }
 
     @Override
@@ -137,23 +118,39 @@ public class NssFilter implements Filter {
     public void destroy() {
     }
 
-    private boolean isAllowed(String userId) {
+    public void update() {
+        List<String> authorizedPrefixes = new ArrayList<>();
+        for (String authorizedPrefix : nssAuthService.getAuthorizedPrefixes()) {
+            authorizedPrefixes.add(authorizedPrefix.toUpperCase());
+        }
+        logger.debug("Updating authorized prefixes from : {} to {}", this.authorizedPrefixes, authorizedPrefixes);
+        this.authorizedPrefixes = Collections.unmodifiableList(authorizedPrefixes);
+
+        Set<String> overrideIds = new HashSet<>();
+        for (String overrideId : nssAuthService.getOverrideUserIds()) {
+            overrideIds.add(overrideId.toUpperCase());
+        }
+        logger.debug("Updating override ids from : {} to {}", this.overrideIds, overrideIds);
+        this.overrideIds = Collections.unmodifiableSet(overrideIds);
+    }
+
+    public String getUnauthorizedResponse() {
+        return unauthorizedResponse;
+    }
+
+    boolean isAllowed(String userId) {
         if (this.overrideIds.contains(userId)) {
             return true;
         }
-        if (CollectionUtils.isEmpty(this.acceptedPrefixes)) {
+        if (CollectionUtils.isEmpty(this.authorizedPrefixes)) {
             return true;
         } else {
-            for (String acceptedPrefix : this.acceptedPrefixes) {
-                if (userId.startsWith(acceptedPrefix)) {
+            for (String authorizedPrefix : this.authorizedPrefixes) {
+                if (userId.startsWith(authorizedPrefix)) {
                     return true;
                 }
             }
             return false;
         }
-    }
-
-    public void setObjectMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
     }
 }

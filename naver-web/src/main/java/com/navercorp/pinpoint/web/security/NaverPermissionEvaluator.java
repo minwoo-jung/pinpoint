@@ -31,7 +31,8 @@ import com.navercorp.pinpoint.web.vo.Application;
  * @author minwoo-jung
  */
 public class NaverPermissionEvaluator extends AppConfigOrganizer implements PermissionEvaluator {
-    
+
+    public static final String ADMIN = "admin";
     public static final String INSPECTOR = "inspector";
     public static final String APPLICATION = "application";
     public static final String AGENT_PARAM = "agentParam";
@@ -50,9 +51,13 @@ public class NaverPermissionEvaluator extends AppConfigOrganizer implements Perm
     @Override
     public boolean hasPermission(Authentication authentication, Serializable target, String targetType, Object permission) {
         final PinpointAuthentication pinAuth = (PinpointAuthentication) authentication;
-        
+
         if (pinAuth.isPinpointManager()) {
             return true;
+        }
+
+        if (ADMIN.equals(permission)) {
+            return pinAuth.isPinpointManager();
         }
         if (INSPECTOR.equals(permission)) {
             return hasPermissionForAppAuth(target, targetType, (String)permission);

@@ -30,7 +30,7 @@ import com.navercorp.pinpoint.web.alarm.vo.Rule;
  * @author minwoo.jung <minwoo.jung@navercorp.com>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext-web.xml")
+@ContextConfiguration("classpath:applicationContext-web-naver.xml")
 @Transactional
 public class MysqlAlarmDaoTest {
 	

@@ -20,148 +20,151 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
+import com.navercorp.pinpoint.web.service.NssAuthService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author HyunGil Jeong
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext-test.xml")
+@RunWith(MockitoJUnitRunner.class)
 public class NssFilterTest {
-    /*
-    # NSS Configuration
-    nss.user.header.key=SSO_USER
-    nss.override.id=kr99999
-    # Allowed prefixes
-    nss.corportaion.prefix=KR,NB,NT,IT,CA,WM,LP,JP,LZ
-    nss.user.type=1,7
-     */
-    private static final String AUTHORIZED_USER_ID_UPPER = "KR10000";
-    private static final String AUTHORIZED_USER_ID_LOWER = "kr10000";
 
-    private static final String UNAUTHORIZED_USER_ID_CORP = "AA00000";
-    private static final String UNAUTHORIZED_USER_ID_TYPE = "kr50000";
+    private static final String USER_HEADER_KEY = "SSO_USER";
 
-    private static final String EMPTY_USER_ID = "";
-    private static final String OVERRIDDEN_USER_ID = "kr99999";
+    private final MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+    private final MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+    private final FilterChain mockFilterChain = spy(FilterChain.class);
 
-    @Value("#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}")
-    private String userHeaderKey;
+    private final NssAuthService nssAuthService = mock(NssAuthService.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
+    private NssFilter nssFilter = new NssFilter(USER_HEADER_KEY, nssAuthService, objectMapper);
 
-    @Mock
-    private FilterChain filterChain;
+    private void setupFilter() throws Exception {
+        doNothing().when(mockFilterChain).doFilter(mockRequest, mockResponse);
+        nssFilter.init();
+    }
 
-    @Autowired
-    private Filter nssFilter;
-
-    @Autowired
-    @Qualifier("jsonObjectMapper")
-    private ObjectMapper objectMapper;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        this.request = new MockHttpServletRequest();
-        this.response = new MockHttpServletResponse();
-        doNothing().when(this.filterChain).doFilter(this.request, this.response);
+    private void setupFilter(List<String> authorizedUserIdPrefixes, List<String> overriddenUserIds) throws Exception {
+        when(nssAuthService.getAuthorizedPrefixes()).thenReturn(authorizedUserIdPrefixes);
+        when(nssAuthService.getOverrideUserIds()).thenReturn(overriddenUserIds);
+        setupFilter();
     }
 
     @Test
-    public void authorized_user_should_pass_upper() throws Exception {
+    public void authorizedUserShouldPass() throws Exception {
         // Given
-        this.request.addHeader(this.userHeaderKey, AUTHORIZED_USER_ID_UPPER);
+        final List<String> authorizedUserPrefixes = Collections.singletonList("kr1");
+        final List<String> overriddenUserIds = Collections.emptyList();
+        setupFilter(authorizedUserPrefixes, overriddenUserIds);
+
+        final String authorizedUserId = "kr12345";
+        mockRequest.addHeader(USER_HEADER_KEY, authorizedUserId);
         // When
-        this.nssFilter.doFilter(this.request, this.response, this.filterChain);
+        nssFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
         // Then
         assertAuthorized();
     }
 
     @Test
-    public void authorized_user_should_pass_lower() throws Exception {
+    public void authorizedUserShouldPass_ignoreCase() throws Exception {
         // Given
-        this.request.addHeader(this.userHeaderKey, AUTHORIZED_USER_ID_LOWER);
+        final List<String> authorizedUserIdPrefixes = Collections.singletonList("kr1");
+        final List<String> overriddenUserIds = Collections.emptyList();
+        setupFilter(authorizedUserIdPrefixes, overriddenUserIds);
+
+        final String authorizedUserId = "KR12345";
+        mockRequest.addHeader(USER_HEADER_KEY, authorizedUserId);
         // When
-        this.nssFilter.doFilter(this.request, this.response, this.filterChain);
+        nssFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
         // Then
         assertAuthorized();
     }
 
     @Test
-    public void unauthorized_corporate_user_should_be_redirected() throws Exception {
+    public void unauthorizedCorporateUsersShouldBeRedirected() throws Exception {
         // Given
-        this.request.addHeader(this.userHeaderKey, UNAUTHORIZED_USER_ID_CORP);
+        final List<String> authorizedUserIdPrefixes = Collections.singletonList("kr1");
+        final List<String> overriddenUserIds = Collections.emptyList();
+        setupFilter(authorizedUserIdPrefixes, overriddenUserIds);
+
+        final String unauthorizedUserId = "nb12345";
+        mockRequest.addHeader(USER_HEADER_KEY, unauthorizedUserId);
         // When
-        this.nssFilter.doFilter(this.request, this.response, this.filterChain);
+        nssFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
         // Then
         assertUnauthorized();
     }
 
     @Test
-    public void unauthorized_user_type_should_be_redirected() throws Exception {
+    public void invalidUserTypeShouldBeRedirected() throws Exception {
         // Given
-        this.request.addHeader(this.userHeaderKey, UNAUTHORIZED_USER_ID_TYPE);
+        final List<String> authorizedUserIdPrefixes = Collections.singletonList("kr1");
+        final List<String> overriddenUserIds = Collections.emptyList();
+        setupFilter(authorizedUserIdPrefixes, overriddenUserIds);
+
+        final String unauthorizedUserId = "kr23456";
+        mockRequest.addHeader(USER_HEADER_KEY, unauthorizedUserId);
         // When
-        this.nssFilter.doFilter(this.request, this.response, this.filterChain);
+        nssFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
         // Then
         assertUnauthorized();
     }
 
     @Test
-    public void missing_header_should_pass() throws Exception {
+    public void missingHeaderShouldPass() throws Exception {
         // Given
+        setupFilter();
         // When
-        this.nssFilter.doFilter(this.request, this.response, this.filterChain);
+        this.nssFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
         // Then
         assertAuthorized();
     }
 
     @Test
-    public void empty_header_value_should_be_redirected() throws Exception {
+    public void unauthorizedButOverriddenUsersShouldPass() throws Exception {
         // Given
-        this.request.addHeader(this.userHeaderKey, EMPTY_USER_ID);
+        final String overriddenUserId = "someOverriddenUserId";
+        final List<String> authorizedUserIdPrefixes = Collections.emptyList();
+        final List<String> overriddenUserIds = Collections.singletonList(overriddenUserId);
+
+        setupFilter(authorizedUserIdPrefixes, overriddenUserIds);
+        mockRequest.addHeader(USER_HEADER_KEY, overriddenUserId);
         // When
-        this.nssFilter.doFilter(this.request, this.response, this.filterChain);
+        nssFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
         // Then
-        assertUnauthorized();
+        assertAuthorized();
     }
 
     @Test
-    public void unauthorized_but_override_users_should_pass() throws Exception {
+    public void shouldAuthorizeIfPrefixesAreNotDefined() throws Exception {
         // Given
-        this.request.addHeader(this.userHeaderKey, OVERRIDDEN_USER_ID);
-        // When
-        this.nssFilter.doFilter(this.request, this.response, this.filterChain);
+        final List<String> authorizedUserIdPrefixes = Collections.emptyList();
+        final List<String> overriddenUserIds = Collections.emptyList();
+        setupFilter(authorizedUserIdPrefixes, overriddenUserIds);
+
+        mockRequest.addHeader(USER_HEADER_KEY, "randomId");
+        // when
+        nssFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
         // Then
         assertAuthorized();
     }
 
     private void assertAuthorized() throws Exception {
-        verify(this.filterChain, times(1)).doFilter(this.request, this.response);
+        verify(mockFilterChain, times(1)).doFilter(mockRequest, mockResponse);
     }
 
     private void assertUnauthorized() throws Exception {
-        verifyZeroInteractions(this.filterChain);
-        Map<String, Object> response = this.objectMapper.readValue(this.response.getContentAsString(), Map.class);
-        assertEquals(NssFilter.UNAUTHORIZED_RESPONSE_ERROR_CODE_VALUE, response.get(NssFilter.UNAUTHORIZED_RESPONSE_ERROR_CODE_KEY));
-        assertEquals(NssFilter.UNAUTHORIZED_RESPONSE_REDIRECT_VALUE, response.get(NssFilter.UNAUTHORIZED_RESPONSE_REDIRECT_KEY));
+        verifyZeroInteractions(mockFilterChain);
+        assertEquals(nssFilter.getUnauthorizedResponse(), mockResponse.getContentAsString());
     }
     
 }

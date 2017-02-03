@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.web.dao.NssAuthDao">
+
+    <!-- authorized prefix -->
+
+    <select id="selectAuthorizedPrefix" resultType="java.lang.String">
+        SELECT prefix FROM nss_auth_prefix
+    </select>
+
+    <insert id="insertAuthorizedPrefix" parameterType="java.lang.String">
+        INSERT INTO nss_auth_prefix (prefix)
+        VALUES (#{authorizedPrefix})
+    </insert>
+
+    <delete id="deleteAuthorizedPrefix" parameterType="java.lang.String">
+        DELETE FROM nss_auth_prefix
+        WHERE prefix = #{authorizedPrefix}
+    </delete>
+
+    <!-- override user id -->
+
+    <select id="selectOverrideUserId" resultType="java.lang.String">
+        SELECT user_id FROM nss_auth_override_user
+    </select>
+
+    <insert id="insertOverrideUserId" parameterType="java.lang.String">
+        INSERT INTO nss_auth_override_user (user_id)
+        VALUES (#{userId})
+    </insert>
+
+    <delete id="deleteOverrideUserId" parameterType="java.lang.String">
+        DELETE FROM nss_auth_override_user
+        WHERE user_id = #{userId}
+    </delete>
+
+</mapper>
