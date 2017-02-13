@@ -54,9 +54,9 @@
 			var oResult = checkInclude( appName, appType );
 			if ( oResult.include ) return;
 			aFavoriteList.splice( oResult.index, 1 );
-			setFavoriteList( cb );
+			setFavoriteList( cb, function() {} );
 		};
-		function setFavoriteList( cb ) {
+		function setFavoriteList( cbSuccess, cbFail ) {
 			$http({
 				"url": cfg.URL,
 				"method": "PUT",
@@ -64,9 +64,9 @@
 					"favoriteApplications": aFavoriteList
 				}
 			}).then(function() {
-				cb();
+				cbSuccess();
 			}, function() {
-				cb();
+				cbFail();
 			});
 		}
 		this.getFavoriteList = function( cb, bForceReload ) {
@@ -105,6 +105,7 @@
 		};
 		try {
 			var aLocalList = JSON.parse(webStorage.get(cfg.FAVORITE_LIST_LOCAL_KEY) || "[]");
+
 			if ( aLocalList.length > 0 && typeof aLocalList[0] === "string" ) {
 				for (var i = 0; i < aLocalList.length; i++) {
 					var oValue = aLocalList[i].split("@");
@@ -114,7 +115,9 @@
 						"code": 0
 					});
 				}
-				setFavoriteList(function() {});
+				setFavoriteList(function() {
+					webStorage.remove(cfg.FAVORITE_LIST_LOCAL_KEY);
+				}, function() {});
 			}
 		}catch(e){
 			aFavoriteList = [];
