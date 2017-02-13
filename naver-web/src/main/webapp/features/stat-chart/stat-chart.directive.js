@@ -27,7 +27,7 @@
 					}
 
 					function renderUpdate(data) {
-						oChart.dataProvider = data;
+						oChart.dataProvider = data.data;
 						oChart.validateData();
 					}
 
@@ -48,7 +48,7 @@
 								"valueWidth": 70
 							},
 							"usePrefixes": true,
-							"dataProvider": chartData,
+							"dataProvider": chartData.data,
 							"valueAxes": [
 								{
 									"id": "v1",
@@ -58,40 +58,78 @@
 									"title": "Cpu Usage (%)",
 									"maximum" : 100,
 									"minimum" : 0
-								},
+								}
 							],
 							"graphs": [
 								{
 									"valueAxis": "v1",
-									"balloonText": "[[value]]%",
+									"balloonText": "[[title]] : [[value]]%",
 									"legendValueText": "[[value]]%",
-									"lineColor": "rgb(31, 119, 180)",
-									"fillColor": "rgb(31, 119, 180)",
-									"title": "JVM",
-									"valueField": "jvmCpuLoad",
-									"fillAlphas": 0.4,
-									"connect": false
-								},
-								{
-									"valueAxis": "v1",
-									"balloonText": "[[value]]%",
-									"legendValueText": "[[value]]%",
-									"lineColor": "rgb(174, 199, 232)",
-									"fillColor": "rgb(174, 199, 232)",
-									"title": "System",
-									"valueField": "systemCpuLoad",
-									"fillAlphas": 0.4,
-									"connect": false
-								},
-								{
-									"valueAxis": "v1",
-									"showBalloon": false,
-									"lineColor": "#FF6600",
-									"title": "Max",
-									"valueField": "maxCpuLoad",
+									"lineColor": "#4C0099",
+									"fillColor": "#4C0099",
+									"lineThickness": 1,
+									"title": chartData.title[0],
+									"valueField": chartData.field[0],
 									"fillAlphas": 0,
-									"visibleInLegend": false
-								}
+									"connect": false
+								},
+								{
+									"valueAxis": "v1",
+									"balloonText": "[[title]] : [[value]]%",
+									"legendValueText": "[[value]]%",
+									"lineColor": "#0000CC",
+									"fillColor": "#0000CC",
+									"lineThickness": 1,
+									"title": chartData.title[1],
+									"valueField": chartData.field[1],
+									"fillAlphas": 0,
+									"connect": false
+								},
+								{
+									"valueAxis": "v1",
+									"balloonText": "[[title]] : [[value]]%",
+									"legendValueText": "[[value]]%",
+									"lineColor": "#66B2FF",
+									"fillColor": "#66B2FF",
+									"lineThickness": 1,
+									"title": chartData.title[2],
+									"valueField": chartData.field[2],
+									"fillAlphas": 0,
+									"connect": false
+								}//,
+								// {
+								// 	"valueAxis": "v1",
+								// 	"balloonText": "[[title]] : [[value]]%",
+								// 	"legendValueText": "[[value]]%",
+								// 	"lineColor": "#0000FF",
+								// 	"fillColor": "#0000FF",
+								// 	"title": "System(avg)",
+								// 	"valueField": "sysAvg",
+								// 	"fillAlphas": 0,
+								// 	"connect": false
+								// },
+								// {
+								// 	"valueAxis": "v1",
+								// 	"balloonText": "[[title]] : [[value]]%",
+								// 	"legendValueText": "[[value]]%",
+								// 	"lineColor": "#4169E1",
+								// 	"fillColor": "#4169E1",
+								// 	"title": "System(min)",
+								// 	"valueField": "sysMin",
+								// 	"fillAlphas": 0,
+								// 	"connect": false
+								// },
+								// {
+								// 	"valueAxis": "v1",
+								// 	"balloonText": "[[title]] : [[value]]%",
+								// 	"legendValueText": "[[value]]%",
+								// 	"lineColor": "#87CEEB",
+								// 	"fillColor": "#87CEEB",
+								// 	"title": "System(Max)",
+								// 	"valueField": "sysMax",
+								// 	"fillAlphas": 0,
+								// 	"connect": false
+								// }
 							],
 							"categoryField": "time",
 							"categoryAxis": {
@@ -110,7 +148,7 @@
 							"cursorAlpha": 0.1
 						});
 						oChartCursor.addListener('changed', function (event) {
-							scope.$emit('cpuLoadChartDirective.cursorChanged.' + scope.namespace, event);
+							scope.$emit('statChartDirective.cursorChanged.' + scope.namespace, event);
 						});
 						oChart.addChartCursor( oChartCursor );
 					}
@@ -133,7 +171,7 @@
 						}
 					}
 
-					scope.$on("statChartDirective.initAndRenderWithData", function (event, data, w, h) {
+					scope.$on("statChartDirective.initAndRenderWithData." + scope.namespace, function (event, data, w, h) {
 						if ( hasId() ) {
 							renderUpdate( data );
 						} else {
