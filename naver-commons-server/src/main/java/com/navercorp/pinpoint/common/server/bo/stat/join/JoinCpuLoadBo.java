@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 NAVER Corp.
+ * Copyright 2017 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ public class JoinCpuLoadBo implements JoinStatBo {
     public JoinCpuLoadBo() {
     }
 
-    protected JoinCpuLoadBo(String id, double jvmCpuLoad, double maxJvmCpuLoad, double minJvmCpuLoad, double systemCpuLoad, double maxSystemCpuLoad, double minSystemCpuLoad, long timestamp) {
+    public JoinCpuLoadBo(String id, double jvmCpuLoad, double maxJvmCpuLoad, double minJvmCpuLoad, double systemCpuLoad, double maxSystemCpuLoad, double minSystemCpuLoad, long timestamp) {
         this.id = id;
         this.jvmCpuLoad = jvmCpuLoad;
         this.maxJvmCpuLoad = maxJvmCpuLoad;

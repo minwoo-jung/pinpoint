@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 NAVER Corp.
+ * Copyright 2017 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,8 @@ public class JoinApplicationStatBo implements JoinStatBo {
             return newJoinApplicationStatBo;
         }
 
-        Map<Long, List<JoinCpuLoadBo>> joinCpuLoadBoMap = new HashMap<>();
+        //TODO (minwoo) : 만약에 5분단위라면 5분이 끝나는 부분이 사라지거나 새로운 5분이 시작하는 부
+        Map<Long, List<JoinCpuLoadBo>> joinCpuLoadBoMap = new HashMap<Long, List<JoinCpuLoadBo>>();
         for (JoinApplicationStatBo joinApplicationStatBo : joinApplicaitonStatBoList) {
             for (JoinCpuLoadBo joinCpuLoadBo : joinApplicationStatBo.getJoinCpuLoadBoList()) {
                 long shiftTimestamp = shiftTimestamp(joinCpuLoadBo.getTimestamp());
@@ -63,14 +64,14 @@ public class JoinApplicationStatBo implements JoinStatBo {
                 if (joinCpuLoadBoList != null) {
                     joinCpuLoadBoList.add(joinCpuLoadBo);
                 } else {
-                    ArrayList<JoinCpuLoadBo> newJoinCpuLoadBoList = new ArrayList<>();
+                    ArrayList<JoinCpuLoadBo> newJoinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
                     newJoinCpuLoadBoList.add(joinCpuLoadBo);
                     joinCpuLoadBoMap.put(shiftTimestamp, newJoinCpuLoadBoList);
                 }
             }
         }
 
-        List<JoinCpuLoadBo> newJoinAgentStatBoList = new ArrayList<>();
+        List<JoinCpuLoadBo> newJoinAgentStatBoList = new ArrayList<JoinCpuLoadBo>();
         long minTimestamp = Long.MAX_VALUE;
         for (Map.Entry<Long, List<JoinCpuLoadBo>> entry : joinCpuLoadBoMap.entrySet()) {
             List<JoinCpuLoadBo> joinCpuLoadBoList = entry.getValue();
@@ -82,7 +83,7 @@ public class JoinApplicationStatBo implements JoinStatBo {
             }
         }
 
-        newJoinApplicationStatBo.setApplicationId(joinApplicaitonStatBoList.get(0).getApplicationId());
+        newJoinApplicationStatBo.setId(joinApplicaitonStatBoList.get(0).getId());
         newJoinApplicationStatBo.setTimestamp(minTimestamp);
         newJoinApplicationStatBo.setJoinCpuLoadBoList(newJoinAgentStatBoList);
 
@@ -121,16 +122,16 @@ public class JoinApplicationStatBo implements JoinStatBo {
             return newJoinApplicationStatBo;
         }
 
-        List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<>();
+        List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
         for (JoinApplicationStatBo joinApplicationStatBo : joinApplicaitonStatBoList) {
             joinCpuLoadBoList.addAll(joinApplicationStatBo.getJoinCpuLoadBoList());
         }
         Long timestamp = joinCpuLoadBoList.get(0).getTimestamp();
         JoinCpuLoadBo newJoinCpuLoadBo = JoinCpuLoadBo.joinCpuLoadBoList(joinCpuLoadBoList, timestamp);
-        List<JoinCpuLoadBo> newJoinCpuLoadBoList = new ArrayList<>();
+        List<JoinCpuLoadBo> newJoinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
         newJoinCpuLoadBoList.add(newJoinCpuLoadBo);
 
-        newJoinApplicationStatBo.setApplicationId(joinApplicaitonStatBoList.get(0).getApplicationId());
+        newJoinApplicationStatBo.setId(joinApplicaitonStatBoList.get(0).getId());
         newJoinApplicationStatBo.setTimestamp(timestamp);
         newJoinApplicationStatBo.setJoinCpuLoadBoList(newJoinCpuLoadBoList);
         newJoinApplicationStatBo.setStatType(StatType.APP_CPU_LOAD_AGGRE);
