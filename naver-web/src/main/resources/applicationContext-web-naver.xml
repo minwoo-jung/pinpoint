@@ -69,7 +69,7 @@
     </bean>
 
     <!-- ================================= flink =========================== -->
-    <!--
+
     <bean id="joincpuLoadCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadCodec"/>
     <bean id="joinCpuLoadDecoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadDecoder">
         <constructor-arg>
@@ -88,9 +88,9 @@
         <constructor-arg index="1" ref="applicationStatRowKeyDecoder"/>
         <constructor-arg index="2" ref="applicationStatRowKeyDistributor"/>
     </bean>
-    -->
+
     <!-- ================================= hbase 쪽 설정으로 이동 필요함. =========================== -->
-    <!--
+
     <bean id="applicationStatRowKeyDistributor" class="com.sematext.hbase.wd.RowKeyDistributorByHashPrefix">
         <constructor-arg ref="applicationStatRangeHasher"/>
     </bean>
@@ -100,5 +100,5 @@
         <constructor-arg type="int" value="33"/>
         <constructor-arg type="int" value="64"/>
     </bean>
-    -->
+
 </beans>
