@@ -37,6 +37,10 @@
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-thrift</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-naver-commons-server</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
@@ -72,7 +76,6 @@
             <artifactId>pinpoint-naver-plugins</artifactId>
             <type>pom</type>
         </dependency>
-
 
         <!-- for email platform dependencies -->
         <dependency>
@@ -118,8 +121,6 @@
             <artifactId>spring-messaging</artifactId>
             <version>4.1.9.RELEASE</version>
         </dependency>
-
-
     </dependencies>
 
     <build>

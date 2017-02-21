@@ -33,7 +33,7 @@ import org.springframework.stereotype.Repository;
  * @author minwoo.jung
  */
 public class ApplicationCache {
-    private final static Logger logger = LoggerFactory.getLogger(ApplicationCache.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private final static String SPEL_KEY = "#application.getAgentId() + '.' + #application.getAgentStartTime()";
     public final static String NOT_FOOUND_APP_ID = "notFoundId";
     private final static AgentInfoMapper agentInfoMapper = new AgentInfoMapper();

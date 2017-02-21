@@ -19,32 +19,37 @@ package com.navercorp.pinpoint.web.dao.hbase;
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseOperations2;
 import com.navercorp.pinpoint.common.server.bo.codec.stat.AgentStatDecoder;
-import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatHbaseOperationFactory;
+import com.navercorp.pinpoint.common.server.bo.codec.stat.ApplicationStatDecoder;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
+import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory;
 import com.navercorp.pinpoint.common.server.bo.stat.AgentStatDataPoint;
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatType;
+import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
+import com.navercorp.pinpoint.common.server.bo.stat.join.StatType;
 import com.navercorp.pinpoint.web.mapper.RangeTimestampFilter;
 import com.navercorp.pinpoint.web.mapper.TimestampFilter;
 import com.navercorp.pinpoint.web.mapper.stat.AgentStatMapperV2;
+import com.navercorp.pinpoint.web.mapper.stat.ApplicationStatMapper;
 import com.navercorp.pinpoint.web.mapper.stat.SampledAgentStatResultExtractor;
+import com.navercorp.pinpoint.web.mapper.stat.SampledApplicationStatResultExtractor;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.stat.SampledAgentStatDataPoint;
 import org.apache.hadoop.hbase.client.Scan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author HyunGil Jeong
+ * @author Minwoo Jung
  */
-@Component
+@Repository
 public class HbaseApplicationStatDaoOperationsV2 {
 
-    private static final int AGENT_STAT_VER2_NUM_PARTITIONS = 32;
+    private static final int APPLICATION_STAT_NUM_PARTITIONS = 32;
     private static final int MAX_SCAN_CACHE_SIZE = 256;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -53,9 +58,9 @@ public class HbaseApplicationStatDaoOperationsV2 {
     private HbaseOperations2 hbaseOperations2;
 
     @Autowired
-    private AgentStatHbaseOperationFactory operationFactory;
+    private ApplicationStatHbaseOperationFactory operationFactory;
 
-    <T extends AgentStatDataPoint> List<T> getAgentStatList(AgentStatType agentStatType, AgentStatMapperV2<T> mapper, String agentId, Range range) {
+    <T extends AgentStatDataPoint> List<T> getAgentStatList(StatType statType, AgentStatMapperV2<T> mapper, String agentId, Range range) {
         if (agentId == null) {
             throw new NullPointerException("agentId must not be null");
         }
@@ -63,9 +68,9 @@ public class HbaseApplicationStatDaoOperationsV2 {
             throw new NullPointerException("range must not be null");
         }
 
-        Scan scan = this.createScan(agentStatType, agentId, range);
+        Scan scan = this.createScan(statType, agentId, range);
 
-        List<List<T>> intermediate = hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), mapper, AGENT_STAT_VER2_NUM_PARTITIONS);
+        List<List<T>> intermediate = hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), mapper, APPLICATION_STAT_NUM_PARTITIONS);
         int expectedSize = (int) (range.getRange() / HBaseTables.AGENT_STAT_TIMESPAN_MS);
         List<T> merged = new ArrayList<>(expectedSize);
         for (List<T> each : intermediate) {
@@ -74,7 +79,7 @@ public class HbaseApplicationStatDaoOperationsV2 {
         return merged;
     }
 
-    <T extends AgentStatDataPoint> boolean agentStatExists(AgentStatType agentStatType, AgentStatMapperV2<T> mapper, String agentId, Range range) {
+    <T extends AgentStatDataPoint> boolean agentStatExists(StatType statType, AgentStatMapperV2<T> mapper, String agentId, Range range) {
         if (agentId == null) {
             throw new NullPointerException("agentId must not be null");
         }
@@ -87,9 +92,9 @@ public class HbaseApplicationStatDaoOperationsV2 {
         }
 
         int resultLimit = 20;
-        Scan scan = this.createScan(agentStatType, agentId, range, resultLimit);
+        Scan scan = this.createScan(statType, agentId, range, resultLimit);
 
-        List<List<T>> result = hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultLimit, mapper, AGENT_STAT_VER2_NUM_PARTITIONS);
+        List<List<T>> result = hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultLimit, mapper, APPLICATION_STAT_NUM_PARTITIONS);
         if (result.isEmpty()) {
             return false;
         } else {
@@ -97,9 +102,9 @@ public class HbaseApplicationStatDaoOperationsV2 {
         }
     }
 
-    <T extends AgentStatDataPoint, S extends SampledAgentStatDataPoint> List<S> getSampledAgentStatList(AgentStatType agentStatType, SampledAgentStatResultExtractor<T, S> resultExtractor, String agentId, Range range) {
-        if (agentId == null) {
-            throw new NullPointerException("agentId must not be null");
+    <T extends JoinStatBo, S extends SampledAgentStatDataPoint> List<S> getSampledStatList(StatType statType, SampledApplicationStatResultExtractor<T, S> resultExtractor, String applicationId, Range range) {
+        if (applicationId == null) {
+            throw new NullPointerException("applicationId must not be null");
         }
         if (range == null) {
             throw new NullPointerException("range must not be null");
@@ -107,33 +112,33 @@ public class HbaseApplicationStatDaoOperationsV2 {
         if (resultExtractor == null) {
             throw new NullPointerException("resultExtractor must not be null");
         }
-        Scan scan = this.createScan(agentStatType, agentId, range);
-        return hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultExtractor, AGENT_STAT_VER2_NUM_PARTITIONS);
+        Scan scan = this.createScan(statType, applicationId, range);
+        return hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultExtractor, APPLICATION_STAT_NUM_PARTITIONS);
     }
 
-    <T extends AgentStatDataPoint> AgentStatMapperV2<T> createRowMapper(AgentStatDecoder<T> decoder, Range range) {
+    <T extends JoinStatBo> ApplicationStatMapper<T> createRowMapper(ApplicationStatDecoder<T> decoder, Range range) {
         TimestampFilter filter = new RangeTimestampFilter(range);
-        return new AgentStatMapperV2<>(this.operationFactory, decoder, filter);
+        return new ApplicationStatMapper<>(this.operationFactory, decoder, filter);
     }
 
-    private Scan createScan(AgentStatType agentStatType, String agentId, Range range) {
+    private Scan createScan(StatType statType, String agentId, Range range) {
         long scanRange = range.getTo() - range.getFrom();
         long expectedNumRows = ((scanRange - 1) / HBaseTables.AGENT_STAT_TIMESPAN_MS) + 1;
         if (range.getFrom() != AgentStatUtils.getBaseTimestamp(range.getFrom())) {
             expectedNumRows++;
         }
         if (expectedNumRows > MAX_SCAN_CACHE_SIZE) {
-            return this.createScan(agentStatType, agentId, range, MAX_SCAN_CACHE_SIZE);
+            return this.createScan(statType, agentId, range, MAX_SCAN_CACHE_SIZE);
         } else {
             // expectedNumRows guaranteed to be within integer range at this point
-            return this.createScan(agentStatType, agentId, range, (int) expectedNumRows);
+            return this.createScan(statType, agentId, range, (int) expectedNumRows);
         }
     }
 
-    private Scan createScan(AgentStatType agentStatType, String agentId, Range range, int scanCacheSize) {
-        Scan scan = this.operationFactory.createScan(agentId, agentStatType, range.getFrom(), range.getTo());
+    private Scan createScan(StatType statType, String agentId, Range range, int scanCacheSize) {
+        Scan scan = this.operationFactory.createScan(agentId, statType, range.getFrom(), range.getTo());
         scan.setCaching(scanCacheSize);
-        scan.setId("AgentStat_" + agentStatType);
+        scan.setId("AgentStat_" + statType);
         scan.addFamily(HBaseTables.AGENT_STAT_CF_STATISTICS);
         return scan;
     }

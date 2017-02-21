@@ -15,31 +15,32 @@
  */
 package com.navercorp.pinpoint.web.dao.hbase;
 
-import com.navercorp.pinpoint.common.server.bo.codec.stat.CpuLoadDecoder;
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatType;
-import com.navercorp.pinpoint.common.server.bo.stat.CpuLoadBo;
+import com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadDecoder;
+import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
+import com.navercorp.pinpoint.common.server.bo.stat.join.StatType;
 import com.navercorp.pinpoint.web.dao.ApplicationCupLoadDao;
-import com.navercorp.pinpoint.web.dao.hbase.stat.v2.HbaseAgentStatDaoOperationsV2;
-import com.navercorp.pinpoint.web.mapper.stat.AgentStatMapperV2;
-import com.navercorp.pinpoint.web.mapper.stat.SampledAgentStatResultExtractor;
-import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.CpuLoadSampler;
+import com.navercorp.pinpoint.web.mapper.stat.ApplicationStatMapper;
+import com.navercorp.pinpoint.web.mapper.stat.SampledApplicationStatResultExtractor;
+import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.JoinCpuLoadSampler;
 import com.navercorp.pinpoint.web.util.TimeWindow;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.stat.SampledCpuLoad;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * @author minwoo.jung
  */
+@Repository
 public class ApplicationCpuLoadDaoImpl implements ApplicationCupLoadDao {
 
     @Autowired
     private CpuLoadDecoder cpuLoadDecoder;
 
     @Autowired
-    private CpuLoadSampler cpuLoadSampler;
+    private JoinCpuLoadSampler cpuLoadSampler;
 
     @Autowired
     private HbaseApplicationStatDaoOperationsV2 operations;
@@ -49,8 +50,8 @@ public class ApplicationCpuLoadDaoImpl implements ApplicationCupLoadDao {
         long scanFrom = timeWindow.getWindowRange().getFrom();
         long scanTo = timeWindow.getWindowRange().getTo() + timeWindow.getWindowSlotSize();
         Range range = new Range(scanFrom, scanTo);
-        AgentStatMapperV2<CpuLoadBo> mapper = operations.createRowMapper(cpuLoadDecoder, range);
-        SampledAgentStatResultExtractor<CpuLoadBo, SampledCpuLoad> resultExtractor = new SampledAgentStatResultExtractor<>(timeWindow, mapper, cpuLoadSampler);
-        return operations.getSampledAgentStatList(AgentStatType.CPU_LOAD, resultExtractor, applicationId, range);
+        ApplicationStatMapper<JoinCpuLoadBo> mapper = operations.createRowMapper(cpuLoadDecoder, range);
+        SampledApplicationStatResultExtractor<JoinCpuLoadBo, SampledCpuLoad> resultExtractor = new SampledApplicationStatResultExtractor<>(timeWindow, mapper, cpuLoadSampler);
+        return operations.getSampledStatList(StatType.APP_CPU_LOAD, resultExtractor, applicationId, range);
     }
 }

@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.flink.receiver;
 import com.codahale.metrics.MetricRegistry;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
+import com.navercorp.pinpoint.flink.Bootstrap;
 import com.navercorp.pinpoint.flink.StatStreamingVer2Job;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
@@ -35,8 +36,8 @@ public class TcpSourceFunction implements SourceFunction<TBase> {
 
     @Override
     public void run(SourceContext<TBase> ctx) throws Exception {
-        //TODO : (minwoo) Bootstrap 만들어서 아래 객체들을 가져도로고 개선
-        ApplicationContext appCtx = StatStreamingVer2Job.appCtx;
+        //TODO : (minwoo) Bootstrap 에서 application context 안가져오고 바로 가져올수 있도록 개선;
+        ApplicationContext appCtx = Bootstrap.getInstance().getApplicationContext();
         CollectorConfiguration configuration = appCtx.getBean("collectorConfiguration", CollectorConfiguration.class);
         DispatchHandler tcpDispatchHandlerWrapper = appCtx.getBean("tcpDispatchHandlerWrapper", DispatchHandler.class);
         PinpointServerAcceptor serverAcceptor = appCtx.getBean("serverAcceptor", PinpointServerAcceptor.class);

@@ -44,7 +44,7 @@ public class TBaseMapper implements MapFunction<TBase, Tuple3<String, JoinAgentS
     public Tuple3<String, JoinAgentStatBo, Long> map(TBase tBase) throws Exception {
         if (tBase instanceof TAgentStatBatch) {
             JoinAgentStatBo joinAgentStatBo = joinTAgentStatBatch((TAgentStatBatch) tBase);
-            return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimestamp());
+            return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp());
         }
 
         return null;

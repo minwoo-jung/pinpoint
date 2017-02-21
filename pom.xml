@@ -62,10 +62,12 @@
 
     <modules>
         <module>naver-agent</module>
+        <module>naver-commons-server</module>
         <module>naver-collector</module>
         <module>naver-web</module>
         <module>naver-it7</module>
         <module>naver-plugins</module>
+        <module>naver-flink</module>
         <module>testweb</module>
         <!--<module>spark</module>-->
     </modules>
@@ -87,6 +89,11 @@
                 <artifactId>pinpoint-naver-plugins</artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
+            </dependency>
+            <dependency>
+                <groupId>com.navercorp.pinpoint</groupId>
+                <artifactId>pinpoint-naver-commons-server</artifactId>
+                <version>${project.version}</version>
             </dependency>
             
             <dependency>

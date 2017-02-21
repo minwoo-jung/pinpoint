@@ -34,7 +34,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 public class Nelo2LogController {
 
-    private static Logger logger = LoggerFactory.getLogger(Nelo2LogController.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     
     private static final long SEARCH_INTERVAL = 1000*60*60*12;
     

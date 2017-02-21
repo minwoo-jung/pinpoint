@@ -44,6 +44,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.shaded.io.netty.bootstrap.*;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StatStreamingVer2Job implements Serializable {
-    private static Logger logger = LoggerFactory.getLogger(StatStreamingVer2Job.class);
-
-    public static ApplicationContext appCtx;
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static void main(String[] args) throws Exception {
         new StatStreamingVer2Job().start();
@@ -65,19 +64,21 @@ public class StatStreamingVer2Job implements Serializable {
 
     public void start() throws Exception {
         logger.info("start job");
-        String[] SPRING_CONFIG_XML = new String[]{"applicationContext-collector.xml", "applicationContext-cache.xml"};
-        appCtx = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
+        Bootstrap bootstrap = Bootstrap.getInstance();
 
+        //TODO : (minwoo) 이것도 bootstrap을 빼면 될듯.
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
         final ParameterTool params = ParameterTool.fromArgs(new String[0]);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.getConfig().setGlobalJobParameters(params);
 
-        final HbaseTemplate2 hbaseTemplate2 = appCtx.getBean("hbaseTemplate", HbaseTemplate2.class);
         //TODO : (minwoo) statisticsDao도 spring bean으로 빼자.
-        final StatisticsDao statisticsDao = new StatisticsDao(hbaseTemplate2);
-        final DataStream<TBase> rawData = env.addSource(new TcpSourceFunction());
-        final TbaseFlatMapper flatMapper = appCtx.getBean("tbaseFlatMapper", TbaseFlatMapper.class);
+        final StatisticsDao statisticsDao = bootstrap.getStatisticsDao();
+        final TcpSourceFunction tcpSourceFunction = bootstrap.getTcpFuncation();
+        final TbaseFlatMapper flatMapper = bootstrap.getTbaseFlatMapper();
+
+        // set data source
+        final DataStream<TBase> rawData = env.addSource(tcpSourceFunction);
 
         // 0. generation rawdata
         final SingleOutputStreamOperator<Tuple3<String, JoinStatBo, Long>> statOperator = rawData.flatMap(flatMapper);
@@ -101,9 +102,9 @@ public class StatStreamingVer2Job implements Serializable {
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
                     try {
                         JoinApplicationStatBo joinApplicationStatBo = join(values);
-                        out.collect(new Tuple3<>(joinApplicationStatBo.getApplicationId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
+                        out.collect(new Tuple3<>(joinApplicationStatBo.getId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("window function error", e);
                     }
                 }
 
@@ -139,7 +140,7 @@ public class StatStreamingVer2Job implements Serializable {
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
                     try {
                         JoinApplicationStatBo joinApplicationStatBo = join(values);
-                        out.collect(new Tuple3<>(joinApplicationStatBo.getApplicationId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
+                        out.collect(new Tuple3<>(joinApplicationStatBo.getId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
                     } catch (Exception e) {
                         e.printStackTrace(); // TODO : (minwoo) 로깅 추가 필요함.
                     }
@@ -177,7 +178,7 @@ public class StatStreamingVer2Job implements Serializable {
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
                     try {
                         JoinAgentStatBo joinAgentStatBo = join(values);
-                        out.collect(new Tuple3<>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
+                        out.collect(new Tuple3<>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
                     } catch (Exception e) {
                         e.printStackTrace();// TODO : (minwoo) 로깅 추가 필요함.
                     }

@@ -15,11 +15,15 @@
  */
 package com.navercorp.pinpoint.web.controller;
 
+import com.navercorp.pinpoint.plugin.spring.beans.interceptor.Cache;
 import com.navercorp.pinpoint.web.service.ApplicationStatChartService;
 import com.navercorp.pinpoint.web.util.TimeWindow;
 import com.navercorp.pinpoint.web.util.TimeWindowSlotCentricSampler;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.stat.chart.AgentStatChartGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,9 +34,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author minwoo.jung
  */
 @Controller
-@RequestMapping("/getAgentStat/cpuLoad/char")
+@RequestMapping("/getApplicationStat/cpuLoad/chart")
 public class ApplicationStatController {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
     private ApplicationStatChartService applicationStatChartService;
 
     @RequestMapping(method = RequestMethod.GET)
@@ -40,7 +47,12 @@ public class ApplicationStatController {
     public AgentStatChartGroup getAgentStatChart(@RequestParam("applicationId") String applicationId, @RequestParam("from") long from, @RequestParam("to") long to) {
         TimeWindowSlotCentricSampler sampler = new TimeWindowSlotCentricSampler();
         TimeWindow timeWindow = new TimeWindow(new Range(from, to), sampler);
-        return this.applicationStatChartService.selectApplicationChart(applicationId, timeWindow);
+        try {
+            return this.applicationStatChartService.selectApplicationChart(applicationId, timeWindow);
+        } catch (Exception e ) {
+            logger.error("error" , e);
+            throw e;
+        }
     }
 }
 

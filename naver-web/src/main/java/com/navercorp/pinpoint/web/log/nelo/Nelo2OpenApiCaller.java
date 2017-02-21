@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Nelo2OpenApiCaller {
 
-	private static Logger logger = LoggerFactory.getLogger(Nelo2OpenApiCaller.class);
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	//NELO2 open API server domain 
 	private static final String NELO_OPEN_API_DOMAIN = "http://api.nelo2.navercorp.com";

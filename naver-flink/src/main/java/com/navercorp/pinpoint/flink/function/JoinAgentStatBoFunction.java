@@ -33,7 +33,7 @@ public class JoinAgentStatBoFunction implements WindowFunction<Tuple3<String, Jo
     @Override
     public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
         JoinAgentStatBo joinAgentStatBo = join(values);
-        out.collect(new Tuple3<>(joinAgentStatBo.getAgentId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
+        out.collect(new Tuple3<>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
     }
 
     private JoinAgentStatBo join(Iterable<Tuple3<String, JoinStatBo, Long>> values) {
