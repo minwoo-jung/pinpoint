@@ -14,7 +14,12 @@
  */
 package com.navercorp.pinpoint.plugin.jdbc.nbaset;
 
-import com.navercorp.pinpoint.bootstrap.instrument.*;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
+import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
+import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
@@ -24,6 +29,7 @@ import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.PreparedStatementBindingMethodFilter;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 
 import java.lang.reflect.Modifier;
 import java.security.ProtectionDomain;
@@ -36,6 +42,9 @@ import static com.navercorp.pinpoint.common.util.VarArgs.va;
 public class NbasetPlugin implements ProfilerPlugin, TransformTemplateAware {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+
+    private final JdbcUrlParserV2 jdbcUrlParser = new NbasetJdbcUrlParser();
+
     private TransformTemplate transformTemplate;
 
     @Override
@@ -45,6 +54,8 @@ public class NbasetPlugin implements ProfilerPlugin, TransformTemplateAware {
             logger.info("Disable nbase-t jdbc option. 'profiler.jdbc.nbaset=false'");
             return;
         }
+
+        context.addJdbcUrlParser(jdbcUrlParser);
 
         addConnectionTransformer(config);
         addDriverTransformer();
@@ -112,7 +123,7 @@ public class NbasetPlugin implements ProfilerPlugin, TransformTemplateAware {
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
 
-                target.addScopedInterceptor("com.navercorp.pinpoint.bootstrap.plugin.jdbc.interceptor.DriverConnectInterceptor", va(new NbasetJdbcUrlParser()), NbasetConstants.NBASET_SCOPE, ExecutionPolicy.ALWAYS);
+                target.addScopedInterceptor("com.navercorp.pinpoint.bootstrap.plugin.jdbc.interceptor.DriverConnectInterceptorV2", va(NbasetConstants.NBASET), NbasetConstants.NBASET_SCOPE, ExecutionPolicy.ALWAYS);
 
                 return target.toBytecode();
             }

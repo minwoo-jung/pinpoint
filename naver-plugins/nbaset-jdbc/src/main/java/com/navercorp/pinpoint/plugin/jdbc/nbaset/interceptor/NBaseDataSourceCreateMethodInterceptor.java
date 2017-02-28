@@ -23,10 +23,9 @@ import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
-import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParser;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.UnKnownDatabaseInfo;
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
-import com.navercorp.pinpoint.plugin.jdbc.nbaset.NbasetJdbcUrlParser;
+import com.navercorp.pinpoint.plugin.jdbc.nbaset.NbasetConstants;
 
 
 /**
@@ -67,8 +66,7 @@ public class NBaseDataSourceCreateMethodInterceptor implements AroundInterceptor
             return UnKnownDatabaseInfo.INSTANCE;
         }
 
-        JdbcUrlParser jdbcUrlParser = new NbasetJdbcUrlParser();
-        final DatabaseInfo databaseInfo = jdbcUrlParser.parse(url);
+        final DatabaseInfo databaseInfo = traceContext.getJdbcContext().parseJdbcUrl(NbasetConstants.NBASET, url);
         if (isDebug) {
             logger.debug("parse DatabaseInfo:{}", databaseInfo);
         }

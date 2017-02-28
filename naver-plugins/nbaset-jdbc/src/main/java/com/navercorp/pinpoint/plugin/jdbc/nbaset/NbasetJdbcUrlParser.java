@@ -20,9 +20,10 @@ import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DefaultDatabaseInfo;
-import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParser;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.StringMaker;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.UnKnownDatabaseInfo;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,27 +31,39 @@ import java.util.List;
 /**
  * @author jaehong.kim
  */
-public class NbasetJdbcUrlParser extends JdbcUrlParser {
+public class NbasetJdbcUrlParser implements JdbcUrlParserV2 {
+
+    private static final String URL_PREFIX = "jdbc:nbase//";
+
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
 
     @Override
-    public DatabaseInfo doParse(String url) {
-        if (url == null) {
-            logger.info("Not found nbase-t url={}", url);
-            return UnKnownDatabaseInfo.createUnknownDataBase(NbasetConstants.NBASET, NbasetConstants.NBASET_EXECUTE_QUERY, null);
+    public DatabaseInfo parse(String jdbcUrl) {
+        if (jdbcUrl == null) {
+            logger.warn("jdbcUrl may not be null");
+            return UnKnownDatabaseInfo.INSTANCE;
+        }
+        if (!jdbcUrl.startsWith(URL_PREFIX)) {
+            logger.warn("jdbcUrl has invalid prefix.(url:{}, prefix:{})", jdbcUrl, URL_PREFIX);
+            return UnKnownDatabaseInfo.INSTANCE;
         }
 
-        final StringMaker maker = new StringMaker(url);
-        final String value = maker.after("jdbc:nbase//").value();
-        if(value == null) {
-            logger.info("Invalid nbase-t url={}", url);
-            return UnKnownDatabaseInfo.createUnknownDataBase(NbasetConstants.NBASET, NbasetConstants.NBASET_EXECUTE_QUERY, null);
+        DatabaseInfo result = null;
+        try {
+            result = parse0(jdbcUrl);
+        } catch (Exception e) {
+            logger.warn("NbasetJdbcUrl parse error. url: " + jdbcUrl + " Caused: " + e.getMessage(), e);
+            result = UnKnownDatabaseInfo.createUnknownDataBase(NbasetConstants.NBASET, NbasetConstants.NBASET_EXECUTE_QUERY, jdbcUrl);
         }
+        return result;
+    }
 
+    private DatabaseInfo parse0(String jdbcUrl) {
+        final StringMaker maker = new StringMaker(jdbcUrl);
+        final String value = maker.after(URL_PREFIX).value();
         final String[] tokens = value.split("/");
         if(tokens == null || tokens.length < 3 || tokens[0].isEmpty() || tokens[1].isEmpty()) {
-            logger.info("Invalid nbase-t url={}", url);
-            return UnKnownDatabaseInfo.createUnknownDataBase(NbasetConstants.NBASET, NbasetConstants.NBASET_EXECUTE_QUERY, null);
+            throw new IllegalArgumentException();
         }
 
         final List<String> hostList = new ArrayList<String>(1);
@@ -58,6 +71,12 @@ public class NbasetJdbcUrlParser extends JdbcUrlParser {
         final String databaseId = tokens[1];
         final String normalizedUrl = maker.clear().before('?').value();
 
-        return new DefaultDatabaseInfo(NbasetConstants.NBASET, NbasetConstants.NBASET_EXECUTE_QUERY, url, normalizedUrl, hostList, databaseId);
+        return new DefaultDatabaseInfo(NbasetConstants.NBASET, NbasetConstants.NBASET_EXECUTE_QUERY, jdbcUrl, normalizedUrl, hostList, databaseId);
     }
+
+    @Override
+    public ServiceType getServiceType() {
+        return NbasetConstants.NBASET;
+    }
+
 }
