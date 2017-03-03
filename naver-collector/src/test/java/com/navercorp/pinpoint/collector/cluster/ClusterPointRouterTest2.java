@@ -9,6 +9,7 @@ import com.navercorp.pinpoint.rpc.Future;
 import com.navercorp.pinpoint.rpc.MessageListener;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.ResponseMessage;
+import com.navercorp.pinpoint.rpc.client.DefaultPinpointClientFactory;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
@@ -195,7 +196,7 @@ public class ClusterPointRouterTest2 {
     }
 
     private PinpointClientFactory createSocketFactory() {
-        PinpointClientFactory factory = new PinpointClientFactory();
+        PinpointClientFactory factory = new DefaultPinpointClientFactory();
         factory.setProperties(getParams());
         factory.setMessageListener(new EchoMessageListener());
         

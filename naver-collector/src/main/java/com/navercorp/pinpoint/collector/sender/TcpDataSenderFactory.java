@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.collector.sender;
 import com.navercorp.pinpoint.profiler.receiver.CommandDispatcher;
 import com.navercorp.pinpoint.profiler.receiver.ProfilerCommandLocatorBuilder;
 import com.navercorp.pinpoint.profiler.sender.TcpDataSender;
+import com.navercorp.pinpoint.rpc.client.DefaultPinpointClientFactory;
 import com.navercorp.pinpoint.rpc.client.PinpointClient;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.rpc.util.ClientFactoryUtils;
@@ -61,7 +62,7 @@ public class TcpDataSenderFactory implements FactoryBean {
     }
 
     private PinpointClientFactory createPinpointClientFactory(CommandDispatcher commandDispatcher) {
-        PinpointClientFactory pinpointClientFactory = new PinpointClientFactory();
+        PinpointClientFactory pinpointClientFactory = new DefaultPinpointClientFactory();
         pinpointClientFactory.setTimeoutMillis(1000 * 5);
 
 //        Map<String, Object> properties = this.agentInformation.toMap();

@@ -4,6 +4,7 @@ import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.rpc.PinpointSocketException;
 import com.navercorp.pinpoint.rpc.MessageListener;
+import com.navercorp.pinpoint.rpc.client.DefaultPinpointClientFactory;
 import com.navercorp.pinpoint.rpc.client.PinpointClient;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
@@ -211,7 +212,7 @@ public class ZookeeperProfilerClusterStressTest {
         public TestSocket() {
             this.properties = ZookeeperTestUtils.getParams(Thread.currentThread().getName(), "agent", System.currentTimeMillis());
 
-            this.factory = new PinpointClientFactory();
+            this.factory = new DefaultPinpointClientFactory();
             this.factory.setProperties(properties);
             this.factory.setMessageListener(messageListener);
         }
