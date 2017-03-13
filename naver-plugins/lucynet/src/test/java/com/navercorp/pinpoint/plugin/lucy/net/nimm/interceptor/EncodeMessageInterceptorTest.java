@@ -23,7 +23,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvoca
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetHeader;
-import com.navercorp.pinpoint.profiler.context.DefaultTraceId;
+import com.navercorp.pinpoint.profiler.context.id.DefaultTraceId;
 import com.nhncorp.lucy.net.call.DefaultCall;
 import com.nhncorp.lucy.npc.UserOptionIndex;
 import org.junit.Assert;
