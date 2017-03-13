@@ -47,7 +47,7 @@
         <property name="username" value="${mysql.user}"/>
         <property name="password" value="${mysql.password}"/>
 
-        <property name="validationQuery" value="select 1 from db_root"/>
+        <property name="validationQuery" value="select 1"/>
     </bean>
 
     <bean id="oracleDataSource" parent="commonDataSource">
