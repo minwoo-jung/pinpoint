@@ -36,6 +36,7 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
@@ -67,7 +68,9 @@ public class StatStreamingVer2Job implements Serializable {
         Bootstrap bootstrap = Bootstrap.getInstance();
 
         //TODO : (minwoo) 이것도 bootstrap을 빼면 될듯.
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
+        // local
+//        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         final ParameterTool params = ParameterTool.fromArgs(new String[0]);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.getConfig().setGlobalJobParameters(params);
@@ -78,7 +81,9 @@ public class StatStreamingVer2Job implements Serializable {
         final TbaseFlatMapper flatMapper = bootstrap.getTbaseFlatMapper();
 
         // set data source
-        final DataStream<TBase> rawData = env.addSource(tcpSourceFunction);
+//        final DataStream<TBase> rawData = env.addSource(tcpSourceFunction);
+        DataStreamSource<TBase> rawData = env.addSource(tcpSourceFunction);
+        rawData.setParallelism(3);
 
         // 0. generation rawdata
         final SingleOutputStreamOperator<Tuple3<String, JoinStatBo, Long>> statOperator = rawData.flatMap(flatMapper);
@@ -88,6 +93,7 @@ public class StatStreamingVer2Job implements Serializable {
             @Override
             public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
                 if (value.f1 instanceof JoinApplicationStatBo) {
+                    logger.info("1-1 FilterFunction : " + value.f1.toString());
                     return true;
                 }
 
@@ -102,6 +108,7 @@ public class StatStreamingVer2Job implements Serializable {
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
                     try {
                         JoinApplicationStatBo joinApplicationStatBo = join(values);
+                        logger.info("1-1 application stat aggre window function : " + joinApplicationStatBo);
                         out.collect(new Tuple3<>(joinApplicationStatBo.getId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
                     } catch (Exception e) {
                         logger.error("window function error", e);
@@ -126,6 +133,7 @@ public class StatStreamingVer2Job implements Serializable {
             @Override
             public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
                 if (value.f1 instanceof JoinApplicationStatBo) {
+                    logger.info("1-2 application stat aggre window function : " + value.f1);
                     return true;
                 }
 
@@ -140,6 +148,7 @@ public class StatStreamingVer2Job implements Serializable {
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
                     try {
                         JoinApplicationStatBo joinApplicationStatBo = join(values);
+                        logger.info("1-2 application stat aggre window function : " + joinApplicationStatBo);
                         out.collect(new Tuple3<>(joinApplicationStatBo.getId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
                     } catch (Exception e) {
                         e.printStackTrace(); // TODO : (minwoo) 로깅 추가 필요함.
@@ -162,6 +171,7 @@ public class StatStreamingVer2Job implements Serializable {
                 @Override
                 public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
                     if (value.f1 instanceof JoinAgentStatBo) {
+                        logger.info("2 application stat aggre window function : " + value.f1);
                         return true;
                     }
 
@@ -178,6 +188,7 @@ public class StatStreamingVer2Job implements Serializable {
                 public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
                     try {
                         JoinAgentStatBo joinAgentStatBo = join(values);
+                        logger.info("2 agent stat aggre window function : " + joinAgentStatBo);
                         out.collect(new Tuple3<>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
                     } catch (Exception e) {
                         e.printStackTrace();// TODO : (minwoo) 로깅 추가 필요함.
@@ -195,6 +206,6 @@ public class StatStreamingVer2Job implements Serializable {
             })
             .writeUsingOutputFormat(statisticsDao);
 
-        env.execute("Aggregation Stat Data");
+        env.execute("Aggregation Stat Data 2");
     }
 }

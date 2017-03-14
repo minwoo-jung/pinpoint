@@ -53,6 +53,7 @@ public class TbaseFlatMapper implements FlatMapFunction<TBase, Tuple3<String, Jo
     @Override
     public void flatMap(TBase tBase, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
         if (tBase instanceof TAgentStatBatch) {
+            logger.info("raw data : " + tBase);
             final TAgentStatBatch tAgentStatBatch = (TAgentStatBatch) tBase;
             final AgentStatBo agentStatBo = agentStatBatchMapper.map(tAgentStatBatch);
 
@@ -67,6 +68,7 @@ public class TbaseFlatMapper implements FlatMapFunction<TBase, Tuple3<String, Jo
 
             final ApplicationCache.ApplicationKey applicationKey = new ApplicationCache.ApplicationKey(joinAgentStatBo.getId(), joinAgentStatBo.getAgentStartTimestamp());
             final String applicationId = applicationCache.findApplicationId(applicationKey);
+
             if (applicationId.equals(ApplicationCache.NOT_FOOUND_APP_ID)) {
                 logger.warn("can't found application id");
                 return;
