@@ -69,6 +69,7 @@
         <module>naver-plugins</module>
         <module>naver-flink</module>
         <module>testweb</module>
+        <module>naver-web-oss</module>
         <!--<module>spark</module>-->
     </modules>
 
