@@ -51,8 +51,8 @@ public class FlinkClusterConnectionManager implements ClusterConnectionManager {
 
     @Override
     public void stop() {
-        for (TcpDataSender tcpDataSender : tcpDataSenderRepository.getClusterSocketList()) {
-            tcpDataSender.stop();
+        for (SenderContext senderContext : tcpDataSenderRepository.getClusterSocketList()) {
+            senderContext.close();
         }
         logger.info("{} stop completed.", this.getClass().getSimpleName());
     }
@@ -66,7 +66,18 @@ public class FlinkClusterConnectionManager implements ClusterConnectionManager {
             return;
         }
 
-        tcpDataSenderRepository.putIfAbsent(address, createTcpDataSender(address));
+        SenderContext senderContext = createTcpDataSender(address);
+
+        if (senderContext == null) {
+            return;
+        }
+
+        SenderContext context = tcpDataSenderRepository.putIfAbsent(address, senderContext);
+
+        if (context != null) {
+            logger.info("TcpDataSender have already been for {}.", address);
+            senderContext.close();
+        }
 
         logger.info("localhost -> {} connect completed.", address);
     }
@@ -75,9 +86,9 @@ public class FlinkClusterConnectionManager implements ClusterConnectionManager {
     public void disconnectPoint(SocketAddress address) {
         logger.info("localhost -> {} disconnect started.", address);
 
-        TcpDataSender tcpDataSender = tcpDataSenderRepository.remove(address);
-        if (tcpDataSender != null) {
-            tcpDataSender.stop();
+        SenderContext context = tcpDataSenderRepository.remove(address);
+        if (context != null) {
+            context.close();
             logger.info("localhost -> {} disconnect completed.", address);
         } else {
             logger.info("localhost -> {} already disconnected.", address);
@@ -89,10 +100,20 @@ public class FlinkClusterConnectionManager implements ClusterConnectionManager {
         return tcpDataSenderRepository.getAddressList();
     }
 
-    private TcpDataSender createTcpDataSender(InetSocketAddress address) {
-        ProfilerCommandLocatorBuilder builder = new ProfilerCommandLocatorBuilder();
-        CommandDispatcher commandDispatcher = new CommandDispatcher(builder.build());
-        PinpointClient client = ClientFactoryUtils.createPinpointClient(address, pinpointClientFactory);
-        return new TcpDataSender(client);
+    private SenderContext createTcpDataSender(InetSocketAddress address) {
+        PinpointClient client = null;
+        try {
+            client = ClientFactoryUtils.createPinpointClient(address, pinpointClientFactory);
+            TcpDataSender tcpDataSender = new TcpDataSender(client);
+            return new SenderContext(tcpDataSender, client);
+        } catch (Exception e) {
+            logger.error("not create tcpDataSender for {}.", address, e);
+
+            if (client != null) {
+                client.close();
+            }
+        }
+
+        return null;
     }
 }

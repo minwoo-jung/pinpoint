@@ -60,9 +60,10 @@ public class SendAgentStatService implements AgentStatService {
 
         if (tcpDataSender == null) {
             logger.warn("not send flink server. Because TcpDataSender is null");
+            return;
         }
         if (tbase instanceof TAgentStatBatch) {
-//            logger.info("send to flinkserver : " + tbase);
+            logger.info("send to flinkserver : " + tbase);
             tcpDataSender.send(tbase);
         } else {
             throw new IllegalArgumentException("unexpected tbase:" + tbase + " expected:" + TAgentStat.class.getName() + " or " + TAgentStatBatch.class.getName());

@@ -20,6 +20,7 @@ import com.navercorp.pinpoint.profiler.sender.TcpDataSender;
 
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,30 +29,34 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author minwoo.jung
  */
 public class TcpDataSenderRepository {
-    private final ConcurrentHashMap<SocketAddress, TcpDataSender> clusterConnectionRepository = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<SocketAddress, SenderContext> clusterConnectionRepository = new ConcurrentHashMap<>();
     private final SendAgentStatService sendAgentStatService;
 
     TcpDataSenderRepository(SendAgentStatService sendAgentStatService) {
         this.sendAgentStatService = sendAgentStatService;
     }
 
-    public TcpDataSender putIfAbsent(SocketAddress address, TcpDataSender tcpDataSender) {
-        TcpDataSender result =  clusterConnectionRepository.putIfAbsent(address, tcpDataSender);
+    public SenderContext putIfAbsent(SocketAddress address, SenderContext senderContext) {
+        SenderContext context =  clusterConnectionRepository.putIfAbsent(address, senderContext);
         replaceDataInsendAgentStatService();
-        return result;
+        return context;
     }
 
-    public TcpDataSender remove(SocketAddress address) {
-        TcpDataSender tcpDataSender = clusterConnectionRepository.remove(address);
-        if (tcpDataSender != null) {
-            tcpDataSender.stop();
-        }
+    public SenderContext remove(SocketAddress address) {
+        SenderContext senderContext = clusterConnectionRepository.remove(address);
         replaceDataInsendAgentStatService();
-        return tcpDataSender;
+        return senderContext;
     }
 
     private void replaceDataInsendAgentStatService() {
-        sendAgentStatService.replaceFlinkServerList(getClusterSocketList());
+        Collection<SenderContext> values = clusterConnectionRepository.values();
+        List tcpDataSenderList = new ArrayList<>(values.size());
+
+        for (SenderContext senderContext : values) {
+            tcpDataSenderList.add(senderContext.getTcpDataSender());
+        }
+
+        sendAgentStatService.replaceFlinkServerList(tcpDataSenderList);
     }
 
     public boolean containsKey(SocketAddress address) {
@@ -64,7 +69,7 @@ public class TcpDataSenderRepository {
         return new ArrayList<>(socketAddresses);
     }
 
-    public List<TcpDataSender> getClusterSocketList() {
+    public List<SenderContext> getClusterSocketList() {
         return new ArrayList<>(clusterConnectionRepository.values());
     }
 }
