@@ -31,6 +31,18 @@ public class NaverCollectorConfiguration extends CollectorConfiguration {
     private String flinkClusterZookeeperAddress;
     private int flinkClusterSessionTimeout;
 
+    public void setFlinkClusterEnable(boolean flinkClusterEnable) {
+        this.flinkClusterEnable = flinkClusterEnable;
+    }
+
+    public void setFlinkClusterZookeeperAddress(String flinkClusterZookeeperAddress) {
+        this.flinkClusterZookeeperAddress = flinkClusterZookeeperAddress;
+    }
+
+    public void setFlinkClusterSessionTimeout(int flinkClusterSessionTimeout) {
+        this.flinkClusterSessionTimeout = flinkClusterSessionTimeout;
+    }
+
     public boolean isFlinkClusterEnable() {
         return flinkClusterEnable;
     }
@@ -44,7 +56,7 @@ public class NaverCollectorConfiguration extends CollectorConfiguration {
     }
 
     @Override
-    protected  void readPropertyValues(Properties properties) {
+    public void readPropertyValues(Properties properties) {
         logger.info("pinpoint-collector.properties read.");
         this.flinkClusterEnable = readBoolean(properties, "flink.cluster.enable");
         this.flinkClusterZookeeperAddress = readString(properties, "flink.cluster.zookeeper.address", "");
