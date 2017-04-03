@@ -159,7 +159,7 @@ public class NssFilterTest {
     }
 
     private void assertAuthorized() throws Exception {
-        verify(mockFilterChain, times(1)).doFilter(mockRequest, mockResponse);
+        verify(mockFilterChain, only()).doFilter(mockRequest, mockResponse);
     }
 
     private void assertUnauthorized() throws Exception {
