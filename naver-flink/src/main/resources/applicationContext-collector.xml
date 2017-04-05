@@ -53,7 +53,6 @@
     </bean>
 
     <bean id="tbaseFlatMapper" class="com.navercorp.pinpoint.flink.process.TbaseFlatMapper">
-        <property name="agentStatBatchMapper" ref="agentStatBatchMapper"/>
         <property name="applicationCache" ref="applicationCache"/>
     </bean>
 

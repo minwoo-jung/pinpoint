@@ -213,27 +213,6 @@ public class JoinCpuLoadBo implements JoinStatBo {
         return minSystemCpuLoad;
     }
 
-    public static JoinCpuLoadBo convertJoinCpuLoadBo(CpuLoadBo cpuLoadBo) {
-        JoinCpuLoadBo joinCpuLoadBo = new JoinCpuLoadBo();
-        joinCpuLoadBo.setId(cpuLoadBo.getAgentId());
-        joinCpuLoadBo.setTimestamp(cpuLoadBo.getTimestamp());
-        joinCpuLoadBo.setJvmCpuLoad(cpuLoadBo.getJvmCpuLoad());
-        joinCpuLoadBo.setMinJvmCpuLoad(cpuLoadBo.getJvmCpuLoad());
-        joinCpuLoadBo.setMaxJvmCpuLoad(cpuLoadBo.getJvmCpuLoad());
-        joinCpuLoadBo.setSystemCpuLoad(cpuLoadBo.getSystemCpuLoad());
-        joinCpuLoadBo.setMinSystemCpuLoad(cpuLoadBo.getSystemCpuLoad());
-        joinCpuLoadBo.setMaxSystemCpuLoad(cpuLoadBo.getSystemCpuLoad());
-        return joinCpuLoadBo;
-    }
-
-    public static List<JoinCpuLoadBo> convertJoinCpuLoadBoList(List<CpuLoadBo> cpuLoadBos) {
-        List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
-        for (CpuLoadBo cpuLoadBo : cpuLoadBos) {
-            joinCpuLoadBoList.add(convertJoinCpuLoadBo(cpuLoadBo));
-        }
-        return joinCpuLoadBoList;
-    }
-
     public byte getVersion() {
         return version;
     }

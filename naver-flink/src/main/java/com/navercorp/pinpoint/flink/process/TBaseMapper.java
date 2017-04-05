@@ -15,7 +15,7 @@
  */
 package com.navercorp.pinpoint.flink.process;
 
-import com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper;
+//import com.navercorp.pinpoint.collector.mapper.thrift.stat.AgentStatBatchMapper;
 import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinAgentStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
@@ -29,37 +29,37 @@ import org.apache.thrift.TBase;
  */
 //TODO : (minwoo) 추후 사용하는데 없으면 삭제 필요
 public class TBaseMapper implements MapFunction<TBase, Tuple3<String, JoinAgentStatBo, Long>> {
-    private AgentStatBatchMapper agentStatBatchMapper;
+//    private AgentStatBatchMapper agentStatBatchMapper;
 
-    public TBaseMapper(AgentStatBatchMapper agentStatBatchMapper) {
-        //TODO : (minwoo) AgentStatBatchMapper 를 한번만 생성해서 문제는 없으나. 더 깔끔하게 개발할 필요는 있음, serialize 로 그냥 만들어버리면 동기화 필요없음.
-        synchronized (TBaseMapper.class) {
-            if (this.agentStatBatchMapper == null) {
-                this.agentStatBatchMapper = agentStatBatchMapper;
-            }
-        }
-    }
+//    public TBaseMapper(AgentStatBatchMapper agentStatBatchMapper) {
+//        //TODO : (minwoo) AgentStatBatchMapper 를 한번만 생성해서 문제는 없으나. 더 깔끔하게 개발할 필요는 있음, serialize 로 그냥 만들어버리면 동기화 필요없음.
+//        synchronized (TBaseMapper.class) {
+//            if (this.agentStatBatchMapper == null) {
+//                this.agentStatBatchMapper = agentStatBatchMapper;
+//            }
+//        }
+//    }
 
     @Override
     public Tuple3<String, JoinAgentStatBo, Long> map(TBase tBase) throws Exception {
-        if (tBase instanceof TAgentStatBatch) {
-            JoinAgentStatBo joinAgentStatBo = joinTAgentStatBatch((TAgentStatBatch) tBase);
-            return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp());
-        }
-
+//        if (tBase instanceof TAgentStatBatch) {
+//            JoinAgentStatBo joinAgentStatBo = joinTAgentStatBatch((TAgentStatBatch) tBase);
+//            return new Tuple3<String, JoinAgentStatBo, Long>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp());
+//        }
+//
         return null;
     }
 
-    public JoinAgentStatBo joinTAgentStatBatch(TAgentStatBatch statBatch) {
-        AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
-        JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
-        joinAgentStatBo.setAgentId(agentStatBo.getAgentId());
-        JoinCpuLoadBo joinCpuLoadBo = joinAgentStatBo.joinCpuLoadBoLIst(agentStatBo.getCpuLoadBos());
-//        joinAgentStatBo.setJoinCpuLoadBo(joinCpuLoadBo);
-        joinAgentStatBo.setTimestamp(joinCpuLoadBo.getTimestamp());
-        //TODO : (minwoo) stat 가져올때 nullpinointexcpetion 대비해야함.
-//                JoinTransactionBo joinTransactionBo = joinAgentStatBo.joinTransactionBos(agentStatBo.getTransactionBos());
-//                JoinActiveTraceBo joinActiveTraceBo = joinAgentStatBo.joinActiveTraceBos(agentStatBo.getActiveTraceBos());
-        return joinAgentStatBo;
-    }
+//    public JoinAgentStatBo joinTAgentStatBatch(TAgentStatBatch statBatch) {
+//        AgentStatBo agentStatBo = agentStatBatchMapper.map(statBatch);
+//        JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
+//        joinAgentStatBo.setId(agentStatBo.getAgentId());
+//        JoinCpuLoadBo joinCpuLoadBo = joinAgentStatBo.joinCpuLoadBoLIst(agentStatBo.getCpuLoadBos());
+////        joinAgentStatBo.setJoinCpuLoadBo(joinCpuLoadBo);
+//        joinAgentStatBo.setTimestamp(joinCpuLoadBo.getTimestamp());
+//        //TODO : (minwoo) stat 가져올때 nullpinointexcpetion 대비해야함.
+////                JoinTransactionBo joinTransactionBo = joinAgentStatBo.joinTransactionBos(agentStatBo.getTransactionBos());
+////                JoinActiveTraceBo joinActiveTraceBo = joinAgentStatBo.joinActiveTraceBos(agentStatBo.getActiveTraceBos());
+//        return joinAgentStatBo;
+//    }
 }

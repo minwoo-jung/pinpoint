@@ -22,6 +22,7 @@ import com.navercorp.pinpoint.profiler.sender.TcpDataSender;
 import com.navercorp.pinpoint.rpc.client.DefaultPinpointClientFactory;
 import com.navercorp.pinpoint.rpc.client.PinpointClient;
 import com.navercorp.pinpoint.rpc.util.ClientFactoryUtils;
+import com.navercorp.pinpoint.thrift.io.FlinkHeaderTBaseSerializerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +37,13 @@ public class FlinkClusterConnectionManager implements ClusterConnectionManager {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final DefaultPinpointClientFactory pinpointClientFactory;
     private final TcpDataSenderRepository tcpDataSenderRepository;
-
+    private final FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory;
 
     public FlinkClusterConnectionManager(TcpDataSenderRepository tcpDataSenderRepository) {
         this.tcpDataSenderRepository = tcpDataSenderRepository;
         this.pinpointClientFactory = new DefaultPinpointClientFactory();
         this.pinpointClientFactory.setTimeoutMillis(1000 * 5);
+        this.flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory();
     }
 
     @Override
@@ -104,7 +106,7 @@ public class FlinkClusterConnectionManager implements ClusterConnectionManager {
         PinpointClient client = null;
         try {
             client = ClientFactoryUtils.createPinpointClient(address, pinpointClientFactory);
-            TcpDataSender tcpDataSender = new TcpDataSender(client);
+            TcpDataSender tcpDataSender = new TcpDataSender(client, flinkHeaderTBaseSerializerFactory.createSerializer());
             return new SenderContext(tcpDataSender, client);
         } catch (Exception e) {
             logger.error("not create tcpDataSender for {}.", address, e);

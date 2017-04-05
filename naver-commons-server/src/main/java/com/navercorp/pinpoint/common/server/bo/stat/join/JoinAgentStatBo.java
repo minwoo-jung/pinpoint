@@ -25,12 +25,13 @@ import java.util.List;
  * @author minwoo.jung
  */
 public class JoinAgentStatBo implements JoinStatBo {
+    private static final List<JoinCpuLoadBo>  EMPTY_JOIN_CPU_LOAD_BO_LIST = new ArrayList<JoinCpuLoadBo>(0);
     private String agentId;
     private long agentStartTimestamp;
     private long timestamp;
-    private List<JoinCpuLoadBo> joinCpuLoadBoList;
-    public void setAgentId(String agentId) {
-        this.agentId = agentId;
+    private List<JoinCpuLoadBo> joinCpuLoadBoList = EMPTY_JOIN_CPU_LOAD_BO_LIST;
+    public void setId(String id) {
+        this.agentId = id;
     }
 
     public void setJoinCpuLoadBoList(List<JoinCpuLoadBo> joinCpuLoadBoList) {
@@ -81,36 +82,10 @@ public class JoinAgentStatBo implements JoinStatBo {
         List<JoinCpuLoadBo> newJoinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
         newJoinCpuLoadBoList.add(joinCpuLoadBo);
         newJoinAgentStatBo.setJoinCpuLoadBoList(newJoinCpuLoadBoList);
-        newJoinAgentStatBo.setAgentId(joinCpuLoadBo.getId());
+        newJoinAgentStatBo.setId(joinCpuLoadBo.getId());
         newJoinAgentStatBo.setTimestamp(joinCpuLoadBo.getTimestamp());
 
         return newJoinAgentStatBo;
 
-    }
-
-    public static List<JoinCpuLoadBo> convertJoinCpuLoadBoList(List<CpuLoadBo> cpuLoadBos) {
-        List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
-
-        for(CpuLoadBo cpuLoadBo : cpuLoadBos) {
-            JoinCpuLoadBo joinCpuLoadBo = JoinCpuLoadBo.convertJoinCpuLoadBo(cpuLoadBo);
-            joinCpuLoadBoList.add(joinCpuLoadBo);
-        }
-
-        return joinCpuLoadBoList;
-    }
-
-    public static JoinAgentStatBo createJoinAgentStatBo(AgentStatBo agentStatBo, long agentStartTimestamp) {
-        JoinAgentStatBo joinAgentStatBo = new JoinAgentStatBo();
-        joinAgentStatBo.setAgentId(agentStatBo.getAgentId());
-        JoinCpuLoadBo joinCpuLoadBo = joinAgentStatBo.joinCpuLoadBoLIst(agentStatBo.getCpuLoadBos());
-        List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
-        joinCpuLoadBoList.add(joinCpuLoadBo);
-        joinAgentStatBo.setJoinCpuLoadBoList(joinCpuLoadBoList);
-        joinAgentStatBo.setTimestamp(joinCpuLoadBo.getTimestamp());
-        joinAgentStatBo.setAgentStartTimestamp(agentStartTimestamp);
-        //TODO : (minwoo) stat 가져올때 nullpinointexcpetion 대비해야함.
-//                JoinTransactionBo joinTransactionBo = joinAgentStatBo.joinTransactionBos(agentStatBo.getTransactionBos());
-//                JoinActiveTraceBo joinActiveTraceBo = joinAgentStatBo.joinActiveTraceBos(agentStatBo.getActiveTraceBos());
-        return joinAgentStatBo;
     }
 }

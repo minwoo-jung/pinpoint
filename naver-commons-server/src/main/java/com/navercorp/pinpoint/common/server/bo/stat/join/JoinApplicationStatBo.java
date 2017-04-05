@@ -103,10 +103,6 @@ public class JoinApplicationStatBo implements JoinStatBo {
         this.joinCpuLoadBoList = joinCpuLoadBoList;
     }
 
-    public static List<JoinCpuLoadBo> createJoinCpuLoadBoList(AgentStatBo agentStatBo) {
-        return JoinCpuLoadBo.convertJoinCpuLoadBoList(agentStatBo.getCpuLoadBos());
-    }
-
     public StatType getStatType() {
         return statType;
     }

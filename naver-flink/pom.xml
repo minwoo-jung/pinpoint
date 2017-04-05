@@ -68,16 +68,20 @@
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-naver-thrift</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-naver-commons-server</artifactId>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-collector</artifactId>
+            <artifactId>pinpoint-web</artifactId>
             <classifier>classes</classifier>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-web</artifactId>
+            <artifactId>pinpoint-collector</artifactId>
             <classifier>classes</classifier>
         </dependency>
 
