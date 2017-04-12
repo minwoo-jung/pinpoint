@@ -18,7 +18,7 @@ package com.navercorp.pinpoint.web.dao.hbase;
 
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseOperations2;
-import com.navercorp.pinpoint.common.server.bo.codec.stat.AgentStatDecoder;
+import com.navercorp.pinpoint.common.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.common.server.bo.codec.stat.ApplicationStatDecoder;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory;
@@ -29,7 +29,6 @@ import com.navercorp.pinpoint.web.mapper.RangeTimestampFilter;
 import com.navercorp.pinpoint.web.mapper.TimestampFilter;
 import com.navercorp.pinpoint.web.mapper.stat.AgentStatMapperV2;
 import com.navercorp.pinpoint.web.mapper.stat.ApplicationStatMapper;
-import com.navercorp.pinpoint.web.mapper.stat.SampledAgentStatResultExtractor;
 import com.navercorp.pinpoint.web.mapper.stat.SampledApplicationStatResultExtractor;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.stat.SampledAgentStatDataPoint;
@@ -60,47 +59,47 @@ public class HbaseApplicationStatDaoOperationsV2 {
     @Autowired
     private ApplicationStatHbaseOperationFactory operationFactory;
 
-    <T extends AgentStatDataPoint> List<T> getAgentStatList(StatType statType, AgentStatMapperV2<T> mapper, String agentId, Range range) {
-        if (agentId == null) {
-            throw new NullPointerException("agentId must not be null");
-        }
-        if (range == null) {
-            throw new NullPointerException("range must not be null");
-        }
+//    <T extends AgentStatDataPoint> List<T> getAgentStatList(StatType statType, AgentStatMapperV2<T> mapper, String agentId, Range range) {
+//        if (agentId == null) {
+//            throw new NullPointerException("agentId must not be null");
+//        }
+//        if (range == null) {
+//            throw new NullPointerException("range must not be null");
+//        }
+//
+//        Scan scan = this.createScan(statType, agentId, range);
+//
+//        List<List<T>> intermediate = hbaseOperations2.findParallel(NaverhBaseTables.APPLICATION_STAT_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), mapper, APPLICATION_STAT_NUM_PARTITIONS);
+//        int expectedSize = (int) (range.getRange() / HBaseTables.AGENT_STAT_TIMESPAN_MS);
+//        List<T> merged = new ArrayList<>(expectedSize);
+//        for (List<T> each : intermediate) {
+//            merged.addAll(each);
+//        }
+//        return merged;
+//    }
 
-        Scan scan = this.createScan(statType, agentId, range);
-
-        List<List<T>> intermediate = hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), mapper, APPLICATION_STAT_NUM_PARTITIONS);
-        int expectedSize = (int) (range.getRange() / HBaseTables.AGENT_STAT_TIMESPAN_MS);
-        List<T> merged = new ArrayList<>(expectedSize);
-        for (List<T> each : intermediate) {
-            merged.addAll(each);
-        }
-        return merged;
-    }
-
-    <T extends AgentStatDataPoint> boolean agentStatExists(StatType statType, AgentStatMapperV2<T> mapper, String agentId, Range range) {
-        if (agentId == null) {
-            throw new NullPointerException("agentId must not be null");
-        }
-        if (range == null) {
-            throw new NullPointerException("range must not be null");
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("checking for stat data existence : agentId={}, {}", agentId, range);
-        }
-
-        int resultLimit = 20;
-        Scan scan = this.createScan(statType, agentId, range, resultLimit);
-
-        List<List<T>> result = hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultLimit, mapper, APPLICATION_STAT_NUM_PARTITIONS);
-        if (result.isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+//    <T extends AgentStatDataPoint> boolean agentStatExists(StatType statType, AgentStatMapperV2<T> mapper, String agentId, Range range) {
+//        if (agentId == null) {
+//            throw new NullPointerException("agentId must not be null");
+//        }
+//        if (range == null) {
+//            throw new NullPointerException("range must not be null");
+//        }
+//
+//        if (logger.isDebugEnabled()) {
+//            logger.debug("checking for stat data existence : agentId={}, {}", agentId, range);
+//        }
+//
+//        int resultLimit = 20;
+//        Scan scan = this.createScan(statType, agentId, range, resultLimit);
+//
+//        List<List<T>> result = hbaseOperations2.findParallel(NaverhBaseTables.APPLICATION_STAT_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultLimit, mapper, APPLICATION_STAT_NUM_PARTITIONS);
+//        if (result.isEmpty()) {
+//            return false;
+//        } else {
+//            return true;
+//        }
+//    }
 
     <T extends JoinStatBo, S extends SampledAgentStatDataPoint> List<S> getSampledStatList(StatType statType, SampledApplicationStatResultExtractor<T, S> resultExtractor, String applicationId, Range range) {
         if (applicationId == null) {
@@ -113,7 +112,7 @@ public class HbaseApplicationStatDaoOperationsV2 {
             throw new NullPointerException("resultExtractor must not be null");
         }
         Scan scan = this.createScan(statType, applicationId, range);
-        return hbaseOperations2.findParallel(NaverhBaseTables.AGENT_STAT_VER2_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultExtractor, APPLICATION_STAT_NUM_PARTITIONS);
+        return hbaseOperations2.findParallel(NaverhBaseTables.APPLICATION_STAT_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultExtractor, APPLICATION_STAT_NUM_PARTITIONS);
     }
 
     <T extends JoinStatBo> ApplicationStatMapper<T> createRowMapper(ApplicationStatDecoder<T> decoder, Range range) {

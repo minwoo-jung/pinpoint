@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.dao.hbase;
+package com.navercorp.pinpoint.common.hbase;
 
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -25,6 +25,6 @@ public class NaverhBaseTables {
 
     public static final int APPLICATION_STAT_TIMESPAN_MS = 5 * 60 * 1000;
 
-    public static final TableName AGENT_STAT_VER2_AGGRE = TableName.valueOf("AgentStatV2Aggre");
-    public static final byte[] AGENT_STAT_CF_STATISTICS = Bytes.toBytes("S");
+    public static final TableName APPLICATION_STAT_AGGRE = TableName.valueOf("ApplicationStatAggre");
+    public static final byte[] APPLICATION_STAT_CF_STATISTICS = Bytes.toBytes("S");
 }

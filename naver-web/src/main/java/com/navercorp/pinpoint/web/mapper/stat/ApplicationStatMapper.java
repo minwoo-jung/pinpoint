@@ -17,16 +17,12 @@ package com.navercorp.pinpoint.web.mapper.stat;
 
 import com.navercorp.pinpoint.common.buffer.Buffer;
 import com.navercorp.pinpoint.common.buffer.OffsetFixedBuffer;
-import com.navercorp.pinpoint.common.hbase.HBaseTables;
+import com.navercorp.pinpoint.common.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.common.hbase.RowMapper;
-import com.navercorp.pinpoint.common.server.bo.codec.stat.AgentStatDecoder;
 import com.navercorp.pinpoint.common.server.bo.codec.stat.ApplicationStatDecoder;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatDecodingContext;
-import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatHbaseOperationFactory;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory;
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatDataPoint;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
-import com.navercorp.pinpoint.web.dao.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.web.mapper.TimestampFilter;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
@@ -73,7 +69,7 @@ public class ApplicationStatMapper <T extends JoinStatBo> implements RowMapper<L
         List<T> dataPoints = new ArrayList<>();
 
         for (Cell cell : result.rawCells()) {
-            if (CellUtil.matchingFamily(cell, NaverhBaseTables.AGENT_STAT_CF_STATISTICS)) {
+            if (CellUtil.matchingFamily(cell, NaverhBaseTables.APPLICATION_STAT_CF_STATISTICS)) {
                 Buffer qualifierBuffer = new OffsetFixedBuffer(cell.getQualifierArray(), cell.getQualifierOffset(), cell.getQualifierLength());
                 Buffer valueBuffer = new OffsetFixedBuffer(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength());
 

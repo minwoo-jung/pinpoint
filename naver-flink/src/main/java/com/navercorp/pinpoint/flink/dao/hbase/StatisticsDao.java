@@ -15,13 +15,10 @@
  */
 package com.navercorp.pinpoint.flink.dao.hbase;
 
-import com.navercorp.pinpoint.common.buffer.AutomaticBuffer;
-import com.navercorp.pinpoint.common.buffer.Buffer;
-import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
+import com.navercorp.pinpoint.common.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.join.CpuLoadSerializer;
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatType;
 import com.navercorp.pinpoint.common.server.bo.stat.join.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.flink.api.common.io.OutputFormat;
@@ -49,7 +46,7 @@ public class StatisticsDao implements OutputFormat<Tuple3<String, JoinStatBo, Lo
     private static ApplicationStatHbaseOperationFactory applicationStatHbaseOperationFactory;
     private static CpuLoadSerializer cpuLoadSerializer;
 
-    private TableName AGENT_STAT_VER2_AGGRE;
+    private TableName APPLICATION_STAT_AGGRE;
 
     public StatisticsDao(HbaseTemplate2 hbaseTemplate2, ApplicationStatHbaseOperationFactory applicationStatHbaseOperationFactory, CpuLoadSerializer cpuLoadSerializer) {
         this.hbaseTemplate2 = hbaseTemplate2;
@@ -59,7 +56,7 @@ public class StatisticsDao implements OutputFormat<Tuple3<String, JoinStatBo, Lo
 
     @Override
     public void configure(Configuration parameters) {
-        AGENT_STAT_VER2_AGGRE = TableName.valueOf("AgentStatV2Aggre");
+        APPLICATION_STAT_AGGRE = NaverhBaseTables.APPLICATION_STAT_AGGRE;
     }
 
     @Override
@@ -89,9 +86,9 @@ public class StatisticsDao implements OutputFormat<Tuple3<String, JoinStatBo, Lo
 
             List<Put> cpuLoadPuts = applicationStatHbaseOperationFactory.createPuts(joinApplicationStatBo.getId(), joinApplicationStatBo.getJoinCpuLoadBoList(), StatType.APP_CPU_LOAD, cpuLoadSerializer);
             if (!cpuLoadPuts.isEmpty()) {
-                List<Put> rejectedPuts = hbaseTemplate2.asyncPut(AGENT_STAT_VER2_AGGRE, cpuLoadPuts);
+                List<Put> rejectedPuts = hbaseTemplate2.asyncPut(APPLICATION_STAT_AGGRE, cpuLoadPuts);
                 if (CollectionUtils.isNotEmpty(rejectedPuts)) {
-                    hbaseTemplate2.put(AGENT_STAT_VER2_AGGRE, rejectedPuts);
+                    hbaseTemplate2.put(APPLICATION_STAT_AGGRE, rejectedPuts);
                 }
             }
         }

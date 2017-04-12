@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>pinpoint-naver</artifactId>
+        <groupId>com.navercorp.pinpoint</groupId>
+        <version>1.6.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>pinpoint-naver-commons-hbase</artifactId>
+    <name>naver-pinpoint-commons-hbase</name>
+
+    <properties>
+        <jdk.version>1.7</jdk.version>
+        <jdk.home>${env.JAVA_7_HOME}</jdk.home>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-commons-hbase</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+</project>

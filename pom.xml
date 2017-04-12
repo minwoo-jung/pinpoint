@@ -71,6 +71,7 @@
         <module>testweb</module>
         <module>naver-web-oss</module>
         <module>naver-thrift</module>
+        <module>naver-commons-hbase</module>
         <!--<module>spark</module>-->
     </modules>
 
@@ -99,10 +100,15 @@
             </dependency>
             <dependency>
                 <groupId>com.navercorp.pinpoint</groupId>
+                <artifactId>pinpoint-naver-commons-hbase</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.navercorp.pinpoint</groupId>
                 <artifactId>pinpoint-naver-thrift</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.nhncorp</groupId>
                 <artifactId>triples-redis-client</artifactId>
