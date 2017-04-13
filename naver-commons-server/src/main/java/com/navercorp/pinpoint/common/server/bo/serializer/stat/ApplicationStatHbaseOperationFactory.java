@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.common.server.bo.serializer.stat;
 
+import com.navercorp.pinpoint.common.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.join.ApplicationStatSerializer;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.StatType;
@@ -75,9 +76,8 @@ public class ApplicationStatHbaseOperationFactory {
     }
 
     public Scan createScan(String agentId, StatType statType, long startTimestamp, long endTimestamp) {
-        // TODO : (minwoo) AGENT_STAT_TIMESPAN_MS 을 APPLICATION_STAT_TIMESPAN_MS 로 변경하고 nvaerhbasetables 객체로 하나 빼야함.
         final ApplicationStatRowKeyComponent startRowKeyComponent = new ApplicationStatRowKeyComponent(agentId, statType, AgentStatUtils.getBaseTimestamp(endTimestamp));
-        final ApplicationStatRowKeyComponent endRowKeyComponenet = new ApplicationStatRowKeyComponent(agentId, statType, AgentStatUtils.getBaseTimestamp(startTimestamp) - AGENT_STAT_TIMESPAN_MS);
+        final ApplicationStatRowKeyComponent endRowKeyComponenet = new ApplicationStatRowKeyComponent(agentId, statType, AgentStatUtils.getBaseTimestamp(startTimestamp) - NaverhBaseTables.APPLICATION_STAT_TIMESPAN_MS);
         byte[] startRowKey = this.rowKeyEncoder.encodeRowKey(startRowKeyComponent);
         byte[] endRowKey = this.rowKeyEncoder.encodeRowKey(endRowKeyComponenet);
         return new Scan(startRowKey, endRowKey);

@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-final class ZookeeperTestUtils {
+public final class ZookeeperTestUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperTestUtils.class);
 
@@ -28,7 +28,7 @@ final class ZookeeperTestUtils {
         return new SimpleMessageListener();
     }
 
-    static ServerMessageListener getServerMessageListener() {
+    public static ServerMessageListener getServerMessageListener() {
         return new SimpleServerMessageListner();
     }
 
@@ -51,7 +51,7 @@ final class ZookeeperTestUtils {
         return properties;
     }
 
-    static TestingServer createZookeeperServer(int port) throws Exception {
+    public static TestingServer createZookeeperServer(int port) throws Exception {
         TestingServer mockZookeeperServer = new TestingServer(port);
         mockZookeeperServer.start();
 

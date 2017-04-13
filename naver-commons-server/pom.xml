@@ -36,6 +36,11 @@
             <artifactId>pinpoint-commons-hbase</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-naver-commons-hbase</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

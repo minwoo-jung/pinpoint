@@ -19,7 +19,7 @@ package com.navercorp.test;
  * @author minwoo.jung
  */
 public class Empty {
-    
+
     public void empty() {
     }
 

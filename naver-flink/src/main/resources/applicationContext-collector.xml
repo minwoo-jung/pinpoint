@@ -48,12 +48,11 @@
     <util:properties id="pinpoint_collector_properties" location="classpath:pinpoint-collector.properties" />
 
     <!-- 컴포넌트 스캔으로 변경 필요함-->
-    <bean id="collectorConfiguration" class="com.navercorp.pinpoint.collector.config.CollectorConfiguration">
+    <bean id="flinkConfiguration" class="com.navercorp.pinpoint.flink.config.FlinkConfiguration">
         <property name="properties" ref="pinpoint_collector_properties"/>
     </bean>
 
     <bean id="tbaseFlatMapper" class="com.navercorp.pinpoint.flink.process.TbaseFlatMapper">
-        <property name="agentStatBatchMapper" ref="agentStatBatchMapper"/>
         <property name="applicationCache" ref="applicationCache"/>
     </bean>
 
@@ -219,10 +218,9 @@
     <!--<constructor-arg ref="streamRouteHandler"/>-->
     <!--</bean>-->
 
-    <!--<bean id="clusterService" class="com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService">-->
-    <!--<constructor-arg ref="collectorConfiguration"/>-->
-    <!--<constructor-arg ref="clusterPointRouter"/>-->
-    <!--</bean>-->
+    <bean id="flinkServerRegister" class="com.navercorp.pinpoint.flink.cluster.FlinkServerRegister" lazy-init="true">
+        <constructor-arg ref="flinkConfiguration"/>
+    </bean>
 
     <!--&lt;!&ndash; TCPReceiver related Beans &ndash;&gt;-->
     <bean id="serverAcceptor" class="com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor"/>
