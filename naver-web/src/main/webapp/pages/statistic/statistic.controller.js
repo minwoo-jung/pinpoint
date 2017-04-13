@@ -34,7 +34,7 @@
 					sampleRate: 1
 				};
 				if ( oParam.from > 0 && oParam.to > 0 ) {
-					$http.get( "/getApplicationStat/cpuLoad/chart.pinpoint" +  getQueryStr(oParam) )
+					$http.get( "getApplicationStat/cpuLoad/chart.pinpoint" +  getQueryStr(oParam) )
 					.then(function(chartData) {
 						// var cpuLoad = { id: 'cpuLoad', title: 'JVM/System Cpu Usage', isAvailable: false};
 
