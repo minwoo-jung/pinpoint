@@ -15,6 +15,7 @@ import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 import external.org.apache.coyote.Request;
@@ -34,7 +35,7 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
 
     @Override
     protected boolean validateArgument(Object[] args) {
-        if (args == null || args.length == 0) {
+        if (ArrayUtils.isEmpty(args)) {
             if (isDebug) {
                 logger.debug("Invalid args={}.", args);
             }

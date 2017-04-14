@@ -22,6 +22,8 @@ import java.util.List;
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
 import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.common.util.ArrayUtils;
+import com.navercorp.pinpoint.common.util.CollectionUtils;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 /**
@@ -42,7 +44,7 @@ public class Bloc3Detector implements ApplicationTypeDetector {
     private final List<String> bootstrapMains;
 
     public Bloc3Detector(List<String> bootstrapMains) {
-        if (bootstrapMains == null || bootstrapMains.isEmpty()) {
+        if (CollectionUtils.isEmpty(bootstrapMains)) {
             this.bootstrapMains = Arrays.asList(DEFAULT_BOOTSTRAP_MAIN);
         } else {
             this.bootstrapMains = bootstrapMains;
@@ -88,7 +90,8 @@ public class Bloc3Detector implements ApplicationTypeDetector {
                 return false;
             }
         });
-        if (files == null || files.length == 0) {
+
+        if (ArrayUtils.isEmpty(files)) {
             return false;
         } else {
             return true;
