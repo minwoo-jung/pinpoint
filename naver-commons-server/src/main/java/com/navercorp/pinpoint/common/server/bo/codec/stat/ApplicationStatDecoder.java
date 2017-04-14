@@ -16,7 +16,7 @@
 package com.navercorp.pinpoint.common.server.bo.codec.stat;
 
 import com.navercorp.pinpoint.common.buffer.Buffer;
-import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatDecodingContext;
+import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatDecodingContext;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class ApplicationStatDecoder<T extends JoinStatBo> {
         return qualifierBuffer.readVLong();
     }
 
-    public List<T> decodeValue(Buffer valueBuffer, AgentStatDecodingContext decodingContext) {
+    public List<T> decodeValue(Buffer valueBuffer, ApplicationStatDecodingContext decodingContext) {
         byte version = valueBuffer.readByte();
         for (ApplicationStatCodec<T> codec : this.codecs) {
             if (version == codec.getVersion()) {

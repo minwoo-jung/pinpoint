@@ -29,8 +29,7 @@ import java.util.Map;
 /**
  * @author minwoo.jung
  */
-public class ApplicationCpuLoadChartGroup implements AgentStatChartGroup {
-    //TODO : (minwoo) AgentStatChartGroup 가 아니고 아예 agent에 대한 언급을 없애야하는거 아닐까?
+public class ApplicationCpuLoadChartGroup implements ApplicationStatChartGroup {
 
     private static final Double UNCOLLECTED_PERCENTAGE = -1D;
 
@@ -49,8 +48,8 @@ public class ApplicationCpuLoadChartGroup implements AgentStatChartGroup {
             jvmCpuLoads.add(sampledCpuLoad.getJvmCpuLoad());
             systemCpuLoads.add(sampledCpuLoad.getSystemCpuLoad());
         }
-        this.cpuLoadCharts.put(CpuLoadChartGroup.CpuLoadChartType.CPU_LOAD_JVM, new TimeSeriesChartBuilder<>(timeWindow, UNCOLLECTED_PERCENTAGE).build(jvmCpuLoads));
-        this.cpuLoadCharts.put(CpuLoadChartGroup.CpuLoadChartType.CPU_LOAD_SYSTEM, new TimeSeriesChartBuilder<>(timeWindow, UNCOLLECTED_PERCENTAGE).build(systemCpuLoads));
+        this.cpuLoadCharts.put(CpuLoadChartType.CPU_LOAD_JVM, new TimeSeriesChartBuilder<>(timeWindow, UNCOLLECTED_PERCENTAGE).build(jvmCpuLoads));
+        this.cpuLoadCharts.put(CpuLoadChartType.CPU_LOAD_SYSTEM, new TimeSeriesChartBuilder<>(timeWindow, UNCOLLECTED_PERCENTAGE).build(systemCpuLoads));
     }
 
     @Override

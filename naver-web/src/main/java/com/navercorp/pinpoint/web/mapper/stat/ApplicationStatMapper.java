@@ -20,7 +20,7 @@ import com.navercorp.pinpoint.common.buffer.OffsetFixedBuffer;
 import com.navercorp.pinpoint.common.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.common.hbase.RowMapper;
 import com.navercorp.pinpoint.common.server.bo.codec.stat.ApplicationStatDecoder;
-import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatDecodingContext;
+import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatDecodingContext;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 import com.navercorp.pinpoint.web.mapper.TimestampFilter;
@@ -63,7 +63,7 @@ public class ApplicationStatMapper <T extends JoinStatBo> implements RowMapper<L
             return Collections.emptyList();
         }
         final byte[] distributedRowKey = result.getRow();
-        final String agentId = this.hbaseOperationFactory.getAgentId(distributedRowKey);
+        final String applicationId = this.hbaseOperationFactory.getApplicationId(distributedRowKey);
         final long baseTimestamp = this.hbaseOperationFactory.getBaseTimestamp(distributedRowKey);
 
         List<T> dataPoints = new ArrayList<>();
@@ -75,8 +75,8 @@ public class ApplicationStatMapper <T extends JoinStatBo> implements RowMapper<L
 
                 long timestampDelta = this.decoder.decodeQualifier(qualifierBuffer);
 
-                AgentStatDecodingContext decodingContext = new AgentStatDecodingContext();
-                decodingContext.setAgentId(agentId);
+                ApplicationStatDecodingContext decodingContext = new ApplicationStatDecodingContext();
+                decodingContext.setApplicationId(applicationId);
                 decodingContext.setBaseTimestamp(baseTimestamp);
                 decodingContext.setTimestampDelta(timestampDelta);
                 List<T> candidates = this.decoder.decodeValue(valueBuffer, decodingContext);

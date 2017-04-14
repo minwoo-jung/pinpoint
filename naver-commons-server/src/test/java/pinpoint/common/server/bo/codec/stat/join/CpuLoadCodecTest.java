@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.common.server.bo.codec.stat.AgentStatDataPointCode
 import com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadCodec;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatDecodingContext;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
+import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatDecodingContext;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
 import org.junit.Test;
 
@@ -52,8 +53,8 @@ public class CpuLoadCodecTest {
         final Buffer valueBuffer = new FixedBuffer(encodedValueBuffer.getBuffer());;
         final long baseTimestamp = AgentStatUtils.getBaseTimestamp(currentTime);
         final long timestampDelta = currentTime - baseTimestamp;
-        final AgentStatDecodingContext decodingContext = new AgentStatDecodingContext();
-        decodingContext.setAgentId(id);
+        final ApplicationStatDecodingContext decodingContext = new ApplicationStatDecodingContext();
+        decodingContext.setApplicationId(id);
         decodingContext.setBaseTimestamp(baseTimestamp);
         decodingContext.setTimestampDelta(timestampDelta);
 

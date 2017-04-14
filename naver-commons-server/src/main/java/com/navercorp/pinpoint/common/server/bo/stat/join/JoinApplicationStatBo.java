@@ -15,8 +15,6 @@
  */
 package com.navercorp.pinpoint.common.server.bo.stat.join;
 
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

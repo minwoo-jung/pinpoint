@@ -31,11 +31,11 @@ public class ApplicationStatRowKeyEncoder implements RowKeyEncoder<ApplicationSt
         if (component == null) {
             throw new NullPointerException("component must not be null");
         }
-        byte[] bAgentId = BytesUtils.toBytes(component.getAgentId());
+        byte[] bApplicationId = BytesUtils.toBytes(component.getApplicationId());
         byte[] bStatType = new byte[]{component.getStatType().getRawTypeCode()};
         byte[] rowKey = new byte[APPLICATION_NAME_MAX_LEN + bStatType.length + BytesUtils.LONG_BYTE_LENGTH];
 
-        BytesUtils.writeBytes(rowKey, 0, bAgentId);
+        BytesUtils.writeBytes(rowKey, 0, bApplicationId);
         BytesUtils.writeBytes(rowKey, APPLICATION_NAME_MAX_LEN, bStatType);
         BytesUtils.writeLong(TimeUtils.reverseTimeMillis(component.getBaseTimestamp()), rowKey, APPLICATION_NAME_MAX_LEN + bStatType.length);
 

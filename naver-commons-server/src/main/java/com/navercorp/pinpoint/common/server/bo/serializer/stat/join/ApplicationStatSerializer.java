@@ -16,6 +16,7 @@
 package com.navercorp.pinpoint.common.server.bo.serializer.stat.join;
 
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
+import com.navercorp.pinpoint.common.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.common.server.bo.codec.stat.ApplicationStatEncoder;
 import com.navercorp.pinpoint.common.server.bo.serializer.HbaseSerializer;
 import com.navercorp.pinpoint.common.server.bo.serializer.SerializationContext;
@@ -42,16 +43,15 @@ public abstract class ApplicationStatSerializer<T extends JoinStatBo> implements
     }
 
     @Override
-    public void serialize(List<T> agentStatBos, Put put, SerializationContext context) {
-        if (CollectionUtils.isEmpty(agentStatBos)) {
+    public void serialize(List<T> joinStatBoList, Put put, SerializationContext context) {
+        if (CollectionUtils.isEmpty(joinStatBoList)) {
             throw new IllegalArgumentException("agentStatBos should not be empty");
         }
-        long initialTimestamp = agentStatBos.get(0).getTimestamp();
+        long initialTimestamp = joinStatBoList.get(0).getTimestamp();
         long baseTimestamp = AgentStatUtils.getBaseTimestamp(initialTimestamp);
         long timestampDelta = initialTimestamp - baseTimestamp;
         ByteBuffer qualifierBuffer = this.encoder.encodeQualifier(timestampDelta);
-        ByteBuffer valueBuffer = this.encoder.encodeValue(agentStatBos);
-        //TODO : (minwoo) HBaseTables를 NaverHbaseTables을 사용하도록 개선
-        put.addColumn(HBaseTables.AGENT_STAT_CF_STATISTICS, qualifierBuffer, HConstants.LATEST_TIMESTAMP, valueBuffer);
+        ByteBuffer valueBuffer = this.encoder.encodeValue(joinStatBoList);
+        put.addColumn(NaverhBaseTables.APPLICATION_STAT_CF_STATISTICS, qualifierBuffer, HConstants.LATEST_TIMESTAMP, valueBuffer);
     }
 }

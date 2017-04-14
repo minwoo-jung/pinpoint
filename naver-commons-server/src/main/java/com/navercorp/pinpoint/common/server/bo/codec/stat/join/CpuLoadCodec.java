@@ -25,8 +25,8 @@ import com.navercorp.pinpoint.common.server.bo.codec.stat.header.BitCountingHead
 import com.navercorp.pinpoint.common.server.bo.codec.stat.strategy.StrategyAnalyzer;
 import com.navercorp.pinpoint.common.server.bo.codec.stat.strategy.UnsignedLongEncodingStrategy;
 import com.navercorp.pinpoint.common.server.bo.codec.strategy.EncodingStrategy;
-import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatDecodingContext;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
+import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatDecodingContext;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +56,11 @@ public class CpuLoadCodec implements ApplicationStatCodec<JoinCpuLoadBo> {
     }
 
     @Override
-    public void encodeValues(Buffer valueBuffer, List<JoinCpuLoadBo> joincpuLoadBoList) {
-        if (CollectionUtils.isEmpty(joincpuLoadBoList)) {
+    public void encodeValues(Buffer valueBuffer, List<JoinCpuLoadBo> joinCpuLoadBoList) {
+        if (CollectionUtils.isEmpty(joinCpuLoadBoList)) {
             throw new IllegalArgumentException("cpuLoadBos must not be empty");
         }
-        final int numValues = joincpuLoadBoList.size();
+        final int numValues = joinCpuLoadBoList.size();
         valueBuffer.putVInt(numValues);
 
         List<Long> timestamps = new ArrayList<Long>(numValues);
@@ -70,7 +70,7 @@ public class CpuLoadCodec implements ApplicationStatCodec<JoinCpuLoadBo> {
         UnsignedLongEncodingStrategy.Analyzer.Builder systemCpuLoadAnalyzerBuilder = new UnsignedLongEncodingStrategy.Analyzer.Builder();
         UnsignedLongEncodingStrategy.Analyzer.Builder minSystemCpuLoadAnalyzerBuilder = new UnsignedLongEncodingStrategy.Analyzer.Builder();
         UnsignedLongEncodingStrategy.Analyzer.Builder maxSystemCpuLoadAnalyzerBuilder = new UnsignedLongEncodingStrategy.Analyzer.Builder();
-        for (JoinCpuLoadBo cpuLoadBo : joincpuLoadBoList) {
+        for (JoinCpuLoadBo cpuLoadBo : joinCpuLoadBoList) {
             timestamps.add(cpuLoadBo.getTimestamp());
             jvmCpuLoadAnalyzerBuilder.addValue(AgentStatUtils.convertDoubleToLong(cpuLoadBo.getJvmCpuLoad()));
             minJvmCpuLoadAnalyzerBuilder.addValue(AgentStatUtils.convertDoubleToLong(cpuLoadBo.getMinJvmCpuLoad()));
@@ -110,9 +110,8 @@ public class CpuLoadCodec implements ApplicationStatCodec<JoinCpuLoadBo> {
     }
 
     @Override
-    public List<JoinCpuLoadBo> decodeValues(Buffer valueBuffer, AgentStatDecodingContext decodingContext) {
-        //TODO : (minwoo) 아래도 api를 getAgentId가 아니라 그냥 id로 변경해야함.
-        final String id = decodingContext.getAgentId();
+    public List<JoinCpuLoadBo> decodeValues(Buffer valueBuffer, ApplicationStatDecodingContext decodingContext) {
+        final String id = decodingContext.getApplicationId();
         final long baseTimestamp = decodingContext.getBaseTimestamp();
         final long timestampDelta = decodingContext.getTimestampDelta();
         final long initialTimestamp = baseTimestamp + timestampDelta;

@@ -13,35 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.pinpoint.common.server.bo.serializer.stat;
 
-import com.navercorp.pinpoint.common.server.bo.stat.join.StatType;
-
 /**
- * @author Minwoo Jung
+ * @author minwoo.jung
  */
-public class ApplicationStatRowKeyComponent {
+public class ApplicationStatDecodingContext {
 
-    private final String applicationId;
-    private final StatType statType;
-    private final long baseTimestamp;
+    private String applicationId;
 
-    public ApplicationStatRowKeyComponent(String applicationId, StatType statType, long baseTimestamp) {
-        this.applicationId = applicationId;
-        this.statType = statType;
-        this.baseTimestamp = baseTimestamp;
-    }
+    private long baseTimestamp;
+
+    private long timestampDelta;
 
     public String getApplicationId() {
-        return this.applicationId;
+        return applicationId;
     }
 
-    public StatType getStatType() {
-        return this.statType;
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
 
     public long getBaseTimestamp() {
-        return this.baseTimestamp;
+        return baseTimestamp;
+    }
+
+    public void setBaseTimestamp(long baseTimestamp) {
+        this.baseTimestamp = baseTimestamp;
+    }
+
+    public long getTimestampDelta() {
+        return timestampDelta;
+    }
+
+    public void setTimestampDelta(long timestampDelta) {
+        this.timestampDelta = timestampDelta;
     }
 }

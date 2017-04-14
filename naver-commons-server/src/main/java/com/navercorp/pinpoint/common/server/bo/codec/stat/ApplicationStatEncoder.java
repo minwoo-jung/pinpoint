@@ -40,10 +40,10 @@ public class ApplicationStatEncoder<T extends JoinStatBo> {
         return qualifierBuffer.wrapByteBuffer();
     }
 
-    public ByteBuffer encodeValue(List<T> agentStatDataPoints) {
+    public ByteBuffer encodeValue(List<T> JoinStatBoList) {
         Buffer valueBuffer = new AutomaticBuffer();
         valueBuffer.putByte(this.codec.getVersion());
-        codec.encodeValues(valueBuffer, agentStatDataPoints);
+        codec.encodeValues(valueBuffer, JoinStatBoList);
         return valueBuffer.wrapByteBuffer();
     }
 }

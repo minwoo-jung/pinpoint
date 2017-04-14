@@ -20,6 +20,7 @@ import com.navercorp.pinpoint.web.util.TimeWindow;
 import com.navercorp.pinpoint.web.vo.stat.SampledCpuLoad;
 import com.navercorp.pinpoint.web.vo.stat.chart.AgentStatChartGroup;
 import com.navercorp.pinpoint.web.vo.stat.chart.ApplicationCpuLoadChartGroup;
+import com.navercorp.pinpoint.web.vo.stat.chart.ApplicationStatChartGroup;
 import com.navercorp.pinpoint.web.vo.stat.chart.CpuLoadChartGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class ApplicationStatChartServiceImpl implements ApplicationStatChartServ
 
 
     @Override
-    public AgentStatChartGroup selectApplicationChart(String applicationId, TimeWindow timeWindow) {
+    public ApplicationStatChartGroup selectApplicationChart(String applicationId, TimeWindow timeWindow) {
         if (applicationId == null) {
             throw new NullPointerException("applicationId must not be null");
         }

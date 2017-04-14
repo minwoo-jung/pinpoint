@@ -43,7 +43,7 @@ public class ApplicationCpuLoadDaoImpl implements ApplicationCupLoadDao {
     private JoinCpuLoadSampler cpuLoadSampler;
 
     @Autowired
-    private HbaseApplicationStatDaoOperationsV2 operations;
+    private HbaseApplicationStatDaoOperations operations;
 
     @Override
     public List<SampledCpuLoad> getApplicationStatList(String applicationId, TimeWindow timeWindow) {

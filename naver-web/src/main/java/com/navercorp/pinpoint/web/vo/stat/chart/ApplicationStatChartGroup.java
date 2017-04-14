@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.service;
+package com.navercorp.pinpoint.web.vo.stat.chart;
 
-import com.navercorp.pinpoint.web.util.TimeWindow;
-import com.navercorp.pinpoint.web.vo.stat.chart.ApplicationStatChartGroup;
+import com.navercorp.pinpoint.web.vo.chart.Chart;
+
+import java.util.Map;
 
 /**
  * @author minwoo.jung
  */
-public interface ApplicationStatChartService {
-    ApplicationStatChartGroup selectApplicationChart(String applicationId, TimeWindow timeWindow);
+public interface ApplicationStatChartGroup {
+    interface ChartType {}
+
+    Map<ChartType, Chart> getCharts();
 }

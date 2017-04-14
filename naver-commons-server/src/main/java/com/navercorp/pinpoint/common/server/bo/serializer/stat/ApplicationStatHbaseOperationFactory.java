@@ -28,8 +28,6 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 
-import static com.navercorp.pinpoint.common.hbase.HBaseTables.AGENT_STAT_TIMESPAN_MS;
-
 /**
  * @author Minwoo Jung
  */
@@ -44,7 +42,7 @@ public class ApplicationStatHbaseOperationFactory {
     public ApplicationStatHbaseOperationFactory(
                 ApplicationStatRowKeyEncoder rowKeyEncoder,
                 ApplicationStatRowKeyDecoder rowKeyDecoder,
-                @Qualifier("agentStatV2RowKeyDistributor") AbstractRowKeyDistributor rowKeyDistributor) {
+                @Qualifier("applicationStatRowKeyDistributor") AbstractRowKeyDistributor rowKeyDistributor) {
         Assert.notNull(rowKeyEncoder, "rowKeyEncoder must not be null");
         Assert.notNull(rowKeyDecoder, "rowKeyDecoder must not be null");
         Assert.notNull(rowKeyDistributor, "rowKeyDistributor must not be null");
@@ -75,9 +73,9 @@ public class ApplicationStatHbaseOperationFactory {
         return puts;
     }
 
-    public Scan createScan(String agentId, StatType statType, long startTimestamp, long endTimestamp) {
-        final ApplicationStatRowKeyComponent startRowKeyComponent = new ApplicationStatRowKeyComponent(agentId, statType, AgentStatUtils.getBaseTimestamp(endTimestamp));
-        final ApplicationStatRowKeyComponent endRowKeyComponenet = new ApplicationStatRowKeyComponent(agentId, statType, AgentStatUtils.getBaseTimestamp(startTimestamp) - NaverhBaseTables.APPLICATION_STAT_TIMESPAN_MS);
+    public Scan createScan(String applicationId, StatType statType, long startTimestamp, long endTimestamp) {
+        final ApplicationStatRowKeyComponent startRowKeyComponent = new ApplicationStatRowKeyComponent(applicationId, statType, AgentStatUtils.getBaseTimestamp(endTimestamp));
+        final ApplicationStatRowKeyComponent endRowKeyComponenet = new ApplicationStatRowKeyComponent(applicationId, statType, AgentStatUtils.getBaseTimestamp(startTimestamp) - NaverhBaseTables.APPLICATION_STAT_TIMESPAN_MS);
         byte[] startRowKey = this.rowKeyEncoder.encodeRowKey(startRowKeyComponent);
         byte[] endRowKey = this.rowKeyEncoder.encodeRowKey(endRowKeyComponenet);
         return new Scan(startRowKey, endRowKey);
@@ -87,16 +85,10 @@ public class ApplicationStatHbaseOperationFactory {
         return this.rowKeyDistributor;
     }
 
-    public String getAgentId(byte[] distributedRowKey) {
+    public String getApplicationId(byte[] distributedRowKey) {
         byte[] originalRowKey = this.rowKeyDistributor.getOriginalKey(distributedRowKey);
-        return this.rowKeyDecoder.decodeRowKey(originalRowKey).getAgentId();
+        return this.rowKeyDecoder.decodeRowKey(originalRowKey).getApplicationId();
     }
-
-//    public AgentStatType getAgentStatType(byte[] distributedRowKey) {
-//        byte[] originalRowKey = this.rowKeyDistributor.getOriginalKey(distributedRowKey);
-//        return this.rowKeyDecoder.decodeRowKey(originalRowKey).getAgentStatType();
-//        return null;
-//    }
 
     public long getBaseTimestamp(byte[] distributedRowKey) {
         byte[] originalRowKey = this.rowKeyDistributor.getOriginalKey(distributedRowKey);

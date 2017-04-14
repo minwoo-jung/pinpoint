@@ -16,10 +16,7 @@
 package com.navercorp.pinpoint.web.mapper.stat;
 
 import com.navercorp.pinpoint.common.hbase.ResultsExtractor;
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatDataPoint;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
-import com.navercorp.pinpoint.web.mapper.stat.sampling.AgentStatSamplingHandler;
-import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.AgentStatSampler;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.ApplicationStatSampler;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.ApplicationStatSamplingHandler;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.join.EagerSamplingHandler;

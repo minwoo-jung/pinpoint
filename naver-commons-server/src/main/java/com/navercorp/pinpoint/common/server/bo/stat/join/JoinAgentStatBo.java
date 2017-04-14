@@ -15,9 +15,6 @@
  */
 package com.navercorp.pinpoint.common.server.bo.stat.join;
 
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
-import com.navercorp.pinpoint.common.server.bo.stat.CpuLoadBo;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +49,6 @@ public class JoinAgentStatBo implements JoinStatBo {
 
     public List<JoinCpuLoadBo> getJoinCpuLoadBoList() {
         return joinCpuLoadBoList;
-    }
-
-    public static JoinCpuLoadBo joinCpuLoadBoLIst(List<CpuLoadBo> cpuLoadBos) {
-        return JoinCpuLoadBo.joinCpuLoadBoListForCpuLoadBoList(cpuLoadBos);
     }
 
     public long getAgentStartTimestamp() {
