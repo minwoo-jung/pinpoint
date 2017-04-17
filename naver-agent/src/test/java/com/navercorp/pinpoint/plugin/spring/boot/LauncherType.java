@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.plugin.spring.boot;
 
+import com.navercorp.pinpoint.common.util.StringUtils;
+
 /**
  * @author HyunGil Jeong
  */
@@ -33,14 +35,14 @@ public enum LauncherType {
     }
 
     public String getPath(String parent) {
-        if (parent == null || parent.isEmpty()) {
+        if (StringUtils.isEmpty(parent)) {
             throw new IllegalArgumentException("parent path must not be empty");
         }
         return parent + "/" + this.path;
     }
 
     public String getJarName(String jarName) {
-        if (jarName == null || jarName.isEmpty()) {
+        if (StringUtils.isEmpty(jarName)) {
             throw new IllegalArgumentException("jarName must not be empty");
         }
         return jarName + "." + this.extension;

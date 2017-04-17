@@ -12,6 +12,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
@@ -158,8 +159,8 @@ public class MessageReceivedInterceptor extends AbstractBlocAroundInterceptor {
 
                 String parentApplicationName = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
                 if (parentApplicationName != null) {
-                    String remoteHost = pinpointOptions.get(Header.HTTP_HOST.toString());
-                    if (remoteHost != null && remoteHost.length() > 0) {
+                    final String remoteHost = pinpointOptions.get(Header.HTTP_HOST.toString());
+                    if (StringUtils.isNotEmpty(remoteHost)) {
                         spanRecorder.recordAcceptorHost(remoteHost);
                     } else {
                         spanRecorder.recordAcceptorHost(getLocalAddress(ioSession));
