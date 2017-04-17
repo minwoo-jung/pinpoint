@@ -41,6 +41,11 @@ public class TcpSourceFunction implements ParallelSourceFunction<TBase> {
     public void run(SourceContext<TBase> ctx) throws Exception {
         //TODO : (minwoo) Bootstrap 에서 application context 안가져오고 바로 가져올수 있도록 개선
         ApplicationContext appCtx = Bootstrap.getInstance().getApplicationContext();
+
+        AgentStatHandler agentStatHandler = new AgentStatHandler(ctx);
+        TcpDispatchHandler tcpDispatchHandler = appCtx.getBean("tcpDispatchHandler", TcpDispatchHandler.class);
+        tcpDispatchHandler.setAgentStatHandler(agentStatHandler);
+
         CollectorConfiguration configuration = appCtx.getBean("flinkConfiguration", CollectorConfiguration.class);
         DispatchHandler tcpDispatchHandlerWrapper = appCtx.getBean("tcpDispatchHandlerWrapper", DispatchHandler.class);
         PinpointServerAcceptor serverAcceptor = appCtx.getBean("serverAcceptor", PinpointServerAcceptor.class);

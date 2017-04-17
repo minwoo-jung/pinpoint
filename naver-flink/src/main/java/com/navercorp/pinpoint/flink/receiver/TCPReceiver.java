@@ -84,11 +84,11 @@ public class TCPReceiver {
 
     private ExecutorService worker;
 
-    private final SerializerFactory<HeaderTBaseSerializer> serializerFactory = new ThreadLocalHeaderTBaseSerializerFactory<>(new HeaderTBaseSerializerFactory(true, HeaderTBaseSerializerFactory.DEFAULT_UDP_STREAM_MAX_SIZE));
+//    private final SerializerFactory<HeaderTBaseSerializer> serializerFactory = new ThreadLocalHeaderTBaseSerializerFactory<>(new HeaderTBaseSerializerFactory(true, HeaderTBaseSerializerFactory.DEFAULT_UDP_STREAM_MAX_SIZE));
     private final DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory = new ThreadLocalHeaderTBaseDeserializerFactory<>(new FlinkHeaderTBaseDeserializerFactory());
 
     @Autowired(required=false)
-    private MetricRegistry metricRegistry; // 제거 가능하지 않나?
+    private MetricRegistry metricRegistry;
 
 //    private ExecutorService agentEventWorker;
 
@@ -109,7 +109,7 @@ public class TCPReceiver {
 //    private AgentStatBatchMapper agentStatBatchMapper = new AgentStatBatchMapper();
 
 //    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, ZookeeperClusterService service) {
-    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, SourceContext<TBase> sourceContext) {
+    public TCPReceiver(CollectorConfiguration configuration,  DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, SourceContext<TBase> sourceContext) {
         if (configuration == null) {
             throw new NullPointerException("collector configuration must not be null");
         }
@@ -212,7 +212,7 @@ public class TCPReceiver {
 
             @Override
             public void handlePing(PingPacket pingPacket, PinpointServer pinpointServer) {
-//                recordPing(pingPacket, pinpointServer);
+                //                recordPing(pingPacket, pinpointServer);
             }
         });
         this.serverAcceptor.bind(configuration.getTcpListenIp(), configuration.getTcpListenPort());
@@ -228,15 +228,16 @@ public class TCPReceiver {
     }
 
     private void requestResponse(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
-        try {
-            worker.execute(new RequestResponseDispatch(requestPacket, pinpointSocket));
-        } catch (RejectedExecutionException e) {
-            // cause is clear - full stack trace not necessary
-            logger.warn("RejectedExecutionException Caused:{}", e.getMessage());
-        }
+//        try {
+//            worker.execute(new RequestResponseDispatch(requestPacket, pinpointSocket));
+//        } catch (RejectedExecutionException e) {
+//            // cause is clear - full stack trace not necessary
+//            logger.warn("RejectedExecutionException Caused:{}", e.getMessage());
+//        }
+          logger.warn("Not support requestResponse");
     }
 
-    private void recordPing(PingPacket pingPacket, PinpointServer pinpointServer) {
+//    private void recordPing(PingPacket pingPacket, PinpointServer pinpointServer) {
 //        final int eventCounter = pingPacket.getPingId();
 //        long pingTimestamp = System.currentTimeMillis();
 //        try {
@@ -247,7 +248,7 @@ public class TCPReceiver {
 //        } catch (Exception e) {
 //            logger.warn("Error handling ping event", e);
 //        }
-    }
+//    }
 
     private class Dispatch implements Runnable {
         private final byte[] bytes;
@@ -267,11 +268,7 @@ public class TCPReceiver {
         public void run() {
             try {
                 TBase<?, ?> tBase = SerializationUtils.deserialize(bytes, deserializerFactory);
-                if (tBase instanceof TFAgentStatBatch) {
-                    TFAgentStatBatch statBatch = (TFAgentStatBatch)tBase;
-                    sourceContext.collect(tBase);
-                }
-                //dispatchHandler.dispatchSendMessage(tBase);
+                dispatchHandler.dispatchSendMessage(tBase);
             } catch (TException e) {
                 if (logger.isWarnEnabled()) {
                     logger.warn("packet serialize error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
@@ -291,62 +288,62 @@ public class TCPReceiver {
         }
     }
 
-    private class RequestResponseDispatch implements Runnable {
-        private final RequestPacket requestPacket;
-        private final PinpointSocket pinpointSocket;
-
-
-        private RequestResponseDispatch(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
-            if (requestPacket == null) {
-                throw new NullPointerException("requestPacket");
-            }
-            this.requestPacket = requestPacket;
-            this.pinpointSocket = pinpointSocket;
-        }
-
-        @Override
-        public void run() {
-
-            byte[] bytes = requestPacket.getPayload();
-            SocketAddress remoteAddress = pinpointSocket.getRemoteAddress();
-            try {
-                TBase<?, ?> tBase = SerializationUtils.deserialize(bytes, deserializerFactory);
-                TBase result = dispatchHandler.dispatchRequestMessage(tBase);
-                if (result != null) {
-                    byte[] resultBytes = SerializationUtils.serialize(result, serializerFactory);
-                    pinpointSocket.response(requestPacket, resultBytes);
-                }
-            } catch (TException e) {
-                if (logger.isWarnEnabled()) {
-                    logger.warn("packet serialize error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
-                }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("packet dump hex:{}", PacketUtils.dumpByteArray(bytes));
-                }
-            } catch (Exception e) {
-                //TODO : (minwoo) exception 처리는 나중에 주석 풀어야함.
-                // there are cases where invalid headers are received
+//    private class RequestResponseDispatch implements Runnable {
+//        private final RequestPacket requestPacket;
+//        private final PinpointSocket pinpointSocket;
+//
+//
+//        private RequestResponseDispatch(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
+//            if (requestPacket == null) {
+//                throw new NullPointerException("requestPacket");
+//            }
+//            this.requestPacket = requestPacket;
+//            this.pinpointSocket = pinpointSocket;
+//        }
+//
+//        @Override
+//        public void run() {
+//
+//            byte[] bytes = requestPacket.getPayload();
+//            SocketAddress remoteAddress = pinpointSocket.getRemoteAddress();
+//            try {
+//                TBase<?, ?> tBase = SerializationUtils.deserialize(bytes, deserializerFactory);
+//                TBase result = dispatchHandler.dispatchRequestMessage(tBase);
+//                if (result != null) {
+//                    byte[] resultBytes = SerializationUtils.serialize(result, serializerFactory);
+//                    pinpointSocket.response(requestPacket, resultBytes);
+//                }
+//            } catch (TException e) {
 //                if (logger.isWarnEnabled()) {
-//                    //logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
-//                    logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage());
+//                    logger.warn("packet serialize error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
 //                }
 //                if (logger.isDebugEnabled()) {
 //                    logger.debug("packet dump hex:{}", PacketUtils.dumpByteArray(bytes));
 //                }
-
-                //TODO : (minwoo)임시 코드임
-                byte[] resultBytes = new byte[0];
-                try {
-                    resultBytes = SerializationUtils.serialize(new TResult(true), serializerFactory);
-                    pinpointSocket.response(requestPacket, resultBytes);
-                } catch (TException e1) {
-                    e1.printStackTrace();
-                }
-            }
-
-
-        }
-    }
+//            } catch (Exception e) {
+//                //TODO : (minwoo) exception 처리는 나중에 주석 풀어야함.
+//                // there are cases where invalid headers are received
+////                if (logger.isWarnEnabled()) {
+////                    //logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
+////                    logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage());
+////                }
+////                if (logger.isDebugEnabled()) {
+////                    logger.debug("packet dump hex:{}", PacketUtils.dumpByteArray(bytes));
+////                }
+//
+//                //TODO : (minwoo)임시 코드임
+//                byte[] resultBytes = new byte[0];
+//                try {
+//                    resultBytes = SerializationUtils.serialize(new TResult(true), serializerFactory);
+//                    pinpointSocket.response(requestPacket, resultBytes);
+//                } catch (TException e1) {
+//                    e1.printStackTrace();
+//                }
+//            }
+//
+//
+//        }
+//    }
 
     @PreDestroy
     public void stop() {

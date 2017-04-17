@@ -15,30 +15,24 @@
  */
 package com.navercorp.pinpoint.flink.receiver;
 
+
 import com.navercorp.pinpoint.collector.handler.Handler;
-import com.navercorp.pinpoint.collector.receiver.AbstractDispatchHandler;
-import com.navercorp.pinpoint.thrift.dto.flink.TFAgentStatBatch;
+import org.apache.flink.streaming.api.functions.source.SourceFunction.SourceContext;
 import org.apache.thrift.TBase;
 
 /**
  * @author minwoo.jung
  */
-public class TcpDispatchHandler extends AbstractDispatchHandler {
+public class AgentStatHandler implements Handler {
 
-    private  AgentStatHandler agentStatHandler;
+    private final SourceContext sourceContext;
+
+    public AgentStatHandler(SourceContext sourceContext) {
+        this.sourceContext = sourceContext;
+    }
 
     @Override
-    protected Handler getHandler(TBase<?, ?> tBase) {
-        if (tBase instanceof TFAgentStatBatch) {
-            return agentStatHandler;
-        }
-
-        return null;
-
+    public void handle(TBase<?, ?> tBase) {
+        sourceContext.collect(tBase);
     }
-
-    public void setAgentStatHandler(AgentStatHandler agentStatHandler) {
-        this.agentStatHandler = agentStatHandler;
-    }
-
 }
