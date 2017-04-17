@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.common.server.bo.serializer.stat.join.ApplicationS
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.StatType;
 import com.sematext.hbase.wd.AbstractRowKeyDistributor;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Scan;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,7 +53,7 @@ public class ApplicationStatHbaseOperationFactory {
     }
 
     public  <T extends JoinStatBo> List<Put> createPuts(String applicationId, List<T> joinStatBoList, StatType statType, ApplicationStatSerializer applicationStatSerializer) {
-        if (joinStatBoList == null || joinStatBoList.isEmpty()) {
+        if (CollectionUtils.isEmpty(joinStatBoList)) {
             return Collections.emptyList();
         }
 

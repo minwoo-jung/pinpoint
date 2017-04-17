@@ -17,6 +17,7 @@ package com.navercorp.pinpoint.plugin.bloc.v4;
 import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
 import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
 import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.common.util.CollectionUtils;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public class Bloc4Detector implements ApplicationTypeDetector {
     private final List<String> bootstrapMains;
 
     public Bloc4Detector(List<String> bootstrapMains) {
-        if (bootstrapMains == null || bootstrapMains.isEmpty()) {
+        if (CollectionUtils.isEmpty(bootstrapMains)) {
             this.bootstrapMains = Arrays.asList(DEFAULT_BOOTSTRAP_MAIN);
         } else {
             this.bootstrapMains = bootstrapMains;
