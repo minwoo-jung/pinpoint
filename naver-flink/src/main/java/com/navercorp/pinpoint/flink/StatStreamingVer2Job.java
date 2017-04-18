@@ -69,8 +69,8 @@ public class StatStreamingVer2Job implements Serializable {
 
         //TODO : (minwoo) 이것도 bootstrap을 빼면 될듯.
         // local
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
-//        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         final ParameterTool params = ParameterTool.fromArgs(new String[0]);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.getConfig().setGlobalJobParameters(params);
@@ -83,7 +83,8 @@ public class StatStreamingVer2Job implements Serializable {
         // set data source
 //        final DataStream<TBase> rawData = env.addSource(tcpSourceFunction);
         DataStreamSource<TBase> rawData = env.addSource(tcpSourceFunction);
-        rawData.setParallelism(1);
+//        rawData.setParallelism(1);
+        rawData.setParallelism(3);
 
         // 0. generation rawdata
         final SingleOutputStreamOperator<Tuple3<String, JoinStatBo, Long>> statOperator = rawData.flatMap(flatMapper);
