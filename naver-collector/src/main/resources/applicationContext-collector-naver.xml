@@ -14,7 +14,6 @@
 
     <import resource="classpath:applicationContext-collector.xml" />
 
-    <!--
     <util:properties id="pinpoint_collector_naver_properties" location="classpath:pinpoint-collector.properties" />
     <bean id="naverCollectorConfiguration" class="com.navercorp.pinpoint.collector.config.NaverCollectorConfiguration">
         <property name="properties" ref="pinpoint_collector_naver_properties"/>
@@ -36,5 +35,4 @@
         <constructor-arg index="0" ref="naverCollectorConfiguration"/>
         <constructor-arg index="1" ref="flinkClusterConnectionManager"/>
     </bean>
-    -->
 </beans>
