@@ -25,6 +25,7 @@ import com.navercorp.pinpoint.common.hbase.PooledHTableFactory;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinAgentStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinApplicationStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
+import com.navercorp.pinpoint.flink.config.FlinkConfiguration;
 import com.navercorp.pinpoint.flink.dao.hbase.StatisticsDao;
 import com.navercorp.pinpoint.flink.function.Timestamp;
 import com.navercorp.pinpoint.flink.process.ApplicationCache;
@@ -68,9 +69,7 @@ public class StatStreamingVer2Job implements Serializable {
         Bootstrap bootstrap = Bootstrap.getInstance();
 
         //TODO : (minwoo) 이것도 bootstrap을 빼면 될듯.
-        // local
-//        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        final StreamExecutionEnvironment env = createStreamExecutionEnvironment();
         final ParameterTool params = ParameterTool.fromArgs(new String[0]);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.getConfig().setGlobalJobParameters(params);
@@ -83,8 +82,7 @@ public class StatStreamingVer2Job implements Serializable {
         // set data source
 //        final DataStream<TBase> rawData = env.addSource(tcpSourceFunction);
         DataStreamSource<TBase> rawData = env.addSource(tcpSourceFunction);
-//        rawData.setParallelism(1);
-        rawData.setParallelism(3);
+        setSourceFunctionParallel(rawData);
 
         // 0. generation rawdata
         final SingleOutputStreamOperator<Tuple3<String, JoinStatBo, Long>> statOperator = rawData.flatMap(flatMapper);
@@ -208,5 +206,21 @@ public class StatStreamingVer2Job implements Serializable {
             .writeUsingOutputFormat(statisticsDao);
 
         env.execute("Aggregation Stat Data 2");
+    }
+
+    protected void setSourceFunctionParallel(DataStreamSource rawData) {
+        FlinkConfiguration flinkConfiguration = Bootstrap.getInstance().getFlinkConfiguration();
+        int parallel = flinkConfiguration.getFlinkSourceFunctionParallel();
+        rawData.setParallelism(parallel);
+    }
+
+    protected StreamExecutionEnvironment createStreamExecutionEnvironment() {
+        FlinkConfiguration flinkConfiguration = Bootstrap.getInstance().getFlinkConfiguration();
+
+        if (flinkConfiguration.isLocalforFlinkStreamExecutionEnvironment()) {
+            return StreamExecutionEnvironment.createLocalEnvironment();
+        } else {
+            return StreamExecutionEnvironment.getExecutionEnvironment();
+        }
     }
 }

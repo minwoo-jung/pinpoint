@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.flink;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.join.CpuLoadSerializer;
+import com.navercorp.pinpoint.flink.config.FlinkConfiguration;
 import com.navercorp.pinpoint.flink.dao.hbase.StatisticsDao;
 import com.navercorp.pinpoint.flink.process.TbaseFlatMapper;
 import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
@@ -35,16 +36,18 @@ public class Bootstrap {
     private final ApplicationContext applicationContext;
     private final TcpSourceFunction tcpSourceFunction;
     private final TbaseFlatMapper tbaseFlatMapper;
+    private final FlinkConfiguration flinkConfiguration;
 
     private Bootstrap() {
         String[] SPRING_CONFIG_XML = new String[]{"applicationContext-collector.xml", "applicationContext-cache.xml"};
         applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
-
         tbaseFlatMapper = applicationContext.getBean("tbaseFlatMapper", TbaseFlatMapper.class);
+        flinkConfiguration = applicationContext.getBean("flinkConfiguration", FlinkConfiguration.class);
 
         final HbaseTemplate2 hbaseTemplate2 = applicationContext.getBean("hbaseTemplate", HbaseTemplate2.class);
         final ApplicationStatHbaseOperationFactory ApplicationStatHbaseOperationFactory = applicationContext.getBean("applicationStatHbaseOperationFactory", ApplicationStatHbaseOperationFactory.class);
-        CpuLoadSerializer cpuLoadSerializer = applicationContext.getBean("cpuLoadSerializer", CpuLoadSerializer.class);
+        final CpuLoadSerializer cpuLoadSerializer = applicationContext.getBean("cpuLoadSerializer", CpuLoadSerializer.class);
+
         //TODO : (minwoo) 아래 두객체도 spring 전환 필요함.
         statisticsDao = new StatisticsDao(hbaseTemplate2, ApplicationStatHbaseOperationFactory, cpuLoadSerializer);
 
@@ -71,4 +74,10 @@ public class Bootstrap {
     public TbaseFlatMapper getTbaseFlatMapper() {
         return tbaseFlatMapper;
     }
+
+    public FlinkConfiguration getFlinkConfiguration() {
+        return flinkConfiguration;
+    }
+
+
 }

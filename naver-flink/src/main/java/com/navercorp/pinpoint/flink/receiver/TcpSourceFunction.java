@@ -15,19 +15,17 @@
  */
 package com.navercorp.pinpoint.flink.receiver;
 
-import com.codahale.metrics.MetricRegistry;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.flink.Bootstrap;
-import com.navercorp.pinpoint.flink.StatStreamingVer2Job;
 import com.navercorp.pinpoint.flink.cluster.FlinkServerRegister;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import org.apache.flink.streaming.api.functions.source.ParallelSourceFunction;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.thrift.TBase;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * @author minwoo.jung
@@ -35,13 +33,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 //public class TcpSourceFunction implements SourceFunction<TBase> {
 public class TcpSourceFunction implements ParallelSourceFunction<TBase> {
 
-    private TCPReceiver tcpReceiver;
+    private final Logger logger = LoggerFactory.getLogger(TcpSourceFunction.class);
+    private TCPReceiver tcpReceiver = null;
+    private ApplicationContext appCtx = null;
 
     @Override
     public void run(SourceContext<TBase> ctx) throws Exception {
         //TODO : (minwoo) Bootstrap 에서 application context 안가져오고 바로 가져올수 있도록 개선
-        ApplicationContext appCtx = Bootstrap.getInstance().getApplicationContext();
-
+        appCtx = Bootstrap.getInstance().getApplicationContext();
         AgentStatHandler agentStatHandler = new AgentStatHandler(ctx);
         TcpDispatchHandler tcpDispatchHandler = appCtx.getBean("tcpDispatchHandler", TcpDispatchHandler.class);
         tcpDispatchHandler.setAgentStatHandler(agentStatHandler);
@@ -50,7 +49,7 @@ public class TcpSourceFunction implements ParallelSourceFunction<TBase> {
         DispatchHandler tcpDispatchHandlerWrapper = appCtx.getBean("tcpDispatchHandlerWrapper", DispatchHandler.class);
         PinpointServerAcceptor serverAcceptor = appCtx.getBean("serverAcceptor", PinpointServerAcceptor.class);
         appCtx.getBean("flinkServerRegister", FlinkServerRegister.class);
-        TCPReceiver tcpReceiver = new TCPReceiver(configuration, tcpDispatchHandlerWrapper, serverAcceptor, ctx);
+        tcpReceiver = new TCPReceiver(configuration, tcpDispatchHandlerWrapper, serverAcceptor, ctx);
         tcpReceiver.afterPropertiesSet();
 
         tcpReceiver.start();
@@ -60,6 +59,13 @@ public class TcpSourceFunction implements ParallelSourceFunction<TBase> {
 
     @Override
     public void cancel() {
-        tcpReceiver.stop();
+        logger.info("cancel TcpSourceFunction.");
+        if (tcpReceiver != null) {
+            tcpReceiver.stop();
+        }
+
+        if (appCtx != null) {
+            ((ConfigurableApplicationContext) appCtx).close();
+        }
     }
 }
