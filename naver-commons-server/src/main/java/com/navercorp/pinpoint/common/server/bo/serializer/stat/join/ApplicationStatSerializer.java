@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.common.server.bo.serializer.stat.join;
 
-import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.common.server.bo.codec.stat.ApplicationStatEncoder;
 import com.navercorp.pinpoint.common.server.bo.serializer.HbaseSerializer;
