@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -84,7 +85,7 @@ import org.apache.http.params.HttpParams;
  * @author Xenos
  */
 public class HttpUtil {
-    private static Charset defaultCharset = Charset.forName("UTF-8");
+    private static Charset defaultCharset = StandardCharsets.UTF_8;
     private static X509TrustManager IgnoreSLLErrorTrustManager = new X509TrustManager() {
 
         @Override

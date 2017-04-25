@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.web.log.nelo;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.junit.Ignore;
@@ -87,8 +88,8 @@ public class Nelo2OpenApiCallerTest {
     
 //    @Test
     public void encodeTest() throws UnsupportedEncodingException {
-        logger.debug(URLEncoder.encode("minwoo_local_tomcat^1425368654938^10", "UTF-8"));
-        logger.debug(URLEncoder.encode("transactionid=\"minwoo_local_tomcat^1425368654938^10\"", "UTF-8"));
+        logger.debug(URLEncoder.encode("minwoo_local_tomcat^1425368654938^10", StandardCharsets.UTF_8.name()));
+        logger.debug(URLEncoder.encode("transactionid=\"minwoo_local_tomcat^1425368654938^10\"", StandardCharsets.UTF_8.name()));
 //        minwoo_local_tomcat%5E1425368654938%5E10
     }
 }

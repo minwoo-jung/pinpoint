@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvocation;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
+import com.navercorp.pinpoint.common.Charsets;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetHeader;
 import com.navercorp.pinpoint.profiler.context.id.DefaultTraceId;
@@ -44,7 +45,7 @@ import java.util.Set;
  */
 public class EncodeMessageInterceptorTest {
 
-    private static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
+    private static final Charset UTF_8_CHARSET = Charsets.UTF_8;
 
     private static MethodDescriptor methodDescriptor;
     private static InterceptorScope scope;
@@ -79,7 +80,7 @@ public class EncodeMessageInterceptorTest {
     public void encodeMessageInterceptorTest1() throws Exception {
         TraceContext traceContext = createMockTraceContext(true);
 
-        Map<UserOptionIndex, byte[]> option = new HashMap();
+        Map<UserOptionIndex, byte[]> option = new HashMap<UserOptionIndex, byte[]>();
 
         EncodeMesssageInterceptor encodeMessageInteceptor = new EncodeMesssageInterceptor(traceContext, methodDescriptor, scope);
         encodeMessageInteceptor.before(null, new Object[]{option, call});
@@ -94,7 +95,7 @@ public class EncodeMessageInterceptorTest {
     public void encodeMessageInterceptorTest2() throws Exception {
         TraceContext traceContext = createMockTraceContext(false);
 
-        Map<UserOptionIndex, byte[]> option = new HashMap();
+        Map<UserOptionIndex, byte[]> option = new HashMap<UserOptionIndex, byte[]>();
 
         EncodeMesssageInterceptor encodeMessageInteceptor = new EncodeMesssageInterceptor(traceContext, methodDescriptor, scope);
         encodeMessageInteceptor.before(null, new Object[]{option, call});
@@ -109,7 +110,7 @@ public class EncodeMessageInterceptorTest {
     public void encodeMessageInterceptorTest3() throws Exception {
         TraceContext traceContext = createMockTraceContext(true);
 
-        Map<UserOptionIndex, byte[]> option = new HashMap();
+        Map<UserOptionIndex, byte[]> option = new HashMap<UserOptionIndex, byte[]>();
         option.put(new UserOptionIndex(1, 3), new String(LucyNetHeader.PINPOINT_HOST.toString() + "=test").getBytes(UTF_8_CHARSET));
         option.put(new UserOptionIndex(1, 1), new String(LucyNetHeader.PINPOINT_PARENT_APPLICATION_TYPE.toString() + "=21").getBytes(UTF_8_CHARSET));
         option.put(new UserOptionIndex(1, 5), new String(LucyNetHeader.PINPOINT_SAMPLED.toString() + "=" + SamplingFlagUtils.SAMPLING_RATE_TRUE).getBytes(UTF_8_CHARSET));
@@ -134,7 +135,7 @@ public class EncodeMessageInterceptorTest {
     public void encodeMessageInterceptorTest4() throws Exception {
         TraceContext traceContext = createMockTraceContext(true);
 
-        Map<UserOptionIndex, byte[]> option = new HashMap();
+        Map<UserOptionIndex, byte[]> option = new HashMap<UserOptionIndex, byte[]>();
         for (int i = 0; i < 30; i++) {
             option.put(new UserOptionIndex(1, i), "".getBytes());
         }

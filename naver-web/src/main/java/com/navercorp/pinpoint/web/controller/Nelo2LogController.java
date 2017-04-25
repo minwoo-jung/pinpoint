@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.web.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +88,7 @@ public class Nelo2LogController {
         StringBuilder paramsBuilder = new StringBuilder();
 
         try {
-            paramsBuilder.append("cmd=" + "PtxId%3A%22" + URLEncoder.encode(transactionId, "UTF-8") + "%22");
+            paramsBuilder.append("cmd=" + "PtxId%3A%22" + URLEncoder.encode(transactionId, StandardCharsets.UTF_8.name()) + "%22");
         } catch (UnsupportedEncodingException e) {
             logger.error("Error while build nelo link url.", e);
             return null;

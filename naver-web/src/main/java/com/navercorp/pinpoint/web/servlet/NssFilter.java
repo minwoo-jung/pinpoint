@@ -31,6 +31,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -108,7 +109,7 @@ public class NssFilter implements Filter {
                 chain.doFilter(request, response);
             } else {
                 response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
+                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.getWriter().write(this.unauthorizedResponse);
             }
         }

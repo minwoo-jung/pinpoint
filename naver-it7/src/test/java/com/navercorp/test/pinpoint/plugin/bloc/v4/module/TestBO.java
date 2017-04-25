@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Runner;
@@ -37,7 +38,7 @@ public class TestBO {
     @Procedure
     public String doTest(String testId, String testClass, String testClassPath) throws Exception {
 
-        final String decodeTestClassPath = URLDecoder.decode(testClassPath, "utf-8");
+        final String decodeTestClassPath = URLDecoder.decode(testClassPath, StandardCharsets.UTF_8.name());
         System.out.println("testClassPath=" + decodeTestClassPath);
 
         ClassLoader loader = getClass().getClassLoader();

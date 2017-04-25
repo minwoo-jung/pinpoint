@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.web.alarm;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +97,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
                 nvps.add(new BasicNameValuePair("receiveMdnList",convertToReceiverFormat(receivers)));
                 nvps.add(new BasicNameValuePair("content", QUOTATATION + message + " #" + sequenceCount + QUOTATATION));
             
-                HttpGet get = new HttpGet(smsServerUrl + "?" + URLEncodedUtils.format(nvps, "UTF-8"));
+                HttpGet get = new HttpGet(smsServerUrl + "?" + URLEncodedUtils.format(nvps, StandardCharsets.UTF_8));
                 logger.debug("SMSServer url : {}", get.getURI());
                 HttpResponse response = client.execute(get);
                 logger.debug("SMSServer call result ={}", EntityUtils.toString(response.getEntity()));
@@ -127,7 +127,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     public void sendEmail(AlarmChecker checker, int sequenceCount) {
         NpcConnectionFactory factory = new NpcConnectionFactory();
         factory.setBoxDirectoryServiceHostName(emailServerUrl);
-        factory.setCharset(Charset.forName("UTF-8"));
+        factory.setCharset(StandardCharsets.UTF_8);
         factory.setLightWeight(true);
 
         NpcHessianConnector connector = null;

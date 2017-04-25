@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class NaverJobFailMessageSender implements JobFailMessageSender {
     private String encodeMessage(String message) {
         message = message.replace("\\", "\\\\").replace("\"", "\\\"").replace("\r\n", "\\n").replace("\r", "\\n").replace("\n", "\\n");
         try {
-            return URLEncoder.encode(message, "UTF-8");
+            return URLEncoder.encode(message, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             logger.error("Can't encoding sms message.");
             return "batch job fail";

@@ -15,6 +15,7 @@
 
 package com.navercorp.pinpoint.plugin.lucy.net;
 
+import com.navercorp.pinpoint.common.Charsets;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.AnnotationKeyFactory;
 import static com.navercorp.pinpoint.common.trace.AnnotationKeyProperty.VIEW_IN_RECORD_SET;
@@ -34,7 +35,7 @@ public final class LucyNetConstants {
     }
 
     // Common
-    public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
+    public static final Charset UTF_8_CHARSET = Charsets.UTF_8;
     public static final String UNKOWN_ADDRESS = "Unknown Address";
 
     // NPC
