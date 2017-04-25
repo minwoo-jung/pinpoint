@@ -18,10 +18,18 @@ package com.navercorp.pinpoint.flink;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.join.CpuLoadSerializer;
+import com.navercorp.pinpoint.flink.cluster.FlinkServerRegister;
 import com.navercorp.pinpoint.flink.config.FlinkConfiguration;
 import com.navercorp.pinpoint.flink.dao.hbase.StatisticsDao;
 import com.navercorp.pinpoint.flink.process.TbaseFlatMapper;
+import com.navercorp.pinpoint.flink.receiver.AgentStatHandler;
+import com.navercorp.pinpoint.flink.receiver.TCPReceiver;
+import com.navercorp.pinpoint.flink.receiver.TcpDispatchHandler;
 import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.source.SourceFunction.SourceContext;
+import org.apache.thrift.TBase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -33,25 +41,22 @@ public class Bootstrap {
     private final static Bootstrap INSTANCE = new Bootstrap();
 
     private final StatisticsDao statisticsDao;
+
     private final ApplicationContext applicationContext;
-    private final TcpSourceFunction tcpSourceFunction;
+
     private final TbaseFlatMapper tbaseFlatMapper;
     private final FlinkConfiguration flinkConfiguration;
-
+    private final TcpDispatchHandler tcpDispatchHandler;
+    private final TcpSourceFunction tcpSourceFunction;
     private Bootstrap() {
         String[] SPRING_CONFIG_XML = new String[]{"applicationContext-collector.xml", "applicationContext-cache.xml"};
         applicationContext = new ClassPathXmlApplicationContext(SPRING_CONFIG_XML);
+
         tbaseFlatMapper = applicationContext.getBean("tbaseFlatMapper", TbaseFlatMapper.class);
         flinkConfiguration = applicationContext.getBean("flinkConfiguration", FlinkConfiguration.class);
-
-        final HbaseTemplate2 hbaseTemplate2 = applicationContext.getBean("hbaseTemplate", HbaseTemplate2.class);
-        final ApplicationStatHbaseOperationFactory ApplicationStatHbaseOperationFactory = applicationContext.getBean("applicationStatHbaseOperationFactory", ApplicationStatHbaseOperationFactory.class);
-        final CpuLoadSerializer cpuLoadSerializer = applicationContext.getBean("cpuLoadSerializer", CpuLoadSerializer.class);
-
-        //TODO : (minwoo) 아래 두객체도 spring 전환 필요함.
-        statisticsDao = new StatisticsDao(hbaseTemplate2, ApplicationStatHbaseOperationFactory, cpuLoadSerializer);
-
-        tcpSourceFunction = new TcpSourceFunction();
+        tcpDispatchHandler = applicationContext.getBean("tcpDispatchHandler", TcpDispatchHandler.class);
+        tcpSourceFunction = applicationContext.getBean("tcpSourceFunction", TcpSourceFunction.class);
+        statisticsDao = applicationContext.getBean("statisticsDao", StatisticsDao.class);
 
     }
 
@@ -59,16 +64,12 @@ public class Bootstrap {
         return INSTANCE;
     }
 
-    public StatisticsDao getStatisticsDao() {
-        return statisticsDao;
-    }
-
-    public TcpSourceFunction getTcpFuncation() {
-        return tcpSourceFunction;
-    }
-
     public ApplicationContext getApplicationContext() {
         return applicationContext;
+    }
+
+    public StatisticsDao getStatisticsDao() {
+        return statisticsDao;
     }
 
     public TbaseFlatMapper getTbaseFlatMapper() {
@@ -79,5 +80,33 @@ public class Bootstrap {
         return flinkConfiguration;
     }
 
+    public StreamExecutionEnvironment createStreamExecutionEnvironment() {
+        if (flinkConfiguration.isLocalforFlinkStreamExecutionEnvironment()) {
+            return StreamExecutionEnvironment.createLocalEnvironment();
+        } else {
+            return StreamExecutionEnvironment.getExecutionEnvironment();
+        }
+    }
 
+    public void setSourceFunctionParallel(DataStreamSource rawData) {
+        int parallel = flinkConfiguration.getFlinkSourceFunctionParallel();
+        rawData.setParallelism(parallel);
+    }
+
+    public void setStatHandlerTcpDispatchHandler(SourceContext<TBase> sourceContext) {
+        AgentStatHandler agentStatHandler = new AgentStatHandler(sourceContext);
+        tcpDispatchHandler.setAgentStatHandler(agentStatHandler);
+    }
+
+    public FlinkServerRegister initFlinkServerRegister() {
+        return applicationContext.getBean("flinkServerRegister", FlinkServerRegister.class);
+    }
+
+    public TCPReceiver initTcpReceiver() {
+        return applicationContext.getBean("tcpReceiver", TCPReceiver.class);
+    }
+
+    public TcpSourceFunction getTcpSourceFuncation() {
+        return tcpSourceFunction;
+    }
 }

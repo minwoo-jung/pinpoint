@@ -66,28 +66,20 @@ public class StatStreamingVer2Job implements Serializable {
 
     public void start() throws Exception {
         logger.info("start job");
-        Bootstrap bootstrap = Bootstrap.getInstance();
-
-        //TODO : (minwoo) 이것도 bootstrap을 빼면 될듯.
-        final StreamExecutionEnvironment env = createStreamExecutionEnvironment();
-        final ParameterTool params = ParameterTool.fromArgs(new String[0]);
-        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        env.getConfig().setGlobalJobParameters(params);
-
-        //TODO : (minwoo) statisticsDao도 spring bean으로 빼자.
-        final StatisticsDao statisticsDao = bootstrap.getStatisticsDao();
-        final TcpSourceFunction tcpSourceFunction = bootstrap.getTcpFuncation();
-        final TbaseFlatMapper flatMapper = bootstrap.getTbaseFlatMapper();
+        final Bootstrap bootstrap = Bootstrap.getInstance();
 
         // set data source
-//        final DataStream<TBase> rawData = env.addSource(tcpSourceFunction);
+        final TcpSourceFunction tcpSourceFunction = bootstrap.getTcpSourceFuncation();
+        final StreamExecutionEnvironment env = bootstrap.createStreamExecutionEnvironment();
         DataStreamSource<TBase> rawData = env.addSource(tcpSourceFunction);
-        setSourceFunctionParallel(rawData);
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        bootstrap.setSourceFunctionParallel(rawData);
 
         // 0. generation rawdata
-        final SingleOutputStreamOperator<Tuple3<String, JoinStatBo, Long>> statOperator = rawData.flatMap(flatMapper);
+        final SingleOutputStreamOperator<Tuple3<String, JoinStatBo, Long>> statOperator = rawData.flatMap(bootstrap.getTbaseFlatMapper());
 
         // 1 process application stat raw data
+        final StatisticsDao statisticsDao = bootstrap.getStatisticsDao();
         DataStream<Tuple3<String, JoinStatBo, Long>> applicationStatAggregationData = statOperator.filter(new FilterFunction<Tuple3<String, JoinStatBo, Long>>() {
             @Override
             public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
@@ -150,7 +142,7 @@ public class StatStreamingVer2Job implements Serializable {
                         logger.info("1-2 application stat aggre window function : " + joinApplicationStatBo);
                         out.collect(new Tuple3<>(joinApplicationStatBo.getId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
                     } catch (Exception e) {
-                        e.printStackTrace(); // TODO : (minwoo) 로깅 추가 필요함.
+                        logger.error("window function error", e);
                     }
                 }
 
@@ -190,7 +182,7 @@ public class StatStreamingVer2Job implements Serializable {
                         logger.info("2 agent stat aggre window function : " + joinAgentStatBo);
                         out.collect(new Tuple3<>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
                     } catch (Exception e) {
-                        e.printStackTrace();// TODO : (minwoo) 로깅 추가 필요함.
+                        logger.error("window function error", e);
                     }
                 }
 
@@ -206,21 +198,5 @@ public class StatStreamingVer2Job implements Serializable {
             .writeUsingOutputFormat(statisticsDao);
 
         env.execute("Aggregation Stat Data 2");
-    }
-
-    protected void setSourceFunctionParallel(DataStreamSource rawData) {
-        FlinkConfiguration flinkConfiguration = Bootstrap.getInstance().getFlinkConfiguration();
-        int parallel = flinkConfiguration.getFlinkSourceFunctionParallel();
-        rawData.setParallelism(parallel);
-    }
-
-    protected StreamExecutionEnvironment createStreamExecutionEnvironment() {
-        FlinkConfiguration flinkConfiguration = Bootstrap.getInstance().getFlinkConfiguration();
-
-        if (flinkConfiguration.isLocalforFlinkStreamExecutionEnvironment()) {
-            return StreamExecutionEnvironment.createLocalEnvironment();
-        } else {
-            return StreamExecutionEnvironment.getExecutionEnvironment();
-        }
     }
 }

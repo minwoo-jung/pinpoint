@@ -17,16 +17,10 @@
 package com.navercorp.pinpoint.flink.receiver;
 
 import com.codahale.metrics.MetricRegistry;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.monitor.MonitoredExecutorService;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
-import com.navercorp.pinpoint.collector.rpc.handler.AgentEventHandler;
-import com.navercorp.pinpoint.collector.rpc.handler.AgentLifeCycleHandler;
 import com.navercorp.pinpoint.collector.util.PacketUtils;
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
-import com.navercorp.pinpoint.common.server.util.AgentEventType;
-import com.navercorp.pinpoint.common.server.util.AgentLifeCycleState;
 import com.navercorp.pinpoint.common.util.ExecutorFactory;
 import com.navercorp.pinpoint.common.util.PinpointThreadFactory;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
@@ -38,14 +32,9 @@ import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
-import com.navercorp.pinpoint.rpc.server.handler.ServerStateChangeEventHandler;
-import com.navercorp.pinpoint.rpc.util.MapUtils;
-import com.navercorp.pinpoint.thrift.dto.TResult;
-import com.navercorp.pinpoint.thrift.dto.flink.TFAgentStatBatch;
 import com.navercorp.pinpoint.thrift.io.*;
 import com.navercorp.pinpoint.thrift.util.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.flink.streaming.api.functions.source.SourceFunction.SourceContext;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -54,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
@@ -77,39 +65,15 @@ public class TCPReceiver {
     private final ThreadFactory tcpWorkerThreadFactory = new PinpointThreadFactory("Pinpoint-TCP-Worker");
     private final DispatchHandler dispatchHandler;
     private final PinpointServerAcceptor serverAcceptor;
-
     private final CollectorConfiguration configuration;
-
-//    private final ZookeeperClusterService clusterService;
+    private final DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory = new ThreadLocalHeaderTBaseDeserializerFactory<>(new FlinkHeaderTBaseDeserializerFactory());
 
     private ExecutorService worker;
-
-//    private final SerializerFactory<HeaderTBaseSerializer> serializerFactory = new ThreadLocalHeaderTBaseSerializerFactory<>(new HeaderTBaseSerializerFactory(true, HeaderTBaseSerializerFactory.DEFAULT_UDP_STREAM_MAX_SIZE));
-    private final DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory = new ThreadLocalHeaderTBaseDeserializerFactory<>(new FlinkHeaderTBaseDeserializerFactory());
 
     @Autowired(required=false)
     private MetricRegistry metricRegistry;
 
-//    private ExecutorService agentEventWorker;
-
-//    @Resource(name="agentEventHandler")
-//    private AgentEventHandler agentEventHandler;
-
-//    @Resource(name="agentLifeCycleHandler")
-//    private AgentLifeCycleHandler agentLifeCycleHandler;
-
-//    @Resource(name="channelStateChangeEventHandlers")
-//    private List<ServerStateChangeEventHandler> channelStateChangeEventHandlers = Collections.emptyList();
-
-//    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler) {
-//        this(configuration, dispatchHandler, new PinpointServerAcceptor(), null);
-//    }
-
-    private final SourceContext<TBase> sourceContext;
-//    private AgentStatBatchMapper agentStatBatchMapper = new AgentStatBatchMapper();
-
-//    public TCPReceiver(CollectorConfiguration configuration, DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, ZookeeperClusterService service) {
-    public TCPReceiver(CollectorConfiguration configuration,  DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor, SourceContext<TBase> sourceContext) {
+    public TCPReceiver(CollectorConfiguration configuration,  DispatchHandler dispatchHandler, PinpointServerAcceptor serverAcceptor) {
         if (configuration == null) {
             throw new NullPointerException("collector configuration must not be null");
         }
@@ -120,8 +84,6 @@ public class TCPReceiver {
         this.dispatchHandler = dispatchHandler;
         this.configuration = configuration;
         this.serverAcceptor = serverAcceptor;
-        this.sourceContext = sourceContext;
-//        this.clusterService = service;
     }
 
     public void afterPropertiesSet() {
@@ -136,14 +98,6 @@ public class TCPReceiver {
         } else {
             this.worker = worker;
         }
-
-//        if (clusterService != null && clusterService.isEnable()) {
-//            this.serverAcceptor.addStateChangeEventHandler(clusterService.getChannelStateChangeEventHandler());
-//        }
-
-//        for (ServerStateChangeEventHandler channelStateChangeEventHandler : this.channelStateChangeEventHandlers) {
-//            serverAcceptor.addStateChangeEventHandler(channelStateChangeEventHandler);
-//        }
 
         setL4TcpChannel(serverAcceptor, configuration.getL4IpList());
     }
@@ -182,27 +136,13 @@ public class TCPReceiver {
 
             @Override
             public HandshakeResponseCode handleHandshake(Map properties) {
-//                if (properties == null) {
-//                    return HandshakeResponseType.ProtocolError.PROTOCOL_ERROR;
-//                }
-//
-//                boolean hasAllType = AgentHandshakePropertyType.hasAllType(properties);
-//                if (!hasAllType) {
-//                    return HandshakeResponseType.PropertyError.PROPERTY_ERROR;
-//                }
-//
-//                boolean supportServer = MapUtils.getBoolean(properties, AgentHandshakePropertyType.SUPPORT_SERVER.getName(), true);
-//                if (supportServer) {
-//                    return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
-//                } else {
-                    return HandshakeResponseType.Success.SIMPLEX_COMMUNICATION;
-//                }
-//                return null;
+                return HandshakeResponseType.Success.SIMPLEX_COMMUNICATION;
+
             }
 
             @Override
             public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
-                receive(sendPacket, pinpointSocket, TCPReceiver.this.sourceContext);
+                receive(sendPacket, pinpointSocket);
             }
 
             @Override
@@ -212,15 +152,14 @@ public class TCPReceiver {
 
             @Override
             public void handlePing(PingPacket pingPacket, PinpointServer pinpointServer) {
-                //                recordPing(pingPacket, pinpointServer);
             }
         });
         this.serverAcceptor.bind(configuration.getTcpListenIp(), configuration.getTcpListenPort());
     }
 
-    private void receive(SendPacket sendPacket, PinpointSocket pinpointSocket, SourceContext<TBase> sourceContext) {
+    private void receive(SendPacket sendPacket, PinpointSocket pinpointSocket) {
         try {
-            worker.execute(new Dispatch(sendPacket.getPayload(), pinpointSocket.getRemoteAddress(), sourceContext));
+            worker.execute(new Dispatch(sendPacket.getPayload(), pinpointSocket.getRemoteAddress()));
         } catch (RejectedExecutionException e) {
             // cause is clear - full stack trace not necessary
             logger.warn("RejectedExecutionException Caused:{}", e.getMessage());
@@ -228,40 +167,19 @@ public class TCPReceiver {
     }
 
     private void requestResponse(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
-//        try {
-//            worker.execute(new RequestResponseDispatch(requestPacket, pinpointSocket));
-//        } catch (RejectedExecutionException e) {
-//            // cause is clear - full stack trace not necessary
-//            logger.warn("RejectedExecutionException Caused:{}", e.getMessage());
-//        }
           logger.warn("Not support requestResponse");
     }
-
-//    private void recordPing(PingPacket pingPacket, PinpointServer pinpointServer) {
-//        final int eventCounter = pingPacket.getPingId();
-//        long pingTimestamp = System.currentTimeMillis();
-//        try {
-//            if (!(eventCounter < 0)) {
-//                agentLifeCycleHandler.handleLifeCycleEvent(pinpointServer, pingTimestamp, AgentLifeCycleState.RUNNING, eventCounter);
-//            }
-//            agentEventHandler.handleEvent(pinpointServer, pingTimestamp, AgentEventType.AGENT_PING);
-//        } catch (Exception e) {
-//            logger.warn("Error handling ping event", e);
-//        }
-//    }
 
     private class Dispatch implements Runnable {
         private final byte[] bytes;
         private final SocketAddress remoteAddress;
-        private final SourceContext<TBase> sourceContext;
 
-        private Dispatch(byte[] bytes, SocketAddress remoteAddress, SourceContext<TBase> sourceContext) {
+        private Dispatch(byte[] bytes, SocketAddress remoteAddress) {
             if (bytes == null) {
                 throw new NullPointerException("bytes");
             }
             this.bytes = bytes;
             this.remoteAddress = remoteAddress;
-            this.sourceContext = sourceContext;
         }
 
         @Override
@@ -288,69 +206,11 @@ public class TCPReceiver {
         }
     }
 
-//    private class RequestResponseDispatch implements Runnable {
-//        private final RequestPacket requestPacket;
-//        private final PinpointSocket pinpointSocket;
-//
-//
-//        private RequestResponseDispatch(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
-//            if (requestPacket == null) {
-//                throw new NullPointerException("requestPacket");
-//            }
-//            this.requestPacket = requestPacket;
-//            this.pinpointSocket = pinpointSocket;
-//        }
-//
-//        @Override
-//        public void run() {
-//
-//            byte[] bytes = requestPacket.getPayload();
-//            SocketAddress remoteAddress = pinpointSocket.getRemoteAddress();
-//            try {
-//                TBase<?, ?> tBase = SerializationUtils.deserialize(bytes, deserializerFactory);
-//                TBase result = dispatchHandler.dispatchRequestMessage(tBase);
-//                if (result != null) {
-//                    byte[] resultBytes = SerializationUtils.serialize(result, serializerFactory);
-//                    pinpointSocket.response(requestPacket, resultBytes);
-//                }
-//            } catch (TException e) {
-//                if (logger.isWarnEnabled()) {
-//                    logger.warn("packet serialize error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
-//                }
-//                if (logger.isDebugEnabled()) {
-//                    logger.debug("packet dump hex:{}", PacketUtils.dumpByteArray(bytes));
-//                }
-//            } catch (Exception e) {
-//                //TODO : (minwoo) exception 처리는 나중에 주석 풀어야함.
-//                // there are cases where invalid headers are received
-////                if (logger.isWarnEnabled()) {
-////                    //logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage(), e);
-////                    logger.warn("Unexpected error. SendSocketAddress:{} Cause:{}", remoteAddress, e.getMessage());
-////                }
-////                if (logger.isDebugEnabled()) {
-////                    logger.debug("packet dump hex:{}", PacketUtils.dumpByteArray(bytes));
-////                }
-//
-//                //TODO : (minwoo)임시 코드임
-//                byte[] resultBytes = new byte[0];
-//                try {
-//                    resultBytes = SerializationUtils.serialize(new TResult(true), serializerFactory);
-//                    pinpointSocket.response(requestPacket, resultBytes);
-//                } catch (TException e1) {
-//                    e1.printStackTrace();
-//                }
-//            }
-//
-//
-//        }
-//    }
-
     @PreDestroy
     public void stop() {
         logger.info("Pinpoint-TCP-Server stop");
         serverAcceptor.close();
         shutdownExecutor(worker);
-//        shutdownExecutor(agentEventWorker);
     }
 
     private void shutdownExecutor(ExecutorService executor) {

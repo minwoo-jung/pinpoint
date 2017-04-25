@@ -73,6 +73,12 @@
     <bean id="joinCpuLoadCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadCodec"/>
     <bean id="cpuLoadEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadEncoder"/>
     <bean id="cpuLoadSerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.CpuLoadSerializer"/>
+
+    <bean id="statisticsDao" class="com.navercorp.pinpoint.flink.dao.hbase.StatisticsDao">
+        <constructor-arg index="0" ref="hbaseTemplate"/>
+        <constructor-arg index="1" ref="applicationStatHbaseOperationFactory"/>
+        <constructor-arg index="2" ref="cpuLoadSerializer"/>
+    </bean>
     <!--
         <bean id="daoAutoFlusher" class="com.navercorp.pinpoint.collector.dao.AutoFlusher" init-method="initialize" destroy-method="shutdown">
             <beans:property name="cachedStatisticsDaoList">
@@ -229,12 +235,13 @@
     <!--<ref bean="agentLifeCycleChangeEventHandler"/> -->
     <!--</util:list>-->
 
-    <!--<bean id="tcpReceiver" class="com.navercorp.pinpoint.flink.receiver.TCPReceiver">-->
-    <!--<constructor-arg type="com.navercorp.pinpoint.collector.config.CollectorConfiguration" ref="collectorConfiguration"/>-->
-    <!--<constructor-arg type="com.navercorp.pinpoint.collector.receiver.DispatchHandler" ref="tcpDispatchHandlerWrapper"/>-->
-    <!--<constructor-arg type="com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor" ref="serverAcceptor"/>-->
-    <!--<constructor-arg type="com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService" ref="clusterService"/>-->
-    <!--</bean>-->
+    <bean id="tcpReceiver" class="com.navercorp.pinpoint.flink.receiver.TCPReceiver" lazy-init="true">
+    <constructor-arg index="0" ref="flinkConfiguration"/>
+    <constructor-arg index="1" ref="tcpDispatchHandlerWrapper"/>
+    <constructor-arg index="2" ref="serverAcceptor"/>
+    </bean>
+
+    <bean id="tcpSourceFunction" class="com.navercorp.pinpoint.flink.receiver.TcpSourceFunction"/>
 
     <!--&lt;!&ndash; UDPSpanReceiver related Beans &ndash;&gt;-->
     <!--<bean id="udpSpanBasePacketHandler" class="com.navercorp.pinpoint.collector.receiver.udp.BaseUDPHandlerFactory">-->
