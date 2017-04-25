@@ -18,7 +18,6 @@
 package com.navercorp.test.pinpoint.testweb.httpclient;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +39,8 @@ import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.providers.netty.NettyAsyncHttpProvider;
 
 public class AsyncHTTPClientTest {
+
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     @Test
     public void asyncHttpClient() {
@@ -91,8 +92,8 @@ public class AsyncHTTPClientTest {
             headers.put("header1", "header1");
             headers.put("header2", "header2");
 
-            requestBuilder.addBodyPart(new com.ning.http.client.multipart.ByteArrayPart("name1", "data".getBytes(), "plain/text", Charset.forName("utf-8"), "filename1"));
-            requestBuilder.addBodyPart(new com.ning.http.client.multipart.FilePart("name2", new File("pom.xml"), "mimeType", Charset.forName("utf-8")));
+            requestBuilder.addBodyPart(new com.ning.http.client.multipart.ByteArrayPart("name1", "data".getBytes(), "plain/text", UTF_8, "filename1"));
+            requestBuilder.addBodyPart(new com.ning.http.client.multipart.FilePart("name2", new File("pom.xml"), "mimeType", UTF_8));
             requestBuilder.addBodyPart(new com.ning.http.client.multipart.StringPart("name3", "value3"));
             requestBuilder.addBodyPart(new com.ning.http.client.multipart.FilePart("name4", new File("pom.xml")));
             requestBuilder.addBodyPart(new StringPart("name5", "value5"));

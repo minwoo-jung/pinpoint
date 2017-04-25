@@ -55,6 +55,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApacheHttpClient4 {
 
+    private static final String UTF_8 = "UTF-8";
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public final static int SLOW_REQUEST_TIME = 1000;
@@ -225,9 +227,9 @@ public class ApacheHttpClient4 {
     private HttpEntity getEntity(Map<String, Object> paramMap) throws UnsupportedEncodingException {
         if (paramMap.size() != 0) {
             // size가 0일때 호출하면 entity에 {}가 들어감.
-            return new StringEntity(paramMap.toString(), "UTF-8");
+            return new StringEntity(paramMap.toString(), UTF_8);
         } else {
-            return new StringEntity("", "UTF-8");
+            return new StringEntity("", UTF_8);
         }
     }
 
@@ -237,8 +239,8 @@ public class ApacheHttpClient4 {
             HttpConnectionParams.setConnectionTimeout(params, (int) connectorOptions.getConnectionTimeout());
             HttpConnectionParams.setSoTimeout(params, connectorOptions.getSoTimeout());
         }
-        params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
-        params.setParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, "UTF-8");
+        params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, UTF_8);
+        params.setParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, UTF_8);
         return params;
     }
 

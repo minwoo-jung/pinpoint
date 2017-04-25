@@ -17,7 +17,6 @@ package com.navercorp.pinpoint.plugin.bloc;
 import static com.navercorp.pinpoint.common.trace.AnnotationKeyProperty.*;
 import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.*;
 
-import com.navercorp.pinpoint.common.Charsets;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.AnnotationKeyFactory;
 import com.navercorp.pinpoint.common.trace.ServiceType;
@@ -34,7 +33,7 @@ public final class BlocConstants {
     }
 
     // Common
-    public static final Charset UTF_8_CHARSET = Charsets.UTF_8;
+    public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
     public static final String UNKOWN_ADDRESS = "Unknown Address";
 
     public static final AnnotationKey CALL_URL = AnnotationKeyFactory.of(15, "CALL_URL");

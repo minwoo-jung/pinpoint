@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.web.applicationmap.link;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -57,8 +58,9 @@ public class NsightMatcherGroup extends MatcherGroup {
                 if (comName.isEmpty() || urlMap.get(matcherUrlName) == null) {
                     continue;
                 }
-       
-                String[] keys = keyInfo.getValue().replaceAll(" ", "").split(",");
+
+                String value = keyInfo.getValue();
+                List<String> keys = com.navercorp.pinpoint.common.util.StringUtils.tokenizeToStringList(value, ",");
                 
                 for (String key : keys) {
                     addServerMatcher(new PostfixServerMatcher(key, urlMap.get(matcherUrlName), LINK_NAME, LinkType.ATAG));

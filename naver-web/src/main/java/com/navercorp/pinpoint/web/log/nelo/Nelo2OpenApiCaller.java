@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -151,8 +152,8 @@ public class Nelo2OpenApiCaller {
 		if (code == null || !code.contains("code=")) {
 		    return null;
 		}
-		
-		return URLDecoder.decode(code.split("code=")[1], "UTF-8");
+
+		return URLDecoder.decode(code.split("code=")[1], StandardCharsets.UTF_8.name());
 	}
 
     private String callLogOpenAPI(String accessToken, String transactionId, String spanId, long time) throws Exception {
