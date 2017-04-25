@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +46,8 @@ import java.util.Map;
 public class NingAsyncHTTPClientController {
 
     private static final Logger logger = LoggerFactory.getLogger(NingAsyncHTTPClientController.class);
+
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     @Autowired
     private NingAsyncHttpClient ningAsyncHttpClient;
@@ -110,8 +113,8 @@ public class NingAsyncHTTPClientController {
         headers.put("header2", "header2");
 
         List<Part> parts = new ArrayList<Part>();
-        parts.add(new com.ning.http.client.multipart.ByteArrayPart("name1", "data".getBytes(), "plain/text", StandardCharsets.UTF_8, "filename1"));
-        parts.add(new com.ning.http.client.multipart.FilePart("name2", new File("./test"), "mimeType", StandardCharsets.UTF_8));
+        parts.add(new com.ning.http.client.multipart.ByteArrayPart("name1", "data".getBytes(), "plain/text", UTF_8, "filename1"));
+        parts.add(new com.ning.http.client.multipart.FilePart("name2", new File("./test"), "mimeType", UTF_8));
         parts.add(new com.ning.http.client.multipart.StringPart("name3", "value3"));
         parts.add(new com.ning.http.client.multipart.FilePart("name4", new File("./test")));
         parts.add(new StringPart("name5", "value5"));

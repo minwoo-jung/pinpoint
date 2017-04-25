@@ -85,7 +85,7 @@ import org.apache.http.params.HttpParams;
  * @author Xenos
  */
 public class HttpUtil {
-    private static Charset defaultCharset = StandardCharsets.UTF_8;
+    private static Charset defaultCharset = Charset.forName("UTF-8");
     private static X509TrustManager IgnoreSLLErrorTrustManager = new X509TrustManager() {
 
         @Override
