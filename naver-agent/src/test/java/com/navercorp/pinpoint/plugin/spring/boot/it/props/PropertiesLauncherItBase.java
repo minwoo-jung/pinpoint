@@ -37,6 +37,9 @@ public class PropertiesLauncherItBase extends SpringBootItBase {
             packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com"));
             packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com/navercorp"));
             packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com/navercorp/pinpoint"));
+        } else if (getTestAppSpringBootVersion() == TestAppSpringBootVersion.POST_1_5_3) {
+            // https://github.com/spring-projects/spring-boot/commit/14638e67bc57645aecd38f15262e0daf490dd2c1
+            packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes"));
         }
         return packagedLibs;
     }
@@ -48,11 +51,11 @@ public class PropertiesLauncherItBase extends SpringBootItBase {
 
     @Override
     protected String getEntryPath() {
-        // 1.4+ creates a separate BOOT-INF directory to package libraries
-        if (getTestAppSpringBootVersion() == TestAppSpringBootVersion.POST_1_4) {
-            return BOOT_INF + "/lib";
-        } else {
+        if (getTestAppSpringBootVersion() == TestAppSpringBootVersion.PRE_1_4) {
             return "lib";
+        } else {
+            // 1.4+ creates a separate BOOT-INF directory to package libraries
+            return BOOT_INF + "/lib";
         }
     }
 }

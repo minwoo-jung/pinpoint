@@ -69,18 +69,41 @@ public enum TestAppSpringBootVersion {
                     "spring-expression-4.3.2.RELEASE.jar"
             );
         }
+    },
+    POST_1_5_3("1.4.0.RELEASE") {
+        @Override
+        public List<String> getNestedLibs() {
+            return Arrays.asList(
+                    "jcl-over-slf4j-1.7.21.jar",
+                    "jul-to-slf4j-1.7.21.jar",
+                    "log4j-over-slf4j-1.7.21.jar",
+                    "logback-classic-1.1.7.jar",
+                    "logback-core-1.1.7.jar",
+                    "slf4j-api-1.7.21.jar",
+                    "snakeyaml-1.17.jar",
+                    "spring-aop-4.3.2.RELEASE.jar",
+                    "spring-beans-4.3.2.RELEASE.jar",
+                    "spring-boot-1.4.0.RELEASE.jar",
+                    "spring-boot-autoconfigure-1.4.0.RELEASE.jar",
+                    "spring-boot-starter-1.4.0.RELEASE.jar",
+                    "spring-boot-starter-logging-1.4.0.RELEASE.jar",
+                    "spring-context-4.3.2.RELEASE.jar",
+                    "spring-core-4.3.2.RELEASE.jar",
+                    "spring-expression-4.3.2.RELEASE.jar"
+            );
+        }
     };
 
     private static final String ARTIFACT_ID = "spring-boot-test";
 
-    private final String version;
+    private final String executableVersion;
 
-    TestAppSpringBootVersion(String version) {
-        this.version = version;
+    TestAppSpringBootVersion(String executableVersion) {
+        this.executableVersion = executableVersion;
     }
 
     public String getExecutableName() {
-        return ARTIFACT_ID + "-" + this.version;
+        return ARTIFACT_ID + "-" + this.executableVersion;
     }
 
     public abstract List<String> getNestedLibs();

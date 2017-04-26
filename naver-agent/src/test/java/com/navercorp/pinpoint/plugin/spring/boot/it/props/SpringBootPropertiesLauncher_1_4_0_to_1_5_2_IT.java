@@ -38,9 +38,9 @@ import java.util.List;
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @JvmVersion(7)
 @OnClassLoader(system = true, child = false)
-@Dependency({ "org.springframework.boot:spring-boot-loader:[1.4.0.RELEASE,)" })
+@Dependency({ "org.springframework.boot:spring-boot-loader:[1.4.0.RELEASE,1.5.2.RELEASE]" })
 @TestAppVersion(TestAppSpringBootVersion.POST_1_4)
-public class SpringBootPropertiesLauncher_1_4_IT extends PropertiesLauncherItBase {
+public class SpringBootPropertiesLauncher_1_4_0_to_1_5_2_IT extends PropertiesLauncherItBase {
 
     @Test
     public void testBootstrap() {
