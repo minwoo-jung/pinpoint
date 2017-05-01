@@ -38,11 +38,11 @@ public class InnerSystemSyncJobTest {
                                                                                              "/batch/applicationContext-batch-test.xml",
                                                                                              "/batch/innerSystemSyncJob.xml");
           JobLauncherTestUtils testLauncher = applicationContext.getBean(JobLauncherTestUtils.class);
-          
+
           JobExecution jobExecution = testLauncher.launchJob(getParameters());
           BatchStatus status = jobExecution.getStatus();
           assertEquals(BatchStatus.COMPLETED, status);
-          
+
           applicationContext.close();
      }
 

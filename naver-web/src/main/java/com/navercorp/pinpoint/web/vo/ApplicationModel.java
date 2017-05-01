@@ -46,4 +46,13 @@ public class ApplicationModel {
     public void setCode(int code) {
         this.code = code;
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationModel{" +
+            "applicationName='" + applicationName + '\'' +
+            ", serviceType='" + serviceType + '\'' +
+            ", code=" + code +
+            '}';
+    }
 }

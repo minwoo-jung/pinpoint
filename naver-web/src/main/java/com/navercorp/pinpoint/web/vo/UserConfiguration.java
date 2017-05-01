@@ -47,4 +47,11 @@ public class UserConfiguration {
         return favoriteApplications;
     }
 
+    @Override
+    public String toString() {
+        return "UserConfiguration{" +
+            "userId='" + userId + '\'' +
+            ", favoriteApplications=" + favoriteApplications +
+            '}';
+    }
 }
