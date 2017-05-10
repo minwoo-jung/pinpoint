@@ -70,7 +70,7 @@
 									"lineThickness": 6,
 									"title": chartData.title[0],
 									"valueField": chartData.field[0],
-									"fillAlphas": 1,
+									"fillAlphas": 0,
 									"connect": false
 								},
 								{
@@ -82,7 +82,7 @@
 									"lineThickness": 3,
 									"title": chartData.title[1],
 									"valueField": chartData.field[1],
-									"fillAlphas": 0.3,
+									"fillAlphas": 0,
 									"connect": false
 								},
 								{
@@ -94,7 +94,7 @@
 									"lineThickness": 3,
 									"title": chartData.title[2],
 									"valueField": chartData.field[2],
-									"fillAlphas": 1,
+									"fillAlphas": 0,
 									"connect": false
 								}//,
 								// {
