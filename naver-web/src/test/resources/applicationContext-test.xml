@@ -46,12 +46,8 @@
     <import resource="classpath:applicationContext-datasource.xml" />
     <import resource="classpath:applicationContext-dao-config.xml" />
 
-    <bean id="trace" class="com.navercorp.pinpoint.collector.dao.hbase.HbaseTraceDao"/>
+    <bean id="trace" class="com.navercorp.pinpoint.collector.dao.hbase.HbaseTraceDaoV2"/>
     <bean class="com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentInfoDao"/>
-
-    <bean id="agentStatHandlerV1" class="com.navercorp.pinpoint.collector.handler.AgentStatHandler" />
-    <bean id="agentStatHandlerV2" class="com.navercorp.pinpoint.collector.handler.AgentStatHandlerV2" />
-    <bean id="hBaseAgentStatService" class="com.navercorp.pinpoint.collector.service.HBaseAgentStatService"/>
 
     <bean id="sequenceSpanEventFilter" class="com.navercorp.pinpoint.common.server.bo.filter.SequenceSpanEventFilter">
         <constructor-arg index="0" value="${collector.spanEvent.sequence.limit:10000}"/>

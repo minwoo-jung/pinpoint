@@ -1,12 +1,10 @@
 package com.navercorp.pinpoint.web.service;
 
 import com.navercorp.pinpoint.collector.dao.TraceDao;
-import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
 import com.navercorp.pinpoint.common.server.bo.SpanBo;
 import com.navercorp.pinpoint.common.server.bo.SpanFactory;
 import com.navercorp.pinpoint.common.server.util.AcceptedTimeService;
-import com.navercorp.pinpoint.common.server.util.SpanUtils;
 import com.navercorp.pinpoint.common.util.TransactionId;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
@@ -14,10 +12,11 @@ import com.navercorp.pinpoint.common.util.TransactionIdUtils;
 import com.navercorp.pinpoint.thrift.dto.TAnnotation;
 import com.navercorp.pinpoint.thrift.dto.TAnnotationValue;
 import com.navercorp.pinpoint.thrift.dto.TSpan;
-import com.navercorp.pinpoint.web.calltree.span.CallTreeIterator;
+import com.navercorp.pinpoint.thrift.dto.TSpanEvent;
 import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
-import org.apache.hadoop.hbase.client.Delete;
+import com.navercorp.pinpoint.web.util.CallStackVerifier;
 import org.apache.thrift.TException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,9 +28,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author emeroad
@@ -40,101 +37,137 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class SpanServiceTest {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private long spanAcceptTime = System.currentTimeMillis();
+
+    private SpanFactory spanFactory;
+
     @Autowired
     private TraceDao traceDao;
 
     @Autowired
     private SpanService spanService;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private HbaseTemplate2 template2;
 
-    private TSpan root;
-    private List<TSpan> deleteSpans = new LinkedList<>();
-    private long spanAcceptTime = System.currentTimeMillis();
-
     @Autowired
     private AcceptedTimeService acceptedTimeService;
-
-    private SpanFactory spanFactory;
 
     @Before
     public void before() throws TException {
         spanFactory = new SpanFactory();
         spanFactory.setAcceptedTimeService(acceptedTimeService);
+    }
 
-        TSpan span = createRootSpan();
-        TransactionId transactionId = TransactionIdUtils.parseTransactionId(span.getTransactionId());
+    @Test
+    public void testSingleTier() {
+
+        long rootSpanId = 0;
+        TSpan rootSpan = createRootSpan(rootSpanId);
+
+        CallStackVerifier callStackVerifier = new CallStackVerifier(rootSpan);
+
+        TransactionId transactionId = TransactionIdUtils.parseTransactionId(rootSpan.getTransactionId());
         logger.debug("id:{}", transactionId);
-        insert(span);
-        deleteSpans.add(span);
 
-        TSpan subSpan1 = createSpanEvent(span);
-        insert(subSpan1);
-        deleteSpans.add(subSpan1);
+        TSpan childSpan1 = createChildSpan(rootSpan, 1, (short) 0);
+        TSpan childSpan2 = createChildSpan(rootSpan, 2, (short) 1);
 
-        TSpan subSpan1_2 = createSpanEvent(span);
-        insert(subSpan1_2);
-        deleteSpans.add(subSpan1_2);
+        callStackVerifier.addChildSpan(rootSpan, childSpan1);
+        callStackVerifier.addChildSpan(rootSpan, childSpan2);
 
-        TSpan subSpan2 = createSpanEvent(subSpan1);
-        insert(subSpan2);
-        deleteSpans.add(subSpan2);
+        insert(rootSpan, childSpan1, childSpan2);
+        logger.info("rootSpan: {}", rootSpan.toString());
+        logger.info("childSpan1: {}", childSpan1.toString());
+        logger.info("childSpan2: {}", childSpan2.toString());
 
-        TSpan subSpan3 = createSpanEvent(subSpan1);
-        insert(subSpan3);
-        deleteSpans.add(subSpan3);
-
-        root = span;
-        logger.info(subSpan1.toString());
-        logger.info(subSpan1_2.toString());
-        logger.info(subSpan2.toString());
-        logger.info(subSpan3.toString());
-
+        SpanResult spanResult = doRead(rootSpan);
+        assertSpanResult(callStackVerifier, spanResult);
     }
 
-    public void after() {
-        List list = new LinkedList();
-        for (TSpan span : deleteSpans) {
-            Delete delete = new Delete(SpanUtils.getTransactionId(span));
-            list.add(delete);
+    @Test
+    public void testMultipleTiers() {
+
+        long rootSpanId = 0;
+        TSpan rootSpan = createRootSpan(rootSpanId);
+
+        CallStackVerifier callStackVerifier = new CallStackVerifier(rootSpan);
+
+        TransactionId transactionId = TransactionIdUtils.parseTransactionId(rootSpan.getTransactionId());
+        logger.debug("id:{}", transactionId);
+
+        TSpan childSpan1 = createChildSpan(rootSpan, 1, (short) 0);
+        TSpan childSpan2 = createChildSpan(rootSpan, 2, (short) 1);
+        TSpan childSpan3 = createChildSpan(rootSpan, 3, (short) 2);
+        TSpan childSpan1_1 = createChildSpan(childSpan1, 11, (short) 0);
+        TSpan childSpan1_2 = createChildSpan(childSpan1, 12, (short) 1);
+        TSpan childSpan3_1 = createChildSpan(childSpan3, 31, (short) 0);
+        TSpan childSpan1_2_1 = createChildSpan(childSpan1_2, 121, (short) 0);
+
+        callStackVerifier.addChildSpan(rootSpan, childSpan1);
+        callStackVerifier.addChildSpan(rootSpan, childSpan2);
+        callStackVerifier.addChildSpan(rootSpan, childSpan3);
+        callStackVerifier.addChildSpan(childSpan1, childSpan1_1);
+        callStackVerifier.addChildSpan(childSpan1, childSpan1_2);
+        callStackVerifier.addChildSpan(childSpan3, childSpan3_1);
+        callStackVerifier.addChildSpan(childSpan1_2, childSpan1_2_1);
+
+        insert(rootSpan, childSpan1, childSpan2, childSpan3, childSpan1_1, childSpan1_2, childSpan3_1, childSpan1_2_1);
+        logger.info("rootSpan: {}", rootSpan.toString());
+        logger.info("childSpan1: {}", childSpan1.toString());
+        logger.info("childSpan2: {}", childSpan2.toString());
+        logger.info("childSpan3: {}", childSpan3.toString());
+        logger.info("childSpan1_1: {}", childSpan1_1.toString());
+        logger.info("childSpan1_2: {}", childSpan1_2.toString());
+        logger.info("childSpan3_1: {}", childSpan3_1.toString());
+        logger.info("childSpan1_2_1: {}", childSpan1_2_1.toString());
+
+        SpanResult spanResult = doRead(rootSpan);
+        assertSpanResult(callStackVerifier, spanResult);
+    }
+
+    private void insert(TSpan... tSpans) {
+        acceptedTimeService.accept(this.spanAcceptTime);
+        for (TSpan tSpan : tSpans) {
+            SpanBo span = spanFactory.buildSpanBo(tSpan);
+            traceDao.insert(span);
         }
-        template2.delete(HBaseTables.TRACES, list);
-        deleteSpans.clear();
     }
 
-    @Test
-    public void testReadSpan() throws TException {
-        doRead(root);
-    }
-
-    @Test
-    public void testReadSpanAndAnnotation() throws TException {
-        doRead(root);
-    }
-
-    private void doRead(TSpan span) {
+    private SpanResult doRead(TSpan span) {
         TransactionId transactionId = TransactionIdUtils.parseTransactionId(span.getTransactionId());
         // selectedHint를 좀더 정확히 수정할것.
-        SpanResult spanResult = spanService.selectSpan(transactionId, spanAcceptTime);
-        CallTreeIterator iterator = spanResult.getCallTree();
-        for (SpanAlign spanAlign : iterator.values()) {
-            logger.info("depth:{} {}", spanAlign.getDepth(), spanAlign.getSpanBo());
+        return spanService.selectSpan(transactionId, spanAcceptTime);
+    }
+
+    private void assertSpanResult(CallStackVerifier callStackVerifier, SpanResult spanResult) {
+        List<SpanAlign> spanAligns = spanResult.getCallTree().values();
+        List<CallStackVerifier.CallStackElement> verifierElements = callStackVerifier.values();
+        Assert.assertEquals(verifierElements.size(), spanAligns.size());
+        for (int i = 0; i < spanAligns.size(); ++i) {
+            SpanAlign spanAlign = spanAligns.get(i);
+            logSpanAlign(spanAlign);
+            CallStackVerifier.CallStackElement verifierElement = verifierElements.get(i);
+            verifierElement.verifySpanAlign(spanAlign);
         }
-        // reorder(spans);
     }
 
-    private void insert(TSpan tSpan) throws TException {
-        acceptedTimeService.accept(this.spanAcceptTime);
-        SpanBo span = spanFactory.buildSpanBo(tSpan);
-        traceDao.insert(span);
+    private void logSpanAlign(SpanAlign spanAlign) {
+        String indent = "  ";
+        StringBuilder whitespaceBuilder = new StringBuilder(indent);
+        int depth = spanAlign.getDepth();
+        for (int i = 0; i < depth; ++i) {
+            whitespaceBuilder.append(indent);
+        }
+        logger.info("{}{}, spanId:{}, depth:{}, spanAlign:{}",
+                whitespaceBuilder.toString(),
+                spanAlign.isSpan() ? "Span" : "SpanEvent",
+                spanAlign.getSpanId(), spanAlign.getDepth(), spanAlign.toString());
     }
 
-    AtomicInteger id = new AtomicInteger(0);
-
-    private TSpan createRootSpan() {
+    private TSpan createRootSpan(long spanId) {
         // 별도 생성기로 뽑을것.
         List<TAnnotation> ano = Collections.emptyList();
         long time = this.spanAcceptTime;
@@ -145,6 +178,7 @@ public class SpanServiceTest {
         span.setApplicationName("ApplicationId");
         byte[] bytes = TransactionIdUtils.formatBytes("traceAgentId", System.currentTimeMillis(), 0);
         span.setTransactionId(bytes);
+        span.setSpanId(spanId);
 
         span.setStartTime(time);
         span.setElapsed(5);
@@ -159,35 +193,42 @@ public class SpanServiceTest {
         annotation.setValue(TAnnotationValue.stringValue(""));
         annotations.add(annotation);
         span.setAnnotations(annotations);
+
         return span;
     }
 
-    private TSpan createSpanEvent(TSpan span) {
+    private TSpan createChildSpan(TSpan parentSpan, long childSpanId, short sequence) {
         List<TAnnotation> ano = Collections.emptyList();
         long time = System.currentTimeMillis();
-        int andIncrement = id.getAndIncrement();
 
-        TSpan sub = new TSpan();
+        TSpanEvent clientSpanEvent = new TSpanEvent();
+        clientSpanEvent.setNextSpanId(childSpanId);
+        clientSpanEvent.setDepth(1);
+        clientSpanEvent.setSequence(sequence);
+        parentSpan.addToSpanEventList(clientSpanEvent);
 
-        sub.setAgentId("UnitTest");
-        sub.setApplicationName("ApplicationId");
-        sub.setAgentStartTime(123);
+        TSpan childSpan = new TSpan();
 
-        sub.setTransactionId(span.getTransactionId());
+        childSpan.setSpanId(childSpanId);
+        childSpan.setAgentId("UnitTest");
+        childSpan.setApplicationName("ApplicationId");
+        childSpan.setAgentStartTime(123);
 
-        sub.setStartTime(time);
-        sub.setElapsed(5);
-        sub.setRpc("RPC");
-        sub.setServiceType(ServiceType.UNKNOWN.getCode());
-        sub.setAnnotations(ano);
+        childSpan.setTransactionId(parentSpan.getTransactionId());
 
-        sub.setParentSpanId(span.getSpanId());
+        childSpan.setStartTime(time);
+        childSpan.setElapsed(5);
+        childSpan.setRpc("RPC");
+        childSpan.setServiceType(ServiceType.UNKNOWN.getCode());
+        childSpan.setAnnotations(ano);
+
+        childSpan.setParentSpanId(parentSpan.getSpanId());
         List<TAnnotation> annotations = new ArrayList<>();
         TAnnotation annotation = new TAnnotation(AnnotationKey.API.getCode());
         annotation.setValue(TAnnotationValue.stringValue(""));
         annotations.add(annotation);
-        sub.setAnnotations(annotations);
-        return sub;
-    }
+        childSpan.setAnnotations(annotations);
 
+        return childSpan;
+    }
 }
