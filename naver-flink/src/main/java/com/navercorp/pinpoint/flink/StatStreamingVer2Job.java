@@ -120,82 +120,82 @@ public class StatStreamingVer2Job implements Serializable {
         applicationStatAggregationData.writeUsingOutputFormat(statisticsDao);
 
         // 1-2. aggregate application stat data
-        statOperator.filter(new FilterFunction<Tuple3<String, JoinStatBo, Long>>() {
-            @Override
-            public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
-                if (value.f1 instanceof JoinApplicationStatBo) {
-                    logger.info("1-2 application stat aggre window function : " + value.f1);
-                    return true;
-                }
-
-                return false;
-            }
-            })
-            .assignTimestampsAndWatermarks(new Timestamp())
-            .keyBy(0)
-            .window(TumblingEventTimeWindows.of(Time.seconds(120)))//TODO : (minwoo) 추후 5분으로 변경필요
-            .apply(new WindowFunction<Tuple3<String, JoinStatBo, Long>, Tuple3<String, JoinStatBo, Long>, Tuple, TimeWindow>() {
-                @Override
-                public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
-                    try {
-                        JoinApplicationStatBo joinApplicationStatBo = join(values);
-                        logger.info("1-2 application stat aggre window function : " + joinApplicationStatBo);
-                        out.collect(new Tuple3<>(joinApplicationStatBo.getId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
-                    } catch (Exception e) {
-                        logger.error("window function error", e);
-                    }
-                }
-
-                private JoinApplicationStatBo join(Iterable<Tuple3<String, JoinStatBo, Long>> values) {
-                    List<JoinApplicationStatBo> joinApplicaitonStatBoList = new ArrayList<JoinApplicationStatBo>();
-                    for (Tuple3<String, JoinStatBo, Long> value : values) {
-                        joinApplicaitonStatBoList.add((JoinApplicationStatBo) value.f1);
-                    }
-                    return JoinApplicationStatBo.joinApplicationStatBo(joinApplicaitonStatBoList);
-
-                }
-            }).writeUsingOutputFormat(statisticsDao);
+//        statOperator.filter(new FilterFunction<Tuple3<String, JoinStatBo, Long>>() {
+//            @Override
+//            public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
+//                if (value.f1 instanceof JoinApplicationStatBo) {
+//                    logger.info("1-2 application stat aggre window function : " + value.f1);
+//                    return true;
+//                }
+//
+//                return false;
+//            }
+//            })
+//            .assignTimestampsAndWatermarks(new Timestamp())
+//            .keyBy(0)
+//            .window(TumblingEventTimeWindows.of(Time.seconds(120)))//TODO : (minwoo) 추후 5분으로 변경필요
+//            .apply(new WindowFunction<Tuple3<String, JoinStatBo, Long>, Tuple3<String, JoinStatBo, Long>, Tuple, TimeWindow>() {
+//                @Override
+//                public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
+//                    try {
+//                        JoinApplicationStatBo joinApplicationStatBo = join(values);
+//                        logger.info("1-2 application stat aggre window function : " + joinApplicationStatBo);
+//                        out.collect(new Tuple3<>(joinApplicationStatBo.getId(), joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
+//                    } catch (Exception e) {
+//                        logger.error("window function error", e);
+//                    }
+//                }
+//
+//                private JoinApplicationStatBo join(Iterable<Tuple3<String, JoinStatBo, Long>> values) {
+//                    List<JoinApplicationStatBo> joinApplicaitonStatBoList = new ArrayList<JoinApplicationStatBo>();
+//                    for (Tuple3<String, JoinStatBo, Long> value : values) {
+//                        joinApplicaitonStatBoList.add((JoinApplicationStatBo) value.f1);
+//                    }
+//                    return JoinApplicationStatBo.joinApplicationStatBo(joinApplicaitonStatBoList);
+//
+//                }
+//            }).writeUsingOutputFormat(statisticsDao);
 
 
         // 2. agrregage agent stat
-        statOperator.filter(new FilterFunction<Tuple3<String, JoinStatBo, Long>>() {
-                @Override
-                public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
-                    if (value.f1 instanceof JoinAgentStatBo) {
-                        logger.info("2 application stat aggre window function : " + value.f1);
-                        return true;
-                    }
-
-                    return false;
-                }
-            })
-            .assignTimestampsAndWatermarks(new Timestamp())
-            .keyBy(0)
-            .window(TumblingEventTimeWindows.of(Time.seconds(120)))//TODO : (minwoo) 추후 5분으로 변경필요
-
-            .apply(new WindowFunction<Tuple3<String, JoinStatBo, Long>, Tuple3<String, JoinStatBo, Long>, Tuple, TimeWindow>() {
-
-                @Override
-                public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
-                    try {
-                        JoinAgentStatBo joinAgentStatBo = join(values);
-                        logger.info("2 agent stat aggre window function : " + joinAgentStatBo);
-                        out.collect(new Tuple3<>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
-                    } catch (Exception e) {
-                        logger.error("window function error", e);
-                    }
-                }
-
-                private JoinAgentStatBo join(Iterable<Tuple3<String, JoinStatBo, Long>> values) {
-                    List<JoinAgentStatBo> joinAgentStatBoList =  new ArrayList<JoinAgentStatBo>();
-                    for (Tuple3<String, JoinStatBo, Long> value : values) {
-                        joinAgentStatBoList.add((JoinAgentStatBo) value.f1);
-                    }
-
-                    return JoinAgentStatBo.joinAgentStatBo(joinAgentStatBoList);
-                }
-            })
-            .writeUsingOutputFormat(statisticsDao);
+//        statOperator.filter(new FilterFunction<Tuple3<String, JoinStatBo, Long>>() {
+//                @Override
+//                public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
+//                    if (value.f1 instanceof JoinAgentStatBo) {
+//                        logger.info("2 application stat aggre window function : " + value.f1);
+//                        return true;
+//                    }
+//
+//                    return false;
+//                }
+//            })
+//            .assignTimestampsAndWatermarks(new Timestamp())
+//            .keyBy(0)
+//            .window(TumblingEventTimeWindows.of(Time.seconds(120)))//TODO : (minwoo) 추후 5분으로 변경필요
+//
+//            .apply(new WindowFunction<Tuple3<String, JoinStatBo, Long>, Tuple3<String, JoinStatBo, Long>, Tuple, TimeWindow>() {
+//
+//                @Override
+//                public void apply(Tuple tuple, TimeWindow window, Iterable<Tuple3<String, JoinStatBo, Long>> values, Collector<Tuple3<String, JoinStatBo, Long>> out) throws Exception {
+//                    try {
+//                        JoinAgentStatBo joinAgentStatBo = join(values);
+//                        logger.info("2 agent stat aggre window function : " + joinAgentStatBo);
+//                        out.collect(new Tuple3<>(joinAgentStatBo.getId(), joinAgentStatBo, joinAgentStatBo.getTimestamp()));
+//                    } catch (Exception e) {
+//                        logger.error("window function error", e);
+//                    }
+//                }
+//
+//                private JoinAgentStatBo join(Iterable<Tuple3<String, JoinStatBo, Long>> values) {
+//                    List<JoinAgentStatBo> joinAgentStatBoList =  new ArrayList<JoinAgentStatBo>();
+//                    for (Tuple3<String, JoinStatBo, Long> value : values) {
+//                        joinAgentStatBoList.add((JoinAgentStatBo) value.f1);
+//                    }
+//
+//                    return JoinAgentStatBo.joinAgentStatBo(joinAgentStatBoList);
+//                }
+//            })
+//            .writeUsingOutputFormat(statisticsDao);
 
         env.execute("Aggregation Stat Data 2");
     }
