@@ -31,7 +31,12 @@ public class TFAgentStatMappter {
     public List<TFAgentStat> map(AgentStatBo agentStatBo) {
 
         List<CpuLoadBo> cpuLoadBoList = agentStatBo.getCpuLoadBos();
-        List<TFAgentStat> tFAgentStatList = new ArrayList<>(agentStatBo.getCpuLoadBos().size());
+
+        if (cpuLoadBoList == null || cpuLoadBoList.size() == 0) {
+            return new ArrayList<TFAgentStat>(0);
+        }
+
+        List<TFAgentStat> tFAgentStatList = new ArrayList<>(cpuLoadBoList.size());
         for(CpuLoadBo cpuLoadBo : cpuLoadBoList) {
             tFAgentStatList.add(createTagentStat(cpuLoadBo));
         }
