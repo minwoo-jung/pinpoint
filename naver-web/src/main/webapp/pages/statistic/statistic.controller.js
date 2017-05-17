@@ -28,7 +28,7 @@
 
 			function loadStatChart() {
 				var oParam = {
-					applicationId: "minwoo_local_app",
+					applicationId: UrlVoService.getApplicationName(),
 					from : UrlVoService.getQueryStartTime(),
 					to : UrlVoService.getQueryEndTime(),
 					sampleRate: 1
