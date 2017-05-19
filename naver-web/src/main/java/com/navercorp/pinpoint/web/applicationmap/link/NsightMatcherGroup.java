@@ -60,8 +60,7 @@ public class NsightMatcherGroup extends MatcherGroup {
                 }
 
                 String value = keyInfo.getValue();
-                List<String> keys = com.navercorp.pinpoint.common.util.StringUtils.tokenizeToStringList(value, ",");
-                
+                final String[] keys = StringUtils.tokenizeToStringArray(value, ",");
                 for (String key : keys) {
                     addServerMatcher(new PostfixServerMatcher(key, urlMap.get(matcherUrlName), LINK_NAME, LinkType.ATAG));
                 }
