@@ -18,7 +18,6 @@ package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
@@ -28,7 +27,6 @@ import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
 /**
  * @Author Taejin Koo
  */
-@TargetMethod(name = "setPrefableNetEndPoint", paramTypes = {"com.nhncorp.lucy.nimm.connector.NimmNetEndPoint"})
 public class NimmAbstractWorkerInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());

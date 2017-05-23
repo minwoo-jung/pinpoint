@@ -23,9 +23,6 @@ import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Name;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
-import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvocation;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
@@ -40,7 +37,6 @@ import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
  * 
  * @author netspider
  */
-@Scope(value = LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE, executionPolicy = ExecutionPolicy.BOUNDARY)
 public class InvokeMethodInterceptor implements AroundInterceptor {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
@@ -54,7 +50,7 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
 
     // TODO nimm socket도 수집해야하나?? nimmAddress는 constructor에서 string으로 변환한 값을 들고 있음.
 
-    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor, @Name(LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE) InterceptorScope scope) {
+    public InvokeMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor, InterceptorScope scope) {
         this.traceContext = traceContext;
         this.descriptor = descriptor;
         this.scope = scope;

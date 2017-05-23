@@ -21,9 +21,6 @@ import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Name;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Scope;
-import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
@@ -44,7 +41,6 @@ import java.util.Set;
 /**
  * @Author Taejin Koo
  */
-@Scope(value = LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE, executionPolicy = ExecutionPolicy.INTERNAL)
 public class EncodeMesssageInterceptor implements AroundInterceptor {
 
     private static final int DEFAULT_MAX_USER_OPTIONS_SET_INDEX = 3;
@@ -56,7 +52,7 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
     private final MethodDescriptor methodDescriptor;
     private final InterceptorScope scope;
 
-    public EncodeMesssageInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, @Name(LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE) InterceptorScope scope) {
+    public EncodeMesssageInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorScope scope) {
         this.traceContext = traceContext;
         this.methodDescriptor = methodDescriptor;
         this.scope = scope;

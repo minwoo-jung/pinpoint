@@ -16,26 +16,48 @@
 package com.navercorp.pinpoint.plugin.jdbc.nbaset;
 
 import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class NbasetJdbcUrlParserTest {
 
     @Test
     public void doParse() {
         NbasetJdbcUrlParser parser = new NbasetJdbcUrlParser();
-        printInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev/dynamic?foo=bar"));
-        printInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev/query?ckey=ckey&foo=bar"));
-        printInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev/query-all?foo=bar"));
-        printInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev/query-all-ckey-list?ckey-list=ckey1;ckey2;ckey3&foo=bar"));
+        DatabaseInfo databaseInfo = null;
 
-        // invalid
-        printInfo(parser.parse(""));
-        printInfo(parser.parse("jdbc:nbase///dev/dynamic?foo=bar"));
-        printInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev"));
+        assertDatabaseInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev/dynamic?foo=bar"), NbasetConstants.NBASET, "dev", "127.0.0.1:6220", "jdbc:nbase//127.0.0.1:6220/dev/dynamic?foo=bar", "jdbc:nbase//127.0.0.1:6220/dev/dynamic", true);
+        assertDatabaseInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev/query?ckey=ckey&foo=bar"), NbasetConstants.NBASET, "dev", "127.0.0.1:6220", "jdbc:nbase//127.0.0.1:6220/dev/query?ckey=ckey&foo=bar", "jdbc:nbase//127.0.0.1:6220/dev/query", true);
+        assertDatabaseInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev/query-all?foo=bar"), NbasetConstants.NBASET, "dev", "127.0.0.1:6220", "jdbc:nbase//127.0.0.1:6220/dev/query-all?foo=bar", "jdbc:nbase//127.0.0.1:6220/dev/query-all", true);
+        assertDatabaseInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev/query-all-ckey-list?ckey-list=ckey1;ckey2;ckey3&foo=bar"), NbasetConstants.NBASET, "dev", "127.0.0.1:6220", "jdbc:nbase//127.0.0.1:6220/dev/query-all-ckey-list?ckey-list=ckey1;ckey2;ckey3&foo=bar", "jdbc:nbase//127.0.0.1:6220/dev/query-all-ckey-list", true);
+        assertDatabaseInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/dev"), NbasetConstants.NBASET, "dev", "127.0.0.1:6220", "jdbc:nbase//127.0.0.1:6220/dev", "jdbc:nbase//127.0.0.1:6220/dev", true);
+        assertDatabaseInfo(parser.parse("jdbc:nbase//127.0.0.1:6220/service/query?port=6220&booleanIsNumberFormat=true&zone-list=0&txTimeout=10"), NbasetConstants.NBASET, "service", "127.0.0.1:6220", "jdbc:nbase//127.0.0.1:6220/service/query?port=6220&booleanIsNumberFormat=true&zone-list=0&txTimeout=10", "jdbc:nbase//127.0.0.1:6220/service/query", true);
+
+        // not found database-id
+        assertDatabaseInfo(parser.parse("jdbc:nbase://127.0.0.1:6219?port=6221&timeout=1&txTimeout=10"), NbasetConstants.NBASET, "default", "127.0.0.1:6219", "jdbc:nbase://127.0.0.1:6219?port=6221&timeout=1&txTimeout=10", "jdbc:nbase://127.0.0.1:6219", true);
+        assertDatabaseInfo(parser.parse("jdbc:nbase://127.0.0.1:6219"), NbasetConstants.NBASET, "default", "127.0.0.1:6219", "jdbc:nbase://127.0.0.1:6219", "jdbc:nbase://127.0.0.1:6219", true);
+        assertDatabaseInfo(parser.parse("jdbc:nbase://127.0.0.1:6219?datetimeIsStringFormat=true"), NbasetConstants.NBASET, "default", "127.0.0.1:6219", "jdbc:nbase://127.0.0.1:6219?datetimeIsStringFormat=true", "jdbc:nbase://127.0.0.1:6219", true);
+
+        assertDatabaseInfo(parser.parse("jdbc:log4jdbc:nbase//xdev063.vpd:6220/zlatan/query?ckey=yj"), NbasetConstants.NBASET, "zlatan", "xdev063.vpd:6220", "jdbc:log4jdbc:nbase//xdev063.vpd:6220/zlatan/query?ckey=yj", "jdbc:log4jdbc:nbase//xdev063.vpd:6220/zlatan/query", true);
+        assertDatabaseInfo(parser.parse("jdbc:nbase//xdev063.vpd:6220/zlatan/query"), NbasetConstants.NBASET, "zlatan", "xdev063.vpd:6220", "jdbc:nbase//xdev063.vpd:6220/zlatan/query", "jdbc:nbase//xdev063.vpd:6220/zlatan/query", true);
+
+        // error
+        assertDatabaseInfo(parser.parse("jdbc:nbase///dev/dynamic?foo=bar"), NbasetConstants.NBASET, "error", "error", "jdbc:nbase///dev/dynamic?foo=bar", "jdbc:nbase///dev/dynamic?foo=bar", false);
+        assertDatabaseInfo(parser.parse("jdbc:nbase//"), NbasetConstants.NBASET, "error", "error", "jdbc:nbase//", "jdbc:nbase//", false);
+
+        // unknown
+        assertDatabaseInfo(parser.parse(""), ServiceType.UNKNOWN_DB, "unknown", "unknown", "unknown", "unknown", false);
+        assertDatabaseInfo(parser.parse("jdbc://127.0.0.1:6219/dev/dynamic?foo=bar"), ServiceType.UNKNOWN_DB, "unknown", "unknown", "unknown", "unknown", false);
     }
 
-    private void printInfo(DatabaseInfo databaseInfo) {
-        System.out.println(databaseInfo);
+    private void assertDatabaseInfo(DatabaseInfo databaseInfo, ServiceType serviceType, String id, String multipleHost, String realUrl, String url, boolean parsingComplete) {
+        assertEquals(serviceType.getCode(), databaseInfo.getType().getCode());
+        assertEquals(id, databaseInfo.getDatabaseId());
+        assertEquals(multipleHost, databaseInfo.getMultipleHost());
+        assertEquals(realUrl, databaseInfo.getRealUrl());
+        assertEquals(url, databaseInfo.getUrl());
+        assertEquals(parsingComplete, databaseInfo.isParsingComplete());
     }
-
 }

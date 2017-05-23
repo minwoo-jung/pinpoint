@@ -18,12 +18,14 @@ import java.security.ProtectionDomain;
 
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
+import com.navercorp.pinpoint.bootstrap.plugin.util.InstrumentUtils;
 
 import static com.navercorp.pinpoint.common.util.VarArgs.va;
 
@@ -51,8 +53,11 @@ public class LinePlugin implements ProfilerPlugin, TransformTemplateAware {
                 target.addField("com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor");
                 target.addField("com.navercorp.pinpoint.plugin.line.MessageEventAccessor");
 
-                target.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskConstructorInterceptor");
-                target.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskRunInterceptor", va(config.getParamDumpSize(), config.getEntityDumpSize()));
+                final InstrumentMethod constructorMethod = InstrumentUtils.findConstructor(target, "com.linecorp.games.common.baseFramework.handlers.HttpCustomServerHandler", "org.jboss.netty.channel.ChannelHandlerContext", "org.jboss.netty.channel.MessageEvent");
+                constructorMethod.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskConstructorInterceptor");
+
+                final InstrumentMethod runMethod = InstrumentUtils.findMethod(target, "run");
+                runMethod.addInterceptor("com.navercorp.pinpoint.plugin.line.games.interceptor.InvokeTaskRunInterceptor", va(config.getParamDumpSize(), config.getEntityDumpSize()));
 
                 return target.toBytecode();
             }

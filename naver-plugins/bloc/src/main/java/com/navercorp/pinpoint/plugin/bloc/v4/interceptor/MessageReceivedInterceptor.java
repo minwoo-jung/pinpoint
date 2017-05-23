@@ -8,7 +8,6 @@ import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.common.trace.ServiceType;
@@ -25,7 +24,6 @@ import java.net.SocketAddress;
 import java.util.Map;
 
 
-@TargetMethod(name = "messageReceived", paramTypes = {"external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object"})
 public class MessageReceivedInterceptor extends AbstractBlocAroundInterceptor {
 
     private static final String NAMESPACE_URA = "URA 1.0";

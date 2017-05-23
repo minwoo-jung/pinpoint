@@ -33,18 +33,19 @@ import java.util.List;
  */
 public class NbasetJdbcUrlParser implements JdbcUrlParserV2 {
 
-    private static final String URL_PREFIX = "jdbc:nbase//";
+    private static final String NBASET_JDBC_URL_PREFIX = "jdbc:nbase";
+    private static final String NBASET_LOG4J_JDBC_URL_PREFIX = "jdbc:log4jdbc:nbase";
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
 
     @Override
     public DatabaseInfo parse(String jdbcUrl) {
         if (jdbcUrl == null) {
-            logger.warn("jdbcUrl may not be null");
+            logger.info("jdbcUrl may not be null");
             return UnKnownDatabaseInfo.INSTANCE;
         }
-        if (!jdbcUrl.startsWith(URL_PREFIX)) {
-            logger.warn("jdbcUrl has invalid prefix.(url:{}, prefix:{})", jdbcUrl, URL_PREFIX);
+        if (!jdbcUrl.startsWith(NBASET_JDBC_URL_PREFIX) && !jdbcUrl.startsWith(NBASET_LOG4J_JDBC_URL_PREFIX)) {
+            logger.info("jdbcUrl has invalid prefix. url={}", jdbcUrl);
             return UnKnownDatabaseInfo.INSTANCE;
         }
 
@@ -52,7 +53,7 @@ public class NbasetJdbcUrlParser implements JdbcUrlParserV2 {
         try {
             result = parse0(jdbcUrl);
         } catch (Exception e) {
-            logger.warn("NbasetJdbcUrl parse error. url: " + jdbcUrl + " Caused: " + e.getMessage(), e);
+            logger.info("NbasetJdbcUrl parse error. url: {} Caused: {}", jdbcUrl, e.getMessage(), e);
             result = UnKnownDatabaseInfo.createUnknownDataBase(NbasetConstants.NBASET, NbasetConstants.NBASET_EXECUTE_QUERY, jdbcUrl);
         }
         return result;
@@ -60,17 +61,31 @@ public class NbasetJdbcUrlParser implements JdbcUrlParserV2 {
 
     private DatabaseInfo parse0(String jdbcUrl) {
         final StringMaker maker = new StringMaker(jdbcUrl);
-        final String value = maker.after(URL_PREFIX).value();
+        final String value = maker.after("//").value();
         final String[] tokens = value.split("/");
-        if(tokens == null || tokens.length < 3 || tokens[0].isEmpty() || tokens[1].isEmpty()) {
-            throw new IllegalArgumentException();
-        }
 
         final List<String> hostList = new ArrayList<String>(1);
-        hostList.add(tokens[0]);
-        final String databaseId = tokens[1];
-        final String normalizedUrl = maker.clear().before('?').value();
+        String databaseId = "default";
+        if (tokens == null || tokens.length == 0) {
+            throw new IllegalArgumentException("invalid nbase-t JDBC URL. url=" + jdbcUrl);
+        }
+        if (tokens[0].isEmpty()) {
+            throw new IllegalArgumentException("invalid nbase-t JDBC URL. url=" + jdbcUrl);
+        }
 
+        final String host = tokens[0];
+        if (host.indexOf('?') != -1) {
+            final String normalizedHost = new StringMaker(host).before('?').value();
+            hostList.add(normalizedHost);
+        } else {
+            hostList.add(host);
+        }
+
+        if (tokens.length > 1) {
+            databaseId = tokens[1];
+        }
+
+        final String normalizedUrl = maker.clear().before('?').value();
         return new DefaultDatabaseInfo(NbasetConstants.NBASET, NbasetConstants.NBASET_EXECUTE_QUERY, jdbcUrl, normalizedUrl, hostList, databaseId);
     }
 

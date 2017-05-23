@@ -30,6 +30,7 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.PreparedStatementBindingMethodFilter;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
+import com.navercorp.pinpoint.bootstrap.plugin.util.InstrumentUtils;
 
 import java.lang.reflect.Modifier;
 import java.security.ProtectionDomain;
@@ -123,7 +124,8 @@ public class NbasetPlugin implements ProfilerPlugin, TransformTemplateAware {
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
 
-                target.addScopedInterceptor("com.navercorp.pinpoint.bootstrap.plugin.jdbc.interceptor.DriverConnectInterceptorV2", va(NbasetConstants.NBASET), NbasetConstants.NBASET_SCOPE, ExecutionPolicy.ALWAYS);
+                InstrumentMethod connectMethod = InstrumentUtils.findMethod(target, "connect", "java.lang.String", "java.util.Properties");
+                connectMethod.addScopedInterceptor("com.navercorp.pinpoint.bootstrap.plugin.jdbc.interceptor.DriverConnectInterceptorV2", va(NbasetConstants.NBASET), NbasetConstants.NBASET_SCOPE, ExecutionPolicy.ALWAYS);
 
                 return target.toBytecode();
             }

@@ -9,6 +9,7 @@ import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
+import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
@@ -19,6 +20,8 @@ import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcHessianConnectorVersion;
 
 import java.security.ProtectionDomain;
 import java.util.List;
+
+import static com.navercorp.pinpoint.common.util.VarArgs.va;
 
 /**
  * Copyright 2014 NAVER Corp.
@@ -113,10 +116,10 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
                 addInterceptor(constructor, LucyNetConstants.NIMM_CONSTRUCTOR_INTERCEPTOR);
 
                 InstrumentMethod method = target.getDeclaredMethod("invoke", "long", "java.lang.String", "java.lang.String", "java.lang.Object[]");
-                addInterceptor(method, LucyNetConstants.NIMM_INVOKE_INTERCEPTOR);
+                addScopedInterceptor(method, LucyNetConstants.NIMM_INVOKE_INTERCEPTOR, LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE, ExecutionPolicy.BOUNDARY);
 
                 InstrumentMethod encodeMesssageMethod = target.getDeclaredMethod("encodeMessage", "java.util.Map", "com.nhncorp.lucy.net.call.Call");
-                addInterceptor(encodeMesssageMethod, LucyNetConstants.NIMM_ENCODE_MESSAGE_INTERCEPTOR);
+                addScopedInterceptor(encodeMesssageMethod, LucyNetConstants.NIMM_ENCODE_MESSAGE_INTERCEPTOR, LucyNetConstants.NIMM_INVOKER_METHOD_SCOPE, ExecutionPolicy.INTERNAL);
 
                 return target.toBytecode();
             }
@@ -234,6 +237,16 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
         if (method != null) {
             try {
                 method.addInterceptor(interceptorClazzName, args);
+            } catch (InstrumentException e) {
+                LOGGER.warn("Unsupported method " + method, e);
+            }
+        }
+    }
+
+    private static void addScopedInterceptor(InstrumentMethod method, String interceptorClazzName, String scopeName, ExecutionPolicy executionPolicy) {
+        if (method != null) {
+            try {
+                method.addScopedInterceptor(interceptorClazzName, scopeName, executionPolicy);
             } catch (InstrumentException e) {
                 LOGGER.warn("Unsupported method " + method, e);
             }

@@ -8,7 +8,6 @@ import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.interceptor.annotation.TargetMethod;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
@@ -33,7 +32,6 @@ import java.util.Map.Entry;
 /**
  * @author netspider
  */
-@TargetMethod(name = "channelRead0", paramTypes = {"io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest"})
 public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
 
     public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor) {
