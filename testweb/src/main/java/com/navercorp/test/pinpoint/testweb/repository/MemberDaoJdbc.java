@@ -22,9 +22,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.navercorp.test.pinpoint.testweb.domain.Member;
@@ -33,7 +33,7 @@ import com.navercorp.test.pinpoint.testweb.domain.Member;
 public class MemberDaoJdbc implements MemberDao {
 
     @Autowired
-    SimpleJdbcTemplate jdbcTemplateMysql;
+    JdbcTemplate jdbcTemplateMysql;
 
     public void setMemberMapper(RowMapper<Member> memberMapper) {
         this.memberMapper = memberMapper;

@@ -2,13 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:lang="http://www.springframework.org/schema/lang" xmlns:beans="http://www.springframework.org/schema/beans"
        xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-       xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
-		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd
-
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
@@ -25,16 +20,16 @@
 
     <util:properties id="thriftServerProps" location="classpath:thrift.properties"/>
 
-    <bean id="jdbcTemplateMysql" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
-        <constructor-arg name="dataSource" ref="mysqlDataSource"/>
+    <bean id="jdbcTemplateMysql" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="mysqlDataSource"/>
     </bean>
 
-    <bean id="jdbcTemplateCubrid" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
-        <constructor-arg name="dataSource" ref="cubridDataSource"/>
+    <bean id="jdbcTemplateCubrid" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="cubridDataSource"/>
     </bean>
 
-    <bean id="jdbcTemplateOracle" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
-        <constructor-arg name="dataSource" ref="oracleDataSource"/>
+    <bean id="jdbcTemplateOracle" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="oracleDataSource"/>
     </bean>
 
 
@@ -68,7 +63,7 @@
     </bean>
 
     <bean id="mysqlSqlMapClientTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg name="sqlSessionFactory" ref="mysqlSqlMapClient"/>
+        <constructor-arg ref="mysqlSqlMapClient"/>
     </bean>
 
     <bean id="mysqlTransactionManager"
@@ -83,7 +78,7 @@
     </bean>
 
     <bean id="oracleSqlMapClientTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg name="sqlSessionFactory" ref="oracleSqlMapClient"/>
+        <constructor-arg ref="oracleSqlMapClient"/>
     </bean>
 
     <bean id="oracleTransactionManager"
@@ -98,7 +93,7 @@
     </bean>
 
     <bean id="cubridSqlMapClientTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg name="sqlSessionFactory" ref="cubridSqlMapClient"/>
+        <constructor-arg ref="cubridSqlMapClient"/>
     </bean>
 
     <bean id="cubridTransactionManager"
@@ -113,7 +108,7 @@
     </bean>
 
     <bean id="msSqlServerSqlMapClientTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg name="sqlSessionFactory" ref="msSqlServerSqlMapClient"/>
+        <constructor-arg ref="msSqlServerSqlMapClient"/>
     </bean>
 
     <bean id="msSqlServerTransactionManager"
