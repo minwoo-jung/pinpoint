@@ -53,7 +53,6 @@ public class JoinApplicationStatBo implements JoinStatBo {
             return newJoinApplicationStatBo;
         }
 
-        //TODO (minwoo) : 만약에 5분단위라면 5분이 끝나는 부분이 사라지거나 새로운 5분이 시작하는 부
         Map<Long, List<JoinCpuLoadBo>> joinCpuLoadBoMap = new HashMap<Long, List<JoinCpuLoadBo>>();
         for (JoinApplicationStatBo joinApplicationStatBo : joinApplicaitonStatBoList) {
             for (JoinCpuLoadBo joinCpuLoadBo : joinApplicationStatBo.getJoinCpuLoadBoList()) {

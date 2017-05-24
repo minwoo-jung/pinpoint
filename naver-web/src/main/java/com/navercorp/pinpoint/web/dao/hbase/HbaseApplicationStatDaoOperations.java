@@ -21,14 +21,13 @@ import com.navercorp.pinpoint.common.hbase.NaverhBaseTables;
 import com.navercorp.pinpoint.common.server.bo.codec.stat.ApplicationStatDecoder;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory;
-import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.StatType;
 import com.navercorp.pinpoint.web.mapper.RangeTimestampFilter;
 import com.navercorp.pinpoint.web.mapper.TimestampFilter;
 import com.navercorp.pinpoint.web.mapper.stat.ApplicationStatMapper;
 import com.navercorp.pinpoint.web.mapper.stat.SampledApplicationStatResultExtractor;
 import com.navercorp.pinpoint.web.vo.Range;
-import com.navercorp.pinpoint.web.vo.stat.SampledAgentStatDataPoint;
+import com.navercorp.pinpoint.web.vo.stat.AggregationStatData;
 import org.apache.hadoop.hbase.client.Scan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,7 @@ public class HbaseApplicationStatDaoOperations {
     @Autowired
     private ApplicationStatHbaseOperationFactory operationFactory;
 
-    <T extends JoinStatBo, S extends SampledAgentStatDataPoint> List<S> getSampledStatList(StatType statType, SampledApplicationStatResultExtractor<T, S> resultExtractor, String applicationId, Range range) {
+    List<AggregationStatData> getSampledStatList(StatType statType, SampledApplicationStatResultExtractor resultExtractor, String applicationId, Range range) {
         if (applicationId == null) {
             throw new NullPointerException("applicationId must not be null");
         }
@@ -68,9 +67,9 @@ public class HbaseApplicationStatDaoOperations {
         return hbaseOperations2.findParallel(NaverhBaseTables.APPLICATION_STAT_AGGRE, scan, this.operationFactory.getRowKeyDistributor(), resultExtractor, APPLICATION_STAT_NUM_PARTITIONS);
     }
 
-    <T extends JoinStatBo> ApplicationStatMapper<T> createRowMapper(ApplicationStatDecoder<T> decoder, Range range) {
+    ApplicationStatMapper createRowMapper(ApplicationStatDecoder decoder, Range range) {
         TimestampFilter filter = new RangeTimestampFilter(range);
-        return new ApplicationStatMapper<>(this.operationFactory, decoder, filter);
+        return new ApplicationStatMapper(this.operationFactory, decoder, filter);
     }
 
     private Scan createScan(StatType statType, String applicationId, Range range) {

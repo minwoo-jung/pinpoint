@@ -32,17 +32,17 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public abstract class ApplicationStatSerializer<T extends JoinStatBo> implements HbaseSerializer<List<T>, Put> {
+public abstract class ApplicationStatSerializer implements HbaseSerializer<List<JoinStatBo>, Put> {
 
-    private final ApplicationStatEncoder<T> encoder;
+    private final ApplicationStatEncoder encoder;
 
-    protected ApplicationStatSerializer(ApplicationStatEncoder<T> encoder) {
+    protected ApplicationStatSerializer(ApplicationStatEncoder encoder) {
         Assert.notNull(encoder, "encoder must not be null");
         this.encoder = encoder;
     }
 
     @Override
-    public void serialize(List<T> joinStatBoList, Put put, SerializationContext context) {
+    public void serialize(List<JoinStatBo> joinStatBoList, Put put, SerializationContext context) {
         if (CollectionUtils.isEmpty(joinStatBoList)) {
             throw new IllegalArgumentException("agentStatBos should not be empty");
         }

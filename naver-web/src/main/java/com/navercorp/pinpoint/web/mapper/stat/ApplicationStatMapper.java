@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public class ApplicationStatMapper <T extends JoinStatBo> implements RowMapper<List<T>> {
+public class ApplicationStatMapper implements RowMapper<List<JoinStatBo>> {
 
     public final static Comparator<JoinStatBo> REVERSE_TIMESTAMP_COMPARATOR = new Comparator<JoinStatBo>() {
         @Override
@@ -48,17 +48,17 @@ public class ApplicationStatMapper <T extends JoinStatBo> implements RowMapper<L
     };
 
     private final ApplicationStatHbaseOperationFactory hbaseOperationFactory;
-    private final ApplicationStatDecoder<T> decoder;
+    private final ApplicationStatDecoder decoder;
     private final TimestampFilter filter;
 
-    public ApplicationStatMapper(ApplicationStatHbaseOperationFactory hbaseOperationFactory, ApplicationStatDecoder<T> decoder, TimestampFilter filter) {
+    public ApplicationStatMapper(ApplicationStatHbaseOperationFactory hbaseOperationFactory, ApplicationStatDecoder decoder, TimestampFilter filter) {
         this.hbaseOperationFactory = hbaseOperationFactory;
         this.decoder = decoder;
         this.filter = filter;
     }
 
     @Override
-    public List<T> mapRow(Result result, int rowNum) throws Exception {
+    public List<JoinStatBo> mapRow(Result result, int rowNum) throws Exception {
         if (result.isEmpty()) {
             return Collections.emptyList();
         }
@@ -66,7 +66,7 @@ public class ApplicationStatMapper <T extends JoinStatBo> implements RowMapper<L
         final String applicationId = this.hbaseOperationFactory.getApplicationId(distributedRowKey);
         final long baseTimestamp = this.hbaseOperationFactory.getBaseTimestamp(distributedRowKey);
 
-        List<T> dataPoints = new ArrayList<>();
+        List<JoinStatBo> dataPoints = new ArrayList<>();
 
         for (Cell cell : result.rawCells()) {
             if (CellUtil.matchingFamily(cell, NaverhBaseTables.APPLICATION_STAT_CF_STATISTICS)) {
@@ -79,8 +79,8 @@ public class ApplicationStatMapper <T extends JoinStatBo> implements RowMapper<L
                 decodingContext.setApplicationId(applicationId);
                 decodingContext.setBaseTimestamp(baseTimestamp);
                 decodingContext.setTimestampDelta(timestampDelta);
-                List<T> candidates = this.decoder.decodeValue(valueBuffer, decodingContext);
-                for (T candidate : candidates) {
+                List<JoinStatBo> candidates = this.decoder.decodeValue(valueBuffer, decodingContext);
+                for (JoinStatBo candidate : candidates) {
                     long timestamp = candidate.getTimestamp();
                     if (this.filter.filter(timestamp)) {
                         continue;

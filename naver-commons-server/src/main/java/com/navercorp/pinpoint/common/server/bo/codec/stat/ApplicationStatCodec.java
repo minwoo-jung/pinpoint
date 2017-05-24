@@ -24,12 +24,12 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public interface ApplicationStatCodec <T extends JoinStatBo> {
+public interface ApplicationStatCodec {
 
     byte getVersion();
 
-    void encodeValues(Buffer valueBuffer, List<T> joinStatBoList);
+    void encodeValues(Buffer valueBuffer, List<JoinStatBo> joinStatBoList);
 
-    List<T> decodeValues(Buffer valueBuffer, ApplicationStatDecodingContext decodingContext);
+    List<JoinStatBo> decodeValues(Buffer valueBuffer, ApplicationStatDecodingContext decodingContext);
 }
 

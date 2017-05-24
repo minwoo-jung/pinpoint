@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2017 NAVER Corp.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <!-- default setting-->
+    <settings>
+        <setting name="cacheEnabled" value="true" />
+
+        <!-- lazy loading-->
+        <setting name="lazyLoadingEnabled" value="true" />
+        <setting name="aggressiveLazyLoading" value="true" />
+
+        <setting name="useGeneratedKeys" value="true" />
+
+        <!-- don't need "REUSE" because preparedStatements are cached  at dbcp  -->
+        <setting name="defaultExecutorType" value="SIMPLE" />
+
+        <!--defaultQueryTiemout. unit is second -->
+        <setting name="defaultStatementTimeout" value="5" />
+        <!--undersocre mapping of DB table  -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type="com.navercorp.pinpoint.web.vo.UserGroup" alias="UserGroup"/>
+        <typeAlias type="com.navercorp.pinpoint.web.vo.UserGroupMember" alias="UserGroupMember"/>
+        <typeAlias type="com.navercorp.pinpoint.web.vo.User" alias="User"/>
+        <typeAlias type="com.navercorp.pinpoint.web.alarm.vo.Rule" alias="Rule"/>
+        <typeAlias type="com.navercorp.pinpoint.web.alarm.vo.CheckerResult" alias="ChecherResult"/>
+
+        <typeAlias type="com.navercorp.pinpoint.web.vo.AgentCountStatistics" alias="AgentCountStatistics"/>
+        <typeAlias type="com.navercorp.pinpoint.web.vo.Range" alias="Range"/>
+
+        <typeAlias type="com.navercorp.pinpoint.web.vo.AppUserGroupAuth" alias="AppUserGroupAuth"/>
+
+
+    </typeAliases>
+
+</configuration>

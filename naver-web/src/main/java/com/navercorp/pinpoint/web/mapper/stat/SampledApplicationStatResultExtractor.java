@@ -16,11 +16,13 @@
 package com.navercorp.pinpoint.web.mapper.stat;
 
 import com.navercorp.pinpoint.common.hbase.ResultsExtractor;
+import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.ApplicationStatSampler;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.ApplicationStatSamplingHandler;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.join.EagerSamplingHandler;
 import com.navercorp.pinpoint.web.util.TimeWindow;
+import com.navercorp.pinpoint.web.vo.stat.AggregationStatData;
 import com.navercorp.pinpoint.web.vo.stat.SampledAgentStatDataPoint;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -30,13 +32,13 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public class SampledApplicationStatResultExtractor <T extends JoinStatBo, S extends SampledAgentStatDataPoint> implements ResultsExtractor<List<S>> {
+public class SampledApplicationStatResultExtractor implements ResultsExtractor<List<AggregationStatData>> {
 
     private final TimeWindow timeWindow;
-    private final ApplicationStatMapper<T> rowMapper;
-    private final ApplicationStatSampler<T, S> sampler;
+    private final ApplicationStatMapper rowMapper;
+    private final ApplicationStatSampler sampler;
 
-    public SampledApplicationStatResultExtractor(TimeWindow timeWindow, ApplicationStatMapper<T> rowMapper, ApplicationStatSampler<T, S> sampler) {
+    public SampledApplicationStatResultExtractor(TimeWindow timeWindow, ApplicationStatMapper rowMapper, ApplicationStatSampler sampler) {
         if (timeWindow.getWindowRangeCount() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("range yields too many timeslots");
         }
@@ -46,11 +48,11 @@ public class SampledApplicationStatResultExtractor <T extends JoinStatBo, S exte
     }
 
     @Override
-    public List<S> extractData(ResultScanner results) throws Exception {
+    public List<AggregationStatData> extractData(ResultScanner results) throws Exception {
         int rowNum = 0;
-        ApplicationStatSamplingHandler<T, S> samplingHandler = new EagerSamplingHandler<>(timeWindow, sampler);
+        ApplicationStatSamplingHandler samplingHandler = new EagerSamplingHandler(timeWindow, sampler);
         for (Result result : results) {
-            for (T dataPoint : this.rowMapper.mapRow(result, rowNum++)) {
+            for (JoinStatBo dataPoint : this.rowMapper.mapRow(result, rowNum++)) {
                 samplingHandler.addDataPoint(dataPoint);
             }
         }

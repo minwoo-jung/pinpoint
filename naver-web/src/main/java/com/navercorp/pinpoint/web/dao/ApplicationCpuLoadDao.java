@@ -16,6 +16,7 @@
 package com.navercorp.pinpoint.web.dao;
 
 import com.navercorp.pinpoint.web.util.TimeWindow;
+import com.navercorp.pinpoint.web.vo.stat.AggreJoinCpuLoadBo;
 import com.navercorp.pinpoint.web.vo.stat.SampledCpuLoad;
 
 import java.util.List;
@@ -23,6 +24,6 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public interface ApplicationCupLoadDao {
-    List<SampledCpuLoad> getApplicationStatList(String applicationId, TimeWindow timeWindow);
+public interface ApplicationCpuLoadDao {
+    List<AggreJoinCpuLoadBo> getApplicationStatList(String applicationId, TimeWindow timeWindow);
 }

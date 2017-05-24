@@ -25,6 +25,7 @@ import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatDecoding
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.AgentStatUtils;
 import com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatDecodingContext;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
+import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -41,12 +42,12 @@ public class CpuLoadCodecTest {
 
     @Test
     public void encodeValues(){
-        final String id = "test_server";
+        final String id = "test_app";
         final long currentTime = new Date().getTime();
         final AgentStatDataPointCodec agentStatDataPointCodec = new AgentStatDataPointCodec();
         final CpuLoadCodec cpuLoadCodec = new CpuLoadCodec(agentStatDataPointCodec);
         final Buffer encodedValueBuffer = new AutomaticBuffer();
-        final List<JoinCpuLoadBo> joinCpuLoadBoList = createJoinCpuLoadBoList(currentTime);
+        final List<JoinStatBo> joinCpuLoadBoList = createJoinCpuLoadBoList(currentTime);
         encodedValueBuffer.putByte(cpuLoadCodec.getVersion());
         cpuLoadCodec.encodeValues(encodedValueBuffer, joinCpuLoadBoList);
 
@@ -59,20 +60,20 @@ public class CpuLoadCodecTest {
         decodingContext.setTimestampDelta(timestampDelta);
 
         assertEquals(valueBuffer.readByte(), cpuLoadCodec.getVersion());
-        List<JoinCpuLoadBo> decodedjoinCpuLoadBoList = cpuLoadCodec.decodeValues(valueBuffer, decodingContext);
+        List<JoinStatBo> decodedjoinCpuLoadBoList = cpuLoadCodec.decodeValues(valueBuffer, decodingContext);
         for (int i = 0; i < decodedjoinCpuLoadBoList.size(); i++) {
             assertTrue(decodedjoinCpuLoadBoList.get(i).equals(joinCpuLoadBoList.get(i)));
         }
     }
 
-    private List<JoinCpuLoadBo> createJoinCpuLoadBoList(long currentTime) {
+    private List<JoinStatBo> createJoinCpuLoadBoList(long currentTime) {
         final String id = "test_server";
-        final List<JoinCpuLoadBo> joinCpuLoadBoList = new ArrayList<JoinCpuLoadBo>();
-        JoinCpuLoadBo joinCpuLoadBo2 = new JoinCpuLoadBo(id, 40, 87, 40, 70, 97, 40, currentTime + 5000);
-        JoinCpuLoadBo joinCpuLoadBo4 = new JoinCpuLoadBo(id, 20, 67, 17, 40, 99, 18, currentTime + 15000);
-        JoinCpuLoadBo joinCpuLoadBo1 = new JoinCpuLoadBo(id, 50, 97, 27, 80, 97, 46, currentTime);
-        JoinCpuLoadBo joinCpuLoadBo3 = new JoinCpuLoadBo(id, 30, 77, 27, 60, 77, 27, currentTime + 10000);
-        JoinCpuLoadBo joinCpuLoadBo5 = new JoinCpuLoadBo(id, 10, 99, 7, 30, 59, 8, currentTime + 20000);
+        final List<JoinStatBo> joinCpuLoadBoList = new ArrayList();
+        JoinCpuLoadBo joinCpuLoadBo2 = new JoinCpuLoadBo(id, 40, 87, "agent2_1", 40, "agent2_2", 70, 97, "agent2_3", 40, "agent2_4", currentTime + 5000);
+        JoinCpuLoadBo joinCpuLoadBo4 = new JoinCpuLoadBo(id, 20, 67, "agent4_1", 17, "agent4_2", 40, 99, "agent4_3", 18, "agent4_4", currentTime + 15000);
+        JoinCpuLoadBo joinCpuLoadBo1 = new JoinCpuLoadBo(id, 50, 97, "agent1_1", 27, "agent1_2", 80, 97, "agent1_3", 46, "agent1_4", currentTime);
+        JoinCpuLoadBo joinCpuLoadBo3 = new JoinCpuLoadBo(id, 30, 77, "agent3_1", 27, "agent3_2", 60, 77, "agent3_3", 27, "agent3_4", currentTime + 10000);
+        JoinCpuLoadBo joinCpuLoadBo5 = new JoinCpuLoadBo(id, 10, 99, "agent5_1", 7, "agent5_2", 30, 59, "agent5_3", 8, "agent5_4", currentTime + 20000);
         joinCpuLoadBoList.add(joinCpuLoadBo1);
         joinCpuLoadBoList.add(joinCpuLoadBo2);
         joinCpuLoadBoList.add(joinCpuLoadBo3);

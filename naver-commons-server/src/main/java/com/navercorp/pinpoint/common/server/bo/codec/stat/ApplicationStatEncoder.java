@@ -25,11 +25,11 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public class ApplicationStatEncoder<T extends JoinStatBo> {
+public class ApplicationStatEncoder {
 
-    private final ApplicationStatCodec<T> codec;
+    private final ApplicationStatCodec codec;
 
-    public ApplicationStatEncoder(ApplicationStatCodec<T> codec) {
+    public ApplicationStatEncoder(ApplicationStatCodec codec) {
         this.codec = codec;
     }
 
@@ -40,7 +40,7 @@ public class ApplicationStatEncoder<T extends JoinStatBo> {
         return qualifierBuffer.wrapByteBuffer();
     }
 
-    public ByteBuffer encodeValue(List<T> JoinStatBoList) {
+    public ByteBuffer encodeValue(List<JoinStatBo> JoinStatBoList) {
         Buffer valueBuffer = new AutomaticBuffer();
         valueBuffer.putByte(this.codec.getVersion());
         codec.encodeValues(valueBuffer, JoinStatBoList);

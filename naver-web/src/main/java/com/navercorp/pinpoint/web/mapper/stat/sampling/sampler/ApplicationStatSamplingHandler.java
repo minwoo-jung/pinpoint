@@ -15,18 +15,17 @@
  */
 package com.navercorp.pinpoint.web.mapper.stat.sampling.sampler;
 
-import com.navercorp.pinpoint.common.server.bo.stat.AgentStatDataPoint;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
-import com.navercorp.pinpoint.web.vo.stat.SampledAgentStatDataPoint;
+import com.navercorp.pinpoint.web.vo.stat.AggregationStatData;
 
 import java.util.List;
 
 /**
  * @author minwoo.jung
  */
-public interface ApplicationStatSamplingHandler <T extends JoinStatBo, S extends SampledAgentStatDataPoint> {
+public interface ApplicationStatSamplingHandler {
 
-    void addDataPoint(T dataPoint);
+    void addDataPoint(JoinStatBo dataPoint);
 
-    List<S> getSampledDataPoints();
-    }
+    List<AggregationStatData> getSampledDataPoints();
+}

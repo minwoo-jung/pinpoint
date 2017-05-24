@@ -16,25 +16,26 @@
 package com.navercorp.pinpoint.web.dao.hbase;
 
 import com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadDecoder;
-import com.navercorp.pinpoint.common.server.bo.stat.join.JoinCpuLoadBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.StatType;
-import com.navercorp.pinpoint.web.dao.ApplicationCupLoadDao;
+import com.navercorp.pinpoint.web.dao.ApplicationCpuLoadDao;
 import com.navercorp.pinpoint.web.mapper.stat.ApplicationStatMapper;
 import com.navercorp.pinpoint.web.mapper.stat.SampledApplicationStatResultExtractor;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.JoinCpuLoadSampler;
 import com.navercorp.pinpoint.web.util.TimeWindow;
 import com.navercorp.pinpoint.web.vo.Range;
-import com.navercorp.pinpoint.web.vo.stat.SampledCpuLoad;
+import com.navercorp.pinpoint.web.vo.stat.AggreJoinCpuLoadBo;
+import com.navercorp.pinpoint.web.vo.stat.AggregationStatData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author minwoo.jung
  */
 @Repository
-public class ApplicationCpuLoadDaoImpl implements ApplicationCupLoadDao {
+public class ApplicationCpuLoadDaoImpl implements ApplicationCpuLoadDao {
 
     @Autowired
     private CpuLoadDecoder cpuLoadDecoder;
@@ -46,12 +47,24 @@ public class ApplicationCpuLoadDaoImpl implements ApplicationCupLoadDao {
     private HbaseApplicationStatDaoOperations operations;
 
     @Override
-    public List<SampledCpuLoad> getApplicationStatList(String applicationId, TimeWindow timeWindow) {
+    public List<AggreJoinCpuLoadBo> getApplicationStatList(String applicationId, TimeWindow timeWindow) {
         long scanFrom = timeWindow.getWindowRange().getFrom();
         long scanTo = timeWindow.getWindowRange().getTo() + timeWindow.getWindowSlotSize();
         Range range = new Range(scanFrom, scanTo);
-        ApplicationStatMapper<JoinCpuLoadBo> mapper = operations.createRowMapper(cpuLoadDecoder, range);
-        SampledApplicationStatResultExtractor<JoinCpuLoadBo, SampledCpuLoad> resultExtractor = new SampledApplicationStatResultExtractor<>(timeWindow, mapper, cpuLoadSampler);
-        return operations.getSampledStatList(StatType.APP_CPU_LOAD, resultExtractor, applicationId, range);
+        ApplicationStatMapper mapper = operations.createRowMapper(cpuLoadDecoder, range);
+        SampledApplicationStatResultExtractor resultExtractor = new SampledApplicationStatResultExtractor(timeWindow, mapper, cpuLoadSampler);
+        List<AggregationStatData> aggregationStatDataList = operations.getSampledStatList(StatType.APP_CPU_LOAD, resultExtractor, applicationId, range);
+        return cast(aggregationStatDataList);
+    }
+
+    private List<AggreJoinCpuLoadBo> cast(List<AggregationStatData> aggregationStatDataList) {
+        List<AggreJoinCpuLoadBo> aggreJoinCpuLoadBoList = new ArrayList<>(aggregationStatDataList.size());
+
+        for (AggregationStatData aggregationStatData : aggregationStatDataList) {
+            aggreJoinCpuLoadBoList.add((AggreJoinCpuLoadBo) aggregationStatData);
+        }
+
+        return aggreJoinCpuLoadBoList;
+
     }
 }

@@ -34,15 +34,20 @@ public class JoinCpuLoadBoMapper implements ThriftBoMapper<JoinCpuLoadBo, TFAgen
 
         JoinCpuLoadBo joinCpuLoadBo = new JoinCpuLoadBo();
 
-        joinCpuLoadBo.setId(tFAgentStat.getAgentId());
+        final String agentId = tFAgentStat.getAgentId();
+        joinCpuLoadBo.setId(agentId);
         joinCpuLoadBo.setTimestamp(tFAgentStat.getTimestamp());
 
         TFCpuLoad tFCpuLoad = tFAgentStat.getCpuLoad();
         joinCpuLoadBo.setJvmCpuLoad(tFCpuLoad.getJvmCpuLoad());
+        joinCpuLoadBo.setMinJvmCpuAgentId(agentId);
         joinCpuLoadBo.setMinJvmCpuLoad(tFCpuLoad.getJvmCpuLoad());
+        joinCpuLoadBo.setMaxJvmCpuAgentId(agentId);
         joinCpuLoadBo.setMaxJvmCpuLoad(tFCpuLoad.getJvmCpuLoad());
         joinCpuLoadBo.setSystemCpuLoad(tFCpuLoad.getSystemCpuLoad());
+        joinCpuLoadBo.setMinSysCpuAgentId(agentId);
         joinCpuLoadBo.setMinSystemCpuLoad(tFCpuLoad.getSystemCpuLoad());
+        joinCpuLoadBo.setMaxSysCpuAgentId(agentId);
         joinCpuLoadBo.setMaxSystemCpuLoad(tFCpuLoad.getSystemCpuLoad());
         return joinCpuLoadBo;
     }

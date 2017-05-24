@@ -15,8 +15,6 @@
  */
 package com.navercorp.pinpoint.web.vo.stat.chart;
 
-import com.navercorp.pinpoint.web.vo.chart.Chart;
-
 import java.util.Map;
 
 /**

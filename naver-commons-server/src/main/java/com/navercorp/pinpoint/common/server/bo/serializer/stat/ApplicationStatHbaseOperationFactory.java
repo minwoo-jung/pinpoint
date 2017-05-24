@@ -52,16 +52,16 @@ public class ApplicationStatHbaseOperationFactory {
         this.rowKeyDistributor = rowKeyDistributor;
     }
 
-    public  <T extends JoinStatBo> List<Put> createPuts(String applicationId, List<T> joinStatBoList, StatType statType, ApplicationStatSerializer applicationStatSerializer) {
+    public List<Put> createPuts(String applicationId, List<JoinStatBo> joinStatBoList, StatType statType, ApplicationStatSerializer applicationStatSerializer) {
         if (CollectionUtils.isEmpty(joinStatBoList)) {
             return Collections.emptyList();
         }
 
-        Map<Long, List<T>> timeslots = slotApplicationStatDataPoints(joinStatBoList);
+        Map<Long, List<JoinStatBo>> timeslots = slotApplicationStatDataPoints(joinStatBoList);
         List<Put> puts = new ArrayList<Put>();
-        for (Map.Entry<Long, List<T>> timeslot : timeslots.entrySet()) {
+        for (Map.Entry<Long, List<JoinStatBo>> timeslot : timeslots.entrySet()) {
             long baseTimestamp = timeslot.getKey();
-            List<T> slottedApplicationStatDataPoints = timeslot.getValue();
+            List<JoinStatBo> slottedApplicationStatDataPoints = timeslot.getValue();
 
             final ApplicationStatRowKeyComponent rowKeyComponent = new ApplicationStatRowKeyComponent(applicationId, statType, baseTimestamp);
             byte[] rowKey = this.rowKeyEncoder.encodeRowKey(rowKeyComponent);

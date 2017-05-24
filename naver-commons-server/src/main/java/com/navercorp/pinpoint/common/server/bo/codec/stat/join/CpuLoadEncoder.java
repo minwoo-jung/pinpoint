@@ -24,10 +24,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 /**
  * @author minwoo.jung
  */
-public class CpuLoadEncoder extends ApplicationStatEncoder<JoinCpuLoadBo> {
+public class CpuLoadEncoder extends ApplicationStatEncoder {
 
     @Autowired
-    private CpuLoadEncoder(@Qualifier("joinCpuLoadCodec") ApplicationStatCodec<JoinCpuLoadBo> cpuLoadCodec) {
+    private CpuLoadEncoder(@Qualifier("joinCpuLoadCodec") ApplicationStatCodec cpuLoadCodec) {
         super(cpuLoadCodec);
     }
 }

@@ -19,6 +19,7 @@ import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.ApplicationStatSampler;
 import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.ApplicationStatSamplingHandler;
 import com.navercorp.pinpoint.web.util.TimeWindow;
+import com.navercorp.pinpoint.web.vo.stat.AggregationStatData;
 import com.navercorp.pinpoint.web.vo.stat.SampledAgentStatDataPoint;
 
 import java.util.*;
@@ -27,20 +28,20 @@ import java.util.*;
  * @author minwoo.jung
  */
 //TODO : (minwoo) agent 이름 중복 이슈는 없으므로 굳이 소팅작업은 필요없을듯함. 개선 필요한 사항임.
-public class EagerSamplingHandler <T extends JoinStatBo, S extends SampledAgentStatDataPoint> implements ApplicationStatSamplingHandler<T, S> {
+public class EagerSamplingHandler implements ApplicationStatSamplingHandler {
 
     private final TimeWindow timeWindow;
-    private final ApplicationStatSampler<T, S> sampler;
+    private final ApplicationStatSampler sampler;
 
     private final Map<String, SamplingPartitionContext> samplingContexts = new HashMap<>();
-    private final Map<Long, SortedMap<String, S>> sampledPointProjection = new TreeMap<>();
+    private final Map<Long, SortedMap<String, AggregationStatData>> sampledPointProjection = new TreeMap<>();
 
-    public EagerSamplingHandler(TimeWindow timeWindow, ApplicationStatSampler<T, S> sampler) {
+    public EagerSamplingHandler(TimeWindow timeWindow, ApplicationStatSampler sampler) {
         this.timeWindow = timeWindow;
         this.sampler = sampler;
     }
 
-    public void addDataPoint(T dataPoint) {
+    public void addDataPoint(JoinStatBo dataPoint) {
         String id = dataPoint.getId();
         long timestamp = dataPoint.getTimestamp();
         long timeslotTimestamp = timeWindow.refineTimestamp(timestamp);
@@ -53,8 +54,8 @@ public class EagerSamplingHandler <T extends JoinStatBo, S extends SampledAgentS
             if (timeslotTimestampToSample == timeslotTimestamp) {
                 samplingContext.addDataPoint(dataPoint);
             } else if (timeslotTimestampToSample > timeslotTimestamp) {
-                S sampledPoint = samplingContext.sampleDataPoints(dataPoint);
-                SortedMap<String, S> sampledPoints = sampledPointProjection.get(timeslotTimestampToSample);
+                AggregationStatData sampledPoint = samplingContext.sampleDataPoints(dataPoint);
+                SortedMap<String, AggregationStatData> sampledPoints = sampledPointProjection.get(timeslotTimestampToSample);
                 if (sampledPoints == null) {
                     sampledPoints = new TreeMap<>();
                     sampledPointProjection.put(timeslotTimestampToSample, sampledPoints);
@@ -70,14 +71,14 @@ public class EagerSamplingHandler <T extends JoinStatBo, S extends SampledAgentS
         }
     }
 
-    public List<S> getSampledDataPoints() {
+    public List<AggregationStatData> getSampledDataPoints() {
         // sample remaining data point projections
         for (Map.Entry<String, SamplingPartitionContext> e : samplingContexts.entrySet()) {
             String id = e.getKey();
             SamplingPartitionContext samplingPartitionContext = e.getValue();
             long timeslotTimestamp = samplingPartitionContext.getTimeslotTimestamp();
-            S sampledDataPoint = samplingPartitionContext.sampleDataPoints();
-            SortedMap<String, S> reduceCandidates = sampledPointProjection.get(timeslotTimestamp);
+            AggregationStatData sampledDataPoint = samplingPartitionContext.sampleDataPoints();
+            SortedMap<String, AggregationStatData> reduceCandidates = sampledPointProjection.get(timeslotTimestamp);
             if (reduceCandidates == null) {
                 reduceCandidates = new TreeMap<>();
                 sampledPointProjection.put(timeslotTimestamp, reduceCandidates);
@@ -88,15 +89,15 @@ public class EagerSamplingHandler <T extends JoinStatBo, S extends SampledAgentS
         if (sampledPointProjection.isEmpty()) {
             return Collections.emptyList();
         } else {
-            List<S> sampledDataPoints = new ArrayList<>(sampledPointProjection.size());
-            for (SortedMap<String, S> sampledPointCandidates : sampledPointProjection.values()) {
+            List<AggregationStatData> sampledDataPoints = new ArrayList<>(sampledPointProjection.size());
+            for (SortedMap<String, AggregationStatData> sampledPointCandidates : sampledPointProjection.values()) {
                 sampledDataPoints.add(reduceSampledPoints(sampledPointCandidates));
             }
             return sampledDataPoints;
         }
     }
 
-    private S reduceSampledPoints(SortedMap<String, S> sampledPointCandidates) {
+    private AggregationStatData reduceSampledPoints(SortedMap<String, AggregationStatData> sampledPointCandidates) {
         String lastKey = sampledPointCandidates.lastKey();
         return sampledPointCandidates.get(lastKey);
     }
@@ -105,15 +106,15 @@ public class EagerSamplingHandler <T extends JoinStatBo, S extends SampledAgentS
 
         private final int timeslotIndex;
         private final long timeslotTimestamp;
-        private final List<T> dataPoints = new ArrayList<>();
+        private final List<JoinStatBo> dataPoints = new ArrayList<>();
 
-        private SamplingPartitionContext(long timeslotTimestamp, T initialDataPoint) {
+        private SamplingPartitionContext(long timeslotTimestamp, JoinStatBo initialDataPoint) {
             this.timeslotTimestamp = timeslotTimestamp;
             this.dataPoints.add(initialDataPoint);
             this.timeslotIndex = timeWindow.getWindowIndex(this.timeslotTimestamp);
         }
 
-        private void addDataPoint(T dataPoint) {
+        private void addDataPoint(JoinStatBo dataPoint) {
             this.dataPoints.add(dataPoint);
         }
 
@@ -121,11 +122,11 @@ public class EagerSamplingHandler <T extends JoinStatBo, S extends SampledAgentS
             return timeslotTimestamp;
         }
 
-        private S sampleDataPoints() {
+        private AggregationStatData sampleDataPoints() {
             return sampleDataPoints(null);
         }
 
-        private S sampleDataPoints(T previousDataPoint) {
+        private AggregationStatData sampleDataPoints(JoinStatBo previousDataPoint) {
             return sampler.sampleDataPoints(timeslotIndex, timeslotTimestamp, dataPoints, previousDataPoint);
         }
 

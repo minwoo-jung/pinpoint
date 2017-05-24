@@ -25,10 +25,10 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public class CpuLoadDecoder extends ApplicationStatDecoder<JoinCpuLoadBo> {
+public class CpuLoadDecoder extends ApplicationStatDecoder {
 
     @Autowired
-    public CpuLoadDecoder(List<ApplicationStatCodec<JoinCpuLoadBo>> cpuLoadCodecs) {
+    public CpuLoadDecoder(List<ApplicationStatCodec> cpuLoadCodecs) {
         super(cpuLoadCodecs);
     }
 }

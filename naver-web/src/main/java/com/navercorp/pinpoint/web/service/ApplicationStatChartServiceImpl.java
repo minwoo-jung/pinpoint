@@ -15,13 +15,11 @@
  */
 package com.navercorp.pinpoint.web.service;
 
-import com.navercorp.pinpoint.web.dao.ApplicationCupLoadDao;
+import com.navercorp.pinpoint.web.dao.ApplicationCpuLoadDao;
 import com.navercorp.pinpoint.web.util.TimeWindow;
-import com.navercorp.pinpoint.web.vo.stat.SampledCpuLoad;
-import com.navercorp.pinpoint.web.vo.stat.chart.AgentStatChartGroup;
+import com.navercorp.pinpoint.web.vo.stat.AggreJoinCpuLoadBo;
 import com.navercorp.pinpoint.web.vo.stat.chart.ApplicationCpuLoadChartGroup;
 import com.navercorp.pinpoint.web.vo.stat.chart.ApplicationStatChartGroup;
-import com.navercorp.pinpoint.web.vo.stat.chart.CpuLoadChartGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +32,7 @@ import java.util.List;
 public class ApplicationStatChartServiceImpl implements ApplicationStatChartService {
 
     @Autowired
-    private ApplicationCupLoadDao applicationCpuLoadDao;
+    private ApplicationCpuLoadDao applicationCpuLoadDao;
 
 
     @Override
@@ -45,7 +43,7 @@ public class ApplicationStatChartServiceImpl implements ApplicationStatChartServ
         if (timeWindow == null) {
             throw new NullPointerException("timeWindow must not be null");
         }
-        List<SampledCpuLoad> sampledCpuLoads = this.applicationCpuLoadDao.getApplicationStatList(applicationId, timeWindow);
-        return new ApplicationCpuLoadChartGroup(timeWindow, sampledCpuLoads);
+        List<AggreJoinCpuLoadBo> aggreJoinCpuLoadBoList = this.applicationCpuLoadDao.getApplicationStatList(applicationId, timeWindow);
+        return new ApplicationCpuLoadChartGroup(timeWindow, aggreJoinCpuLoadBoList);
     }
 }

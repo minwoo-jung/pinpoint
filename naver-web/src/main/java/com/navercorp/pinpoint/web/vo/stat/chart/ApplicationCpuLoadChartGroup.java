@@ -16,44 +16,45 @@
 package com.navercorp.pinpoint.web.vo.stat.chart;
 
 import com.navercorp.pinpoint.web.util.TimeWindow;
-import com.navercorp.pinpoint.web.vo.chart.Chart;
-import com.navercorp.pinpoint.web.vo.chart.Point;
-import com.navercorp.pinpoint.web.vo.chart.TimeSeriesChartBuilder;
-import com.navercorp.pinpoint.web.vo.stat.SampledCpuLoad;
+import com.navercorp.pinpoint.web.vo.stat.AggreJoinCpuLoadBo;
+import com.navercorp.pinpoint.web.vo.stat.chart.CpuLoadPoint.UncollectedCpuLoadPointCreater;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * @author minwoo.jung
  */
 public class ApplicationCpuLoadChartGroup implements ApplicationStatChartGroup {
 
-    private static final Double UNCOLLECTED_PERCENTAGE = -1D;
+    private static final UncollectedCpuLoadPointCreater UNCOLLECTED_CPULOADPOINT = new UncollectedCpuLoadPointCreater();
 
-    private final Map<ChartType, Chart> cpuLoadCharts;
+    private final Map<ChartType, Chart> cpuLoadChartMap;
 
     public enum CpuLoadChartType implements ChartType {
         CPU_LOAD_JVM,
         CPU_LOAD_SYSTEM
     }
 
-    public ApplicationCpuLoadChartGroup(TimeWindow timeWindow, List<SampledCpuLoad> sampledCpuLoads) {
-        this.cpuLoadCharts = new HashMap<>();
-        List<Point<Long, Double>> jvmCpuLoads = new ArrayList<>(sampledCpuLoads.size());
-        List<Point<Long, Double>> systemCpuLoads = new ArrayList<>(sampledCpuLoads.size());
-        for (SampledCpuLoad sampledCpuLoad : sampledCpuLoads) {
-            jvmCpuLoads.add(sampledCpuLoad.getJvmCpuLoad());
-            systemCpuLoads.add(sampledCpuLoad.getSystemCpuLoad());
+    public ApplicationCpuLoadChartGroup(TimeWindow timeWindow, List<AggreJoinCpuLoadBo> AggreCpuLoadList) {
+        cpuLoadChartMap = new HashMap<>();
+        List<Point> jvmCpuLoadList = new ArrayList<>(AggreCpuLoadList.size());
+        List<Point> systemCpuLoadList = new ArrayList<>(AggreCpuLoadList.size());
+
+        for (AggreJoinCpuLoadBo aggreJoinCpuLoadBo : AggreCpuLoadList) {
+            jvmCpuLoadList.add(new CpuLoadPoint(aggreJoinCpuLoadBo.getTimestamp(), aggreJoinCpuLoadBo.getMinJvmCpuLoad(), aggreJoinCpuLoadBo.getMinJvmCpuAgentId(), aggreJoinCpuLoadBo.getMaxJvmCpuLoad(), aggreJoinCpuLoadBo.getMaxJvmCpuAgentId(), aggreJoinCpuLoadBo.getJvmCpuLoad()));
+            systemCpuLoadList.add(new CpuLoadPoint(aggreJoinCpuLoadBo.getTimestamp(), aggreJoinCpuLoadBo.getMinSystemCpuLoad(), aggreJoinCpuLoadBo.getMinSysCpuAgentId(), aggreJoinCpuLoadBo.getMaxSystemCpuLoad(), aggreJoinCpuLoadBo.getMaxSysCpuAgentId(), aggreJoinCpuLoadBo.getSystemCpuLoad()));
         }
-        this.cpuLoadCharts.put(CpuLoadChartType.CPU_LOAD_JVM, new TimeSeriesChartBuilder<>(timeWindow, UNCOLLECTED_PERCENTAGE).build(jvmCpuLoads));
-        this.cpuLoadCharts.put(CpuLoadChartType.CPU_LOAD_SYSTEM, new TimeSeriesChartBuilder<>(timeWindow, UNCOLLECTED_PERCENTAGE).build(systemCpuLoads));
+
+        cpuLoadChartMap.put(CpuLoadChartType.CPU_LOAD_JVM, new TimeSeriesChartBuilder(timeWindow, UNCOLLECTED_CPULOADPOINT).build(jvmCpuLoadList));
+        cpuLoadChartMap.put(CpuLoadChartType.CPU_LOAD_SYSTEM, new TimeSeriesChartBuilder(timeWindow, UNCOLLECTED_CPULOADPOINT).build(systemCpuLoadList));
     }
 
     @Override
     public Map<ChartType, Chart> getCharts() {
-        return this.cpuLoadCharts;
+        return this.cpuLoadChartMap;
     }
 }

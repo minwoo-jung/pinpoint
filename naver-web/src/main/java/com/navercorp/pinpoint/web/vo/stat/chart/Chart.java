@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.mapper.stat.sampling.sampler;
-
-import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
-import com.navercorp.pinpoint.web.vo.stat.AggregationStatData;
-import com.navercorp.pinpoint.web.vo.stat.SampledAgentStatDataPoint;
+package com.navercorp.pinpoint.web.vo.stat.chart;
 
 import java.util.List;
 
 /**
  * @author minwoo.jung
  */
-public interface ApplicationStatSampler <T extends JoinStatBo> {
+public class Chart {
+    public List<Point> getPoints() {
+        return points;
+    }
 
-    AggregationStatData sampleDataPoints(int index, long timestamp, List<T> dataPoints, T previousDataPoint);
+    private final List<Point> points;
 
+    public Chart(List<Point> points) {
+        this.points = points;
+    }
 }

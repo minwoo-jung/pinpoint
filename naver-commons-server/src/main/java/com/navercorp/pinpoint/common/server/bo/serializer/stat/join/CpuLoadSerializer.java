@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * @author minwoo.jung
  */
-public class CpuLoadSerializer extends ApplicationStatSerializer<JoinCpuLoadBo> {
+public class CpuLoadSerializer extends ApplicationStatSerializer {
 
     @Autowired
     public CpuLoadSerializer(CpuLoadEncoder cpuLoadEncoder) {
