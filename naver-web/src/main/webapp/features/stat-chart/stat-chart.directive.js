@@ -139,9 +139,7 @@
 							oChart.validateSize();
 						}
 					}
-
 					scope.$on("statChartDirective.initAndRenderWithData." + scope.namespace, function (event, data, w, h) {
-						console.log( data, w, h );
 						if ( hasId() ) {
 							renderUpdate( data );
 						} else {

@@ -69,9 +69,9 @@
 				for (var i = 0; i < length; ++i) {
 					returnData.data.push({
 						"time": moment(pointsData[i]['xVal']).format("YYYY-MM-DD HH:mm:ss"),
-						"avg": 70,//pointsData[i]['yValForAvg'].toFixed(2),
-						"min": 0,//pointsData[i]['yValForMin'].toFixed(2),
-						"max": 90,//pointsData[i]['yValForMax'].toFixed(2)
+						"avg": pointsData[i]['yValForAvg'].toFixed(2),
+						"min": pointsData[i]['yValForMin'].toFixed(2),
+						"max": pointsData[i]['yValForMax'].toFixed(2),
 						"minAgent": pointsData[i]['agentIdForMin'],
 						"maxAgent": pointsData[i]['agentIdForMax']
 					});
