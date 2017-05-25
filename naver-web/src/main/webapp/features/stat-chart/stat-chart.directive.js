@@ -55,7 +55,7 @@
 									"gridAlpha": 0,
 									"axisAlpha": 1,
 									"position": "left",
-									"title": "Cpu Usage (%)",
+									"title": chartData.chartTitle,
 									"maximum" : 100,
 									"minimum" : 0
 								}
@@ -69,67 +69,36 @@
 									"fillColor": "#4C0099",
 									"lineThickness": 6,
 									"title": chartData.title[0],
-									"valueField": chartData.field[0],
+									"valueField": chartData.field[0], // avg
 									"fillAlphas": 0,
 									"connect": false
 								},
 								{
 									"valueAxis": "v1",
-									"balloonText": "[[title]] : [[value]]%",
+									"balloonText": "[[title]] : [[value]]%<br><strong>[[description]]</strong>",
 									"legendValueText": "[[value]]%",
 									"lineColor": "#0000CC",
 									"fillColor": "#0000CC",
 									"lineThickness": 3,
 									"title": chartData.title[1],
-									"valueField": chartData.field[1],
+									"valueField": chartData.field[1], // max
+									"descriptionField": chartData.field[3],
 									"fillAlphas": 0,
 									"connect": false
 								},
 								{
 									"valueAxis": "v1",
-									"balloonText": "[[title]] : [[value]]%",
+									"balloonText": "[[title]] : [[value]]%<br><strong>[[description]]</strong>",
 									"legendValueText": "[[value]]%",
 									"lineColor": "#66B2FF",
 									"fillColor": "#66B2FF",
 									"lineThickness": 3,
 									"title": chartData.title[2],
-									"valueField": chartData.field[2],
+									"valueField": chartData.field[2], // min
+									"descriptionField": chartData.field[4],
 									"fillAlphas": 0,
 									"connect": false
-								}//,
-								// {
-								// 	"valueAxis": "v1",
-								// 	"balloonText": "[[title]] : [[value]]%",
-								// 	"legendValueText": "[[value]]%",
-								// 	"lineColor": "#0000FF",
-								// 	"fillColor": "#0000FF",
-								// 	"title": "System(avg)",
-								// 	"valueField": "sysAvg",
-								// 	"fillAlphas": 0,
-								// 	"connect": false
-								// },
-								// {
-								// 	"valueAxis": "v1",
-								// 	"balloonText": "[[title]] : [[value]]%",
-								// 	"legendValueText": "[[value]]%",
-								// 	"lineColor": "#4169E1",
-								// 	"fillColor": "#4169E1",
-								// 	"title": "System(min)",
-								// 	"valueField": "sysMin",
-								// 	"fillAlphas": 0,
-								// 	"connect": false
-								// },
-								// {
-								// 	"valueAxis": "v1",
-								// 	"balloonText": "[[title]] : [[value]]%",
-								// 	"legendValueText": "[[value]]%",
-								// 	"lineColor": "#87CEEB",
-								// 	"fillColor": "#87CEEB",
-								// 	"title": "System(Max)",
-								// 	"valueField": "sysMax",
-								// 	"fillAlphas": 0,
-								// 	"connect": false
-								// }
+								}
 							],
 							"categoryField": "time",
 							"categoryAxis": {
@@ -172,6 +141,7 @@
 					}
 
 					scope.$on("statChartDirective.initAndRenderWithData." + scope.namespace, function (event, data, w, h) {
+						console.log( data, w, h );
 						if ( hasId() ) {
 							renderUpdate( data );
 						} else {
