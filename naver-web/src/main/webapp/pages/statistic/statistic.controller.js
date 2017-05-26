@@ -30,7 +30,7 @@
 					to : UrlVoService.getQueryEndTime(),
 					from : UrlVoService.getQueryStartTime(),
 					sampleRate: 1,
-					applicationId: UrlVoService.getApplication()
+					applicationId: UrlVoService.getApplicationName()
 				};
 				if ( oParam.from > 0 && oParam.to > 0 ) {
 					$http.get( "getApplicationStat/cpuLoad/chart.pinpoint" +  getQueryStr(oParam) ).then(function(chartData) {
