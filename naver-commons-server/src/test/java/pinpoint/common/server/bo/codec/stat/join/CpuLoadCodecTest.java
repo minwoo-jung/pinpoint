@@ -40,9 +40,9 @@ import static org.junit.Assert.assertTrue;
  */
 public class CpuLoadCodecTest {
 
+    private static final String ID = "test_app";
     @Test
     public void encodeValues(){
-        final String id = "test_app";
         final long currentTime = new Date().getTime();
         final AgentStatDataPointCodec agentStatDataPointCodec = new AgentStatDataPointCodec();
         final CpuLoadCodec cpuLoadCodec = new CpuLoadCodec(agentStatDataPointCodec);
@@ -55,7 +55,7 @@ public class CpuLoadCodecTest {
         final long baseTimestamp = AgentStatUtils.getBaseTimestamp(currentTime);
         final long timestampDelta = currentTime - baseTimestamp;
         final ApplicationStatDecodingContext decodingContext = new ApplicationStatDecodingContext();
-        decodingContext.setApplicationId(id);
+        decodingContext.setApplicationId(ID);
         decodingContext.setBaseTimestamp(baseTimestamp);
         decodingContext.setTimestampDelta(timestampDelta);
 
@@ -67,13 +67,12 @@ public class CpuLoadCodecTest {
     }
 
     private List<JoinStatBo> createJoinCpuLoadBoList(long currentTime) {
-        final String id = "test_server";
         final List<JoinStatBo> joinCpuLoadBoList = new ArrayList();
-        JoinCpuLoadBo joinCpuLoadBo2 = new JoinCpuLoadBo(id, 40, 87, "agent2_1", 40, "agent2_2", 70, 97, "agent2_3", 40, "agent2_4", currentTime + 5000);
-        JoinCpuLoadBo joinCpuLoadBo4 = new JoinCpuLoadBo(id, 20, 67, "agent4_1", 17, "agent4_2", 40, 99, "agent4_3", 18, "agent4_4", currentTime + 15000);
-        JoinCpuLoadBo joinCpuLoadBo1 = new JoinCpuLoadBo(id, 50, 97, "agent1_1", 27, "agent1_2", 80, 97, "agent1_3", 46, "agent1_4", currentTime);
-        JoinCpuLoadBo joinCpuLoadBo3 = new JoinCpuLoadBo(id, 30, 77, "agent3_1", 27, "agent3_2", 60, 77, "agent3_3", 27, "agent3_4", currentTime + 10000);
-        JoinCpuLoadBo joinCpuLoadBo5 = new JoinCpuLoadBo(id, 10, 99, "agent5_1", 7, "agent5_2", 30, 59, "agent5_3", 8, "agent5_4", currentTime + 20000);
+        JoinCpuLoadBo joinCpuLoadBo2 = new JoinCpuLoadBo(ID, 40, 87, "agent2_1", 40, "agent2_2", 70, 97, "agent2_3", 40, "agent2_4", currentTime + 5000);
+        JoinCpuLoadBo joinCpuLoadBo4 = new JoinCpuLoadBo(ID, 20, 67, "agent4_1", 17, "agent4_2", 40, 99, "agent4_3", 18, "agent4_4", currentTime + 15000);
+        JoinCpuLoadBo joinCpuLoadBo1 = new JoinCpuLoadBo(ID, 50, 97, "agent1_1", 27, "agent1_2", 80, 97, "agent1_3", 46, "agent1_4", currentTime);
+        JoinCpuLoadBo joinCpuLoadBo3 = new JoinCpuLoadBo(ID, 30, 77, "agent3_1", 27, "agent3_2", 60, 77, "agent3_3", 27, "agent3_4", currentTime + 10000);
+        JoinCpuLoadBo joinCpuLoadBo5 = new JoinCpuLoadBo(ID, 10, 99, "agent5_1", 7, "agent5_2", 30, 59, "agent5_3", 8, "agent5_4", currentTime + 20000);
         joinCpuLoadBoList.add(joinCpuLoadBo1);
         joinCpuLoadBoList.add(joinCpuLoadBo2);
         joinCpuLoadBoList.add(joinCpuLoadBo3);
