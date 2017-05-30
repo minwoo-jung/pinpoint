@@ -63,6 +63,19 @@
 							"graphs": [
 								{
 									"valueAxis": "v1",
+									"balloonText": "[[title]] : [[value]]%<br><strong>[[description]]</strong>",
+									"legendValueText": "[[value]]%",
+									"lineColor": "#66B2FF",
+									"fillColor": "#66B2FF",
+									"lineThickness": 3,
+									"title": chartData.title[2],
+									"valueField": chartData.field[2], // min
+									"descriptionField": chartData.field[4],
+									"fillAlphas": 0,
+									"connect": false
+								},
+								{
+									"valueAxis": "v1",
 									"balloonText": "[[title]] : [[value]]%",
 									"legendValueText": "[[value]]%",
 									"lineColor": "#4C0099",
@@ -83,19 +96,6 @@
 									"title": chartData.title[1],
 									"valueField": chartData.field[1], // max
 									"descriptionField": chartData.field[3],
-									"fillAlphas": 0,
-									"connect": false
-								},
-								{
-									"valueAxis": "v1",
-									"balloonText": "[[title]] : [[value]]%<br><strong>[[description]]</strong>",
-									"legendValueText": "[[value]]%",
-									"lineColor": "#66B2FF",
-									"fillColor": "#66B2FF",
-									"lineThickness": 3,
-									"title": chartData.title[2],
-									"valueField": chartData.field[2], // min
-									"descriptionField": chartData.field[4],
 									"fillAlphas": 0,
 									"connect": false
 								}
