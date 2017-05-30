@@ -68,37 +68,4 @@
         </property>
     </bean>
 
-    <!-- ================================= flink =========================== -->
-
-    <bean id="joincpuLoadCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadCodec"/>
-    <bean id="joinCpuLoadDecoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadDecoder">
-        <constructor-arg>
-            <list>
-                <ref bean="joincpuLoadCodec"/>
-            </list>
-        </constructor-arg>
-    </bean>
-
-    <bean id="joinCpuLoadSampler" class="com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.JoinCpuLoadSampler"/>
-
-    <bean id="applicationStatRowKeyEncoder" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatRowKeyEncoder"/>
-    <bean id="applicationStatRowKeyDecoder" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatRowKeyDecoder"/>
-    <bean id="applicationStatHbaseOperationFactory" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory">
-        <constructor-arg index="0" ref="applicationStatRowKeyEncoder"/>
-        <constructor-arg index="1" ref="applicationStatRowKeyDecoder"/>
-        <constructor-arg index="2" ref="applicationStatRowKeyDistributor"/>
-    </bean>
-
-    <!-- ================================= hbase 쪽 설정으로 이동 필요함. =========================== -->
-
-    <bean id="applicationStatRowKeyDistributor" class="com.sematext.hbase.wd.RowKeyDistributorByHashPrefix">
-        <constructor-arg ref="applicationStatRangeHasher"/>
-    </bean>
-
-    <bean id="applicationStatRangeHasher" class="com.navercorp.pinpoint.common.hbase.distributor.RangeOneByteSimpleHash">
-        <constructor-arg type="int" value="0"/>
-        <constructor-arg type="int" value="33"/>
-        <constructor-arg type="int" value="64"/>
-    </bean>
-
 </beans>

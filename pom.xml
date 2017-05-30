@@ -62,7 +62,6 @@
 
     <modules>
         <module>naver-agent</module>
-        <module>naver-commons-server</module>
         <module>naver-collector</module>
         <module>naver-web</module>
         <module>naver-it7</module>
@@ -70,8 +69,6 @@
         <module>naver-flink</module>
         <module>testweb</module>
         <module>naver-web-oss</module>
-        <module>naver-thrift</module>
-        <module>naver-commons-hbase</module>
         <!--<module>spark</module>-->
     </modules>
 

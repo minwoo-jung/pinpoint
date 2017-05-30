@@ -21,7 +21,7 @@ import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClient;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperEventWatcher;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperTestUtils;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.exception.PinpointZookeeperException;
-import com.navercorp.pinpoint.collector.config.NaverCollectorConfiguration;
+import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.service.SendAgentStatService;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
@@ -44,11 +44,11 @@ public class FlinkClusterServiceTest {
     private static final int DEFAULT_ZOOKEEPER_PORT = SocketUtils.findAvailableTcpPort(22213);
     private static final String PINPOINT_FLINK_CLUSTER_PATH =  "/pinpoint-cluster/flink";
 
-    private static NaverCollectorConfiguration config = null;
+    private static CollectorConfiguration config = null;
 
     @BeforeClass
     public static void setUp() {
-        config = new NaverCollectorConfiguration();
+        config = new CollectorConfiguration();
         config.setFlinkClusterEnable(true);
         config.setFlinkClusterZookeeperAddress("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT);
         config.setFlinkClusterSessionTimeout(30000);
