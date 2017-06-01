@@ -30,7 +30,7 @@
 						{ "title": "설치 가이드 동영상 강좌 2", "link": "https://www.youtube.com/watch?v=fliKPGHGXK4" },
 						{ "title": "AWS Ubuntu 14.04 설치 가이드 ", "link": "http://lky1001.tistory.com/132" },
 						{ "title": "Alarm 가이드", "link": "https://github.com/naver/pinpoint/blob/master/doc/alarm.md#alarm-1" },
-						{ "title": "권한 설정 가이드", "link": "http://yobi.navercorp.com/Labs-public/pinpoint-issues/post/34" }
+						{ "title": "권한 설정 가이드", "link": "http://yobi.navercorp.com/Labs-public_pinpoint-issues/posts/190" }
 					];
 
 					scope.$on( "configuration.selectMenu", function( event, selectedName ) {
