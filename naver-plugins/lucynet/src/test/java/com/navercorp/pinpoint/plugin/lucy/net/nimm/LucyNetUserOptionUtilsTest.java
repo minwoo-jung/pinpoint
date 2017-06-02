@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public class LucyNetUserOptionUtilsTest {
 

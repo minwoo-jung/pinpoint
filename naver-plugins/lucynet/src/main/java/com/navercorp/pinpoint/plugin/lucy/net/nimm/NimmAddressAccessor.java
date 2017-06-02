@@ -1,7 +1,7 @@
 package com.navercorp.pinpoint.plugin.lucy.net.nimm;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public interface NimmAddressAccessor {
 

@@ -7,7 +7,7 @@ import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPlugin;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public enum NpcHessianConnectorVersion {
 

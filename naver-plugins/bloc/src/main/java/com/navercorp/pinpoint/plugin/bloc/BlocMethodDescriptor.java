@@ -19,7 +19,7 @@ import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.common.trace.MethodType;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public class BlocMethodDescriptor implements MethodDescriptor {
 

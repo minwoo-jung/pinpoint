@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public final class LucyNetUtils {
 
@@ -50,7 +50,7 @@ public final class LucyNetUtils {
 
     public static List<byte[]> createOptions(TraceId nextTraceId, String applicationName, short serverTypeCode, String endPoint, Set<String> notIncludeOptions) {
         if (notIncludeOptions == null) {
-            throw new NullPointerException("notIncludeOptions may not be null.");
+            throw new NullPointerException("notIncludeOptions must not be null.");
         }
 
         if (nextTraceId == null) {
@@ -130,7 +130,7 @@ public final class LucyNetUtils {
 
     public static boolean equalsUserOptionIndex(UserOptionIndex userOptionIndex1, UserOptionIndex userOptionIndex2) {
         if (userOptionIndex1 == null || userOptionIndex2 == null) {
-            throw new NullPointerException("argument may not be null.");
+            throw new NullPointerException("argument must not be null.");
         }
 
         if (userOptionIndex1.getFlagIndex() != userOptionIndex2.getFlagIndex()) {

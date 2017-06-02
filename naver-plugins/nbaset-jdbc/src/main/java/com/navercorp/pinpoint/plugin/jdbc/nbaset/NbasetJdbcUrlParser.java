@@ -41,7 +41,7 @@ public class NbasetJdbcUrlParser implements JdbcUrlParserV2 {
     @Override
     public DatabaseInfo parse(String jdbcUrl) {
         if (jdbcUrl == null) {
-            logger.info("jdbcUrl may not be null");
+            logger.info("jdbcUrl must not be null");
             return UnKnownDatabaseInfo.INSTANCE;
         }
         if (!jdbcUrl.startsWith(NBASET_JDBC_URL_PREFIX) && !jdbcUrl.startsWith(NBASET_LOG4J_JDBC_URL_PREFIX)) {

@@ -21,7 +21,7 @@ import com.nhncorp.lucy.npc.NpcMessage;
 import java.util.Map;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public class NimmHandlerInterceptor extends AbstractBlocAroundInterceptor {
 

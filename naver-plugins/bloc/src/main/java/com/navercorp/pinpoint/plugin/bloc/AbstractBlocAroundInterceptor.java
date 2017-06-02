@@ -23,7 +23,7 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public abstract class AbstractBlocAroundInterceptor implements AroundInterceptor {
 

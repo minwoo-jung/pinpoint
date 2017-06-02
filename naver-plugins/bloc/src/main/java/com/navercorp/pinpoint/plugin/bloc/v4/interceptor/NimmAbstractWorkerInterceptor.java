@@ -25,7 +25,7 @@ import com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor;
 import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public class NimmAbstractWorkerInterceptor implements AroundInterceptor {
 

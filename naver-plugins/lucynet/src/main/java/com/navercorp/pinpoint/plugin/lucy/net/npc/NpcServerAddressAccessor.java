@@ -3,7 +3,7 @@ package com.navercorp.pinpoint.plugin.lucy.net.npc;
 import java.net.InetSocketAddress;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public interface NpcServerAddressAccessor {
 

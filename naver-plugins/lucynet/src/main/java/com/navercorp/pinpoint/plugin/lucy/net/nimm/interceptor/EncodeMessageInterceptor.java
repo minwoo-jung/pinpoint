@@ -39,9 +39,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
-public class EncodeMesssageInterceptor implements AroundInterceptor {
+public class EncodeMessageInterceptor implements AroundInterceptor {
 
     private static final int DEFAULT_MAX_USER_OPTIONS_SET_INDEX = 3;
 
@@ -52,7 +52,7 @@ public class EncodeMesssageInterceptor implements AroundInterceptor {
     private final MethodDescriptor methodDescriptor;
     private final InterceptorScope scope;
 
-    public EncodeMesssageInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorScope scope) {
+    public EncodeMessageInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, InterceptorScope scope) {
         this.traceContext = traceContext;
         this.methodDescriptor = methodDescriptor;
         this.scope = scope;

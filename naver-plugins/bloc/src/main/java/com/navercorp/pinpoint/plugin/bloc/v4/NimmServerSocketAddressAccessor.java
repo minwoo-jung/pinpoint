@@ -16,7 +16,7 @@
 package com.navercorp.pinpoint.plugin.bloc.v4;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public interface NimmServerSocketAddressAccessor {
 

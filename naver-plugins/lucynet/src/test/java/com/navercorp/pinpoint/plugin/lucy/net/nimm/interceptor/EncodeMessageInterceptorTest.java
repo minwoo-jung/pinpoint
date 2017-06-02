@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 NAVER Corp.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @Author Taejin Koo
+ * @author Taejin Koo
  */
 public class EncodeMessageInterceptorTest {
 
@@ -82,7 +82,7 @@ public class EncodeMessageInterceptorTest {
 
         Map<UserOptionIndex, byte[]> option = new HashMap<UserOptionIndex, byte[]>();
 
-        EncodeMesssageInterceptor encodeMessageInteceptor = new EncodeMesssageInterceptor(traceContext, methodDescriptor, scope);
+        EncodeMessageInterceptor encodeMessageInteceptor = new EncodeMessageInterceptor(traceContext, methodDescriptor, scope);
         encodeMessageInteceptor.before(null, new Object[]{option, call});
 
         checkOptions(option);
@@ -97,7 +97,7 @@ public class EncodeMessageInterceptorTest {
 
         Map<UserOptionIndex, byte[]> option = new HashMap<UserOptionIndex, byte[]>();
 
-        EncodeMesssageInterceptor encodeMessageInteceptor = new EncodeMesssageInterceptor(traceContext, methodDescriptor, scope);
+        EncodeMessageInterceptor encodeMessageInteceptor = new EncodeMessageInterceptor(traceContext, methodDescriptor, scope);
         encodeMessageInteceptor.before(null, new Object[]{option, call});
 
         checkOptions(option);
@@ -115,7 +115,7 @@ public class EncodeMessageInterceptorTest {
         option.put(new UserOptionIndex(1, 1), new String(LucyNetHeader.PINPOINT_PARENT_APPLICATION_TYPE.toString() + "=21").getBytes(UTF_8_CHARSET));
         option.put(new UserOptionIndex(1, 5), new String(LucyNetHeader.PINPOINT_SAMPLED.toString() + "=" + SamplingFlagUtils.SAMPLING_RATE_TRUE).getBytes(UTF_8_CHARSET));
 
-        EncodeMesssageInterceptor encodeMessageInteceptor = new EncodeMesssageInterceptor(traceContext, methodDescriptor, scope);
+        EncodeMessageInterceptor encodeMessageInteceptor = new EncodeMessageInterceptor(traceContext, methodDescriptor, scope);
         encodeMessageInteceptor.before(null, new Object[]{option, call});
 
         checkOptions(option);
@@ -141,7 +141,7 @@ public class EncodeMessageInterceptorTest {
         }
 
 
-        EncodeMesssageInterceptor encodeMessageInteceptor = new EncodeMesssageInterceptor(traceContext, methodDescriptor, scope);
+        EncodeMessageInterceptor encodeMessageInteceptor = new EncodeMessageInterceptor(traceContext, methodDescriptor, scope);
         encodeMessageInteceptor.before(null, new Object[]{option, call});
 
         checkOptions(option);
