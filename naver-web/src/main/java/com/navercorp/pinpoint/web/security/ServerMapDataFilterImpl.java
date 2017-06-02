@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.navercorp.pinpoint.web.applicationmap.ApplicationMapBuilder;
+import com.navercorp.pinpoint.web.applicationmap.ApplicationMapBuilderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.CloseStatus;
@@ -27,7 +29,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMap;
-import com.navercorp.pinpoint.web.applicationmap.ApplicationMapBuilder;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapWithScatterData;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapWithScatterScanResult;
 import com.navercorp.pinpoint.web.applicationmap.DefaultApplicationMap;
@@ -64,6 +65,9 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
     
     @Autowired
     ApplicationConfigService applicationConfigService;
+
+    @Autowired
+    private ApplicationMapBuilderFactory applicationMapBuilderFactory;
     
     @Override
     public boolean filter(Application application) {
@@ -141,8 +145,8 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         for(Link link : links) {
             linkList.addLink(linkDataFiltering(link, nodeList));
         }
-        
-        ApplicationMapBuilder builder = new ApplicationMapBuilder(((DefaultApplicationMap)map).getRange());
+
+        ApplicationMapBuilder builder = applicationMapBuilderFactory.createApplicationMapBuilder(map.getRange());
         return builder.build(nodeList, linkList);
     }
 

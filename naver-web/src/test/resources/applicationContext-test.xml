@@ -27,6 +27,7 @@
                                          com.navercorp.pinpoint.web.filter,
                                          com.navercorp.pinpoint.web.alarm,
                                          com.navercorp.pinpoint.web.config,
+                                         com.navercorp.pinpoint.web.applicationmap,
                                          com.navercorp.pinpoint.collector.mapper.thrift,
                                          com.navercorp.pinpoint.collector.dao.hbase.stat,
                                          com.navercorp.pinpoint.collector.dao.hbase.filter,
