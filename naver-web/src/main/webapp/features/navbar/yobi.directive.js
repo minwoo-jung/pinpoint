@@ -48,7 +48,7 @@
 						if ( aNoticeData.length > 0 ) {
 							webStorage.add("last-notice-time", aNoticeData[aNoticeData.length - 1].createdDate);
 						}
-						window.open( "http://yobi.navercorp.com/Labs-public/pinpoint-issues/posts" );
+						window.open( "https://yobi.navercorp.com/Labs-public_pinpoint-issues/posts" );
 						analyticsService.send( analyticsService.CONST.MAIN, "ClickOpenYobi" );
 						scope.hasNotice = false;
 					};
