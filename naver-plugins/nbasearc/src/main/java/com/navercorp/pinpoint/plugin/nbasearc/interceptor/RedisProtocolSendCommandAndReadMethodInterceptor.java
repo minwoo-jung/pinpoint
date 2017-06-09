@@ -55,14 +55,17 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
 
         try {
             final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
-            if (invocation != null && invocation.getAttachment() != null && invocation.getAttachment() instanceof CommandContext) {
-                final CommandContext commandContext = (CommandContext) invocation.getAttachment();
+            final Object attachment = getAttachment(invocation);
+            if (attachment instanceof CommandContext) {
+                final CommandContext commandContext = (CommandContext) attachment;
                 if (methodDescriptor.getMethodName().equals("sendCommand")) {
                     commandContext.setWriteBeginTime(System.currentTimeMillis());
                 } else {
                     commandContext.setReadBeginTime(System.currentTimeMillis());
                 }
-                logger.debug("Set command context {}", commandContext);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Set command context {}", commandContext);
+                }
             }
         } catch (Throwable t) {
             logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
@@ -78,8 +81,9 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
 
         try {
             final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
-            if (invocation != null && invocation.getAttachment() != null && invocation.getAttachment() instanceof CommandContext) {
-                final CommandContext commandContext = (CommandContext) invocation.getAttachment();
+            final Object attachment = getAttachment(invocation);
+            if (attachment instanceof CommandContext) {
+                final CommandContext commandContext = (CommandContext) attachment;
                 if (methodDescriptor.getMethodName().equals("sendCommand")) {
                     commandContext.setWriteEndTime(System.currentTimeMillis());
                     commandContext.setWriteFail(throwable != null);
@@ -87,10 +91,19 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
                     commandContext.setReadEndTime(System.currentTimeMillis());
                     commandContext.setReadFail(throwable != null);
                 }
-                logger.debug("Set command context {}", commandContext);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Set command context {}", commandContext);
+                }
             }
         } catch (Throwable t) {
             logger.warn("Failed to AFTER process. {}", t.getMessage(), t);
         }
+    }
+
+    private Object getAttachment(InterceptorScopeInvocation invocation) {
+        if (invocation == null) {
+            return null;
+        }
+        return invocation.getAttachment();
     }
 }

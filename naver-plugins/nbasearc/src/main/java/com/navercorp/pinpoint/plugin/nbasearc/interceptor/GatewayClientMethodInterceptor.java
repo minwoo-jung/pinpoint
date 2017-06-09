@@ -24,6 +24,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvoca
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContext;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContextFactory;
+import com.navercorp.pinpoint.plugin.nbasearc.CommandContextFormatter;
 import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 
@@ -63,21 +64,16 @@ public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterce
         }
 
         final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
-        if (invocation != null && invocation.getAttachment() != null) {
-            final CommandContext commandContext = (CommandContext) invocation.getAttachment();
+        final Object attachment = getAttachment(invocation);
+        if (attachment instanceof CommandContext) {
+            final CommandContext commandContext = (CommandContext) attachment;
             endPoint = commandContext.getEndPoint();
-            logger.debug("Check command context {}", commandContext);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Check command context {}", commandContext);
+            }
             if (io) {
-                final StringBuilder sb = new StringBuilder();
-                sb.append("write=").append(commandContext.getWriteElapsedTime());
-                if (commandContext.isWriteFail()) {
-                    sb.append("(fail)");
-                }
-                sb.append(", read=").append(commandContext.getReadElapsedTime());
-                if (commandContext.isReadFail()) {
-                    sb.append("(fail)");
-                }
-                recorder.recordAttribute(AnnotationKey.ARGS0, sb.toString());
+                final String commandContextString = format(commandContext);
+                recorder.recordAttribute(AnnotationKey.ARGS0, commandContextString);
             }
             // clear
             invocation.removeAttachment();
@@ -89,4 +85,16 @@ public class GatewayClientMethodInterceptor extends SpanEventSimpleAroundInterce
         recorder.recordServiceType(NbaseArcConstants.NBASE_ARC);
         recorder.recordException(throwable);
     }
+
+    private Object getAttachment(InterceptorScopeInvocation invocation) {
+        if (invocation == null) {
+            return null;
+        }
+        return invocation.getAttachment();
+    }
+
+    private String format(CommandContext commandContext) {
+        return CommandContextFormatter.format(commandContext);
+    }
+
 }

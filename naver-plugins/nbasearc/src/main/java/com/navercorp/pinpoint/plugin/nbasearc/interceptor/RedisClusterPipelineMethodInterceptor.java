@@ -24,6 +24,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvoca
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContext;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContextFactory;
+import com.navercorp.pinpoint.plugin.nbasearc.CommandContextFormatter;
 import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
@@ -65,22 +66,17 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
         }
 
         final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
-        if (invocation != null && invocation.getAttachment() != null && invocation.getAttachment() instanceof CommandContext) {
-            final CommandContext commandContext = (CommandContext) invocation.getAttachment();
-            logger.debug("Check command context {}", commandContext);
+        final Object attachment = getAttachment(invocation);
+        if (attachment instanceof CommandContext) {
+            final CommandContext commandContext = (CommandContext) attachment;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Check command context {}", commandContext);
+            }
 
             endPoint = commandContext.getEndPoint();
             if (io) {
-                final StringBuilder sb = new StringBuilder();
-                sb.append("write=").append(commandContext.getWriteElapsedTime());
-                if (commandContext.isWriteFail()) {
-                    sb.append("(fail)");
-                }
-                sb.append(", read=").append(commandContext.getReadElapsedTime());
-                if (commandContext.isReadFail()) {
-                    sb.append("(fail)");
-                }
-                recorder.recordAttribute(AnnotationKey.ARGS0, sb.toString());
+                final String commandString = format(commandContext);
+                recorder.recordAttribute(AnnotationKey.ARGS0, commandString);
             }
             // clear
             invocation.removeAttachment();
@@ -92,4 +88,16 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
         recorder.recordServiceType(NbaseArcConstants.NBASE_ARC);
         recorder.recordException(throwable);
     }
+
+    private String format(CommandContext commandContext) {
+        return CommandContextFormatter.format(commandContext);
+    }
+
+    private Object getAttachment(InterceptorScopeInvocation invocation) {
+        if (invocation == null) {
+            return null;
+        }
+        return invocation.getAttachment();
+    }
+
 }

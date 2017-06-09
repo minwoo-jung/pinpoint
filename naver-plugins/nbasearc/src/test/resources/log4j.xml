@@ -9,30 +9,15 @@
         </layout>
     </appender>
 
-    <appender name="dailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="${pinpoint.log}/${pinpoint.agentId}-pinpoint.log"/>
-        <param name="Append" value="true"/>
-        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
-
-        <layout class="org.apache.log4j.EnhancedPatternLayout">
-            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%-5p](%-35.35c{1.}:%-3L) %m%n"/>
-        </layout>
-
-    </appender>
-
     <logger name="com.navercorp.pinpoint" additivity="false">
         <level value="DEBUG"/>
         <!-- for development mode -->
         <appender-ref ref="console"/>
-        <!-- for release mode -->
-        <appender-ref ref="dailyRollingFile"/>
     </logger>
 
     <root>
         <level value="DEBUG"/>
         <!-- for development mode -->
         <appender-ref ref="console"/>
-        <!-- for release mode -->
-        <appender-ref ref="dailyRollingFile"/>
     </root>
 </log4j:configuration>

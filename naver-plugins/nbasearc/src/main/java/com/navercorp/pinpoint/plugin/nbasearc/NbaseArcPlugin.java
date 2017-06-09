@@ -87,7 +87,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
                         method.addScopedInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientMethodInterceptor", va(config.isIo()), NbaseArcConstants.NBASE_ARC_SCOPE);
                     } catch (Exception e) {
                         if (logger.isWarnEnabled()) {
-                            logger.warn("Unsupported method " + method, e);
+                            logger.warn("Unsupported method {}", method, e);
                         }
                     }
                 }
@@ -227,7 +227,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
                         method.addScopedInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterMethodInterceptor", NbaseArcConstants.NBASE_ARC_SCOPE);
                     } catch (Exception e) {
                         if (logger.isWarnEnabled()) {
-                            logger.warn("Unsupported method " + method, e);
+                            logger.warn("Unsupported method {}", method, e);
                         }
                     }
                 }
@@ -260,7 +260,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
                         method.addScopedInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor", va(config.isIo()), NbaseArcConstants.NBASE_ARC_SCOPE);
                     } catch (Exception e) {
                         if (logger.isWarnEnabled()) {
-                            logger.warn("Unsupported method " + method, e);
+                            logger.warn("Unsupported method {}", method, e);
                         }
                     }
                 }

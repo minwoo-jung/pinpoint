@@ -59,10 +59,13 @@ public class RedisConnectionSendCommandMethodInterceptor implements AroundInterc
 
             final String endPoint = ((EndPointAccessor) target)._$PINPOINT$_getEndPoint();
             final InterceptorScopeInvocation invocation = interceptorScope.getCurrentInvocation();
-            if (invocation != null && invocation.getAttachment() != null && invocation.getAttachment() instanceof CommandContext) {
-                final CommandContext commandContext = (CommandContext) invocation.getAttachment();
+            final Object attachment = getAttachment(invocation);
+            if (attachment instanceof CommandContext) {
+                final CommandContext commandContext = (CommandContext) attachment;
                 commandContext.setEndPoint(endPoint);
-                logger.debug("Set command context {}", commandContext);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Set command context {}", commandContext);
+                }
             }
         } catch (Throwable t) {
             logger.warn("Failed to BEFORE process. {}", t.getMessage(), t);
@@ -82,5 +85,12 @@ public class RedisConnectionSendCommandMethodInterceptor implements AroundInterc
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
+    }
+
+    private Object getAttachment(InterceptorScopeInvocation invocation) {
+        if (invocation == null) {
+            return null;
+        }
+        return invocation.getAttachment();
     }
 }
