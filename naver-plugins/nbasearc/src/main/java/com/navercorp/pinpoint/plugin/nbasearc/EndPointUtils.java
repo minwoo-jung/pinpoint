@@ -22,19 +22,28 @@ package com.navercorp.pinpoint.plugin.nbasearc;
 public class EndPointUtils {
 
     public static String getEndPoint(Object[] args) {
-        if (!(args[0] instanceof String)) {
-            return "";
+        if (args[0] instanceof String) {
+            final String host = (String) args[0];
+            final int port = getPort(args);
+            return hostAndPort(host, port);
         }
-        final StringBuilder endPoint = new StringBuilder();
-        // first arg - host
-        endPoint.append(args[0]);
+        return "";
+    }
+
+    private static int getPort(Object[] args) {
+        // second argument is port
         if (args.length >= 2 && args[1] instanceof Integer) {
-            // second argument is port
-            endPoint.append(':').append(args[1]);
-        } else {
-            // if not found second argument, set default port
-            endPoint.append(':').append(6379);
+            return (Integer) args[1];
         }
-        return endPoint.toString();
+        // default port
+        return 6379;
+    }
+
+    private static String hostAndPort(String host, int port) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(host);
+        sb.append(':');
+        sb.append(port);
+        return sb.toString();
     }
 }

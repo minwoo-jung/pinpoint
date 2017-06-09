@@ -63,7 +63,7 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
                 } else {
                     commandContext.setReadBeginTime(System.currentTimeMillis());
                 }
-                if (logger.isDebugEnabled()) {
+                if (isDebug) {
                     logger.debug("Set command context {}", commandContext);
                 }
             }
@@ -91,7 +91,7 @@ public class RedisProtocolSendCommandAndReadMethodInterceptor implements AroundI
                     commandContext.setReadEndTime(System.currentTimeMillis());
                     commandContext.setReadFail(throwable != null);
                 }
-                if (logger.isDebugEnabled()) {
+                if (isDebug) {
                     logger.debug("Set command context {}", commandContext);
                 }
             }
