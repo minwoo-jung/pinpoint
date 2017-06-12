@@ -27,6 +27,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvocation;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPluginConfig;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUtils;
@@ -88,7 +89,7 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
         if (target instanceof NimmAddressAccessor) {
             nimmAddress = ((NimmAddressAccessor) target)._$PINPOINT$_getNimmAddress();
         }
-        if(nimmAddress == null || nimmAddress.length() == 0) {
+        if (StringUtils.isEmpty(nimmAddress)) {
             recorder.recordDestinationId("unknown");
         } else {
             recorder.recordDestinationId(nimmAddress);
@@ -156,7 +157,7 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
     }
     
     private boolean isAsynchronousInvocation(final Object target, final Object[] args, Object result, Throwable throwable) {
-        if(throwable != null || result == null) {
+        if (throwable != null || result == null) {
             return false;
         }
 
