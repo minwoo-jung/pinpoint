@@ -158,7 +158,7 @@ public class MessageReceivedInterceptor extends AbstractBlocAroundInterceptor {
                 String parentApplicationName = pinpointOptions.get(Header.HTTP_PARENT_APPLICATION_NAME.toString());
                 if (parentApplicationName != null) {
                     final String remoteHost = pinpointOptions.get(Header.HTTP_HOST.toString());
-                    if (StringUtils.isNotEmpty(remoteHost)) {
+                    if (StringUtils.hasLength(remoteHost)) {
                         spanRecorder.recordAcceptorHost(remoteHost);
                     } else {
                         spanRecorder.recordAcceptorHost(getLocalAddress(ioSession));

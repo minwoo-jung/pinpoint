@@ -237,7 +237,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
                     // netty 3.9 면 getHeader가 deprecated 되었다. 추후 없어질수는 있기는 한데 일단 동작에 문제가 없는듯 함.
                     final Charset charset = getCharset(request);
                     String bodyStr = content.toString(0, contentSize, charset);
-                    if (StringUtils.isNotEmpty(bodyStr)) {
+                    if (StringUtils.hasLength(bodyStr)) {
                         recorder.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
                     }
                 }
@@ -245,7 +245,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
                 // String parameters = getRequestParameter_old(request, 64,
                 // 512);
                 String parameters = getRequestParameter(request, paramDumpSize);
-                if (StringUtils.isNotEmpty(parameters)) {
+                if (StringUtils.hasLength(parameters)) {
                     recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                 }
             }
@@ -273,14 +273,14 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
 
                     // 해당 메소드의 경우 readerIndex를 after에서 읽을경우 다음으로 갈수 있음.
                     String bodyStr = content.toString(content.readerIndex(), contentSize, charset);
-                    if (StringUtils.isNotEmpty(bodyStr)) {
+                    if (StringUtils.hasLength(bodyStr)) {
                         recorder.recordAttribute(AnnotationKey.HTTP_PARAM_ENTITY, bodyStr);
                     }
                 }
             } else if (equalMethod(HttpMethod.GET, reqMethod)) {
                 // String parameters = getRequestParameter_old(request, 64, 512);
                 final String parameters = getRequestParameter(request, paramDumpSize);
-                if (StringUtils.isNotEmpty(parameters)) {
+                if (StringUtils.hasLength(parameters)) {
                     recorder.recordAttribute(AnnotationKey.HTTP_PARAM, parameters);
                 }
             }
