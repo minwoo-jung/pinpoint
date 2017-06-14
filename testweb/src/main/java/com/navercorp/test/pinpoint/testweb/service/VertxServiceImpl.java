@@ -9,6 +9,7 @@ import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.net.impl.VertxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -122,22 +123,17 @@ public class VertxServiceImpl implements VertxService {
     }
 
     private void runOnContext(HttpServerRequest request) {
-        vertx.runOnContext(new Handler<Void>() {
-            @Override
-            public void handle(Void aVoid) {
-                sleep();
-                request.response().end("Run on context.");
-            }
+        vertx.runOnContext(aVoid -> {
+            sleep();
+            request.response().end("Run on context");
         });
+
     }
 
     private void runOnContextRequest(HttpServerRequest request) {
-        vertx.runOnContext(new Handler<Void>() {
-            @Override
-            public void handle(Void aVoid) {
-                request(80, "naver.com", "/");
-                request.response().end("Run on context request.");
-            }
+        vertx.runOnContext(aVoid -> {
+            request(80, "naver.com", "/");
+            request.response().end("Run on context request.");
         });
     }
 }
