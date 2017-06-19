@@ -12,6 +12,7 @@ import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
+import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.ArrayUtils;
@@ -160,10 +161,8 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
         if (host == null) {
             return "unknown";
         }
-        if (port < 0) {
-            return host;
-        }
-        return host + ":" + port;
+        port = HostAndPort.getPortOrNoPort(port);
+        return HostAndPort.toHostAndPortString(host, port);
     }
 
     private void recordParentInfo(SpanRecorder recorder, Request request) {

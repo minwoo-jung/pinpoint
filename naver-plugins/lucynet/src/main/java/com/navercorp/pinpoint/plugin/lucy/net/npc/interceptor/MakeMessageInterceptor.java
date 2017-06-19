@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.plugin.lucy.net.EndPointUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
@@ -76,14 +77,7 @@ public class MakeMessageInterceptor implements AroundInterceptor {
             recorder.recordNextSpanId(id.getSpanId());
             if (result instanceof com.nhncorp.lucy.npc.DefaultNpcMessage) {
                 recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
-                String endPoint = LucyNetConstants.UNKOWN_ADDRESS;
-                if (target instanceof NpcServerAddressAccessor) {
-                    InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
-                    if (serverAddress != null) {
-                        int port = serverAddress.getPort();
-                        endPoint = getHostAddress(serverAddress) + ((port > 0) ? ":" + port : "");
-                    }
-                }
+                final String endPoint = getEndPoint(target);
                 recorder.recordDestinationId(endPoint);
 
                 List<byte[]> options = LucyNetUtils.createOptions(id, traceContext.getApplicationName(), traceContext.getServerTypeCode(), endPoint);
@@ -99,22 +93,19 @@ public class MakeMessageInterceptor implements AroundInterceptor {
         }
     }
 
-    private String getHostAddress(InetSocketAddress inetSocketAddress) {
-        if (inetSocketAddress == null) {
-            return null;
+    private String getEndPoint(Object target) {
+        if (target instanceof NpcServerAddressAccessor) {
+            final InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
+            if (serverAddress != null) {
+                return EndPointUtils.getEndPoint(serverAddress);
+            }
         }
-        // TODO JDK 1.7 InetSocketAddress.getHostString();
-        // Warning : Avoid unnecessary DNS lookup  (warning:InetSocketAddress.getHostName())
-        final InetAddress inetAddress = inetSocketAddress.getAddress();
-        if (inetAddress == null) {
-            return null;
-        }
-        return inetAddress.getHostAddress();
+        return LucyNetConstants.UNKOWN_ADDRESS;
     }
 
     private boolean putOption(DefaultNpcMessage npcMessage, List<byte[]> options) {
         for (byte[] option : options) {
-            UserOptionIndex optionIndex = findAvaiableOptionIndex(npcMessage);
+            UserOptionIndex optionIndex = findAvailableOptionIndex(npcMessage);
             if (optionIndex == null) {
                 return false;
             }
@@ -124,11 +115,11 @@ public class MakeMessageInterceptor implements AroundInterceptor {
         return true;
     }
     
-    private UserOptionIndex findAvaiableOptionIndex(DefaultNpcMessage npcMessage) {
-        return findAvaiableOptionIndex(npcMessage, new UserOptionIndex(1, 0), DEFAULT_MAX_USER_OPTIONS_SET_INDEX);
+    private UserOptionIndex findAvailableOptionIndex(DefaultNpcMessage npcMessage) {
+        return findAvailableOptionIndex(npcMessage, new UserOptionIndex(1, 0), DEFAULT_MAX_USER_OPTIONS_SET_INDEX);
     }
 
-    private UserOptionIndex findAvaiableOptionIndex(DefaultNpcMessage npcMessage, UserOptionIndex optionIndex, int maxUserOptionSetIndex) {
+    private UserOptionIndex findAvailableOptionIndex(DefaultNpcMessage npcMessage, UserOptionIndex optionIndex, int maxUserOptionSetIndex) {
         int optionSetIndex = optionIndex.getOptionSetIndex();
 
         if (optionSetIndex == maxUserOptionSetIndex) {
@@ -142,9 +133,9 @@ public class MakeMessageInterceptor implements AroundInterceptor {
 
         int flagIndex = optionIndex.getFlagIndex() + 1;
         if (flagIndex == 32) {
-            return findAvaiableOptionIndex(npcMessage, new UserOptionIndex(optionSetIndex + 1, 0), maxUserOptionSetIndex);
+            return findAvailableOptionIndex(npcMessage, new UserOptionIndex(optionSetIndex + 1, 0), maxUserOptionSetIndex);
         } else {
-            return findAvaiableOptionIndex(npcMessage, new UserOptionIndex(optionSetIndex, flagIndex), maxUserOptionSetIndex);
+            return findAvailableOptionIndex(npcMessage, new UserOptionIndex(optionSetIndex, flagIndex), maxUserOptionSetIndex);
         }
     }
 

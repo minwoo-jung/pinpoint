@@ -12,6 +12,7 @@ import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.bootstrap.util.StringUtils;
+import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
@@ -193,7 +194,7 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
 
         if (socketAddress instanceof InetSocketAddress) {
             InetSocketAddress inetSocketAddress = (InetSocketAddress) socketAddress;
-            return inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort();
+            return HostAndPort.toHostAndPortString(inetSocketAddress.getAddress().getHostAddress(), inetSocketAddress.getPort());
         }
 
         if (address.startsWith("/")) {

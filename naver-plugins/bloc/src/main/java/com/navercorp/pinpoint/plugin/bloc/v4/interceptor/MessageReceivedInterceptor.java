@@ -10,6 +10,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
+import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
@@ -201,7 +202,7 @@ public class MessageReceivedInterceptor extends AbstractBlocAroundInterceptor {
 
         if (socketAddress instanceof InetSocketAddress) {
             InetSocketAddress addr = (InetSocketAddress) socketAddress;
-            return addr.getAddress().getHostAddress() + ":" + addr.getPort();
+            return HostAndPort.toHostAndPortString(addr.getAddress().getHostAddress(), addr.getPort());
         }
 
         String address = socketAddress.toString();

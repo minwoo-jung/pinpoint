@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import org.junit.Test;
 
 import com.navercorp.pinpoint.common.server.bo.SpanEventBo;
@@ -49,7 +50,7 @@ public class NbaseArcPluginTest extends BasePinpointTest {
             assertEquals(2, events.size());
 
             final SpanEventBo eventBo = events.get(0);
-            assertEquals(HOST + ":" + PORT, eventBo.getEndPoint());
+            assertEquals(HostAndPort.toHostAndPortString(HOST, PORT), eventBo.getEndPoint());
             assertEquals("NBASE_ARC", eventBo.getDestinationId());
         } finally {
             if (redis != null) {

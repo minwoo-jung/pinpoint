@@ -7,6 +7,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.plugin.lucy.net.EndPointUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
 
@@ -41,16 +42,20 @@ public class CreateConnectorInterceptor implements AroundInterceptor {
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
 
         InetSocketAddress serverAddress = null;
-        if(args != null && args.length >= 1 && args[0] != null && args[0] instanceof NpcConnectorOption) {
+        if (args != null && args.length >= 1 && args[0] instanceof NpcConnectorOption) {
             NpcConnectorOption option = (NpcConnectorOption) args[0];
             serverAddress = option.getAddress();
         }
+
+        final String endPoint = getEndPoint(serverAddress);
+        recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
+    }
+
+    private String getEndPoint(InetSocketAddress serverAddress) {
         if (serverAddress != null) {
-            int port = serverAddress.getPort();
-            String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
+            return EndPointUtils.getEndPoint(serverAddress);
         } else {
-            recorder.recordAttribute(LucyNetConstants.NPC_URL, "unknown");
+            return "unknown";
         }
     }
 

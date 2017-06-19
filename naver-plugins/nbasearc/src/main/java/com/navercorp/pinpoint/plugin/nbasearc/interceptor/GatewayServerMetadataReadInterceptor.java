@@ -20,6 +20,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.nhncorp.redis.cluster.gateway.GatewayServer;
@@ -55,7 +56,7 @@ public abstract class GatewayServerMetadataReadInterceptor implements AroundInte
             // trace destinationId & endPoint
             // first argument is GatewayServer
             final GatewayServer server = (GatewayServer) args[0];
-            final String endPoint = server.getAddress().getHost() + ":" + server.getAddress().getPort();
+            final String endPoint = HostAndPort.toHostAndPortString(server.getAddress().getHost(), server.getAddress().getPort());
             ((EndPointAccessor)target)._$PINPOINT$_setEndPoint(endPoint);
 
             final String destinationId = ((DestinationIdAccessor)args[0])._$PINPOINT$_getDestinationId();

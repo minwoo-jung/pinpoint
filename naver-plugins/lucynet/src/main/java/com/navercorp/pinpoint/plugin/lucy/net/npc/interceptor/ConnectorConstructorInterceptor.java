@@ -7,6 +7,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.plugin.lucy.net.EndPointUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
 import com.nhncorp.lucy.npc.connector.KeepAliveNpcHessianConnector;
@@ -76,13 +77,18 @@ public class ConnectorConstructorInterceptor implements AroundInterceptor {
         SpanEventRecorder recorder = trace.traceBlockBegin();
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
 
+
+        final String endPoint = getEndPoint(serverAddress);
+        recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
+    }
+
+
+    private String getEndPoint(InetSocketAddress serverAddress) {
         if (serverAddress != null) {
-            int port = serverAddress.getPort();
-            String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
+            return EndPointUtils.getEndPoint(serverAddress);
         } else {
             // destination id가 없으면 안되기 때문에 unknown으로 지정.
-            recorder.recordAttribute(LucyNetConstants.NPC_URL, LucyNetConstants.UNKOWN_ADDRESS);
+            return LucyNetConstants.UNKOWN_ADDRESS;
         }
     }
 

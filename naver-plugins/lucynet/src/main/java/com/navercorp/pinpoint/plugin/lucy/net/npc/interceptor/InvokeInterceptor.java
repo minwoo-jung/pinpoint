@@ -9,6 +9,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.plugin.lucy.net.EndPointUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
 
@@ -76,8 +77,7 @@ public class InvokeInterceptor implements AroundInterceptor {
             InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
 
             if (serverAddress != null) {
-                int port = serverAddress.getPort();
-                String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
+                final String endPoint = EndPointUtils.getEndPoint(serverAddress);
 
                 //      DestinationId와 동일하므로 없는게 맞음.
                 //        trace.recordEndPoint(endPoint);
@@ -123,7 +123,7 @@ public class InvokeInterceptor implements AroundInterceptor {
     }
     
     private boolean isAsynchronousInvocation(final Object target, final Object[] args, Object result, Throwable throwable) {
-        if(throwable != null || result == null) {
+        if (throwable != null || result == null) {
             return false;
         }
 

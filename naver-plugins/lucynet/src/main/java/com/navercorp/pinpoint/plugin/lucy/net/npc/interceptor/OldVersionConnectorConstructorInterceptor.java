@@ -7,6 +7,8 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.common.util.ArrayUtils;
+import com.navercorp.pinpoint.plugin.lucy.net.EndPointUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
 
@@ -32,17 +34,17 @@ public class OldVersionConnectorConstructorInterceptor implements AroundIntercep
     public void before(Object target, Object[] args) {
         InetSocketAddress serverAddress = null;
 
-        if (args != null && args.length > 0) {
+        if (ArrayUtils.hasLength(args)) {
             if (args[0] instanceof InetSocketAddress) {
                 serverAddress = (InetSocketAddress) args[0];
             }
         }
 
-        if (target instanceof  NpcServerAddressAccessor) {
+        if (target instanceof NpcServerAddressAccessor) {
             ((NpcServerAddressAccessor)target)._$PINPOINT$_setNpcServerAddress(serverAddress);
         }
 
-        Trace trace = traceContext.currentTraceObject();
+        final Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
             return;
         }
@@ -50,13 +52,15 @@ public class OldVersionConnectorConstructorInterceptor implements AroundIntercep
         SpanEventRecorder recorder = trace.traceBlockBegin();
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
 
+        final String endPoint = getEndPoint(serverAddress);
+        recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
+    }
+
+    private String getEndPoint(InetSocketAddress serverAddress) {
         if (serverAddress != null) {
-            int port = serverAddress.getPort();
-            String endPoint = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordAttribute(LucyNetConstants.NPC_URL, endPoint);
-        } else {
-            recorder.recordAttribute(LucyNetConstants.NPC_URL, "unknown");
+            return EndPointUtils.getEndPoint(serverAddress);
         }
+        return "unknown";
     }
 
     @Override
@@ -65,7 +69,7 @@ public class OldVersionConnectorConstructorInterceptor implements AroundIntercep
             logger.afterInterceptor(target, args);
         }
 
-        Trace trace = traceContext.currentTraceObject();
+        final Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
             return;
         }

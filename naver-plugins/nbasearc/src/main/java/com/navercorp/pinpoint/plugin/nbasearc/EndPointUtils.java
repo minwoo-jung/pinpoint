@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.plugin.nbasearc;
 
+import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
+
 /**
  * @author Woonduk Kang(emeroad)
  */
@@ -25,7 +27,7 @@ public class EndPointUtils {
         if (args[0] instanceof String) {
             final String host = (String) args[0];
             final int port = getPort(args);
-            return hostAndPort(host, port);
+            return HostAndPort.toHostAndPortString(host, port);
         }
         return "";
     }
@@ -39,11 +41,4 @@ public class EndPointUtils {
         return 6379;
     }
 
-    private static String hostAndPort(String host, int port) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(host);
-        sb.append(':');
-        sb.append(port);
-        return sb.toString();
-    }
 }

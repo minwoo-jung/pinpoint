@@ -8,6 +8,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.plugin.lucy.net.EndPointUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 
 import java.net.InetSocketAddress;
@@ -38,7 +39,7 @@ public class ConnectInterceptor implements AroundInterceptor {
 
         // Trace trace = traceContext.currentRawTraceObject();
         // sampling 레이트를 추가로 확인하여 액션을 취하는 로직이 없으므로 그냥 currentTraceObject()를 호출한다.
-        Trace trace = traceContext.currentTraceObject();
+        final Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
             return;
         }
@@ -51,14 +52,15 @@ public class ConnectInterceptor implements AroundInterceptor {
         if (args != null && args.length >= 1 && args[0] instanceof com.nhncorp.lucy.npc.connector.NpcConnectorOption) {
             com.nhncorp.lucy.npc.connector.NpcConnectorOption connectorOption = (com.nhncorp.lucy.npc.connector.NpcConnectorOption) args[0];
             InetSocketAddress serverAddress = connectorOption.getAddress();
-            int port = serverAddress.getPort();
-            String endpiont = serverAddress.getHostName() + ((port > 0) ? ":" + port : "");
-            recorder.recordDestinationId(endpiont);
+
+            final String endPoint = EndPointUtils.getEndPoint(serverAddress);
+            recorder.recordDestinationId(endPoint);
 
             recorder.recordAttribute(LucyNetConstants.NPC_URL, serverAddress.toString());
             recorder.recordAttribute(LucyNetConstants.NPC_CONNECT_OPTION, connectorOption.toString());
         }
     }
+
 
     @Override
     public void after(Object target, Object[] args, Object result, Throwable throwable) {
@@ -67,7 +69,7 @@ public class ConnectInterceptor implements AroundInterceptor {
             logger.afterInterceptor(target, args);
         }
 
-        Trace trace = traceContext.currentTraceObject();
+        final Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
             return;
         }
