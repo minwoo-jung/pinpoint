@@ -32,7 +32,9 @@
                                          com.navercorp.pinpoint.collector.dao.hbase.stat,
                                          com.navercorp.pinpoint.collector.dao.hbase.filter,
                                          com.navercorp.pinpoint.common.server.bo,
-                                         com.navercorp.pinpoint.common.server.util" />
+                                         com.navercorp.pinpoint.common.server.util">
+        <context:exclude-filter type="regex" expression="com\.navercorp\.pinpoint\.collector\.mapper\.thrift\.event\..*"/>
+    </context:component-scan>
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">

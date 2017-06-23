@@ -34,6 +34,10 @@
 
     <util:properties id="pinpoint_collector_properties" location="classpath:pinpoint-collector.properties" />
 
+    <bean id="collectorConfiguration" class="com.navercorp.pinpoint.collector.config.CollectorConfiguration">
+        <property name="properties" ref="pinpoint_collector_properties"/>
+    </bean>
+
     <import resource="classpath:applicationContext-hbase.xml"></import>
 
     <bean id="hBaseAdminTemplate" class="com.navercorp.pinpoint.common.hbase.HBaseAdminTemplate" destroy-method="close">
@@ -51,9 +55,32 @@
 
     <bean id="commandHeaderTBaseSerializerFactory" class="com.navercorp.pinpoint.thrift.io.CommandHeaderTBaseSerializerFactory">
     </bean>
+    <bean id="agentEventHeaderTBaseSerializerFactory" class="com.navercorp.pinpoint.thrift.io.AgentEventHeaderTBaseSerializerFactory">
+    </bean>
 
     <bean id="commandHeaderTBaseDeserializerFactory" class="com.navercorp.pinpoint.thrift.io.CommandHeaderTBaseDeserializerFactory">
     </bean>
+
+    <!-- Agent Event/Lifecycle related Beans -->
+    <bean id="agentEventWorker" class="com.navercorp.pinpoint.common.util.ExecutorFactory" factory-method="newFixedThreadPool">
+        <constructor-arg index="0" value="#{collectorConfiguration.agentEventWorkerThreadSize}"/>
+        <constructor-arg index="1" value="#{collectorConfiguration.agentEventWorkerQueueSize}"/>
+        <constructor-arg index="2" value="Pinpoint-AgentEvent-Worker"/>
+        <constructor-arg index="3" value="true"/>
+    </bean>
+
+    <bean id="agentEventMessageSerializer" class="com.navercorp.pinpoint.common.server.util.AgentEventMessageSerializer">
+        <constructor-arg>
+            <list value-type="com.navercorp.pinpoint.thrift.io.SerializerFactory">
+                <ref bean="commandHeaderTBaseSerializerFactory"/>
+                <ref bean="agentEventHeaderTBaseSerializerFactory"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="agentEventService" class="com.navercorp.pinpoint.collector.service.AgentEventService"/>
+    <bean id="agentLifeCycleHandler" class="com.navercorp.pinpoint.collector.rpc.handler.AgentLifeCycleHandler"/>
+    <bean id="agentLifeCycleChangeEventHandler" class="com.navercorp.pinpoint.collector.rpc.handler.AgentLifeCycleChangeEventHandler"/>
 
     <!-- Route Filters -->
     <bean id="loggingRouteFilter" class="com.navercorp.pinpoint.collector.cluster.route.filter.LoggingFilter"/>
