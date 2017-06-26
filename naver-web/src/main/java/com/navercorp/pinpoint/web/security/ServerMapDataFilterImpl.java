@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.navercorp.pinpoint.web.applicationmap.ApplicationMapBuilder;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapBuilderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -146,8 +145,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
             linkList.addLink(linkDataFiltering(link, nodeList));
         }
 
-        ApplicationMapBuilder builder = applicationMapBuilderFactory.createApplicationMapBuilder(map.getRange());
-        return builder.build(nodeList, linkList);
+        return new DefaultApplicationMap(map.getRange(), nodeList, linkList);
     }
 
     private Node nodeDataFiltering(Node node) {
