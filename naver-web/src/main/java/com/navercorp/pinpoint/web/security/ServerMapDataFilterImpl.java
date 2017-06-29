@@ -34,10 +34,10 @@ import com.navercorp.pinpoint.web.applicationmap.ApplicationMapWithScatterScanRe
 import com.navercorp.pinpoint.web.applicationmap.DefaultApplicationMap;
 import com.navercorp.pinpoint.web.applicationmap.link.Link;
 import com.navercorp.pinpoint.web.applicationmap.link.LinkList;
-import com.navercorp.pinpoint.web.applicationmap.node.Node;
-import com.navercorp.pinpoint.web.applicationmap.node.NodeList;
-import com.navercorp.pinpoint.web.applicationmap.node.ServerInstance;
-import com.navercorp.pinpoint.web.applicationmap.node.ServerInstanceList;
+import com.navercorp.pinpoint.web.applicationmap.nodes.Node;
+import com.navercorp.pinpoint.web.applicationmap.nodes.NodeList;
+import com.navercorp.pinpoint.web.applicationmap.nodes.ServerInstance;
+import com.navercorp.pinpoint.web.applicationmap.nodes.ServerInstanceList;
 import com.navercorp.pinpoint.web.applicationmap.histogram.NodeHistogram;
 import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallData;
 import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallDataMap;

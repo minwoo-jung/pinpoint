@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 
 import org.springframework.util.StringUtils;
 
-import com.navercorp.pinpoint.web.applicationmap.node.ServerInstance;
+import com.navercorp.pinpoint.web.applicationmap.nodes.ServerInstance;
 import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
 import com.navercorp.pinpoint.web.vo.AgentInfo;
 
