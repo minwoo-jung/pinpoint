@@ -18,7 +18,7 @@ package com.navercorp.pinpoint.web.applicationmap.link;
 
 import org.springframework.util.StringUtils;
 
-import com.navercorp.pinpoint.web.applicationmap.ServerInstance;
+import com.navercorp.pinpoint.web.applicationmap.node.ServerInstance;
 
 /**
  * @author minwoo.jung <minwoo.jung@navercorp.com>

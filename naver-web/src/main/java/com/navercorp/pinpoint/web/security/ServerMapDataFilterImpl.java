@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapBuilderFactory;
+import com.navercorp.pinpoint.web.applicationmap.link.LinkFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.CloseStatus;
@@ -31,12 +32,12 @@ import com.navercorp.pinpoint.web.applicationmap.ApplicationMap;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapWithScatterData;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapWithScatterScanResult;
 import com.navercorp.pinpoint.web.applicationmap.DefaultApplicationMap;
-import com.navercorp.pinpoint.web.applicationmap.Link;
-import com.navercorp.pinpoint.web.applicationmap.LinkList;
-import com.navercorp.pinpoint.web.applicationmap.Node;
-import com.navercorp.pinpoint.web.applicationmap.NodeList;
-import com.navercorp.pinpoint.web.applicationmap.ServerInstance;
-import com.navercorp.pinpoint.web.applicationmap.ServerInstanceList;
+import com.navercorp.pinpoint.web.applicationmap.link.Link;
+import com.navercorp.pinpoint.web.applicationmap.link.LinkList;
+import com.navercorp.pinpoint.web.applicationmap.node.Node;
+import com.navercorp.pinpoint.web.applicationmap.node.NodeList;
+import com.navercorp.pinpoint.web.applicationmap.node.ServerInstance;
+import com.navercorp.pinpoint.web.applicationmap.node.ServerInstanceList;
 import com.navercorp.pinpoint.web.applicationmap.histogram.NodeHistogram;
 import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallData;
 import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallDataMap;
@@ -183,7 +184,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
           to = createOrFindUnauthorizedNode(to, nodeList);
       }
       
-      Link newLink = new Link(link.getCreateType(), from, to, link.getRange());
+      Link newLink = LinkFactory.createLink(link.getCreateType(), from, to, link.getRange(), link.getLinkType());
 
       if (isAuthFromApp == false || isAuthToApp == false) {
           LinkCallDataMap newSourceLinkCallDataMap = createLinkCallDataMap(link.getSourceLinkCallDataMap(), isAuthFromApp, isAuthToApp);
