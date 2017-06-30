@@ -15,7 +15,7 @@
 
 package com.navercorp.pinpoint.plugin.lucy.net;
 
-import com.navercorp.pinpoint.bootstrap.async.AsyncTraceIdAccessor;
+import com.navercorp.pinpoint.bootstrap.async.AsyncContextAccessor;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
@@ -86,7 +86,7 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
-                target.addField(AsyncTraceIdAccessor.class.getName());
+                target.addField(AsyncContextAccessor.class.getName());
 
                 // FIXME 이렇게 하면 api type이 internal method로 보이는데 사실 NPC_CLIENT, NIMM_CLIENT로 보여야함. servicetype으로 넣기에 애매해서. 어떻게 수정할 것인지는 나중에 고민.
                 List<InstrumentMethod> methods = target.getDeclaredMethods(MethodFilters.name("getReturnValue", "get", "isReadyAndSet"));
@@ -108,7 +108,7 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
                 InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(LucyNetConstants.NIMM_ADDRESS_ACCESSOR);
-                target.addField(AsyncTraceIdAccessor.class.getName());
+                target.addField(AsyncContextAccessor.class.getName());
 
                 InstrumentMethod constructor = target.getConstructor("com.nhncorp.lucy.nimm.connector.address.NimmAddress", "com.nhncorp.lucy.nimm.connector.NimmSocket", "long");
                 addInterceptor(constructor, LucyNetConstants.NIMM_CONSTRUCTOR_INTERCEPTOR);
@@ -236,7 +236,7 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
             try {
                 method.addInterceptor(interceptorClazzName, args);
             } catch (InstrumentException e) {
-                LOGGER.warn("Unsupported method " + method, e);
+                LOGGER.warn("Unsupported method {}", method, e);
             }
         }
     }
@@ -246,7 +246,7 @@ public class LucyNetPlugin implements ProfilerPlugin, TransformTemplateAware {
             try {
                 method.addScopedInterceptor(interceptorClazzName, scopeName, executionPolicy);
             } catch (InstrumentException e) {
-                LOGGER.warn("Unsupported method " + method, e);
+                LOGGER.warn("Unsupported method {}", method, e);
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.async.AsyncTraceIdAccessor;
-import com.navercorp.pinpoint.bootstrap.context.AsyncTraceId;
+import com.navercorp.pinpoint.bootstrap.async.AsyncContextAccessor;
+import com.navercorp.pinpoint.bootstrap.context.AsyncContext;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
@@ -108,11 +108,11 @@ public class InvokeInterceptor implements AroundInterceptor {
             recorder.recordException(throwable);
             if (isAsynchronousInvocation(target, args, result, throwable)) {
                 // set asynchronous trace
-                final AsyncTraceId asyncTraceId = trace.getAsyncTraceId();
-                recorder.recordNextAsyncId(asyncTraceId.getAsyncId());
-                ((AsyncTraceIdAccessor)result)._$PINPOINT$_setAsyncTraceId(asyncTraceId);
+                final AsyncContext asyncContext = recorder.newAsyncContext();
+
+                ((AsyncContextAccessor)result)._$PINPOINT$_setAsyncContext(asyncContext);
                 if (isDebug) {
-                    logger.debug("Set asyncTraceId metadata {}", asyncTraceId);
+                    logger.debug("Set AsyncContext {}", asyncContext);
                 }
             }
 
@@ -127,8 +127,8 @@ public class InvokeInterceptor implements AroundInterceptor {
             return false;
         }
 
-        if (!(result instanceof AsyncTraceIdAccessor)) {
-            logger.debug("Invalid result object. Need accessor({}).", AsyncTraceIdAccessor.class.getName());
+        if (!(result instanceof AsyncContextAccessor)) {
+            logger.debug("Invalid result object. Need accessor({}).", AsyncContextAccessor.class.getName());
             return false;
         }
 
