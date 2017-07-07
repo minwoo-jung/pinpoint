@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.plugin.jdbc.mysql;
 import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.test.plugin.Dependency;
+import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import org.junit.BeforeClass;
@@ -33,6 +34,7 @@ import java.util.Properties;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
+@JvmVersion(8)
 @Dependency({"mysql:mysql-connector-java:[6.0.2,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
 public class MySql_6_X_IT {
 
