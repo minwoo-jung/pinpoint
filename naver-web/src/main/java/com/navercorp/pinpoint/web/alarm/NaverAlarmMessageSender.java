@@ -16,11 +16,14 @@
 
 package com.navercorp.pinpoint.web.alarm;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.navercorp.pinpoint.web.alarm.checker.AlarmChecker;
+import com.navercorp.pinpoint.web.service.UserGroupService;
+import com.nhncorp.lucy.net.call.Fault;
+import com.nhncorp.lucy.net.call.Reply;
+import com.nhncorp.lucy.net.call.ReturnValue;
+import com.nhncorp.lucy.net.invoker.InvocationFuture;
+import com.nhncorp.lucy.npc.connector.NpcConnectionFactory;
+import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,14 +38,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.navercorp.pinpoint.web.alarm.checker.AlarmChecker;
-import com.navercorp.pinpoint.web.service.UserGroupService;
-import com.nhncorp.lucy.net.call.Fault;
-import com.nhncorp.lucy.net.call.Reply;
-import com.nhncorp.lucy.net.call.ReturnValue;
-import com.nhncorp.lucy.net.invoker.InvocationFuture;
-import com.nhncorp.lucy.npc.connector.NpcConnectionFactory;
-import com.nhncorp.lucy.npc.connector.NpcHessianConnector;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author minwoo.jung
@@ -88,8 +87,9 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
         
         CloseableHttpClient client = HttpClients.createDefault();
         
-        try { 
-            for(String message : checker.getSmsMessage()) {
+        try {
+            List<String> smsMessageList = checker.getSmsMessage();
+            for(String message : smsMessageList) {
                 logger.info("send SMS : {}", message);
                 List<NameValuePair> nvps = new ArrayList<>();
                 nvps.add(new BasicNameValuePair("serviceId", smsServiceID));
