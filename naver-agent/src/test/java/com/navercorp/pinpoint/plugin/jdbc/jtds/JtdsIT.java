@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@Dependency({"net.sourceforge.jtds:jtds:[1.2.8]"})
+@Dependency({"net.sourceforge.jtds:jtds:[1.2.8]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
 public class JtdsIT {
     private static final String MSSQL = "MSSQL";
     private static final String MSSQL_EXECUTE_QUERY = "MSSQL_EXECUTE_QUERY";
