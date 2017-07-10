@@ -47,8 +47,8 @@ import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
-@Dependency({"mysql:mysql-connector-java:[5.1.6],[5.1.34],[5.1.36,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
-public class MySqlLoadBalanceIT {
+@Dependency({"mysql:mysql-connector-java:[5.1.6],[5.1.34],[5.1.36,5.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
+public class MySqlLoadBalance_5_X_IT {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static Properties db;
