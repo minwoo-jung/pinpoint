@@ -167,6 +167,20 @@
 							hideEditArea();
 						}, showAlert );
 					};
+					scope.onCaptureUpdateClick = function($event) {
+						if ( $event.target.tagName.toUpperCase() === "SPAN" ) {
+							var $target = $($event.target);
+							if ( $target.hasClass( "update-confirm") ) {
+								scope.onApplyUpdateAlarm();
+							} else if ( $target.hasClass( "update-cancel") ) {
+								scope.onCancelUpdateAlarm();
+							} else if ( $target.hasClass( "add-confirm") ) {
+								scope.onApplyAddAlarm();
+							} else if ( $target.hasClass( "add-cancel" ) ) {
+								scope.onCancelAddAlarm();
+							}
+						}
+					};
 					scope.onCancelAddAlarm = function() {
 						AddAlarm.cancelAction( aEditNodes, hideEditArea );
 					};

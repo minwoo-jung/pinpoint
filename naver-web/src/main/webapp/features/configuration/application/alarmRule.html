@@ -15,64 +15,64 @@
 					<th class="col-md-2"></th>
 				</tr>
 				</thead>
-				<tbody>
-				<tr class="_edit1 hide-me" style="background-color:#F3FBFF">
-					<td class="col-md-4">
-						<select class="form-control" name="rule" style="width:95%;height:26px;padding:2px;">
-							<option value="">Select rule</option>
-							<option ng-repeat="rule in ruleSets" value="{{rule}}">{{rule}}</option>
-						</select>
-					</td>
-					<td class="col-md-3">
-						<select class="form-control" name="userGroup" style="width:95%;height: 26px;padding:2px;">
-							<option value="">Select user group</option>
-							<option ng-repeat="userGroup in userGroupList" value="{{userGroup.id}}">{{userGroup.id}}</option>
-						</select>
-					</td>
-					<td class="col-md-2">
-						<input type="number" value="1" placeholder="Threshold" name="threshold" class="form-control" style="height:26px;width:90%"/>
-					</td>
-					<td class="col-md-2">
-						<select class="form-control" name="type" style="height:26px;width:95%;padding:2px;">
-							<option value="all">All</option>
-							<option value="email">Email</option>
-							<option value="sms">SMS</option>
-							<option value="">None</option>
-						</select>
-					</td>
-					<td class="col-md-2">
-						<div class="_edit" style="line-height:20px;">
-							<span class="glyphicon glyphicon-ok edit-confirm" aria-hidden="true" ng-click="onApplyUpdateAlarm()"></span>
-							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" ng-click="onCancelUpdateAlarm()"></span>
-						</div>
-						<div class="_add hide-me" style="line-height:20px;">
-							<span class="glyphicon glyphicon-ok edit-confirm" aria-hidden="true" ng-click="onApplyAddAlarm()"></span>
-							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" ng-click="onCancelAddAlarm()"></span>
-						</div>
-					</td>
-				</tr>
-				<tr class="_edit2 hide-me" style="background-color:#F3FBFF">
-					<td colspan="4">
-						<input type="text" placeholder="Note..." class="form-control" name="notes" style="height:26px"/>
-					</td>
-					<td></td>
-				</tr>
-				<tr ng-repeat="rule in ruleList" id="{{prefix + rule.ruleId}}">
-					<td class="col-md-4">{{rule.checkerName}}</td>
-					<td class="col-md-3">{{rule.userGroupId}}</td>
-					<td class="col-md-2">{{rule.threshold}}</td>
-					<td class="col-md-2">{{getType( rule )}}</td>
-					<td class="col-md-2">
-						<div class="_normal">
-							<span class="glyphicon glyphicon-pencil edit" aria-hidden="true" ng-click="onUpdateAlarm($event)"></span>
-							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" ng-click="onRemoveAlarm($event)"></span>
-						</div>
-						<div class="_remove hide-me">
-							<span class="glyphicon glyphicon-arrow-left remove-cancel" aria-hidden="true" ng-click="onCancelRemoveAlarm()"></span>
-							<span class="glyphicon glyphicon-remove remove remove-confirm" aria-hidden="true" ng-click="onApplyRemoveAlarm()"></span>
-						</div>
-					</td>
-				</tr>
+				<tbody ng-click="onCaptureUpdateClick($event)">
+					<tr class="_edit1 hide-me" style="background-color:#F3FBFF">
+						<td class="col-md-4">
+							<select class="form-control" name="rule" style="width:95%;height:26px;padding:2px;">
+								<option value="">Select rule</option>
+								<option ng-repeat="rule in ruleSets" value="{{rule}}">{{rule}}</option>
+							</select>
+						</td>
+						<td class="col-md-3">
+							<select class="form-control" name="userGroup" style="width:95%;height: 26px;padding:2px;">
+								<option value="">Select user group</option>
+								<option ng-repeat="userGroup in userGroupList" value="{{userGroup.id}}">{{userGroup.id}}</option>
+							</select>
+						</td>
+						<td class="col-md-2">
+							<input type="number" value="1" placeholder="Threshold" name="threshold" class="form-control" style="height:26px;width:90%"/>
+						</td>
+						<td class="col-md-2">
+							<select class="form-control" name="type" style="height:26px;width:95%;padding:2px;">
+								<option value="all">All</option>
+								<option value="email">Email</option>
+								<option value="sms">SMS</option>
+								<option value="">None</option>
+							</select>
+						</td>
+						<td class="col-md-2">
+							<div class="_edit" style="line-height:20px;">
+								<span class="glyphicon glyphicon-ok update-confirm" aria-hidden="true"></span>
+								<span class="glyphicon glyphicon-remove update-cancel remove" aria-hidden="true"></span>
+							</div>
+							<div class="_add hide-me" style="line-height:20px;">
+								<span class="glyphicon glyphicon-ok add-confirm" aria-hidden="true"></span>
+								<span class="glyphicon glyphicon-remove add-cancel remove" aria-hidden="true"></span>
+							</div>
+						</td>
+					</tr>
+					<tr class="_edit2 hide-me" style="background-color:#F3FBFF">
+						<td colspan="4">
+							<input type="text" placeholder="Note..." class="form-control" name="notes" style="height:26px"/>
+						</td>
+						<td></td>
+					</tr>
+					<tr ng-repeat="rule in ruleList" id="{{prefix + rule.ruleId}}">
+						<td class="col-md-4">{{rule.checkerName}}</td>
+						<td class="col-md-3">{{rule.userGroupId}}</td>
+						<td class="col-md-2">{{rule.threshold}}</td>
+						<td class="col-md-2">{{getType( rule )}}</td>
+						<td class="col-md-2">
+							<div class="_normal">
+								<span class="glyphicon glyphicon-pencil edit" aria-hidden="true" ng-click="onUpdateAlarm($event)"></span>
+								<span class="glyphicon glyphicon-remove remove" aria-hidden="true" ng-click="onRemoveAlarm($event)"></span>
+							</div>
+							<div class="_remove hide-me">
+								<span class="glyphicon glyphicon-arrow-left remove-cancel" aria-hidden="true" ng-click="onCancelRemoveAlarm()"></span>
+								<span class="glyphicon glyphicon-remove remove remove-confirm" aria-hidden="true" ng-click="onApplyRemoveAlarm()"></span>
+							</div>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
