@@ -32,6 +32,10 @@
         <constructor-arg ref="oracleDataSource"/>
     </bean>
 
+    <bean id="jdbcTemplatePostgreSql" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="postgreSqlDataSource"/>
+    </bean>
+
 
     <bean id="arcusClientFactory" class="com.navercorp.test.pinpoint.testweb.component.ArcusClientFactory">
         <constructor-arg value="ncloud.arcuscloud.nhncorp.com:17288"/>
@@ -114,6 +118,21 @@
     <bean id="msSqlServerTransactionManager"
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="jtdsDataSource"/>
+    </bean>
+
+    <!-- postgreSql -->
+    <bean id="postgreSqlSqlMapClient" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="postgreSqlDataSource"/>
+        <property name="configLocation" value="classpath:postgresql/SqlMapConfig.xml"/>
+    </bean>
+
+    <bean id="postgreSqlSqlMapClientTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="postgreSqlSqlMapClient"/>
+    </bean>
+
+    <bean id="postgreSqlTransactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="postgreSqlDataSource"/>
     </bean>
 
     <tx:annotation-driven transaction-manager="mysqlTransactionManager"/>

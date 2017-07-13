@@ -180,6 +180,11 @@
         <!--<scope>provided</scope> -->
         <!--</dependency> -->
 
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
         <!-- web -->
         <dependency>
             <groupId>javax.servlet</groupId>

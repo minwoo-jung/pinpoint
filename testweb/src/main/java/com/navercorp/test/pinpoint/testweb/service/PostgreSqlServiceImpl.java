@@ -1,0 +1,53 @@
+/*
+ * Copyright 2017 NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.navercorp.test.pinpoint.testweb.service;
+
+import com.navercorp.test.pinpoint.testweb.repository.PostgreSqlDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * @author HyunGil Jeong
+ */
+@Service
+@Transactional("postgreSqlTransactionManager")
+public class PostgreSqlServiceImpl implements PostgreSqlService {
+
+    @Autowired
+    private PostgreSqlDao postgreSqlDao;
+
+    @Override
+    public int selectOne() {
+        return postgreSqlDao.selectOne();
+    }
+
+    @Override
+    public int selectOneWithParam(int id) {
+        return postgreSqlDao.selectOneWithParam(id);
+    }
+
+    @Override
+    public void createStatement() {
+        postgreSqlDao.createStatement();
+    }
+
+    @Override
+    public void createErrorStatement() {
+        postgreSqlDao.createErrorStatement();
+    }
+}

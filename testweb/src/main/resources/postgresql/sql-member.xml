@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.navercorp.test.pinpoint.testweb.domain.Member">
+<!-- 
+	<typeAlias alias="Member" type="Member" />
+ -->
+ 
+	<delete id="delete" parameterType="int">
+		delete from member where id = #id#
+	</delete>
+
+	<insert id="add" parameterType="com.navercorp.test.pinpoint.testweb.domain.Member">
+		insert into member (id, name, joined) values(#id#, #name#, #joined#)
+	</insert>
+
+    <insert id="addStatement" parameterType="com.navercorp.test.pinpoint.testweb.domain.Member">
+		insert into member (id, name, joined) values($id$, $name$, #joined#);
+	</insert>
+
+
+    <update id="update" parameterType="com.navercorp.test.pinpoint.testweb.domain.Member">
+		update member set name = #name#, joined = #joined# where id = #id#
+	</update>
+
+	<select id="get" parameterType="int" resultType="com.navercorp.test.pinpoint.testweb.domain.Member">
+		select * from member where id = #id#
+	</select>
+
+	<select id="list" resultType="com.navercorp.test.pinpoint.testweb.domain.Member">
+		select * from member order by id
+	</select>
+</mapper>

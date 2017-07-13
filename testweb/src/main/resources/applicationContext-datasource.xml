@@ -93,4 +93,14 @@
         <property name="validationQuery" value="select 1 from db_root"/>
 
 	</bean>
+
+    <bean id="postgreSqlDataSource" parent="commonDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver" />
+
+        <property name="url" value="${postgresql.url}"/>
+        <property name="username" value="${postgresql.user}"/>
+        <property name="password" value="${postgresql.password}"/>
+
+        <property name="validationQuery" value="select 1"/>
+    </bean>
 </beans>
