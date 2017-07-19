@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 NAVER Corp.
+ * Copyright 2017 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.plugin.nbasearc.interceptor;
+package com.navercorp.pinpoint.plugin.nbasearc.open.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
@@ -25,9 +25,9 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
  * @author jaehong.kim
  *
  */
-public class RedisClusterPipelineConstructorInterceptor extends GatewayServerMetadataReadInterceptor {
+public class RedisClusterPipelineSetServerMethodInterceptor extends GatewayServerMetadataReadInterceptor {
 
-    public RedisClusterPipelineConstructorInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
+    public RedisClusterPipelineSetServerMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
         super(traceContext, methodDescriptor);
     }
 }

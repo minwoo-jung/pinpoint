@@ -207,7 +207,29 @@ public class RedisClusterMethodNames {
                 "sscount",
                 "ssexists",
                 "ssexpire",
-                "ssttl"
+                "ssttl",
+                "bitfield",
+                "scan",
+                "cscan",
+                "cscandigest",
+                "cscanlen",
+                "sscan",
+                "hscan",
+                "zscan",
+                "hstrlen",
+                "zlexcount",
+                "zrangeByLex",
+                "zrevrangeByLex",
+                "zremrangeByLex",
+                "geoadd",
+                "geodist",
+                "geohash",
+                "geopos",
+                "georadius",
+                "georadiusByMember",
+                "pfadd",
+                "pfcount",
+                "touch"
         };
     }
 }

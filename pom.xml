@@ -98,6 +98,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.navercorp</groupId>
+                <artifactId>nbase-arc-java-client</artifactId>
+                <version>1.5.1</version>
+            </dependency>
+
+            <dependency>
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
                 <version>2.4.1</version>

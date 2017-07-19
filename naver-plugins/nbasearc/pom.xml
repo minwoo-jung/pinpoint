@@ -41,9 +41,17 @@
 
         <!-- Redis -->
         <!-- nBase-ARC -->
+        <!-- naver -->
         <dependency>
             <groupId>com.nhncorp</groupId>
             <artifactId>triples-redis-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- opensource -->
+        <dependency>
+            <groupId>com.navercorp</groupId>
+            <artifactId>nbase-arc-java-client</artifactId>
             <scope>provided</scope>
         </dependency>
 

@@ -1,1 +1,2 @@
-com.navercorp.pinpoint.plugin.nbasearc.NbaseArcPlugin
+com.navercorp.pinpoint.plugin.nbasearc.naver.NbaseArcPlugin
+com.navercorp.pinpoint.plugin.nbasearc.open.NbaseArcPlugin
