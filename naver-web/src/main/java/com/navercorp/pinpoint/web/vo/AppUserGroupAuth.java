@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.navercorp.pinpoint.web.exception.AuthorityException;
 import com.navercorp.pinpoint.web.view.AppUserGroupAuthSerializer;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * @author minwoo.jung
  *
@@ -124,8 +127,10 @@ public class AppUserGroupAuth {
     public enum Role {
         GUEST("guest", 1), USER("user", 2), MANAGER("manager", 3);
         
-        private String name;
-        private int level;
+        private final String name;
+        private final int level;
+
+        private static final Set<Role> ROLES = EnumSet.allOf(Role.class);
         
         Role(String name, int level) {
             this.name = name;
@@ -157,7 +162,8 @@ public class AppUserGroupAuth {
         }
         
         public static Role findRole(String roleName){
-            for(Role role : values()){
+
+            for (Role role : ROLES) {
                 if(role.getName().equals(roleName)){
                     return role;
                 }
