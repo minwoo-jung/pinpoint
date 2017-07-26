@@ -20,19 +20,38 @@ public class VertxController {
     @Autowired
     private VertxService vertxService;
 
-    @RequestMapping(value="/vertx/request")
+    @RequestMapping(value="/vertx/client/requestBody")
+    @ResponseBody
+    public void requestBody(final HttpServletRequest request) throws Exception {
+        vertxService.request(request.getLocalPort(), request.getLocalAddr(), "/", "{foo:bar}");
+    }
+
+    @RequestMapping(value="/vertx/client/requestChunk")
+    @ResponseBody
+    public void requestChunk(final HttpServletRequest request) throws Exception {
+        vertxService.chunk(request.getLocalPort(), request.getLocalAddr(), "/", "{foo:bar}");
+    }
+
+    @RequestMapping(value="/vertx/client/request")
     @ResponseBody
     public void request(final HttpServletRequest request) throws Exception {
         vertxService.request(request.getLocalPort(), request.getLocalAddr(), "/");
     }
 
-    @RequestMapping(value="/vertx/request/param")
+    @RequestMapping(value="/vertx/client/sendHead")
+    @ResponseBody
+    public void sendHead(final HttpServletRequest request) throws Exception {
+        vertxService.sendHead(request.getLocalPort(), request.getLocalAddr(), "/");
+    }
+
+
+    @RequestMapping(value="/vertx/client/request/param")
     @ResponseBody
     public void requestNaver() throws Exception {
         vertxService.request(80, "www.naver.com", "/?foo=bar");
     }
 
-    @RequestMapping(value="/vertx/request/failed")
+    @RequestMapping(value="/vertx/client/request/failed")
     @ResponseBody
     public void requestDaum() throws Exception {
         vertxService.request(9999, "127.0.0.1", "/");
@@ -50,10 +69,22 @@ public class VertxController {
         vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/request");
     }
 
+    @RequestMapping(value="/vertx/server/request/param")
+    @ResponseBody
+    public void serverRequestParam(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/request/param?foo=bar");
+    }
+
     @RequestMapping(value="/vertx/server/executeBlocking")
     @ResponseBody
     public void serverExecuteBlocking(final HttpServletRequest request) throws Exception {
         vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/executeBlocking");
+    }
+
+    @RequestMapping(value="/vertx/server/executeBlocking/wait3s")
+    @ResponseBody
+    public void serverExecuteBlockingWait3s(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/executeBlocking/wait3s");
     }
 
     @RequestMapping(value="/vertx/server/executeBlocking/request")
@@ -66,6 +97,12 @@ public class VertxController {
     @ResponseBody
     public void serverRunOnContext(final HttpServletRequest request) throws Exception {
         vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/runOnContext");
+    }
+
+    @RequestMapping(value="/vertx/server/runOnContext/wait3s")
+    @ResponseBody
+    public void serverRunOnContextWait3s(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/runOnContext/wait3s");
     }
 
     @RequestMapping(value="/vertx/server/runOnContext/request")
