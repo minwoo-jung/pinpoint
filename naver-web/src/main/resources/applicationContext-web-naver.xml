@@ -34,38 +34,4 @@
         <task:scheduled ref="nssFilter" method="update"
                         fixed-rate="#{pinpointWebProps['nss.update.interval'] ?: 60000}"/>
     </task:scheduled-tasks>
-
-    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-        <property name="messageConverters">
-            <list>
-                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-                    <property name="objectMapper">
-                        <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
-                    </property>
-                    <property name="supportedMediaTypes">
-                        <list>
-                            <value>text/json</value>
-                            <value>application/json</value>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.springframework.http.converter.FormHttpMessageConverter">
-                    <property name="supportedMediaTypes">
-                        <list>
-                            <value>application/x-www-form-urlencoded</value>
-                        </list>
-                    </property>
-                </bean>
-                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
-                    <property name="supportedMediaTypes">
-                        <list>
-                            <value>text/plain</value>
-                            <value>text/html</value>
-                        </list>
-                    </property>
-                </bean>
-            </list>
-        </property>
-    </bean>
-
 </beans>
