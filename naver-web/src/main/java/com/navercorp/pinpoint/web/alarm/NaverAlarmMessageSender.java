@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.web.alarm;
 
 import com.navercorp.pinpoint.web.alarm.checker.AlarmChecker;
+import com.navercorp.pinpoint.web.batch.NaverBatchConfiguration;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.nhncorp.lucy.net.call.Fault;
 import com.nhncorp.lucy.net.call.Reply;
@@ -49,34 +50,33 @@ import java.util.List;
 public class NaverAlarmMessageSender implements AlarmMessageSender {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
-    @Value("#{batchProps['pinpoint.url']}")
-    private String pinpointUrl;
-    
-    @Value("#{batchProps['batch.server.env']}")
-    private String batchEnv;
-
-    
-    @Autowired
-    private UserGroupService userGroupService;
-    
-    // Email config
-    @Value("#{batchProps['alarm.mail.url']}")
-    private String emailServerUrl;
     private static final String QUOTATATION = "\"";
     private static final String ADDR_SEPARATOR = ";";
     private static final String SENDER_EMAIL_ADDRESS = "<dl_labs_p_pinpoint@navercorp.com>";
     private static final String EMAIL_SERVICE_ID = "pinpoint";
     private static final String OPTION = "version=1;mimeCharset=utf-8;debugMode=false";
-    
-    // SMS config
-    @Value("#{batchProps['alarm.sms.url']}")
+
+
+
+    @Autowired
+    private UserGroupService userGroupService;
+
+    private String emailServerUrl;
     private String smsServerUrl;
-    @Value("#{batchProps['alarm.sms.serviceId']}")
     private String smsServiceID;
-        
+    private String batchEnv;
+    private String pinpointUrl;
+
     private static final String SENDER_NUMBER = "0317844499";
-    
+
+    public NaverAlarmMessageSender(NaverBatchConfiguration batchConfiguration) {
+        this.pinpointUrl = batchConfiguration.getPinpointUrl();
+        this.batchEnv = batchConfiguration.getBatchEnv();
+        this.emailServerUrl = batchConfiguration.getEmailServerUrl();
+        this.smsServerUrl = batchConfiguration.getMexServerUrl();
+        this.smsServiceID = batchConfiguration.getServiceID();
+    }
+
     @Override
     public void sendSms(AlarmChecker checker, int sequenceCount) {
         List<String> receivers = userGroupService.selectPhoneNumberOfMember(checker.getuserGroupId());

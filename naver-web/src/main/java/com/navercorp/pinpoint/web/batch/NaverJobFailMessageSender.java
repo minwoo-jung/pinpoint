@@ -16,20 +16,20 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.beans.factory.annotation.Value;
 
 public class NaverJobFailMessageSender implements JobFailMessageSender {
-	
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String SENDER_NUMBER = "0317844499";
+
     private final String mexServerUrl;
     private final List<String> cellPhoneNumbers;
     private final String serviceID;
-    private static final String SENDER_NUMBER = "0317844499";
-    
-    @Value("#{batchProps['batch.server.env']}")
-    private String batchEnv;
-    
-    public NaverJobFailMessageSender(String mexServerUrl, String serviceID, List<String> cellPhoneNumbers) {
-        this.mexServerUrl = mexServerUrl;
-        this.serviceID = serviceID;
-        this.cellPhoneNumbers = cellPhoneNumbers;
+    private final String batchEnv;
+
+    public NaverJobFailMessageSender(NaverBatchConfiguration batchConfiguration) {
+        this.mexServerUrl = batchConfiguration.getMexServerUrl();
+        this.serviceID = batchConfiguration.getServiceID();
+        this.cellPhoneNumbers = batchConfiguration.getCellPhoneNumberList();
+        this.batchEnv = batchConfiguration.getBatchEnv();
     }
 
 	@Override

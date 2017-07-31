@@ -13,19 +13,15 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
     
     <bean id="naverAlarmMessageSender" class="com.navercorp.pinpoint.web.alarm.NaverAlarmMessageSender"/>
-    <util:properties id="batchProps" location="classpath:batch.properties"/>
+
+	<bean id="naverBatchConfigruation" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration">
+		<property name="properties" ref="naverBatchProps"/>
+	</bean>
+	<util:properties id="naverBatchProps" location="classpath:batch.properties"/>
     
     <bean id="naverJobFailMessageSender" class="com.navercorp.pinpoint.web.batch.NaverJobFailMessageSender">
-    	<constructor-arg index="0" value="#{batchProps['alarm.sms.url']}"/>
-    	<constructor-arg index="1" value="#{batchProps['alarm.sms.serviceId']}"/>
-    	<constructor-arg index="2">
-    		<list>
-    			<value>01073715625</value>
-    			<value>01037773637</value>
-    			<value>01089440733</value>
-    		</list>
-    	</constructor-arg>
-    </bean>
+		<constructor-arg index="0" ref="naverBatchConfigruation"/>
+	</bean>
     
     <task:scheduled-tasks scheduler="naverScheduler">
         <task:scheduled ref="naverBatchJobLauncher" method="innerSystemSyncJob" cron="0 0 7 * * *" />
@@ -33,9 +29,8 @@
     
     <task:scheduler id="naverScheduler" pool-size="1"/>
     
-    <bean id="naverBatchJobLauncher" class="com.navercorp.pinpoint.web.batch.NaverBatchJobLauncher">
-        <property name="batchServerIp" value="#{batchProps['batch.server.ip']}"/>
-    </bean>
+    <bean id="naverBatchJobLauncher" class="com.navercorp.pinpoint.web.batch.NaverBatchJobLauncher"/>
+
     
     <import resource="classpath:batch/innerSystemSyncJob.xml"/>
     
