@@ -34,10 +34,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class JobRepositoryCheckTest {
 
-//    @Test
+    @Test
     public void test() throws Exception{
         GenericXmlApplicationContext applicationContext = new GenericXmlApplicationContext("/applicationContext-test.xml",
-            "/batch/applicationContext-batch.xml",
             "/batch/applicationContext-batch-test.xml",
             "/batch/jobRepositoryCheckJob.xml");
         JobLauncherTestUtils testLauncher = applicationContext.getBean(JobLauncherTestUtils.class);

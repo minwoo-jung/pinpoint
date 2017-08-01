@@ -34,7 +34,6 @@ public class InnerSystemSyncJobTest {
      
      public static void main(String[] args) throws Exception{
           GenericXmlApplicationContext applicationContext = new GenericXmlApplicationContext("/applicationContext-test.xml",
-                                                                                             "/batch/applicationContext-batch.xml",
                                                                                              "/batch/applicationContext-batch-test.xml",
                                                                                              "/batch/innerSystemSyncJob.xml");
           JobLauncherTestUtils testLauncher = applicationContext.getBean(JobLauncherTestUtils.class);
