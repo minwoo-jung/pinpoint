@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapBuilderFactory;
-import com.navercorp.pinpoint.web.applicationmap.link.LinkFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.CloseStatus;
@@ -184,7 +183,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
           to = createOrFindUnauthorizedNode(to, nodeList);
       }
       
-      Link newLink = LinkFactory.createLink(link.getCreateType(), from, to, link.getRange(), link.getLinkType());
+      Link newLink = new Link(link.getLinkType(), link.getCreateType(), from, to, link.getRange());
 
       if (isAuthFromApp == false || isAuthToApp == false) {
           LinkCallDataMap newSourceLinkCallDataMap = createLinkCallDataMap(link.getSourceLinkCallDataMap(), isAuthFromApp, isAuthToApp);
