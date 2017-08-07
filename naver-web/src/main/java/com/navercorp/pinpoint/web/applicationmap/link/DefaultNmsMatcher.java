@@ -22,7 +22,7 @@ import com.navercorp.pinpoint.web.applicationmap.link.LinkInfo.LinkType;
  * @author minwoo.jung
  */
 public class DefaultNmsMatcher implements ServerMatcher {
-    public static final String URL = "/nms.pinpoint?hostIp=";
+    public static final String URL = "http://nms2.navercorp.com/searchRelation/main?singleKeyword=%s&searchType=Text";
     
     @Override
     public boolean isMatched(String value) {
@@ -31,6 +31,6 @@ public class DefaultNmsMatcher implements ServerMatcher {
 
     @Override
     public LinkInfo getLinkInfo(String value) {
-        return new LinkInfo("network", URL + value, LinkType.BUTTON);
+        return new LinkInfo("network", String.format(URL,value), LinkType.ATAG);
     }
 }
