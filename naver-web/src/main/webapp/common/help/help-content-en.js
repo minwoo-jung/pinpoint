@@ -749,6 +749,24 @@
 						desc: "Both the JVM's and the system's CPU usage are collected"
 					}]
 				}]
+			},
+			statTPS: {
+				mainStyle: "",
+				title: "TPS",
+				desc: "Number of transactions received by the agents per second",
+				category: [{
+					title: "[Legend]",
+					items: [{
+						name: "MAX",
+						desc: "Highest TPS of the agents"
+					},{
+						name: "AVG",
+						desc: "Average TPS of the agents"
+					},{
+						name: "MIN",
+						desc: "Lowest TPS of the agents"
+					}]
+				}]
 			}
 		},
 		callTree: {
