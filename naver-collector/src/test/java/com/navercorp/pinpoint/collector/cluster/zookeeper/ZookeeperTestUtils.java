@@ -5,7 +5,7 @@ import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
-import com.navercorp.pinpoint.rpc.packet.PingPacket;
+import com.navercorp.pinpoint.rpc.packet.PingPayloadPacket;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
@@ -29,7 +29,7 @@ public final class ZookeeperTestUtils {
     }
 
     public static ServerMessageListener getServerMessageListener() {
-        return new SimpleServerMessageListner();
+        return new SimpleServerMessageListener();
     }
 
     static Map<String, Object> getParams() {
@@ -74,7 +74,7 @@ public final class ZookeeperTestUtils {
         }
     }
 
-    private static class SimpleServerMessageListner implements ServerMessageListener {
+    private static class SimpleServerMessageListener implements ServerMessageListener {
         @Override
         public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
             LOGGER.warn("Unsupport send received {} {}", sendPacket, pinpointSocket);
@@ -92,9 +92,10 @@ public final class ZookeeperTestUtils {
         }
 
         @Override
-        public void handlePing(PingPacket pingPacket, PinpointServer writablePinpointServer) {
-            LOGGER.warn("Unsupport ping received {} {}", pingPacket, writablePinpointServer);
+        public void handlePing(PingPayloadPacket pingPacket, PinpointServer pinpointServer) {
+            LOGGER.warn("Unsupported ping received packet:{}, remote:{}", pingPacket, pinpointServer);
         }
+
     }
 
 }

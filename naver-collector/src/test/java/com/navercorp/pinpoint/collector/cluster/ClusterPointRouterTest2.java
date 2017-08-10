@@ -14,7 +14,7 @@ import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
-import com.navercorp.pinpoint.rpc.packet.PingPacket;
+import com.navercorp.pinpoint.rpc.packet.PingPayloadPacket;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
@@ -177,9 +177,10 @@ public class ClusterPointRouterTest2 {
         }
 
         @Override
-        public void handlePing(PingPacket pingPacket, PinpointServer writablePinpointServer) {
-            logger.warn("Unsupport ping received {} {}", pingPacket, writablePinpointServer);
+        public void handlePing(PingPayloadPacket pingPacket, PinpointServer pinpointServer) {
+            logger.warn("Unsupported ping received packet:{}, remote:{}", pingPacket, pinpointServer);
         }
+
     }
 
     private Map<String, Object> getParams() {
