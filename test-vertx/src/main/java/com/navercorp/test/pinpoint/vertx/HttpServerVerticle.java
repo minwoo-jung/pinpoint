@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author jaehong.kim
@@ -63,8 +64,8 @@ public class HttpServerVerticle extends AbstractVerticle {
         router.get("/executeBlocking").handler(routingContext -> {
             executeBlocking(routingContext.request(), 1);
         });
-        router.get("/executeBlocking/wait3s").handler(routingContext -> {
-            executeBlocking(routingContext.request(), 3);
+        router.get("/executeBlocking/wait10s").handler(routingContext -> {
+            executeBlocking(routingContext.request(), 10);
         });
         router.get("/executeBlocking/request").handler(routingContext -> {
             executeBlockingRequest(routingContext.request());
@@ -72,8 +73,8 @@ public class HttpServerVerticle extends AbstractVerticle {
         router.get("/runOnContext").handler(routingContext -> {
             runOnContext(routingContext.request(), 1);
         });
-        router.get("/runOnContext/wait3s").handler(routingContext -> {
-            runOnContext(routingContext.request(), 3);
+        router.get("/runOnContext/wait10s").handler(routingContext -> {
+            runOnContext(routingContext.request(), 10);
         });
         router.get("/runOnContext/request").handler(routingContext -> {
             runOnContextRequest(routingContext.request());
@@ -132,12 +133,19 @@ public class HttpServerVerticle extends AbstractVerticle {
         }
     }
 
+    // for debug
+    private final AtomicInteger counter = new AtomicInteger();
+
     private void executeBlocking(HttpServerRequest request, final int waitSeconds) {
+        int debugCount = counter.incrementAndGet();
+        logger.info("executeBlocking: id{} {}", debugCount, waitSeconds);
+
         vertx.executeBlocking(new Handler<Future<Object>>() {
             @Override
             public void handle(Future<Object> objectFuture) {
+                logger.info("sleep:{}", waitSeconds);
                 sleep(waitSeconds);
-                request.response().end("Execute blocking.");
+                request.response().end("Execute blocking." + waitSeconds);
             }
         }, false, null);
     }

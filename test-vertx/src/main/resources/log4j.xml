@@ -51,7 +51,7 @@
 
 
     <logger name="com.navercorp.pinpoint" additivity="false">
-        <level value="INFO"/>
+        <level value="DEBUG"/>
         <appender-ref ref="console"/>
         <!--         <appender-ref ref="nelo-async"/> -->
     </logger>
