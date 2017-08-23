@@ -8,6 +8,7 @@ import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyHttpHeaderHandler;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
@@ -149,12 +150,23 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
                 recordParentInfo(spanRecorder, request);
             }
             spanRecorder.recordApi(blocMethodApiTag);
+            // record proxy HTTP headers.
+            proxyHttpHeaderRecorder.record(spanRecorder, new ProxyHttpHeaderHandler() {
+                @Override
+                public String read(String name) {
+                    return request.getHeader(name);
+                }
+
+                @Override
+                public void remove(String name) {
+                    request.getMimeHeaders().removeHeader(name);
+                }
+            });
         } finally {
             SpanEventRecorder spanEventRecorder = trace.traceBlockBegin();
             spanEventRecorder.recordApi(methodDescriptor);
             spanEventRecorder.recordServiceType(BlocConstants.BLOC_INTERNAL_METHOD);
         }
-
     }
 
     private String getEndPoint(String host, int port) {

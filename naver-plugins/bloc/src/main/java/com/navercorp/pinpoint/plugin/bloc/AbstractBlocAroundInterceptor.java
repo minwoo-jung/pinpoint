@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyHttpHeaderRecorder;
 
 /**
  * @author Taejin Koo
@@ -39,6 +40,7 @@ public abstract class AbstractBlocAroundInterceptor implements AroundInterceptor
     protected final TraceContext traceContext;
 
     protected final boolean traceRequestParam;
+    protected final ProxyHttpHeaderRecorder proxyHttpHeaderRecorder;
 
     protected AbstractBlocAroundInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, Class<? extends AbstractBlocAroundInterceptor> childClazz) {
         this.traceContext = traceContext;
@@ -48,6 +50,7 @@ public abstract class AbstractBlocAroundInterceptor implements AroundInterceptor
 
         BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
         traceRequestParam = config.isBlocTraceRequestParam();
+        this.proxyHttpHeaderRecorder = new ProxyHttpHeaderRecorder(traceContext);
 
         traceContext.cacheApi(blocMethodApiTag);
     }

@@ -8,6 +8,7 @@ import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyHttpHeaderHandler;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
@@ -162,8 +163,8 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
         try {
             SpanRecorder spanRecorder = trace.getSpanRecorder();
 
-            io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
-            io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
+            final io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
+            final io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
 
             spanRecorder.recordServiceType(BlocConstants.BLOC);
 
@@ -178,6 +179,17 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
 
             spanRecorder.recordAttribute(AnnotationKey.HTTP_URL, InterceptorUtils.getHttpUrl(request.getUri(), traceRequestParam));
             spanRecorder.recordApi(blocMethodApiTag);
+            proxyHttpHeaderRecorder.record(spanRecorder, new ProxyHttpHeaderHandler() {
+                @Override
+                public String read(String name) {
+                    return request.headers().get(name);
+                }
+
+                @Override
+                public void remove(String name) {
+                    request.headers().remove(name);
+                }
+            });
 
             if (!spanRecorder.isRoot()) {
                 recordParentInfo(spanRecorder, request, ctx);
