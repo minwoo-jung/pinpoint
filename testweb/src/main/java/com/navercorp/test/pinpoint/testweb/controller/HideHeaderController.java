@@ -78,9 +78,10 @@ public class HideHeaderController {
 
         Enumeration<String> headerNames = request.getHeaderNames();
         ArrayList<String> headerNamesList = Collections.list(headerNames);
+        logger.debug("headernames:{}", headerNamesList);
         for (String headerName : headerNamesList) {
-            if (headerName.startsWith(PINPOINT_HEADER_STARTWITH)) {
-                return "fail(getHeaderNames)";
+            if (headerName.regionMatches(true, 0, PINPOINT_HEADER_STARTWITH, 0, PINPOINT_HEADER_STARTWITH.length())) {
+                return "fail(getHeaderNames) headerName:" + headerName;
             }
         }
 
