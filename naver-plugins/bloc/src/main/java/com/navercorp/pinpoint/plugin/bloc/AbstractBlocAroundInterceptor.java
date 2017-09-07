@@ -50,7 +50,7 @@ public abstract class AbstractBlocAroundInterceptor implements AroundInterceptor
 
         BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
         traceRequestParam = config.isBlocTraceRequestParam();
-        this.proxyHttpHeaderRecorder = new ProxyHttpHeaderRecorder(traceContext);
+        this.proxyHttpHeaderRecorder = new ProxyHttpHeaderRecorder(traceContext.getProfilerConfig().isProxyHttpHeaderEnable());
 
         traceContext.cacheApi(blocMethodApiTag);
     }

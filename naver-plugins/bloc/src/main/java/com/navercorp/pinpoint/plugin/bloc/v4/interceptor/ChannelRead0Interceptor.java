@@ -184,11 +184,6 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
                 public String read(String name) {
                     return request.headers().get(name);
                 }
-
-                @Override
-                public void remove(String name) {
-                    request.headers().remove(name);
-                }
             });
 
             if (!spanRecorder.isRoot()) {

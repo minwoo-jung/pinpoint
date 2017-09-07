@@ -156,11 +156,6 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
                 public String read(String name) {
                     return request.getHeader(name);
                 }
-
-                @Override
-                public void remove(String name) {
-                    request.getMimeHeaders().removeHeader(name);
-                }
             });
         } finally {
             SpanEventRecorder spanEventRecorder = trace.traceBlockBegin();
