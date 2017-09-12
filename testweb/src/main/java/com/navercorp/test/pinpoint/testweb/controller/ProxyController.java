@@ -45,7 +45,7 @@ public class ProxyController {
     public String proxy(HttpServletRequest request) {
         StringBuilder buffer = new StringBuilder();
         Enumeration<String> enumeration = request.getHeaderNames();
-        while(enumeration.hasMoreElements()) {
+        while (enumeration.hasMoreElements()) {
             String name = enumeration.nextElement();
             String value = request.getHeader(name);
             buffer.append(name).append("=").append(value).append("<br>\n");
@@ -61,7 +61,7 @@ public class ProxyController {
     @ResponseBody
     public String proxyApacheHttpd(HttpServletRequest request) {
         final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = "t=" + System.currentTimeMillis() + "999" + " D=12345 i=51 b=49";
+        final String proxyHeaderValue = "t=" + System.currentTimeMillis() + "999" + " D=12345 i=51 b=49 app=foo-bar";
 
         request(url, "Pinpoint-ProxyApache", proxyHeaderValue);
         return proxyHeaderValue;
@@ -134,33 +134,7 @@ public class ProxyController {
         String timestamp = String.valueOf(System.currentTimeMillis());
         timestamp = timestamp.substring(0, timestamp.length() - 3) + "." + timestamp.substring(timestamp.length() - 3);
 
-        final String proxyHeaderValue = timestamp + " 0.000";
-
-        request(url, "Pinpoint-ProxyNginx", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/nginx/plus3s")
-    @ResponseBody
-    public String proxyNginxPlus3s(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        String timestamp = String.valueOf(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3));
-        timestamp = timestamp.substring(0, timestamp.length() - 3) + "." + timestamp.substring(timestamp.length() - 3);
-
-        final String proxyHeaderValue = timestamp + " 0.123";
-
-        request(url, "Pinpoint-ProxyNginx", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/nginx/minus3s")
-    @ResponseBody
-    public String proxyNginxMinus3s(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        String timestamp = String.valueOf(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(3));
-        timestamp = timestamp.substring(0, timestamp.length() - 3) + "." + timestamp.substring(timestamp.length() - 3);
-
-        final String proxyHeaderValue = timestamp + " 1.234";
+        final String proxyHeaderValue = "t=" + timestamp + " D=0.000 app=foo-bar";
 
         request(url, "Pinpoint-ProxyNginx", proxyHeaderValue);
         return proxyHeaderValue;
@@ -173,107 +147,17 @@ public class ProxyController {
         String timestamp = String.valueOf(System.currentTimeMillis());
         timestamp = timestamp.substring(0, timestamp.length() - 3) + "." + timestamp.substring(timestamp.length() - 3);
 
-        final String proxyHeaderValue = timestamp;
+        final String proxyHeaderValue = "t=" + timestamp;
 
         request(url, "Pinpoint-ProxyNginx", proxyHeaderValue);
         return proxyHeaderValue;
     }
 
-    @RequestMapping(value = "/proxy/commons")
+    @RequestMapping(value = "/proxy/app")
     @ResponseBody
     public String proxyCommons(HttpServletRequest request) {
         final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis());
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/commons/plus2s")
-    @ResponseBody
-    public String proxyCommonsPlus2s(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(2));
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/commons/plus2m")
-    @ResponseBody
-    public String proxyCommonsPlus2m(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(2));
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/commons/plus2h")
-    @ResponseBody
-    public String proxyCommonsPlus2h(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(2));
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/commons/plus2d")
-    @ResponseBody
-    public String proxyCommonsPlus2d(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2));
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/commons/minus2s")
-    @ResponseBody
-    public String proxyCommonsMinus2s(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(2));
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/commons/minus2m")
-    @ResponseBody
-    public String proxyCommonsMinus2m(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(2));
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/commons/minus2h")
-    @ResponseBody
-    public String proxyCommonsMinus2h(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(2));
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/commons/minus2d")
-    @ResponseBody
-    public String proxyCommonsMinus2d(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(2));
-
-        request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
-        return proxyHeaderValue;
-    }
-
-    @RequestMapping(value = "/proxy/app")
-    @ResponseBody
-    public String proxyApp(HttpServletRequest request) {
-        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/proxy.pinpoint";
-        final String proxyHeaderValue = String.valueOf(System.currentTimeMillis()) + " foo-bar";
+        final String proxyHeaderValue = "t=" + String.valueOf(System.currentTimeMillis()) + " app=foo-bar";
 
         request(url, "Pinpoint-ProxyApp", proxyHeaderValue);
         return proxyHeaderValue;

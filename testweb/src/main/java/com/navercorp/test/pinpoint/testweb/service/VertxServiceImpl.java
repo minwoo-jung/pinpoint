@@ -73,6 +73,7 @@ public class VertxServiceImpl implements VertxService {
 
     @Override
     public void request(int port, String host, String uri) {
+        final long currentTimeMillis = System.currentTimeMillis();
         final HttpClient client = vertx.createHttpClient();
         client.request(HttpMethod.GET, port, host, uri, new Handler<HttpClientResponse>() {
             @Override
@@ -91,7 +92,7 @@ public class VertxServiceImpl implements VertxService {
                     }
                 });
             }
-        }).end();
+        }).putHeader("Pinpoint-ProxyApp", "t=" + currentTimeMillis + " app=foo-bar").end();
     }
 
     @Override
