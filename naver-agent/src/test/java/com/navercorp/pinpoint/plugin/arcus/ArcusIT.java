@@ -121,8 +121,7 @@ public class ArcusIT {
         verifier.verifyTrace(event(ARCUS_FUTURE_GET, getFutureGet));
         verifier.verifyTrace(event(ARCUS, asyncGet, args(KEY)));
         verifier.verifyTrace(event(ARCUS_EHCACHE_FUTURE_GET, frontCacheFutureGet));
-        verifier.verifyTraceCount(0);
-        
+
         get();
         
         verifier.verifyTrace(event(ARCUS, get, args(KEY)));
