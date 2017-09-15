@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import com.nhncorp.lucy.nimm.Charsets;
 import com.nhncorp.lucy.nimm.connector.MessageFuture;
 import com.nhncorp.lucy.nimm.connector.NimmSocket;
 import com.nhncorp.lucy.nimm.connector.agent.provider.AgentInfo;
@@ -73,7 +74,7 @@ public class AnnotatedMgmtAgent extends NimmAgentArchetype implements Management
     public boolean loopMessage() throws Exception {
         NimmSocket localSocket = createSocket();
 
-        byte[] msg = "UlaUlaWowWow".getBytes();
+        byte[] msg = "UlaUlaWowWow".getBytes(Charsets.UTF_8);
         MessageFuture future = localSocket.request(getMySocket(), msg);
 
         future.await();
