@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.nhncorp.lucy.nimm;
+package com.navercorp.test.pinpoint.testweb.util;
 
 import java.nio.charset.Charset;
 

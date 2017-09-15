@@ -17,18 +17,16 @@
 
 package com.navercorp.test.pinpoint.testweb.controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.navercorp.test.pinpoint.testweb.util.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +69,7 @@ public class JdkConnectController {
             connection.connect();
 
             final int responseCode = connection.getResponseCode();
-            final List<String> contents = IOUtils.readLines(connection.getInputStream(), StandardCharsets.UTF_8);
+            final List<String> contents = IOUtils.readLines(connection.getInputStream(), Charsets.UTF_8);
             logger.info("code:{} contents:{}", responseCode, contents);
 
         } catch (IOException e) {
