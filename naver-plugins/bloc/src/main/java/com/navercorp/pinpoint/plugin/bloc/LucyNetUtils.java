@@ -15,7 +15,7 @@
 
 package com.navercorp.pinpoint.plugin.bloc;
 
-import com.navercorp.pinpoint.bootstrap.util.StringUtils;
+import com.navercorp.pinpoint.common.util.StringUtils;
 import com.nhncorp.lucy.net.call.Call;
 import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
 import com.nhncorp.lucy.npc.NpcMessage;
@@ -123,11 +123,10 @@ public class LucyNetUtils {
         }
 
         final StringBuilder paramsAsString = new StringBuilder(64);
-        if (params.size() == 1 && params.get(0) instanceof Map) {
-            Map map = (Map) params.get(0);
+        if (params.size() == 1 && params.get(0) instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) params.get(0);
 
-            Set keySet = map.keySet();
-            for (Object key : keySet) {
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
                 if (paramsAsString.length() == 0) {
                     paramsAsString.append("{ ");
                 } else {
@@ -140,11 +139,13 @@ public class LucyNetUtils {
                 }
 
                 int remainSize = Math.max(maxLimit - paramsAsString.length(), 1);
-                paramsAsString.append(StringUtils.abbreviate(String.valueOf(key), Math.min(eachLimit, remainSize)));
-                paramsAsString.append("=");
+                final String key = String.valueOf(entry.getKey());
+                paramsAsString.append(StringUtils.abbreviate(key, Math.min(eachLimit, remainSize)));
+                paramsAsString.append('=');
 
                 remainSize = Math.max(maxLimit - paramsAsString.length(), 1);
-                paramsAsString.append(StringUtils.abbreviate(String.valueOf(map.get(key)), Math.min(eachLimit, remainSize)));
+                final String value = String.valueOf(entry.getValue());
+                paramsAsString.append(StringUtils.abbreviate(value, Math.min(eachLimit, remainSize)));
             }
             paramsAsString.append(" }");
         } else {
