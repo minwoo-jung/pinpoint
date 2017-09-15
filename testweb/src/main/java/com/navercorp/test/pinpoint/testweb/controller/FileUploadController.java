@@ -17,10 +17,11 @@
 
 package com.navercorp.test.pinpoint.testweb.controller;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -40,82 +41,103 @@ public class FileUploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
+    private static final String TEMP_FILE_LOCATION = getTempFileLocation();
     /**
      * Upload single file using Spring Controller
      */
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
-    public @ResponseBody String uploadFileHandler(@RequestParam("name") String name, @RequestParam("file") MultipartFile file) {
+    public @ResponseBody
+    String uploadFileHandler(@RequestParam("name") String name, @RequestParam("file") MultipartFile file) {
 
-        if (!file.isEmpty()) {
-            try {
-                byte[] bytes = file.getBytes();
-
-                // Creating the directory to store file
-                String rootPath = System.getProperty("catalina.home");
-                File dir = new File(rootPath + File.separator + "tmpFiles");
-                if (!dir.exists())
-                    dir.mkdirs();
-
-                // Create the file on server
-                File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
-                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
-                stream.write(bytes);
-                stream.close();
-
-                logger.info("Server File Location=" + serverFile.getAbsolutePath());
-
-                return "You successfully uploaded file=" + name;
-            } catch (Exception e) {
-                return "You failed to upload " + name + " => " + e.getMessage();
-            }
-        } else {
+        if (file.isEmpty()) {
             return "You failed to upload " + name + " because the file was empty.";
         }
+
+        try {
+            final byte[] bytes = file.getBytes();
+
+            // Creating the directory to store file
+            File dir = getDirectory(TEMP_FILE_LOCATION);
+
+            // Create the file on server
+            File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
+            FileUtils.writeByteArrayToFile(serverFile, bytes);
+
+            logger.info("Server File Location={}", serverFile.getAbsolutePath());
+
+            return "You successfully uploaded file=" + name;
+        } catch (Exception e) {
+            return "You failed to upload " + name + " => " + e.getMessage();
+        }
+
     }
 
     /**
      * Upload multiple file using Spring Controller
      */
     @RequestMapping(value = "/uploadMultipleFile", method = RequestMethod.POST)
-    public @ResponseBody String uploadMultipleFileHandler(@RequestParam("name") String[] names, @RequestParam("file") MultipartFile[] files) {
+    public @ResponseBody
+    String uploadMultipleFileHandler(@RequestParam("name") String[] names, @RequestParam("file") MultipartFile[] files) {
 
-        if (files.length != names.length)
+        if (files.length != names.length) {
             return "Mandatory information missing";
+        }
 
-        String message = "";
+        final File saveDir = getDirectory(TEMP_FILE_LOCATION);
+        final List<String> fileNames = new ArrayList<String>();
         for (int i = 0; i < files.length; i++) {
-            MultipartFile file = files[i];
-            String name = names[i];
+            final MultipartFile file = files[i];
+            final String name = names[i];
             try {
-                byte[] bytes = file.getBytes();
-
-                // Creating the directory to store file
-                String rootPath = System.getProperty("catalina.home");
-                File dir = new File(rootPath + File.separator + "tmpFiles");
-                if (!dir.exists())
-                    dir.mkdirs();
+                final byte[] bytes = file.getBytes();
 
                 // Create the file on server
-                File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
-                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
-                stream.write(bytes);
-                stream.close();
+                File serverFile = new File(saveDir.getAbsolutePath() + File.separator + name);
+                FileUtils.writeByteArrayToFile(serverFile, bytes);
 
-                logger.info("Server File Location=" + serverFile.getAbsolutePath());
+                logger.info("Server File Location={}", serverFile.getAbsolutePath());
 
-                message = message + "You successfully uploaded file=" + name + "<br />";
+                fileNames.add(name);
             } catch (Exception e) {
                 return "You failed to upload " + name + " => " + e.getMessage();
             }
         }
-        return message;
+        return formatFileList(fileNames);
     }
-    
+
+    private String formatFileList(List<String> fileList) {
+        StringBuilder buffer = new StringBuilder(128);
+        for (String file : fileList) {
+            buffer.append("You successfully uploaded file=");
+            buffer.append(file);
+            buffer.append("<br />");
+        }
+
+        return buffer.toString();
+    }
+
+    private static String getTempFileLocation() {
+        // Creating the directory to store file
+        String rootPath = System.getProperty("catalina.home");
+        return rootPath + File.separator + "tmpFiles";
+    }
+
+    private File getDirectory(String pathname) {
+        final File dir = new File(pathname);
+        if (!dir.exists()) {
+            final boolean mkdirs = dir.mkdirs();
+            if (!mkdirs) {
+                logger.warn("{} dir make fail.", pathname);
+            }
+        }
+        return dir;
+    }
+
     @RequestMapping(value = "/uploadView")
     public String uploadView() {
         return "fileUpload/upload";
     }
-    
+
     @RequestMapping(value = "/uploadMultipleView")
     public String uploadMultipleView() {
         return "fileUpload/uploadMultiple";

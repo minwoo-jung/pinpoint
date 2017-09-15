@@ -24,9 +24,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,19 +43,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class JdkConnectController {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @RequestMapping(value = "/jdk/connect")
     @ResponseBody
     public String get(@RequestHeader(value = "Cookie", required = false) String cookie, HttpServletRequest request) {
 
+        final URL url = newURL("http://google.com?foo=bar");
         try {
-            URL url = new URL("http://google.com?foo=bar");
-            try {
-                URLConnection connection = url.openConnection();
-                connection.connect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (MalformedURLException e) {
+            URLConnection connection = url.openConnection();
+            connection.connect();
+        } catch (IOException e) {
+            logger.warn("{} open error", url, e);
+            return "fail";
         }
 
         return "OK";
@@ -60,30 +65,30 @@ public class JdkConnectController {
     @ResponseBody
     public String get2(@RequestHeader(value = "Cookie", required = false) String cookie, HttpServletRequest request) {
 
+        final URL url = newURL("http://google.com?foo=bar");
         try {
-            URL url = new URL("http://google.com?foo=bar");
-            try {
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
 
-                connection.getResponseCode();
+            final int responseCode = connection.getResponseCode();
+            final List<String> contents = IOUtils.readLines(connection.getInputStream(), StandardCharsets.UTF_8);
+            logger.info("code:{} contents:{}", responseCode, contents);
 
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (MalformedURLException e) {
+        } catch (IOException e) {
+            logger.warn("{} open error", url, e);
+            return "fail";
         }
 
+
         return "OK";
+    }
+
+    private URL newURL(String spec) {
+        try {
+            return new URL(spec);
+        } catch (MalformedURLException exception) {
+            throw new IllegalArgumentException("invalid url" + spec, exception);
+        }
     }
 
 }
