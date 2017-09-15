@@ -82,29 +82,33 @@ public class NbasetCpPlugin implements ProfilerPlugin, TransformTemplateAware {
                 InstrumentMethod getConnectionMethod = InstrumentUtils.findMethod(target, "getConnection", "com.nhncorp.nbase_t.krpc.core.KrpcTarget");
                 if (getConnectionMethod == null) {
                     logger.info("can't find getConnection(com.nhncorp.nbase_t.krpc.core.KrpcTarget) method.");
+                } else {
+                    getConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_GET_CONNECTION, NbasetCpConstants.SCOPE);
                 }
-                getConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_GET_CONNECTION, NbasetCpConstants.SCOPE);
 
                 // closeConnection
                 InstrumentMethod closeConnectionMethod = InstrumentUtils.findMethod(target, "closeConnection", "java.net.Socket");
                 if (closeConnectionMethod == null) {
                     logger.info("can't find closeConnection(java.net.Socket) method.");
+                } else {
+                    closeConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_CLOSE_CONNECTION, NbasetCpConstants.SCOPE);
                 }
-                closeConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_CLOSE_CONNECTION, NbasetCpConstants.SCOPE);
 
                 // returnConnection
                 InstrumentMethod returnConnectionMethod = InstrumentUtils.findMethod(target, "returnConnection", "com.nhncorp.nbase_t.krpc.core.KrpcTarget", "java.net.Socket");
                 if (returnConnectionMethod == null) {
                     logger.info("can't find returnConnection(com.nhncorp.nbase_t.krpc.core.KrpcTarget, java.net.Socket) method.");
+                } else {
+                    returnConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_RETURN_CONNECTION, NbasetCpConstants.SCOPE);
                 }
-                returnConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_RETURN_CONNECTION, NbasetCpConstants.SCOPE);
 
                 // closeMethod
                 InstrumentMethod closeMethod = InstrumentUtils.findMethod(target, "close");
                 if (closeMethod == null) {
                     logger.info("can't find close() method.");
+                } else {
+                    closeMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_CLOSE, NbasetCpConstants.SCOPE);
                 }
-                closeMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_CLOSE, NbasetCpConstants.SCOPE);
 
                 return target.toBytecode();
             }
