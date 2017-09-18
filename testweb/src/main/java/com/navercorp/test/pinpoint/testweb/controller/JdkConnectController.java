@@ -18,6 +18,7 @@
 package com.navercorp.test.pinpoint.testweb.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -69,7 +70,7 @@ public class JdkConnectController {
             connection.connect();
 
             final int responseCode = connection.getResponseCode();
-            final List<String> contents = IOUtils.readLines(connection.getInputStream(), Charsets.UTF_8);
+            final List<String> contents = readStream(connection);
             logger.info("code:{} contents:{}", responseCode, contents);
 
         } catch (IOException e) {
@@ -79,6 +80,15 @@ public class JdkConnectController {
 
 
         return "OK";
+    }
+
+    private List<String> readStream(HttpURLConnection connection) throws IOException {
+        final InputStream inputStream = connection.getInputStream();
+        try {
+            return IOUtils.readLines(inputStream, Charsets.UTF_8);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
     }
 
     private URL newURL(String spec) {
