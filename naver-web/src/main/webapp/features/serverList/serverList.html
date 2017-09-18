@@ -9,7 +9,6 @@
 							<span class="glyphicon glyphicon-home"></span> <span class="server-name">{{server.name.split(':')[0]}}</span>
 						</div>
 						<div style="text-align:right" ng-if="server.linkList">
-							<!--button ng-repeat="link in server.linkList" class="btn btn-xs btn-custom" ng-click="openSite($event, link.linkType, link.linkName, link.linkURL)">{{link.linkName}}</button-->
 							<span ng-repeat="link in server.linkList">
 								<a ng-if="link.linkType !== 'button'" style="color:#67BB67" ng-click="openSite($event, link.linkType, link.linkName, link.linkURL)">{{link.linkName}}</a>
 								<label ng-if="link.linkType === 'button'" style="color:#67BB67">{{link.linkName}} <input type="checkbox" name="{{link.linkURL}}" ng-click="openSite($event, link.linkType, link.linkName, link.linkURL)"/></label>
@@ -23,20 +22,6 @@
 									<span>{{instance.name}}</span>
 								</label>
 								<a style="float:right" ng-click="openInspector($event, instance.name)">Inspector</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="server-collection _link" ng-hide="bIsNode" >
-					<li>
-						<ul>
-							<li ng-repeat="(name, histogram) in linkList | orderBy:'name'">
-								<label>
-									<input type="radio" name="selectedServer" value="{{name}}" ng-click="selectServer(name)" ng-checked="$first">
-									<span class="glyphicon glyphicon-hdd" style="color:{{hasError(histogram)}}"></span>
-									<span>{{name}}</span>
-								</label>
-								<a style="float:right" ng-click="openInspector($event, name)">Inspector</a>
 							</li>
 						</ul>
 					</li>
