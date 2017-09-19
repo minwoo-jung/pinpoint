@@ -27,7 +27,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
  */
 public class RedisClusterPipelineSetServerMethodInterceptor extends GatewayServerMetadataReadInterceptor {
 
-    public RedisClusterPipelineSetServerMethodInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
-        super(traceContext, methodDescriptor);
+    public RedisClusterPipelineSetServerMethodInterceptor() {
+        super();
     }
 }

@@ -34,7 +34,7 @@ public class GatewayConstructorInterceptor implements AroundInterceptor {
     private final boolean isDebug = logger.isDebugEnabled();
 
 
-    public GatewayConstructorInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
+    public GatewayConstructorInterceptor() {
     }
 
     @Override

@@ -34,7 +34,7 @@ public class GatewayClientConstructorInterceptor implements AroundInterceptor {
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
-    public GatewayClientConstructorInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
+    public GatewayClientConstructorInterceptor() {
     }
 
     @Override
