@@ -37,10 +37,8 @@ public abstract class GatewayServerMetadataReadInterceptor implements AroundInte
     protected final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     protected final boolean isDebug = logger.isDebugEnabled();
 
-    protected MethodDescriptor methodDescriptor;
 
-    public GatewayServerMetadataReadInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor) {
-        this.methodDescriptor = methodDescriptor;
+    public GatewayServerMetadataReadInterceptor() {
     }
 
     @Override

@@ -40,7 +40,7 @@ public class ServiceAgent extends NimmAgentArchetype implements ServiceAgentAPI 
     }
 
 
-    private class Worker extends NimmAbstractWorker {
+    private static class Worker extends NimmAbstractWorker {
 
         @Override
         public void destroy() {
@@ -57,8 +57,7 @@ public class ServiceAgent extends NimmAgentArchetype implements ServiceAgentAPI 
         }
 
         @Override
-        protected ByteBuffer responseMessage(NimmMessage request)
-                throws Exception {
+        protected ByteBuffer responseMessage(NimmMessage request) throws Exception {
             return request.getMessage();
         }
 

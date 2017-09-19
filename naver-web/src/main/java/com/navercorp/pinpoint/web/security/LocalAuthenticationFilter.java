@@ -43,7 +43,7 @@ public class LocalAuthenticationFilter extends OncePerRequestFilter {
     }
     
     
-    final class CustomHttpServletRequest extends HttpServletRequestWrapper {
+    private static class CustomHttpServletRequest extends HttpServletRequestWrapper {
         private final Map<String, String> headers;
      
         public CustomHttpServletRequest(HttpServletRequest request){
