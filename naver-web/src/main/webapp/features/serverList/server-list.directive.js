@@ -21,6 +21,7 @@
 					var bInitialized = false;
 					var bAjaxLoading = false;
 					var $element = $(element);
+					var oChartYMax;
 					scope.bIsNode = true;
 					scope.hasScatter = false;
 					scope.selectedAgent = "";
@@ -33,11 +34,11 @@
 						scope.selectedAgent = instanceName;
 						scope.$broadcast('changedCurrentAgent.forServerList', instanceName );
 						if ( bInitialized ) {
-							scope.$broadcast('responseTimeSummaryChartDirective.updateData.forServerList', histogram);
-							scope.$broadcast('loadChartDirective.updateData.forServerList', timeSeriesHistogram);
+							scope.$broadcast('responseTimeSummaryChartDirective.updateData.forServerList', histogram, oChartYMax["responseSummaryChart"]);
+							scope.$broadcast('loadChartDirective.updateData.forServerList', timeSeriesHistogram, oChartYMax["loadChart"]);
 						} else {
-							scope.$broadcast('responseTimeSummaryChartDirective.initAndRenderWithData.forServerList', histogram, '360px', '150px', false, true);
-							scope.$broadcast('loadChartDirective.initAndRenderWithData.forServerList', timeSeriesHistogram, '360px', '200px', false, true);
+							scope.$broadcast('responseTimeSummaryChartDirective.initAndRenderWithData.forServerList', histogram, oChartYMax["responseSummaryChart"], '360px', '150px', false, true);
+							scope.$broadcast('loadChartDirective.initAndRenderWithData.forServerList', timeSeriesHistogram, oChartYMax["loadChart"], '360px', '220px', false, true);
 							bInitialized = true;
 						}
 					}
@@ -181,12 +182,13 @@
 						scope.$broadcast('scatterDirective.initialize.forServerList', oNavbarVoService);
 						scope.hideLayer( 0 );
 					});
-					scope.$on('serverListDirective.show', function ( event, bIsNodeServer, node, serverHistogramData, oNavbarVoService ) {
+					scope.$on('serverListDirective.show', function ( event, bIsNodeServer, node, serverHistogramData, chartMax, oNavbarVoService ) {
 						if ( bVisible === true ) {
 							scope.hideLayer();
 							return;
 						}
 						bVisible = true;
+						oChartYMax = chartMax;
 						if ( angular.isUndefined( scope.node ) || scope.node === null || ( scope.node.key !== node.key ) ) {
 							setData(bIsNodeServer, node, serverHistogramData, oNavbarVoService);
 						}
