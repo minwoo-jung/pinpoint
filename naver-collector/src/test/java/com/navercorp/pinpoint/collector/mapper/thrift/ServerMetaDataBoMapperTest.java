@@ -46,7 +46,7 @@ public class ServerMetaDataBoMapperTest {
         assertEquals(tServerMetaData.getServerInfo(), serverMetaData.getServerInfo());
         assertEquals(tServerMetaData.getVmArgs(), serverMetaData.getVmArgs());
         assertEquals(tServiceInfos.size(), serviceInfos.size());
-        for (int i = 0; i < tServiceInfos.size(); ++i) {
+        for (int i = 0; i < tServiceInfos.size(); i++) {
             assertEquals(tServiceInfos.get(i).getServiceName(), serviceInfos.get(i).getServiceName());
             assertEquals(tServiceInfos.get(i).getServiceLibs(), serviceInfos.get(i).getServiceLibs());
         }

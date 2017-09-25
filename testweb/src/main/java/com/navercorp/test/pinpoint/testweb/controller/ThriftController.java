@@ -294,7 +294,7 @@ public class ThriftController {
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
             EchoService.Client client = new EchoService.Client(protocol);
-            for (int i = 0; i < loopCnt; ++i) {
+            for (int i = 0; i < loopCnt; i++) {
               try {
                   if ((i+1)%5 == 0) {
                       result.add("unexisting = " + client.unexisting(MESSAGE));
@@ -369,7 +369,7 @@ public class ThriftController {
                     latch.countDown();
                 }
             }
-            for (int i = 0; i < loopCnt; ++i) {
+            for (int i = 0; i < loopCnt; i++) {
                 CountDownLatch latch = new CountDownLatch(1);
                 if ((i+1)%5 == 0) {
                     UnexistingAsyncMethodCallback unexistingCallback = new UnexistingAsyncMethodCallback(latch);

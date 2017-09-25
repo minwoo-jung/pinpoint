@@ -146,7 +146,7 @@ public class SpanServiceTest {
         List<SpanAlign> spanAligns = spanResult.getCallTree().values();
         List<CallStackVerifier.CallStackElement> verifierElements = callStackVerifier.values();
         Assert.assertEquals(verifierElements.size(), spanAligns.size());
-        for (int i = 0; i < spanAligns.size(); ++i) {
+        for (int i = 0; i < spanAligns.size(); i++) {
             SpanAlign spanAlign = spanAligns.get(i);
             logSpanAlign(spanAlign);
             CallStackVerifier.CallStackElement verifierElement = verifierElements.get(i);
@@ -158,7 +158,7 @@ public class SpanServiceTest {
         String indent = "  ";
         StringBuilder whitespaceBuilder = new StringBuilder(indent);
         int depth = spanAlign.getDepth();
-        for (int i = 0; i < depth; ++i) {
+        for (int i = 0; i < depth; i++) {
             whitespaceBuilder.append(indent);
         }
         logger.info("{}{}, spanId:{}, depth:{}, spanAlign:{}",

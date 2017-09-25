@@ -87,7 +87,7 @@ public class TAgentStatBatchBuilder {
         agentStatBatch.setAgentId(this.agentId);
         List<TAgentStat> agentStats = new ArrayList<>(this.numStats);
         long timestamp = this.initialTimestamp;
-        for (int i = 0; i < this.numStats; ++i) {
+        for (int i = 0; i < this.numStats; i++) {
             TAgentStat agentStat = new TAgentStat();
             agentStat.setAgentId(this.agentId);
             agentStat.setTimestamp(timestamp + (collectInterval * i));
