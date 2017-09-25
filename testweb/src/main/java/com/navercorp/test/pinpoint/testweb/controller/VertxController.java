@@ -129,6 +129,13 @@ public class VertxController {
         vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/connection/close");
     }
 
+    @RequestMapping(value="/vertx/server/error")
+    @ResponseBody
+    public void serverError(final HttpServletRequest request) throws Exception {
+        vertxService.request(VertxService.LISTEN_PORT, request.getLocalAddr(), "/unknown");
+    }
+
+
     private String getLocalAddress(final HttpServletRequest request) {
         return request.getLocalAddr() + ":" + request.getLocalPort();
     }

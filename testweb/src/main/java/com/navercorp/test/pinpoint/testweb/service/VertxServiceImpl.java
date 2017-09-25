@@ -4,16 +4,12 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.http.HttpConnection;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpVersion;
-import io.vertx.core.net.impl.VertxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -167,7 +163,7 @@ public class VertxServiceImpl implements VertxService {
             } else if (r.uri().equals("/runOnContext/request")) {
                 runOnContextRequest(r);
             } else {
-                r.response().end("Unknown request. " + r.uri());
+                r.response().setStatusCode(500).end("Unknown request. " + r.uri());
             }
         }).listen(VertxService.LISTEN_PORT, result -> {
             if (result.succeeded()) {
