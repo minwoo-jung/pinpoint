@@ -30,6 +30,9 @@
 
     <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter"/>
 
+    <bean id="agentDownloadInfoDao" class="com.navercorp.pinpoint.web.dao.rest.NaverAgentDownloadInfoDao">
+    </bean>
+
     <task:scheduled-tasks>
         <task:scheduled ref="nssFilter" method="update"
                         fixed-rate="#{pinpointWebProps['nss.update.interval'] ?: 60000}"/>
