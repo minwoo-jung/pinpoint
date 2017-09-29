@@ -18,6 +18,9 @@
 			"view": "Authentication & Alarm",
 			"value": "application"
 		}, {
+			"view": "Installation",
+			"value": "installation"
+		}, {
 			"view": "Help",
 			"value": "help"
 		}]

@@ -48,9 +48,13 @@
 						desc: "heap의 사용률이 임계치를 초과한 경우 알람이 전송된다."
 					},{
 						name: "JVM_CPU_USAGE_RATE",
-						desc: "applicaiton의 CPU 사용률이 임계치를 초과한 경우 알람이 전송된다."
+						desc: "application의 CPU 사용률이 임계치를 초과한 경우 알람이 전송된다."
 					}]
 				}]
+			},
+			installation: {
+				desc: "* Application Name 과 Agent Id의 중복 여부를 확인 할 수 있습니다.",
+				lengthGuide: "1 ~ {{MAX_CHAR}}자의 문자를 입력하세요."
 			}
 		},	
 		navbar : {
