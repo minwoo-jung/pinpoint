@@ -19,7 +19,6 @@
 				link: function(scope, element) {
 					var bVisible = false;
 					var bInitialized = false;
-					var bAjaxLoading = false;
 					var $element = $(element);
 					var oChartYMax;
 					scope.bIsNode = true;
@@ -88,7 +87,6 @@
 							"right": -386
 						}, delay, function() {
 							bVisible = false;
-							hideNmsLayer();
 						});
 					};
 					scope.hasError = function( instanceName ) {
@@ -107,73 +105,13 @@
 							showChart( instanceName, scope.node.agentHistogram[instanceName], scope.node.agentTimeSeriesHistogram[instanceName] );
 						}
 					};
-
-					// <!--for NMS
-					scope.showNMSList = false;
-					var $nms = $element.find(".nms");
-					var compiledTemplate = Handlebars.compile([
-						'<div>',
-						'{{#each datum}}',
-							'<div>',
-							'{{#each this}}',
-								'<h4 style="color:#C36B05;padding-left:2px"> <span class="glyphicon glyphicon-globe" aria-hidden="true"></span> {{name}} - {{ip}} : {{port}}</h4>',
-								'{{#each image}}',
-									'<dl>',
-										'<dt style="padding-left:2px"> <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span> {{title}}</dt>',
-										'<dd><a href="{{url}}" target="_blank"><img src="{{url}}" width="390" height="146"></a></dd>',
-									'</dl>',
-								'{{/each}}',
-							'{{/each}}',
-							'</div>',
-						'{{/each}}',
-						'</div>'
-					].join(''));
-					function hideNmsLayer() {
-						uncheckAllNms();
-						$nms.parent().scrollTop(0);
-						scope.showNMSList = false;
-						bAjaxLoading = false;
-					}
-					function uncheckAllNms( current ) {
-						$element.find( "input[type=checkbox]" ).each(function(index, ele) {
-							if ( angular.isDefined( current ) && current == $(ele).prop("name") ) {
-							} else {
-								$(ele).removeAttr("checked");
-							}
-						});
-					}
 					scope.openSite = function( $event, type, name, url ) {
 						switch( type ) {
 							case "aTag":
 								$window.open( url );
 								break;
-							case "button":
-								if ( bAjaxLoading === true ) return;
-								var value = url;
-								bAjaxLoading = true;
-								if ( scope.showNMSList === true && $nms.attr("data-server") === value ) {
-									hideNmsLayer();
-								} else {
-									uncheckAllNms( url );
-
-									$nms.attr("data-server", value);
-									$http.get( value ).success( function( result ) {
-										$nms.empty();
-										if ( angular.isDefined(result.errorCode) ) {
-											$nms.html('<h4 style="text-align:center;padding-top:20%;text-decoration:red;text-decoration-color:orange">' + result.errorMessage + '</h4>');
-										} else {
-											$nms.html( compiledTemplate({ "datum": result }) );
-										}
-										scope.showNMSList = true;
-										bAjaxLoading = false;
-									}).error( function() {
-
-									});
-								}
-								break;
 						}
 					};
-					// for NMS -->
 					scope.$on('serverListDirective.initialize', function ( event, oNavbarVoService ) {
 						scope.node = null;
 						scope.oNavbarVoService = null;
