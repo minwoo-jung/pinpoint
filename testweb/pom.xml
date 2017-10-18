@@ -392,6 +392,13 @@
             <version>3.3.3</version>
         </dependency>
 
+        <!-- hystrix (+ rxjava) -->
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-core</artifactId>
+            <version>1.5.12</version>
+        </dependency>
+
     </dependencies>
 
     <build>
