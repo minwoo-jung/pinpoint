@@ -23,6 +23,10 @@
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-flink</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.nhncorp.nelo2</groupId>
+            <artifactId>nelo2-java-sdk-log4j</artifactId>
+        </dependency>
     </dependencies>
 
 
