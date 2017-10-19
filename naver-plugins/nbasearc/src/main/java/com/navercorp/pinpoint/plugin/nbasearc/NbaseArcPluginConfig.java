@@ -18,28 +18,29 @@ package com.navercorp.pinpoint.plugin.nbasearc;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 
 /**
- * 
  * @author jaehong.kim
- *
  */
 public class NbaseArcPluginConfig {
-
-    private final boolean enabled;
-    private final boolean pipelineEnabled;
+    private final boolean enable;
+    private final boolean pipeline;
     private final boolean io;
 
     public NbaseArcPluginConfig(ProfilerConfig src) {
-        enabled = src.readBoolean("profiler.nbase_arc", true);
-        pipelineEnabled = src.readBoolean("profiler.nbase_arc.pipeline", true);
-        io = src.readBoolean("profiler.nbase_arc.io", true);
+        if (src.readBoolean("profiler.nbase_arc", true)) {
+            this.enable = src.readBoolean("profiler.nbase_arc.enable", true);
+        } else {
+            this.enable = false;
+        }
+        this.pipeline = src.readBoolean("profiler.nbase_arc.pipeline", true);
+        this.io = src.readBoolean("profiler.nbase_arc.io", true);
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isEnable() {
+        return enable;
     }
 
-    public boolean isPipelineEnabled() {
-        return pipelineEnabled;
+    public boolean isPipeline() {
+        return pipeline;
     }
 
     public boolean isIo() {
@@ -49,10 +50,10 @@ public class NbaseArcPluginConfig {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("{enabled=");
-        builder.append(enabled);
-        builder.append(", pipelineEnabled=");
-        builder.append(pipelineEnabled);
+        builder.append("{enable=");
+        builder.append(enable);
+        builder.append(", pipeline=");
+        builder.append(pipeline);
         builder.append(", io=");
         builder.append(io);
         builder.append("}");

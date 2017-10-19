@@ -28,10 +28,9 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
+import com.navercorp.pinpoint.plugin.nbasearc.GatewayClientMethodNameFilter;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcPluginConfig;
-import com.navercorp.pinpoint.plugin.nbasearc.RedisClusterMethodNames;
-import com.navercorp.pinpoint.plugin.nbasearc.RedisClusterPipelineMethodNames;
 
 import java.security.ProtectionDomain;
 
@@ -44,52 +43,50 @@ import static com.navercorp.pinpoint.common.util.VarArgs.va;
  */
 public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
+    private final GatewayClientMethodNameFilter methodNameFilter = new GatewayClientMethodNameFilter();
 
     private TransformTemplate transformTemplate;
 
     @Override
     public void setup(ProfilerPluginSetupContext context) {
         final NbaseArcPluginConfig config = new NbaseArcPluginConfig(context.getConfig());
-        final boolean enabled = config.isEnabled();
-        final boolean pipelineEnabled = config.isPipelineEnabled();
-        final boolean io = config.isIo();
-
-        if (enabled || pipelineEnabled) {
-            logger.info("Enable NbaseArcPlugin. version range=[1.5,)");
-            addGatewayClientClassEditor(config);
-            addRedisConnectionClassEditor();
-            if (io) {
-                addRedisProtocolClassEditor();
+        if (!config.isEnable()) {
+            if (logger.isInfoEnabled()) {
+                logger.info("Disable NbaseArcPlugin. version range=[1.5,) config={}", config);
             }
-            addGatewayServerClassEditor(config);
-            addGatewayClassEditor();
+            return;
+        }
+        if (logger.isInfoEnabled()) {
+            logger.info("Enable NbaseArcPlugin. version range=[1.5,) config={}", config);
+        }
 
-            if (enabled) {
-                addRedisClusterClassEditor();
-            }
-
-            if (pipelineEnabled) {
-                addRedisClusterPipeline(config);
-            }
-        } else {
-            logger.info("Disable NbaseArcPlugin. version range=[1.5,)");
+        addGatewayClient(config);
+        addRedisConnection();
+        if (config.isIo()) {
+            addRedisProtocol();
+        }
+        addGatewayServer(config);
+        addGateway();
+        addRedisCluster();
+        if (config.isPipeline()) {
+            addRedisClusterPipeline(config);
         }
     }
 
-    private void addGatewayClientClassEditor(final NbaseArcPluginConfig config) {
+    private void addGatewayClient(final NbaseArcPluginConfig config) {
         transformTemplate.transform("com.navercorp.redis.cluster.gateway.GatewayClient", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(NbaseArcConstants.DESTINATION_ID_ACCESSOR);
 
-                InstrumentMethod constructorMethod = target.getConstructor("com.navercorp.redis.cluster.gateway.GatewayConfig");
+                final InstrumentMethod constructorMethod = target.getConstructor("com.navercorp.redis.cluster.gateway.GatewayConfig");
                 if (constructorMethod != null) {
                     constructorMethod.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.open.interceptor.GatewayClientConstructorInterceptor");
                 }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(MethodFilters.name(RedisClusterMethodNames.get()), MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(methodNameFilter, MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
                     try {
                         method.addScopedInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayClientMethodInterceptor", va(config.isIo()), NbaseArcConstants.NBASE_ARC_SCOPE);
                     } catch (Exception e) {
@@ -108,20 +105,20 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
         });
     }
 
-    private void addRedisConnectionClassEditor() {
+    private void addRedisConnection() {
         transformTemplate.transform("com.navercorp.redis.cluster.connection.RedisConnection", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(NbaseArcConstants.END_POINT_ACCESSOR);
 
-                InstrumentMethod constructorEditorBuilderArg1 = target.getConstructor("java.lang.String");
+                final InstrumentMethod constructorEditorBuilderArg1 = target.getConstructor("java.lang.String");
                 if (constructorEditorBuilderArg1 != null) {
                     constructorEditorBuilderArg1.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionConstructorInterceptor");
                 }
 
-                InstrumentMethod constructorEditorBuilderArg2 = target.getConstructor("java.lang.String", "int");
+                final InstrumentMethod constructorEditorBuilderArg2 = target.getConstructor("java.lang.String", "int");
                 if (constructorEditorBuilderArg2 != null) {
                     constructorEditorBuilderArg2.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisConnectionConstructorInterceptor");
                 }
@@ -135,12 +132,12 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
         });
     }
 
-    private void addRedisProtocolClassEditor() {
+    private void addRedisProtocol() {
         transformTemplate.transform("com.navercorp.redis.cluster.connection.RedisProtocol", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
 
                 for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.name("sendCommand", "read"))) {
                     method.addScopedInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisProtocolSendCommandAndReadMethodInterceptor", NbaseArcConstants.NBASE_ARC_SCOPE, ExecutionPolicy.INTERNAL);
@@ -151,15 +148,15 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
         });
     }
 
-    private void addGatewayServerClassEditor(NbaseArcPluginConfig config) {
+    private void addGatewayServer(NbaseArcPluginConfig config) {
         transformTemplate.transform("com.navercorp.redis.cluster.gateway.GatewayServer", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(NbaseArcConstants.DESTINATION_ID_ACCESSOR);
 
-                InstrumentMethod method = target.getDeclaredMethod("getResource");
+                final InstrumentMethod method = target.getDeclaredMethod("getResource");
                 if (method != null) {
                     method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.GatewayServerGetResourceMethodInterceptor");
                 }
@@ -169,15 +166,15 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
         });
     }
 
-    private void addGatewayClassEditor() {
+    private void addGateway() {
         transformTemplate.transform("com.navercorp.redis.cluster.gateway.Gateway", new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(NbaseArcConstants.DESTINATION_ID_ACCESSOR);
 
-                InstrumentMethod constructor = target.getConstructor("com.navercorp.redis.cluster.gateway.GatewayConfig");
+                final InstrumentMethod constructor = target.getConstructor("com.navercorp.redis.cluster.gateway.GatewayConfig");
                 if (constructor != null) {
                     constructor.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.open.interceptor.GatewayConstructorInterceptor");
                 }
@@ -191,45 +188,45 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
         });
     }
 
-    private void addRedisClusterClassEditor() {
-        addRedisClusterExtendedClassEditor("com.navercorp.redis.cluster.triples.BinaryTriplesRedisCluster", new TransformHandler() {
+    private void addRedisCluster() {
+        addRedisClusterExtends("com.navercorp.redis.cluster.triples.BinaryTriplesRedisCluster", new TransformHandler() {
             @Override
             public void handle(InstrumentClass target) throws InstrumentException {
                 target.addField(NbaseArcConstants.DESTINATION_ID_ACCESSOR);
                 target.addField(NbaseArcConstants.END_POINT_ACCESSOR);
             }
         });
-        addRedisClusterExtendedClassEditor("com.navercorp.redis.cluster.triples.TriplesRedisCluster", null);
-        addRedisClusterExtendedClassEditor("com.navercorp.redis.cluster.BinaryRedisCluster", null);
-        addRedisClusterExtendedClassEditor("com.navercorp.redis.cluster.RedisCluster", null);
+        addRedisClusterExtends("com.navercorp.redis.cluster.triples.TriplesRedisCluster", null);
+        addRedisClusterExtends("com.navercorp.redis.cluster.BinaryRedisCluster", null);
+        addRedisClusterExtends("com.navercorp.redis.cluster.RedisCluster", null);
     }
 
-    private void addRedisClusterExtendedClassEditor(String targetClassName, final TransformHandler handler) {
+    private void addRedisClusterExtends(String targetClassName, final TransformHandler handler) {
         transformTemplate.transform(targetClassName, new TransformCallback() {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 if (handler != null) {
                     handler.handle(target);
                 }
 
-                InstrumentMethod constructorEditorBuilderArg1 = target.getConstructor("java.lang.String");
+                final InstrumentMethod constructorEditorBuilderArg1 = target.getConstructor("java.lang.String");
                 if (constructorEditorBuilderArg1 != null) {
                     constructorEditorBuilderArg1.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
                 }
 
-                InstrumentMethod constructorEditorBuilderArg2 = target.getConstructor("java.lang.String", "int");
+                final InstrumentMethod constructorEditorBuilderArg2 = target.getConstructor("java.lang.String", "int");
                 if (constructorEditorBuilderArg2 != null) {
                     constructorEditorBuilderArg2.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
                 }
 
-                InstrumentMethod constructorEditorBuilderArg3 = target.getConstructor("java.lang.String", "int", "int");
+                final InstrumentMethod constructorEditorBuilderArg3 = target.getConstructor("java.lang.String", "int", "int");
                 if (constructorEditorBuilderArg3 != null) {
                     constructorEditorBuilderArg3.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterConstructorInterceptor");
                 }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(MethodFilters.name(RedisClusterMethodNames.get()), MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(methodNameFilter, MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
                     try {
                         method.addScopedInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterMethodInterceptor", NbaseArcConstants.NBASE_ARC_SCOPE);
                     } catch (Exception e) {
@@ -249,12 +246,12 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
 
             @Override
             public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
                 target.addField(NbaseArcConstants.DESTINATION_ID_ACCESSOR);
                 target.addField(NbaseArcConstants.END_POINT_ACCESSOR);
 
                 if (target.hasConstructor("com.navercorp.redis.cluster.gateway.GatewayServer")) {
-                    InstrumentMethod constructor = target.getConstructor("com.navercorp.redis.cluster.gateway.GatewayServer");
+                    final InstrumentMethod constructor = target.getConstructor("com.navercorp.redis.cluster.gateway.GatewayServer");
                     constructor.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.open.interceptor.RedisClusterPipelineConstructorInterceptor");
                 }
 
@@ -262,7 +259,7 @@ public class NbaseArcPlugin implements ProfilerPlugin, TransformTemplateAware {
                     method.addInterceptor("com.navercorp.pinpoint.plugin.nbasearc.open.interceptor.RedisClusterPipelineSetServerMethodInterceptor");
                 }
 
-                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(MethodFilters.name(RedisClusterPipelineMethodNames.get()), MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
+                for (InstrumentMethod method : target.getDeclaredMethods(MethodFilters.chain(methodNameFilter, MethodFilters.modifierNot(MethodFilters.SYNTHETIC)))) {
                     try {
                         method.addScopedInterceptor("com.navercorp.pinpoint.plugin.nbasearc.interceptor.RedisClusterPipelineMethodInterceptor", va(config.isIo()), NbaseArcConstants.NBASE_ARC_SCOPE);
                     } catch (Exception e) {

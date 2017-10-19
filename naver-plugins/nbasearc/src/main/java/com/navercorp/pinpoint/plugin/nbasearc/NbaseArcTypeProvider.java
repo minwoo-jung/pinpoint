@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc;
 
+import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.AnnotationKeyMatchers;
 import com.navercorp.pinpoint.common.trace.TraceMetadataProvider;
 import com.navercorp.pinpoint.common.trace.TraceMetadataSetupContext;
@@ -28,7 +29,7 @@ public class NbaseArcTypeProvider implements TraceMetadataProvider {
 
     @Override
     public void setup(TraceMetadataSetupContext context) {
-        context.addServiceType(NbaseArcConstants.NBASE_ARC, AnnotationKeyMatchers.ARGS_MATCHER);
+        context.addServiceType(NbaseArcConstants.NBASE_ARC, AnnotationKeyMatchers.exact(AnnotationKey.REDIS_IO));
         context.addServiceType(NbaseArcConstants.NBASE_ARC_INTERNAL);
     }
 }

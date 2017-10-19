@@ -22,9 +22,9 @@ import com.navercorp.pinpoint.bootstrap.interceptor.SpanEventSimpleAroundInterce
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScopeInvocation;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.common.util.IntBooleanIntBooleanValue;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContext;
 import com.navercorp.pinpoint.plugin.nbasearc.CommandContextFactory;
-import com.navercorp.pinpoint.plugin.nbasearc.CommandContextFormatter;
 import com.navercorp.pinpoint.plugin.nbasearc.DestinationIdAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.EndPointAccessor;
 import com.navercorp.pinpoint.plugin.nbasearc.NbaseArcConstants;
@@ -74,10 +74,7 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
             }
 
             endPoint = commandContext.getEndPoint();
-            if (io) {
-                final String commandString = format(commandContext);
-                recorder.recordAttribute(AnnotationKey.ARGS0, commandString);
-            }
+            recordIo(recorder, commandContext);
             // clear
             invocation.removeAttachment();
         }
@@ -89,8 +86,11 @@ public class RedisClusterPipelineMethodInterceptor extends SpanEventSimpleAround
         recorder.recordException(throwable);
     }
 
-    private String format(CommandContext commandContext) {
-        return CommandContextFormatter.format(commandContext);
+    private void recordIo(SpanEventRecorder recorder, CommandContext callContext) {
+        if (io) {
+            IntBooleanIntBooleanValue value = new IntBooleanIntBooleanValue((int) callContext.getWriteElapsedTime(), callContext.isWriteFail(), (int) callContext.getReadElapsedTime(), callContext.isReadFail());
+            recorder.recordAttribute(AnnotationKey.REDIS_IO, value);
+        }
     }
 
     private Object getAttachment(InterceptorScopeInvocation invocation) {
