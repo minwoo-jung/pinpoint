@@ -125,6 +125,5 @@ public class ArcusIT {
         get();
         
         verifier.verifyTrace(event(ARCUS, get, args(KEY)));
-        verifier.verifyTraceCount(0);
     }
 }
