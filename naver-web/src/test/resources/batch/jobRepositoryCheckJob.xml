@@ -8,7 +8,7 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <job id="jobRepositoryCheckJob" xmlns="http://www.springframework.org/schema/batch" >
-        <step id="step1" xmlns="http://www.springframework.org/schema/batch" >
+        <step id="jobRepositoryCheckStep" xmlns="http://www.springframework.org/schema/batch" >
             <tasklet ref="jobRepositoryCheckTasklet"/>
         </step>
     </job>
