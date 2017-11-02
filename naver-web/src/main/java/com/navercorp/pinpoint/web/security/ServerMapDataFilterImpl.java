@@ -76,7 +76,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
     
     @Override
     public boolean filter(WebSocketSession webSocketSession, RequestMessage requestMessage) {
-        String applicationId = (String)requestMessage.getParams().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY);
+        String applicationId = (String)requestMessage.getParameters().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY);
         PinpointAuthentication authentication = (PinpointAuthentication)webSocketSession.getPrincipal();
         
         return isAuthorized(authentication, applicationId) ? false : true;
@@ -239,6 +239,6 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
     
     @Override
     public CloseStatus getCloseStatus(RequestMessage requestMessage) {
-        return CloseStatus.POLICY_VIOLATION.withReason("you don't have authorization for " + requestMessage.getParams().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY) + ".");
+        return CloseStatus.POLICY_VIOLATION.withReason("you don't have authorization for " + requestMessage.getParameters().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY) + ".");
     }
 }
