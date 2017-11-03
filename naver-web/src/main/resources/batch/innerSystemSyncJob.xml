@@ -36,7 +36,7 @@
 					employeeno AS userId,
 					name,
 					team AS department,
-					telphone AS phoneNumber,
+					telphone_enc AS phoneNumber,
 					email
 				FROM im_tbl_direct_user
                 WHERE retirechk  <> '002'

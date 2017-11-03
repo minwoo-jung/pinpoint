@@ -33,10 +33,6 @@ public class UserWriter implements ItemWriter<User> {
 	
 	@Override
 	public void write(List<? extends User> users) throws Exception {
-	    for(User user : users) {
-	        user.removeHyphenForPhoneNumber();
-	    }
-	    
 		userDao.insertUserList((List<User>) users);
 	}
 }
