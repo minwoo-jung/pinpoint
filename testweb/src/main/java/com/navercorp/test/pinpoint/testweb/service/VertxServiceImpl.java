@@ -10,6 +10,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpVersion;
+import io.vertx.ext.web.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -71,6 +72,7 @@ public class VertxServiceImpl implements VertxService {
     public void request(int port, String host, String uri) {
         final long currentTimeMillis = System.currentTimeMillis();
         final HttpClient client = vertx.createHttpClient();
+
         client.request(HttpMethod.GET, port, host, uri, new Handler<HttpClientResponse>() {
             @Override
             public void handle(HttpClientResponse httpClientResponse) {
@@ -114,6 +116,17 @@ public class VertxServiceImpl implements VertxService {
         }).putHeader("content-length", String.valueOf(body.length())).write(body).end();
     }
 
+    @Override
+    public void requestAbs(String url) {
+        final HttpClient client = vertx.createHttpClient();
+        client.requestAbs(HttpMethod.GET, url).handler(new Handler<HttpClientResponse>() {
+            @Override
+            public void handle(HttpClientResponse httpClientResponse) {
+                logger.debug("Response {} {}", httpClientResponse.statusCode(), httpClientResponse.statusMessage());
+            }
+        }).end();
+    }
+
     public void chunk(int port, String host, String uri, String body) {
         final HttpClient client = vertx.createHttpClient();
         client.request(HttpMethod.POST, port, host, uri, new Handler<HttpClientResponse>() {
@@ -139,33 +152,43 @@ public class VertxServiceImpl implements VertxService {
     private void createHttpServer() {
         HttpServerOptions options = new HttpServerOptions();
         options.setIdleTimeout(1000);
-        vertx.createHttpServer().requestHandler(r -> {
-            if (r.uri().equals("/")) {
-                r.response().end("Welcome pinpoint vert.x HTTP server test.");
-            } else if (r.uri().equals("/request")) {
-                request(80, "naver.com", "/");
-                r.response().end("Request.");
-            } else if (r.uri().equals("/noresponse")) {
-            } else if (r.uri().equals("/close")) {
-                r.response().close();
-            } else if (r.uri().equals("/connection/close")) {
-                r.connection().close();
-            } else if (r.uri().equals("/executeBlocking")) {
-                executeBlocking(r, 1);
-            } else if (r.uri().equals("/executeBlocking/wait3s")) {
-                executeBlocking(r, 3);
-            } else if (r.uri().equals("/executeBlocking/request")) {
-                executeBlockingRequest(r);
-            } else if (r.uri().equals("/runOnContext")) {
-                runOnContext(r, 1);
-            } else if (r.uri().equals("/runOnContext/wait3s")) {
-                runOnContext(r, 3);
-            } else if (r.uri().equals("/runOnContext/request")) {
-                runOnContextRequest(r);
-            } else {
-                r.response().setStatusCode(500).end("Unknown request. " + r.uri());
-            }
-        }).listen(VertxService.LISTEN_PORT, result -> {
+        Router router = Router.router(vertx);
+
+        router.get("/").handler(routingContext -> {
+            routingContext.response().end("Welcome pinpoint vert.x HTTP server test.");
+        });
+        router.get("/request").handler(routingContext -> {
+            request(80, "naver.com", "/");
+            routingContext.response().end("Request http://naver.com:80/");
+        });
+        router.get("/noresponse").handler(routingContext -> {
+        });
+        router.get("/close").handler(routingContext -> {
+            routingContext.response().close();
+        });
+        router.get("/connection/close").handler(routingContext -> {
+            routingContext.request().connection().close();
+        });
+        router.get("/executeBlocking").handler(routingContext -> {
+            executeBlocking(routingContext.request(), 1);
+        });
+        router.get("/executeBlocking/wait10s").handler(routingContext -> {
+            executeBlocking(routingContext.request(), 10);
+        });
+        router.get("/executeBlocking/request").handler(routingContext -> {
+            executeBlockingRequest(routingContext.request());
+        });
+        router.get("/runOnContext").handler(routingContext -> {
+            runOnContext(routingContext.request(), 1);
+        });
+        router.get("/runOnContext/wait10s").handler(routingContext -> {
+            runOnContext(routingContext.request(), 10);
+        });
+        router.get("/runOnContext/request").handler(routingContext -> {
+            runOnContextRequest(routingContext.request());
+        });
+
+        vertx.createHttpServer().requestHandler(router::accept).listen(VertxService.LISTEN_PORT, result -> {
             if (result.succeeded()) {
                 logger.info("Started HTTP server.");
             } else {

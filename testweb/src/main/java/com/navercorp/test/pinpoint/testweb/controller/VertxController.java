@@ -38,6 +38,13 @@ public class VertxController {
         vertxService.request(request.getLocalPort(), request.getLocalAddr(), "/");
     }
 
+    @RequestMapping(value="/vertx/client/requestAbs")
+    @ResponseBody
+    public void requestAbs(final HttpServletRequest request) throws Exception {
+        final String url = "http://" + request.getLocalAddr() + ":" + request.getLocalPort() + "/";
+        vertxService.requestAbs(url);
+    }
+
     @RequestMapping(value="/vertx/client/sendHead")
     @ResponseBody
     public void sendHead(final HttpServletRequest request) throws Exception {

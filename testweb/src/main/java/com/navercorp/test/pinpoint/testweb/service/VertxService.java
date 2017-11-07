@@ -11,6 +11,7 @@ public interface VertxService {
 
     void sendHead(int port, String host, String uri);
     void request(int port, String host, String uri);
+    void requestAbs(String url);
     void request(int port, String host, String uri, String body);
     void chunk(int port, String host, String uri, String body);
 }
