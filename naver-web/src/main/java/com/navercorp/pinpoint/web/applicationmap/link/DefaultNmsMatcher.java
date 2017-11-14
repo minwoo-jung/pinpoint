@@ -31,6 +31,6 @@ public class DefaultNmsMatcher implements ServerMatcher {
 
     @Override
     public LinkInfo getLinkInfo(String value) {
-        return new LinkInfo("network", String.format(URL,value), LinkType.ATAG);
+        return new LinkInfo("NMS", String.format(URL,value), LinkType.ATAG);
     }
 }
