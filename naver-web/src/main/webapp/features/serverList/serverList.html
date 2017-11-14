@@ -9,10 +9,7 @@
 							<span class="glyphicon glyphicon-home"></span> <span class="server-name">{{server.name.split(':')[0]}}</span>
 						</div>
 						<div style="text-align:right" ng-if="server.linkList">
-							<span ng-repeat="link in server.linkList">
-								<a ng-if="link.linkType !== 'button'" style="color:#67BB67" ng-click="openSite($event, link.linkType, link.linkName, link.linkURL)">{{link.linkName}}</a>
-								<label ng-if="link.linkType === 'button'" style="color:#67BB67">{{link.linkName}} <input type="checkbox" name="{{link.linkURL}}" ng-click="openSite($event, link.linkType, link.linkName, link.linkURL)"/></label>
-							</span>
+							<button style="margin-left:4px" type="button" class="btn btn-success btn-xs" ng-if="server.linkList" ng-repeat="link in server.linkList" ng-click="openSite($event, link.linkType, link.linkName, link.linkURL)">{{link.linkName}}</button>
 						</div>
 						<ul>
 							<li ng-repeat="instance in server.instanceList | orderBy:'instance.name'">
@@ -21,7 +18,7 @@
 									<span class="glyphicon glyphicon-hdd" style="color:{{hasError(node.agentHistogram[instance.name])}}"></span>
 									<span>{{instance.name}}</span>
 								</label>
-								<a style="float:right" ng-click="openInspector($event, instance.name)">Inspector</a>
+								<button style="float:right" type="button" class="btn btn-success btn-xs" ng-click="openInspector($event, instance.name)"><i class="xi-chart-line"></i></button>
 							</li>
 						</ul>
 					</li>
