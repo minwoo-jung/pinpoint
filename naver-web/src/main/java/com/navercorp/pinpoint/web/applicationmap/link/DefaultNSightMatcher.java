@@ -33,6 +33,6 @@ public class DefaultNSightMatcher implements ServerMatcher {
 
     @Override
     public LinkInfo getLinkInfo(String value) {
-        return new LinkInfo("Nsight", URL + value, LinkType.ATAG);
+        return new LinkInfo("Ns", URL + value, LinkType.ATAG);
     }
 }
