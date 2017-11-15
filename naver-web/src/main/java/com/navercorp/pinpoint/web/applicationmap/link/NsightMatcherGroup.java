@@ -33,7 +33,7 @@ public class NsightMatcherGroup extends MatcherGroup {
     
     static final String MATCHER_KEY_PREFIX = "site.matcher.key.nsight";
     static final String MATCHER_URL_PREFIX = "site.matcher.url.nsight";
-    static final String LINK_NAME ="Nsight";
+    static final String LINK_NAME ="Ns";
     
     public NsightMatcherGroup(final Map<String, String> matcherProps) {
         if (matcherProps != null) {
