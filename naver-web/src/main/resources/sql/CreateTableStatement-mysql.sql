@@ -29,3 +29,15 @@ CREATE TABLE `user_configuration` (
 );
 
 ALTER TABLE user_configuration ADD UNIQUE KEY user_id_idx (user_id);
+
+CREATE TABLE `nss_auth_override_user` (
+  `user_id` char(7) NOT NULL,
+  PRIMARY KEY (`user_id`)
+);
+
+CREATE TABLE `nss_auth_prefix` (
+  `prefix` varchar(7) NOT NULL,
+  PRIMARY KEY (`prefix`)
+);
+
+
