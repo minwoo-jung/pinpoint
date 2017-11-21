@@ -38,8 +38,8 @@
 
 
     <bean id="arcusClientFactory" class="com.navercorp.test.pinpoint.testweb.component.ArcusClientFactory">
-        <constructor-arg value="ncloud.arcuscloud.nhncorp.com:17288"/>
-        <constructor-arg value="ff31ddb85e9b431c8c0e5e50a4315c27"/>
+        <constructor-arg value="kra-dev.arcuscloud.navercorp.com:17288"/>
+        <constructor-arg value="dev_pinpoint"/>
     </bean>
     <bean id="memcachedClientFactory" class="com.navercorp.test.pinpoint.testweb.component.MemcachedClientFactory">
         <constructor-arg value="10.99.200.15:11316,10.99.200.16:11316,10.99.200.17:11316"/>

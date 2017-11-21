@@ -61,7 +61,7 @@ public class ArcusIT {
         ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
         builder.setFrontCacheExpireTime(10000);
         builder.setMaxFrontCacheElements(100);
-        arcusClient = ArcusClient.createArcusClient("ncloud.arcuscloud.nhncorp.com:17288", "ff31ddb85e9b431c8c0e5e50a4315c27", builder);
+        arcusClient = ArcusClient.createArcusClient("kra-dev.arcuscloud.navercorp.com:17288", "dev_pinpoint", builder);
     }
 
     public boolean set() throws Exception {
