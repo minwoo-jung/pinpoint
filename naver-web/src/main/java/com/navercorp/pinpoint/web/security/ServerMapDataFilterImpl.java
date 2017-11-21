@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapBuilderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.CloseStatus;
@@ -51,6 +53,8 @@ import com.navercorp.pinpoint.web.websocket.message.RequestMessage;
  * @author minwoo.jung
  */
 public class ServerMapDataFilterImpl extends AppConfigOrganizer implements ServerMapDataFilter {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final static String UNAUTHORIZED_AGENT = "UNAUTHORIZED_AGENT";
     private final static ServerInstanceList unAuthServerInstanceList;
@@ -89,7 +93,8 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
 
     
     private boolean isAuthorized(PinpointAuthentication authentication, String applicationId) {
-        if (authentication == null) { 
+        if (authentication == null) {
+            logger.info("Authorization is fail. Because authentication is null.");
             return false;
         }
         if (isPinpointManager(authentication)) {
@@ -104,7 +109,8 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
                 return true;
             }
         }
-        
+
+        logger.info("User({}) don't have ServerMap authorization for {}.",authentication.getPrincipal(), applicationId);
         return false;
     }
 

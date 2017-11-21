@@ -17,6 +17,8 @@ package com.navercorp.pinpoint.web.security;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
@@ -32,6 +34,8 @@ import com.navercorp.pinpoint.web.vo.callstacks.RecordFactory;
  * @author minwoo.jung
  */
 public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFilter {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     @Override
     public boolean filter(SpanAlign spanAlign, MetaData metaData) {
@@ -41,7 +45,8 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
     private boolean isAuthorized(SpanAlign spanAlign, MetaData metaData) {
         PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
         
-        if (authentication == null) { 
+        if (authentication == null) {
+            logger.info("Authorization is fail. Because authentication is null.");
             return false;
         }
         if (isPinpointManager(authentication)) {
@@ -60,6 +65,8 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
                     return true;
                 }
             }
+
+            logger.info("User({}) don't have {} authorization for {}.",authentication.getPrincipal(), MetaData.SQL,  applicationId);
             return false;
         } else if (MetaData.API.equals(metaData)) {
             for(AppUserGroupAuth auth : userGroupAuths) {
@@ -67,6 +74,8 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
                     return true;
                 }
             }
+
+            logger.info("User({}) don't have {} authorization for {}.",authentication.getPrincipal(), MetaData.API,  applicationId);
             return false;
         } else if (MetaData.PARAM.equals(metaData)) {
             for(AppUserGroupAuth auth : userGroupAuths) {
@@ -74,9 +83,12 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
                     return true;
                 }
             }
+
+            logger.info("User({}) don't have {} authorization for {}.",authentication.getPrincipal(), MetaData.PARAM,  applicationId);
             return false;
-        } 
-        
+        }
+
+        logger.info("User({}) don't have {} authorization for {}.", authentication.getPrincipal(), metaData, applicationId);
         return false;
     }
 
