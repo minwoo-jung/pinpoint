@@ -19,7 +19,6 @@ package com.navercorp.pinpoint.web.dao.rest;
 import com.navercorp.pinpoint.common.util.IdValidateUtils;
 import com.navercorp.pinpoint.web.dao.AgentDownloadInfoDao;
 import com.navercorp.pinpoint.web.vo.AgentDownloadInfo;
-import com.navercorp.pinpoint.web.vo.NaverAgentDownloadInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -55,8 +54,8 @@ public class NaverAgentDownloadInfoDao implements AgentDownloadInfoDao {
 
         List<AgentDownloadInfo> agentDownloadInfoList = new ArrayList<>(versionList.size());
         for (String version : versionList) {
-            NaverAgentDownloadInfo naverAgentDownloadInfo = new NaverAgentDownloadInfo(version, String.format(repositoryUrl + FILE_PATH, version, version));
-            agentDownloadInfoList.add(naverAgentDownloadInfo);
+            AgentDownloadInfo agentDownloadInfo = new AgentDownloadInfo(version, String.format(repositoryUrl + FILE_PATH, version, version));
+            agentDownloadInfoList.add(agentDownloadInfo);
         }
 
         return agentDownloadInfoList;
