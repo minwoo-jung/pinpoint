@@ -2,6 +2,8 @@ package com.navercorp.pinpoint.web.dao.hbase.filter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.navercorp.pinpoint.common.server.util.SpanUtils;
 import com.navercorp.pinpoint.common.util.TransactionId;
@@ -40,6 +42,7 @@ import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash;
 public class HbaseFilterPerformanceTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private static ExecutorService executorService;
     private static HbaseTemplate2 hbaseTemplate2;
     private static AbstractRowKeyDistributor traceIdRowKeyDistributor;
 
@@ -50,10 +53,11 @@ public class HbaseFilterPerformanceTest {
         Configuration cfg = HBaseConfiguration.create();
         cfg.set("hbase.zookeeper.quorum", "dev.zk.pinpoint.navercorp.com");
         cfg.set("hbase.zookeeper.property.clientPort", "2181");
-        
+
+        executorService = Executors.newFixedThreadPool(10);
         hbaseTemplate2 = new HbaseTemplate2();
         hbaseTemplate2.setConfiguration(cfg);
-        hbaseTemplate2.setTableFactory(new PooledHTableFactory(cfg));
+        hbaseTemplate2.setTableFactory(new PooledHTableFactory(cfg, executorService));
         hbaseTemplate2.afterPropertiesSet();
 
         OneByteSimpleHash applicationTraceIndexHash = new com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash(32);
@@ -64,6 +68,9 @@ public class HbaseFilterPerformanceTest {
     public static void afterClass() throws Exception {
         if (hbaseTemplate2 != null) {
             hbaseTemplate2.destroy();
+        }
+        if (executorService != null) {
+            executorService.shutdown();
         }
     }
 
