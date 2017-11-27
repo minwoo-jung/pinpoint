@@ -146,9 +146,9 @@
             </dependency>
 
             <dependency>
-                <groupId>com.nhncorp.nelo2</groupId>
+                <groupId>com.naver.nelo2</groupId>
                 <artifactId>nelo2-java-sdk-log4j</artifactId>
-                <version>1.3.3</version>
+                <version>1.6.3</version>
             </dependency>
             
             <dependency>
