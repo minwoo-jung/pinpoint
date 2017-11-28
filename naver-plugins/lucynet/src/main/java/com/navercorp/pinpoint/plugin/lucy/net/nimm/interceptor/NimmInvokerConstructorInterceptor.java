@@ -5,6 +5,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
 import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
@@ -35,8 +36,8 @@ public class NimmInvokerConstructorInterceptor implements AroundInterceptor {
             logger.beforeInterceptor(target, args);
         }
 
-        if (args != null && args.length >= 1 && args[0] instanceof com.nhncorp.lucy.nimm.connector.address.NimmAddress) {
-            com.nhncorp.lucy.nimm.connector.address.NimmAddress nimmAddress = (com.nhncorp.lucy.nimm.connector.address.NimmAddress) args[0];
+        if (ArrayUtils.hasLength(args) && args[0] instanceof NimmAddress) {
+            NimmAddress nimmAddress = (NimmAddress) args[0];
             if (target instanceof NimmAddressAccessor) {
                 ((NimmAddressAccessor) target)._$PINPOINT$_setNimmAddress(addressToString(nimmAddress));
             }

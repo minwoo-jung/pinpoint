@@ -30,7 +30,6 @@ import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
 import com.nhncorp.lucy.npc.DefaultNpcMessage;
 import com.nhncorp.lucy.npc.UserOptionIndex;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
 

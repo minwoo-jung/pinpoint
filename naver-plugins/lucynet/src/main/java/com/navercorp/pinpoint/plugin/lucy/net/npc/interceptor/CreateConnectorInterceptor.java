@@ -7,6 +7,7 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.EndPointUtils;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
 import com.nhncorp.lucy.npc.connector.NpcConnectorOption;
@@ -42,7 +43,7 @@ public class CreateConnectorInterceptor implements AroundInterceptor {
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT_INTERNAL);
 
         InetSocketAddress serverAddress = null;
-        if (args != null && args.length >= 1 && args[0] instanceof NpcConnectorOption) {
+        if (ArrayUtils.hasLength(args) && args[0] instanceof NpcConnectorOption) {
             NpcConnectorOption option = (NpcConnectorOption) args[0];
             serverAddress = option.getAddress();
         }
