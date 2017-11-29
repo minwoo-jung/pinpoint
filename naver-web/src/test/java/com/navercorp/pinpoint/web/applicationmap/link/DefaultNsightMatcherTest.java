@@ -8,12 +8,12 @@ public class DefaultNsightMatcherTest {
 
     @Test
     public void success() {
-        String sampleString = "dev-pinpoint-workload003.ncl";
+        String sampleString = "dev-pinpoint-workload03.ncl";
         ServerMatcher matcher = new DefaultNSightMatcher();
 
         Assert.assertTrue(matcher.isMatched(sampleString));
         LinkInfo linkInfo = matcher.getLinkInfo(sampleString);
-        Assert.assertEquals("http://nsight.navercorp.com/dashboard_server/dev-pinpoint-workload003.ncl", linkInfo.getLinkUrl());
+        Assert.assertEquals("http://nsight.navercorp.com/dashboard_server/dev-pinpoint-workload03.ncl", linkInfo.getLinkUrl());
     }
     
 }
