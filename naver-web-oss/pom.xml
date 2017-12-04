@@ -19,7 +19,7 @@
         <buildTime>${maven.build.timestamp}</buildTime>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <sniffer.artifactid>java18</sniffer.artifactid>
-        <fastxml.jackson.version>2.8.5</fastxml.jackson.version>
+        <fastxml.jackson.version>2.8.10</fastxml.jackson.version>
     </properties>
 
     <dependencies>
