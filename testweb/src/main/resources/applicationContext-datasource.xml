@@ -50,17 +50,6 @@
         <property name="validationQuery" value="select 1"/>
     </bean>
 
-    <bean id="oracleDataSource" parent="commonDataSource">
-        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
-
-        <property name="url" value="${oracle.url}"/>
-        <property name="username" value="${oracle.user}"/>
-        <property name="password" value="${oracle.password}"/>
-
-        <property name="validationQuery" value="select 1 from dual"/>
-
-    </bean>
-
     <!--<bean id="mssqlserverDatasource" parent="commonDatasource">-->
         <!--<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>-->
         <!--<property name="url" value="jdbc:sqlserver://10.64.80.37:1433;DatabaseName=test"/>-->
@@ -103,4 +92,38 @@
 
         <property name="validationQuery" value="select 1"/>
     </bean>
+
+<!--
+    <bean id="oracleDataSource" parent="commonDataSource">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+
+        <property name="url" value="${oracle.url}"/>
+        <property name="username" value="${oracle.user}"/>
+        <property name="password" value="${oracle.password}"/>
+
+        <property name="validationQuery" value="select 1 from dual"/>
+
+    </bean>
+-->
+
+    <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+        <property name="poolName" value="oraclePool"/>
+        <property name="connectionTestQuery" value="select 1 from dual"/>
+        <property name="dataSourceClassName" value="oracle.jdbc.pool.OracleDataSource"/>
+        <property name="maximumPoolSize" value="23"/>
+        <property name="idleTimeout" value="3000"/>
+
+        <property name="dataSourceProperties">
+            <props>
+                <prop key="url">${oracle.url}</prop>
+                <prop key="user">${oracle.user}"</prop>
+                <prop key="password">${oracle.password}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="oracleDataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <constructor-arg ref="hikariConfig"/>
+    </bean>
+
 </beans>
