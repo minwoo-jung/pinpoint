@@ -401,6 +401,12 @@
             <version>1.5.12</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.nhncorp.owfs</groupId>
+            <artifactId>owfs-api</artifactId>
+            <version>4.0.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>

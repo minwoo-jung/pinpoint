@@ -19,6 +19,7 @@
         <module>nelo</module>
         <module>nbaset-jdbc</module>
         <module>nbaset-cp</module>
+        <module>owfs</module>
     </modules>
 
     <dependencies>
@@ -55,6 +56,11 @@
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-nbaset-cp-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-owfs-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

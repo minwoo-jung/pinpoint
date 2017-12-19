@@ -165,6 +165,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.nhncorp.owfs</groupId>
+            <artifactId>owfs-api</artifactId>
+            <version>4.0.9</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
