@@ -1,8 +1,8 @@
 (function( $ ) {
 	"use strict";
 
-	pinpointApp.directive( "applicationConfigDirective", [ "SystemConfigurationService",
-		function ( SystemConfigService ) {
+	pinpointApp.directive( "applicationConfigDirective", [
+		function () {
 			return {
 				restrict: "EA",
 				replace: true,
@@ -30,9 +30,6 @@
 						scope.$broadcast( "change.your.role", scope.openSource ? true : bIsManager );
 						event.stopPropagation();
 					});
-					scope.isInnerMode = function() {
-						return SystemConfigService.get("openSource") === false ? true : false;
-					};
 				}
 			};
 		}
