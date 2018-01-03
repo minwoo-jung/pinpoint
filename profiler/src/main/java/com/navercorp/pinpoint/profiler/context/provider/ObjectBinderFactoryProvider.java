@@ -20,6 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.plugin.uri.UriStatMetricRegistry;
 import com.navercorp.pinpoint.profiler.context.monitor.DataSourceMonitorRegistryService;
 import com.navercorp.pinpoint.profiler.metadata.ApiMetaDataService;
 import com.navercorp.pinpoint.profiler.objectfactory.ObjectBinderFactory;
@@ -33,9 +34,10 @@ public class ObjectBinderFactoryProvider implements Provider<ObjectBinderFactory
     private final Provider<TraceContext> traceContextProvider;
     private final DataSourceMonitorRegistryService dataSourceMonitorRegistryService;
     private final Provider<ApiMetaDataService> apiMetaDataServiceProvider;
+    private final UriStatMetricRegistry uriStatMetricRegistry;
 
     @Inject
-    public ObjectBinderFactoryProvider(ProfilerConfig profilerConfig, Provider<TraceContext> traceContextProvider, DataSourceMonitorRegistryService dataSourceMonitorRegistryService, Provider<ApiMetaDataService> apiMetaDataServiceProvider) {
+    public ObjectBinderFactoryProvider(ProfilerConfig profilerConfig, Provider<TraceContext> traceContextProvider, DataSourceMonitorRegistryService dataSourceMonitorRegistryService, Provider<ApiMetaDataService> apiMetaDataServiceProvider, UriStatMetricRegistry uriStatMetricRegistry) {
         if (profilerConfig == null) {
             throw new NullPointerException("profilerConfig must not be null");
         }
@@ -48,15 +50,19 @@ public class ObjectBinderFactoryProvider implements Provider<ObjectBinderFactory
         if (apiMetaDataServiceProvider == null) {
             throw new NullPointerException("apiMetaDataServiceProvider must not be null");
         }
+        if (uriStatMetricRegistry == null) {
+            throw new NullPointerException("uriStatMetricRegistry must not be null");
+        }
         this.profilerConfig = profilerConfig;
         this.traceContextProvider = traceContextProvider;
         this.dataSourceMonitorRegistryService = dataSourceMonitorRegistryService;
         this.apiMetaDataServiceProvider = apiMetaDataServiceProvider;
+        this.uriStatMetricRegistry = uriStatMetricRegistry;
     }
 
     @Override
     public ObjectBinderFactory get() {
-        return new ObjectBinderFactory(profilerConfig, traceContextProvider, dataSourceMonitorRegistryService, apiMetaDataServiceProvider);
+        return new ObjectBinderFactory(profilerConfig, traceContextProvider, dataSourceMonitorRegistryService, apiMetaDataServiceProvider, uriStatMetricRegistry);
     }
 
 }

@@ -37,6 +37,7 @@ import com.navercorp.pinpoint.profiler.instrument.InstrumentEngine;
 import com.navercorp.pinpoint.profiler.interceptor.registry.InterceptorRegistryBinder;
 import com.navercorp.pinpoint.profiler.monitor.AgentStatMonitor;
 import com.navercorp.pinpoint.profiler.monitor.DeadlockMonitor;
+import com.navercorp.pinpoint.profiler.monitor.UriStatMonitor;
 import com.navercorp.pinpoint.profiler.sender.DataSender;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
@@ -81,6 +82,7 @@ public class DefaultApplicationContext implements ApplicationContext {
     private final DynamicTransformTrigger dynamicTransformTrigger;
 
     private final Injector injector;
+    private final UriStatMonitor uriStatMonitor;
 
     public DefaultApplicationContext(AgentOption agentOption, final InterceptorRegistryBinder interceptorRegistryBinder) {
         this(agentOption, interceptorRegistryBinder, new ApplicationContextModuleFactory());
@@ -133,6 +135,7 @@ public class DefaultApplicationContext implements ApplicationContext {
         this.deadlockMonitor = injector.getInstance(DeadlockMonitor.class);
         this.agentInfoSender = injector.getInstance(AgentInfoSender.class);
         this.agentStatMonitor = injector.getInstance(AgentStatMonitor.class);
+        this.uriStatMonitor = injector.getInstance(UriStatMonitor.class);
     }
 
     public ClassFileTransformer wrap(ClassFileTransformerDispatcher classFileTransformerDispatcher) {
@@ -206,6 +209,8 @@ public class DefaultApplicationContext implements ApplicationContext {
         this.deadlockMonitor.start();
         this.agentInfoSender.start();
         this.agentStatMonitor.start();
+//        일단 url 별로 수집은 되고 있고 collector로 보낼수 있도록 batch 형태로 job이 동작되도록 구현부터 해야함.
+        this.uriStatMonitor.start();
     }
 
     @Override

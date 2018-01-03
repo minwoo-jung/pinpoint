@@ -27,6 +27,7 @@ import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.instrument.DynamicTransformTrigger;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcContext;
+import com.navercorp.pinpoint.bootstrap.plugin.uri.UriStatMetricRegistry;
 import com.navercorp.pinpoint.bootstrap.sampler.Sampler;
 import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import com.navercorp.pinpoint.common.trace.ServiceType;
@@ -119,6 +120,7 @@ import com.navercorp.pinpoint.profiler.context.provider.stat.response.ResponseTi
 import com.navercorp.pinpoint.profiler.context.provider.stat.response.ResponseTimeMetricProvider;
 import com.navercorp.pinpoint.profiler.context.provider.stat.transaction.TransactionMetricCollectorProvider;
 import com.navercorp.pinpoint.profiler.context.provider.stat.transaction.TransactionMetricProvider;
+import com.navercorp.pinpoint.profiler.context.provider.stat.uri.UriStatMetricRegistryProvider;
 import com.navercorp.pinpoint.profiler.context.recorder.DefaultRecorderFactory;
 import com.navercorp.pinpoint.profiler.context.recorder.RecorderFactory;
 import com.navercorp.pinpoint.profiler.context.storage.StorageFactory;
@@ -129,10 +131,7 @@ import com.navercorp.pinpoint.profiler.metadata.DefaultSqlMetaDataService;
 import com.navercorp.pinpoint.profiler.metadata.DefaultStringMetaDataService;
 import com.navercorp.pinpoint.profiler.metadata.SqlMetaDataService;
 import com.navercorp.pinpoint.profiler.metadata.StringMetaDataService;
-import com.navercorp.pinpoint.profiler.monitor.AgentStatMonitor;
-import com.navercorp.pinpoint.profiler.monitor.DeadlockMonitor;
-import com.navercorp.pinpoint.profiler.monitor.DeadlockThreadRegistry;
-import com.navercorp.pinpoint.profiler.monitor.DefaultAgentStatMonitor;
+import com.navercorp.pinpoint.profiler.monitor.*;
 import com.navercorp.pinpoint.profiler.monitor.collector.AgentStatCollector;
 import com.navercorp.pinpoint.profiler.monitor.collector.AgentStatMetricCollector;
 import com.navercorp.pinpoint.profiler.monitor.collector.activethread.ActiveTraceMetricCollector;
@@ -256,6 +255,7 @@ public class ApplicationContextModule extends AbstractModule {
         bind(DeadlockMonitor.class).toProvider(DeadlockMonitorProvider.class).in(Scopes.SINGLETON);
         bind(AgentInfoSender.class).toProvider(AgentInfoSenderProvider.class).in(Scopes.SINGLETON);
         bind(AgentStatMonitor.class).to(DefaultAgentStatMonitor.class).in(Scopes.SINGLETON);
+        bind(UriStatMonitor.class).to(DefaultUriStatMonitor.class).in(Scopes.SINGLETON);
     }
 
     private void bindTraceComponent() {
@@ -329,6 +329,8 @@ public class ApplicationContextModule extends AbstractModule {
 
         bind(DeadlockMetric.class).toProvider(DeadlockMetricProvider.class).in(Scopes.SINGLETON);
         bind(DeadlockMetricCollector.class).toProvider(DeadlockMetricCollectorProvider.class).in(Scopes.SINGLETON);
+
+        bind(UriStatMetricRegistry.class).toProvider(UriStatMetricRegistryProvider.class).in(Scopes.SINGLETON);
 
         bind(new TypeLiteral<AgentStatMetricCollector<TAgentStat>>() {})
                 .annotatedWith(Names.named("AgentStatCollector"))

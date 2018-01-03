@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentContext;
 import com.navercorp.pinpoint.bootstrap.plugin.monitor.DataSourceMonitorRegistry;
+import com.navercorp.pinpoint.bootstrap.plugin.uri.UriStatMetricRegistry;
 import com.navercorp.pinpoint.profiler.instrument.ScopeInfo;
 import com.navercorp.pinpoint.profiler.metadata.ApiMetaDataService;
 import org.junit.Before;
@@ -53,6 +54,7 @@ public class AnnotatedInterceptorFactoryTest {
     private final InstrumentClass instrumentClass = mock(InstrumentClass.class);
     private final InstrumentMethod instrumentMethod = mock(InstrumentMethod.class);
     private final MethodDescriptor descriptor = mock(MethodDescriptor.class);
+    private final UriStatMetricRegistry uriStatMetricRegistry = mock(UriStatMetricRegistry.class);
     
     @Before
     public void setUp() {
@@ -72,7 +74,7 @@ public class AnnotatedInterceptorFactoryTest {
     }
 
     private AnnotatedInterceptorFactory newAnnotatedInterceptorFactory() {
-        return new AnnotatedInterceptorFactory(profilerConfig, traceContext, dataSourceMonitorRegistry, apiMetaDataService, pluginContext, false);
+        return new AnnotatedInterceptorFactory(profilerConfig, traceContext, dataSourceMonitorRegistry, apiMetaDataService, pluginContext, false, uriStatMetricRegistry);
     }
 
     private ScopeInfo newEmptyScopeInfo() {

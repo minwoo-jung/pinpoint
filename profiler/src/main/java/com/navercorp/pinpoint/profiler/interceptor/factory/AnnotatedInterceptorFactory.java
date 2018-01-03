@@ -62,6 +62,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.scope.ScopedStaticAroundInte
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.plugin.ObjectFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.monitor.DataSourceMonitorRegistry;
+import com.navercorp.pinpoint.bootstrap.plugin.uri.UriStatMetricRegistry;
 import com.navercorp.pinpoint.profiler.instrument.ScopeInfo;
 import com.navercorp.pinpoint.profiler.metadata.ApiMetaDataService;
 import com.navercorp.pinpoint.profiler.objectfactory.AutoBindingObjectFactory;
@@ -75,11 +76,12 @@ public class AnnotatedInterceptorFactory implements InterceptorFactory {
     private final ProfilerConfig profilerConfig;
     private final TraceContext traceContext;
     private final DataSourceMonitorRegistry dataSourceMonitorRegistry;
+    private final UriStatMetricRegistry uriStatMetricRegistry;
     private final ApiMetaDataService apiMetaDataService;
     private final InstrumentContext pluginContext;
     private final boolean exceptionHandle;
 
-    public AnnotatedInterceptorFactory(ProfilerConfig profilerConfig, TraceContext traceContext, DataSourceMonitorRegistry dataSourceMonitorRegistry, ApiMetaDataService apiMetaDataService, InstrumentContext pluginContext, boolean exceptionHandle) {
+    public AnnotatedInterceptorFactory(ProfilerConfig profilerConfig, TraceContext traceContext, DataSourceMonitorRegistry dataSourceMonitorRegistry, ApiMetaDataService apiMetaDataService, InstrumentContext pluginContext, boolean exceptionHandle, UriStatMetricRegistry uriStatMetricRegistry) {
         if (profilerConfig == null) {
             throw new NullPointerException("profilerConfig must not be null");
         }
@@ -95,9 +97,13 @@ public class AnnotatedInterceptorFactory implements InterceptorFactory {
         if (pluginContext == null) {
             throw new NullPointerException("pluginContext must not be null");
         }
+        if (uriStatMetricRegistry == null) {
+            throw new NullPointerException("uriStatMetricRegistry must not be null");
+        }
         this.profilerConfig = profilerConfig;
         this.traceContext = traceContext;
         this.dataSourceMonitorRegistry = dataSourceMonitorRegistry;
+        this.uriStatMetricRegistry = uriStatMetricRegistry;
         this.apiMetaDataService = apiMetaDataService;
         this.pluginContext = pluginContext;
         this.exceptionHandle = exceptionHandle;
@@ -109,7 +115,7 @@ public class AnnotatedInterceptorFactory implements InterceptorFactory {
         AutoBindingObjectFactory factory = new AutoBindingObjectFactory(profilerConfig, traceContext, pluginContext, classLoader);
         ObjectFactory objectFactory = ObjectFactory.byConstructor(interceptorClassName, providedArguments);
         final InterceptorScope interceptorScope = scopeInfo.getInterceptorScope();
-        InterceptorArgumentProvider interceptorArgumentProvider = new InterceptorArgumentProvider(dataSourceMonitorRegistry, apiMetaDataService, scopeInfo.getInterceptorScope(), target, targetMethod);
+        InterceptorArgumentProvider interceptorArgumentProvider = new InterceptorArgumentProvider(dataSourceMonitorRegistry, apiMetaDataService, uriStatMetricRegistry, scopeInfo.getInterceptorScope(), target, targetMethod);
 
         Interceptor interceptor = (Interceptor) factory.createInstance(objectFactory, interceptorArgumentProvider);
 

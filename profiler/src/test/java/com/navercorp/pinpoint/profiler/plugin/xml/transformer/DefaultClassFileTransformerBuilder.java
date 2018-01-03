@@ -12,6 +12,7 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentContext;
 import com.navercorp.pinpoint.bootstrap.instrument.MethodFilter;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
 import com.navercorp.pinpoint.bootstrap.plugin.monitor.DataSourceMonitorRegistry;
+import com.navercorp.pinpoint.bootstrap.plugin.uri.UriStatMetricRegistry;
 import com.navercorp.pinpoint.profiler.metadata.ApiMetaDataService;
 import com.navercorp.pinpoint.profiler.plugin.MatchableClassFileTransformer;
 import com.navercorp.pinpoint.profiler.plugin.xml.FieldInjector;
@@ -33,12 +34,13 @@ public class DefaultClassFileTransformerBuilder implements ClassFileTransformerB
     private final String targetClassName;
     private final DataSourceMonitorRegistry dataSourceMonitorRegistry;
     private final ApiMetaDataService apiMetaDataService;
+    private final UriStatMetricRegistry uriStatMetricRegistry;
 
-    public DefaultClassFileTransformerBuilder(ProfilerConfig profilerConfig, TraceContext traceContext, DataSourceMonitorRegistry dataSourceMonitorRegistry, ApiMetaDataService apiMetaDataService, InstrumentContext pluginContext, String targetClassName) {
-        this(profilerConfig, traceContext, dataSourceMonitorRegistry, apiMetaDataService, pluginContext, targetClassName, null);
+    public DefaultClassFileTransformerBuilder(ProfilerConfig profilerConfig, TraceContext traceContext, DataSourceMonitorRegistry dataSourceMonitorRegistry, UriStatMetricRegistry uriStatMetricRegistry, ApiMetaDataService apiMetaDataService, InstrumentContext pluginContext, String targetClassName) {
+        this(profilerConfig, traceContext, dataSourceMonitorRegistry, uriStatMetricRegistry, apiMetaDataService, pluginContext, targetClassName, null);
     }
     
-    private DefaultClassFileTransformerBuilder(ProfilerConfig profilerConfig, TraceContext traceContext, DataSourceMonitorRegistry dataSourceMonitorRegistry, ApiMetaDataService apiMetaDataService,
+    private DefaultClassFileTransformerBuilder(ProfilerConfig profilerConfig, TraceContext traceContext, DataSourceMonitorRegistry dataSourceMonitorRegistry, UriStatMetricRegistry uriStatMetricRegistry, ApiMetaDataService apiMetaDataService,
                                                InstrumentContext pluginContext, String targetClassName, ClassCondition condition) {
         if (profilerConfig == null) {
             throw new NullPointerException("profilerConfig must not be null");
@@ -55,9 +57,14 @@ public class DefaultClassFileTransformerBuilder implements ClassFileTransformerB
         if (pluginContext == null) {
             throw new NullPointerException("pluginContext must not be null");
         }
+        if (uriStatMetricRegistry == null) {
+            throw new NullPointerException("uriStatMetricRegistry must not be null");
+        }
         this.profilerConfig = profilerConfig;
         this.traceContext = traceContext;
         this.dataSourceMonitorRegistry = dataSourceMonitorRegistry;
+        this.uriStatMetricRegistry = uriStatMetricRegistry;
+
         this.apiMetaDataService = apiMetaDataService;
 
         this.pluginContext = pluginContext;
@@ -67,7 +74,7 @@ public class DefaultClassFileTransformerBuilder implements ClassFileTransformerB
 
     @Override
     public void conditional(ClassCondition condition, ConditionalClassFileTransformerSetup describer) {
-        DefaultClassFileTransformerBuilder conditional = new DefaultClassFileTransformerBuilder(profilerConfig, traceContext, dataSourceMonitorRegistry, apiMetaDataService, pluginContext, targetClassName, condition);
+        DefaultClassFileTransformerBuilder conditional = new DefaultClassFileTransformerBuilder(profilerConfig, traceContext, dataSourceMonitorRegistry, uriStatMetricRegistry, apiMetaDataService, pluginContext, targetClassName, condition);
         describer.setup(conditional);
         recipeBuilders.add(conditional);
     }
@@ -179,7 +186,7 @@ public class DefaultClassFileTransformerBuilder implements ClassFileTransformerB
 
         @Override
         public ClassRecipe buildRecipe() {
-            return new TargetAnnotatedInterceptorInjector(profilerConfig, traceContext, dataSourceMonitorRegistry, apiMetaDataService, pluginContext, interceptorClassName, constructorArguments, scopeName, executionPoint);
+            return new TargetAnnotatedInterceptorInjector(profilerConfig, traceContext, dataSourceMonitorRegistry, uriStatMetricRegistry, apiMetaDataService, pluginContext, interceptorClassName, constructorArguments, scopeName, executionPoint);
         }
     }
 

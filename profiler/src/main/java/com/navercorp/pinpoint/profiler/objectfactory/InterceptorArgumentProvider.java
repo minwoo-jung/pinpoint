@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.bootstrap.interceptor.annotation.Name;
 import com.navercorp.pinpoint.bootstrap.interceptor.annotation.NoCache;
 import com.navercorp.pinpoint.bootstrap.interceptor.scope.InterceptorScope;
 import com.navercorp.pinpoint.bootstrap.plugin.monitor.DataSourceMonitorRegistry;
+import com.navercorp.pinpoint.bootstrap.plugin.uri.UriStatMetricRegistry;
 import com.navercorp.pinpoint.exception.PinpointException;
 import com.navercorp.pinpoint.profiler.metadata.ApiMetaDataService;
 import com.navercorp.pinpoint.profiler.util.TypeUtils;
@@ -37,20 +38,26 @@ public class InterceptorArgumentProvider implements ArgumentProvider {
     private final InterceptorScope interceptorScope;
     private final InstrumentClass targetClass;
     private final InstrumentMethod targetMethod;
+    private final UriStatMetricRegistry uriStatMetricRegistry;
 
-    public InterceptorArgumentProvider(DataSourceMonitorRegistry dataSourceMonitorRegistry, ApiMetaDataService apiMetaDataService, InstrumentClass targetClass) {
-        this(dataSourceMonitorRegistry, apiMetaDataService, null, targetClass, null);
+    public InterceptorArgumentProvider(DataSourceMonitorRegistry dataSourceMonitorRegistry, ApiMetaDataService apiMetaDataService, InstrumentClass targetClass, UriStatMetricRegistry uriStatMetricRegistry) {
+        this(dataSourceMonitorRegistry, apiMetaDataService, uriStatMetricRegistry, null, targetClass, null);
     }
     
-    public InterceptorArgumentProvider(DataSourceMonitorRegistry dataSourceMonitorRegistry, ApiMetaDataService apiMetaDataService, InterceptorScope interceptorScope, InstrumentClass targetClass, InstrumentMethod targetMethod) {
+    public InterceptorArgumentProvider(DataSourceMonitorRegistry dataSourceMonitorRegistry, ApiMetaDataService apiMetaDataService, UriStatMetricRegistry uriStatMetricRegistry, InterceptorScope interceptorScope, InstrumentClass targetClass, InstrumentMethod targetMethod) {
         if (dataSourceMonitorRegistry == null) {
             throw new NullPointerException("dataSourceMonitorRegistry must not be null");
         }
         if (apiMetaDataService == null) {
             throw new NullPointerException("apiMetaDataService must not be null");
         }
+        if (uriStatMetricRegistry == null) {
+            throw new NullPointerException("uriStatMetricRegistry must not be null");
+        }
+
         this.dataSourceMonitorRegistry = dataSourceMonitorRegistry;
         this.apiMetaDataService = apiMetaDataService;
+        this.uriStatMetricRegistry = uriStatMetricRegistry;
         this.interceptorScope = interceptorScope;
         this.targetClass = targetClass;
         this.targetMethod = targetMethod;
@@ -81,7 +88,10 @@ public class InterceptorArgumentProvider implements ArgumentProvider {
             }
         } else if (type == DataSourceMonitorRegistry.class) {
             return Option.withValue(dataSourceMonitorRegistry);
+        } else if (type == UriStatMetricRegistry.class) {
+            return Option.withValue(uriStatMetricRegistry);
         }
+
         
         return Option.empty();
     }

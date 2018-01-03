@@ -63,6 +63,59 @@ public class SpringBeansPlugin implements ProfilerPlugin, TransformTemplateAware
         if (config.hasTarget(SpringBeansTargetScope.POST_PROCESSOR)) {
             addAbstractAutowireCapableBeanFactoryTransformer(context);
         }
+
+        //TODO : (minwoo) set SpringBeansTargetScope??
+//        addMappingRegistoryTransformer(context);
+//        doDispatchTransformer(context);
+        addHandleMatchTransformer(context);
+    }
+
+    private void addHandleMatchTransformer(ProfilerPluginSetupContext context) {
+        transformTemplate.transform("org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping", new TransformCallback() {
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+
+                final InstrumentMethod createBeanInstance = target.getDeclaredMethod("handleMatch", "org.springframework.web.servlet.mvc.method.RequestMappingInfo", "java.lang.String", "javax.servlet.http.HttpServletRequest");
+//                createBeanInstance.addInterceptor("com.navercorp.pinpoint.plugin.spring.beans.interceptor.RegisterInterceptor", va(urlStatMetricRegistry));
+                createBeanInstance.addInterceptor("com.navercorp.pinpoint.plugin.spring.beans.interceptor.HandleMatchInterceptor");
+
+                return target.toBytecode();
+            }
+        });
+    }
+
+    private void doDispatchTransformer(ProfilerPluginSetupContext context) {
+        transformTemplate.transform("org.springframework.web.servlet.DispatcherServlet", new TransformCallback() {
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+//                UrlStatMetricRegistry urlStatMetricRegistry = new UrlStatMetricRegistry();
+                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+
+                final InstrumentMethod createBeanInstance = target.getDeclaredMethod("doDispatch", "javax.servlet.http.HttpServletRequest", "javax.servlet.http.HttpServletResponse");
+//                createBeanInstance.addInterceptor("com.navercorp.pinpoint.plugin.spring.beans.interceptor.RegisterInterceptor", va(urlStatMetricRegistry));
+                createBeanInstance.addInterceptor("com.navercorp.pinpoint.plugin.spring.beans.interceptor.DoDispatchInterceptor");
+
+                return target.toBytecode();
+            }
+        });
+    }
+
+    private void addMappingRegistoryTransformer(final ProfilerPluginSetupContext context) {
+
+        transformTemplate.transform("org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry", new TransformCallback() {
+            @Override
+            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+//                UrlStatMetricRegistry urlStatMetricRegistry = new UrlStatMetricRegistry();
+                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+
+                final InstrumentMethod createBeanInstance = target.getDeclaredMethod("register", "java.lang.Object", "java.lang.Object", "java.lang.reflect.Method");
+//                createBeanInstance.addInterceptor("com.navercorp.pinpoint.plugin.spring.beans.interceptor.RegisterInterceptor", va(urlStatMetricRegistry));
+                createBeanInstance.addInterceptor("com.navercorp.pinpoint.plugin.spring.beans.interceptor.RegisterInterceptor");
+
+                return target.toBytecode();
+            }
+        });
     }
 
     private void addAbstractAutowireCapableBeanFactoryTransformer(final ProfilerPluginSetupContext context) {
