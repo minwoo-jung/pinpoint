@@ -26,11 +26,13 @@ import org.springframework.stereotype.Service;
 import com.navercorp.pinpoint.web.dao.UserGroupDao;
 import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.UserGroupMember;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author minwoo.jung
  */
 @Service
+@Transactional
 public class UserGroupServiceImpl implements UserGroupService {
 
     @Autowired

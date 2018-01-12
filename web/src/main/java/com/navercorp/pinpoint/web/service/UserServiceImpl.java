@@ -22,11 +22,13 @@ import org.springframework.stereotype.Service;
 
 import com.navercorp.pinpoint.web.dao.UserDao;
 import com.navercorp.pinpoint.web.vo.User;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author minwoo.jung
  */
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired

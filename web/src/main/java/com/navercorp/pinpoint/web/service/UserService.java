@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.web.service;
 import java.util.List;
 
 import com.navercorp.pinpoint.web.vo.User;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author minwoo.jung

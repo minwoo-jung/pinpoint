@@ -24,11 +24,13 @@ import org.springframework.stereotype.Repository;
 
 import com.navercorp.pinpoint.web.dao.UserDao;
 import com.navercorp.pinpoint.web.vo.User;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author minwoo.jung
  */
 @Repository
+@Transactional
 public class MysqlUserDao implements UserDao {
 
     private static final String NAMESPACE = UserDao.class.getPackage().getName() + "." + UserDao.class.getSimpleName() + ".";

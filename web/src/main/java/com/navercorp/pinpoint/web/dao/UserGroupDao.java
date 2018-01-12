@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.UserGroupMember;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author minwoo.jung
