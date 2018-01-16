@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.navercorp.pinpoint.common.hbase.HbaseTableNameProvider;
+import com.navercorp.pinpoint.common.hbase.TableNameProvider;
 import com.navercorp.pinpoint.common.server.util.SpanUtils;
 import com.navercorp.pinpoint.common.util.TransactionId;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.NamespaceDescriptor;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
@@ -45,6 +49,7 @@ public class HbaseFilterPerformanceTest {
     private static ExecutorService executorService;
     private static HbaseTemplate2 hbaseTemplate2;
     private static AbstractRowKeyDistributor traceIdRowKeyDistributor;
+    private static TableNameProvider tableNameProvider = new HbaseTableNameProvider(NamespaceDescriptor.DEFAULT_NAMESPACE_NAME_STR);
 
     @BeforeClass
     public static void beforeClass() throws IOException {
@@ -132,7 +137,8 @@ public class HbaseFilterPerformanceTest {
             scan.setFilter(makePrefixFilter(area, null, -1));
 
             long startTime = System.currentTimeMillis();
-            List<List<Dot>> dotListList = hbaseTemplate2.find(HBaseTables.APPLICATION_TRACE_INDEX, scan, traceIdRowKeyDistributor, fetchLimit, new TraceIndexScatterMapper());
+            TableName applicationTraceIndexTableName = tableNameProvider.getTableName(HBaseTables.APPLICATION_TRACE_INDEX_STR);
+            List<List<Dot>> dotListList = hbaseTemplate2.find(applicationTraceIndexTableName, scan, traceIdRowKeyDistributor, fetchLimit, new TraceIndexScatterMapper());
             logger.debug("elapsed : {}ms", (System.currentTimeMillis() - startTime));
             logger.debug("fetched size : {}", dotListList.size());
         } catch (HbaseSystemException e) {
