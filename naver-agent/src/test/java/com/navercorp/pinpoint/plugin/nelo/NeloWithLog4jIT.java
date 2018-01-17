@@ -14,6 +14,7 @@
  */
 package com.navercorp.pinpoint.plugin.nelo;
 
+import com.navercorp.pinpoint.test.plugin.JvmArgument;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ import com.navercorp.test.Empty;
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @Repository("http://repo.navercorp.com/maven2")
 @Dependency({ "com.nhncorp.nelo2:nelo2-java-sdk-log4j:[1.3.3,1.5.4]", "log4j:log4j:[1.2.16]", "org.slf4j:slf4j-api:[1.7.2]", "org.slf4j:slf4j-log4j12:[1.7.5]","org.apache.thrift:libthrift:[0.9.0]", "commons-lang:commons-lang:[2.6]"})
+@JvmArgument("-Dlog4j.configuration=com/navercorp/pinpoint/plugin/nelo/log4j.xml")
 @JvmVersion(7)
 @PinpointConfig("pinpoint.config")
 public class NeloWithLog4jIT {

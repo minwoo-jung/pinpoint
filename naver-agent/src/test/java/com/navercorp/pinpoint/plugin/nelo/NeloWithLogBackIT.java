@@ -14,6 +14,7 @@
  */
 package com.navercorp.pinpoint.plugin.nelo;
 
+import com.navercorp.pinpoint.test.plugin.JvmArgument;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ import com.navercorp.test.Empty;
 @PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
 @Repository("http://repo.navercorp.com/maven2")
 @Dependency({ "com.nhncorp.nelo2:nelo2-java-sdk-logback:[1.3.3,)", "ch.qos.logback:logback-classic:[1.0.13]", "org.slf4j:slf4j-api:[1.7.2]", "org.slf4j:slf4j-log4j12:[1.7.5]","org.apache.thrift:libthrift:[0.9.0]", "commons-lang:commons-lang:[2.6]"})
+@JvmArgument("-Dlogback.configurationFile=com/navercorp/pinpoint/plugin/nelo/logback.xml")
 @JvmVersion(7)
 @PinpointConfig("pinpoint.config")
 public class NeloWithLogBackIT {
