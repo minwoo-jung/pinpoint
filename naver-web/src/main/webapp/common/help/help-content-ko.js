@@ -1,10 +1,9 @@
 (function(){ 
 	'use strict';
-
 	var oHelp = {
 		configuration: {
 			general: {
-				warning: "(설정 정보는 브라우저 캐쉬에 저장합니다. 서버 측 저장은 추후 지원 할 예정입니다.)",
+				warning: "* 설정 정보는 브라우저 캐쉬에 저장합니다. 서버 측 저장은 추후 지원 할 예정입니다.",
 				empty: "등록된 목록이 없습니다."
 			},
 			alarmRules: {
@@ -14,41 +13,47 @@
 				category: [{
 					title: "[항목]",
 					items: [{
-						name: "SLOW_COUNT",
+						name: "SLOW COUNT",
 						desc: "application 내에서 외부서버를 호출한 요청 중 slow 호출의 개수가 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "SLOW_RATE",
+						name: "SLOW RATE",
 						desc: "application 내에서 외부서버를 호출한 요청 중 slow 호출의 비율(%)이 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "ERROR_COUNT",
+						name: "ERROR COUNT",
 						desc: "application 내에서 외부서버를 호출한 요청 중 error 가 발생한 호출의 개수가 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "ERROR_RATE",
+						name: "ERROR RATE",
 						desc: "application 내에서 외부서버를 호출한 요청 중 error 가 발생한 호출의 비율이 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "RESPONSE_COUNT",
+						name: "TOTAL COUNT",
 						desc: "application 내에서 외부서버를 호출한 요청의 개수가 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "SLOW_COUNT_TO_CALLEE",
+						name: "SLOW COUNT TO CALLEE",
 						desc: "외부에서 application을 호출한 요청 중에 외부서버로 응답을 늦게 준 요청의 개수가 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "SLOW_RATE_TO_CALLEE",
+						name: "SLOW RATE TO CALLEE",
 						desc: "외부에서 application을 호출한 요청 중에 외부서버로 응답을 늦게 준 요청의 비율(%)이 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "ERROR_COUNT_TO_CALLEE",
+						name: "ERROR COUNT TO CALLEE",
 						desc: "외부에서 application을 호출한 요청 중에 에러가 발생한 요청의 개수가 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "ERROR_RATE_TO_CALLEE",
+						name: "ERROR RATE TO CALLEE",
 						desc: "외부에서 application을 호출한 요청 중에 에러가 발생한 요청의 비율(%)이 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "TOTAL_COUNT_TO_CALLEE",
+						name: "TOTAL COUNT TO CALLEE",
 						desc: "외부에서 application을 호출한 요청 개수가 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "HEAP_USAGE_RATE",
+						name: "HEAP USAGE RATE",
 						desc: "heap의 사용률이 임계치를 초과한 경우 알람이 전송된다."
 					},{
-						name: "JVM_CPU_USAGE_RATE",
+						name: "JVM CPU USAGE RATE",
 						desc: "application의 CPU 사용률이 임계치를 초과한 경우 알람이 전송된다."
+					},{
+						name: "DATASOURCE CONNECTION USAGE RATE",
+						desc: "application의 DataSource내의 Connection 사용률이 임계치를 초과한 경우 알람이 전송된다."
+					}, {
+						name: "DEADLOCK OCCURRENCE",
+						desc: "application에서 데드락 상태가 탐지되면 알람이 전송된다."
 					}]
 				}]
 			},
@@ -56,7 +61,7 @@
 				desc: "* Application Name 과 Agent Id의 중복 여부를 확인 할 수 있습니다.",
 				lengthGuide: "1 ~ {{MAX_CHAR}}자의 문자를 입력하세요."
 			}
-		},	
+		},
 		navbar : {
 			searchPeriod : {
 				guideDateMax: "한번에 검색 할 수 있는 최대 기간은 {{day}}일 입니다.",
@@ -467,11 +472,14 @@
 			},
 			linkServers: {
 				mainStyle: "width:350px;",
-				title: "Server Instance",
+				title: "Server Information",
 				desc: "해당 구간을 통과하는 트랜잭션을 호출한 서버 인스턴스의 정보입니다. (호출자)",
 				category: [{
 					title: "[범례]",
 					items: [{
+						name: "<span class='glyphicon glyphicon-home'></span>",
+						desc: "물리서버 호스트 이름"
+					},{
 						name: "<span class='glyphicon glyphicon-hdd'></span>",
 						desc: "물리서버에 설치된 서버 인스턴스에서 동작중인 Pinpoint의 agentId입니다."
 					}]
@@ -615,7 +623,7 @@
 					}]
 				}]
 			},
-            tps: {
+			tps: {
                 mainStyle: "",
                 title: "TPS",
                 desc: "서버로 인입된 초당 트랜잭션 수",

@@ -1,6 +1,5 @@
 (function() {
 	'use strict';
-	
 	var oHelp = {
 		configuration: {
 			general: {
@@ -14,41 +13,47 @@
 				category: [{
 					title: "[Type]",
 					items: [{
-						name: "SLOW_COUNT",
+						name: "SLOW COUNT",
 						desc: "Sends an alarm when the number of slow requests sent by the application exceeds the configured threshold."
 					},{
-						name: "SLOW_RATE",
+						name: "SLOW RATE",
 						desc: "Sends an alarm when the percentage(%) of slow requests sent by the application exceeds the configured threshold."
 					},{
-						name: "ERROR_COUNT",
+						name: "ERROR COUNT",
 						desc: "Sends an alarm when the number of failed requests sent by the application exceeds the configured threshold."
 					},{
-						name: "ERROR_RATE",
+						name: "ERROR RATE",
 						desc: "Sends an alarm when the percentage(%) of failed requests sent by the application exceeds the configured threshold."
 					},{
-						name: "RESPONSE_COUNT",
+						name: "TOTAL COUNT",
 						desc: "Sends an alarm when the number of all requests sent by the application exceeds the configured threshold."
 					},{
-						name: "SLOW_COUNT_TO_CALLEE",
+						name: "SLOW COUNT TO CALLEE",
 						desc: "Sends an alarm when the number of slow responses returned by the application exceeds the configured threshold."
 					},{
-						name: "SLOW_RATE_TO_CALLEE",
+						name: "SLOW RATE TO CALLEE",
 						desc: "Sends an alarm when the percentage(%) of slow responses returned by the application exceeds the configured threshold."
 					},{
-						name: "ERROR_COUNT_TO_CALLEE",
+						name: "ERROR COUNT TO CALLEE",
 						desc: "Sends an alarm when the number of failed responses returned by the application exceeds the configured threshold."
 					},{
-						name: "ERROR_RATE_TO_CALLEE",
+						name: "ERROR RATE TO CALLEE",
 						desc: "Sends an alarm when the percentage(%) of failed responses returned by the application exceeds the configured threshold."
 					},{
-						name: "TOTAL_COUNT_TO_CALLEE",
+						name: "TOTAL COUNT TO CALLEE",
 						desc: "Sends an alarm when the number of all remote calls sent to the application exceeds the configured threshold."
 					},{
-						name: "HEAP_USAGE_RATE",
+						name: "HEAP USAGE RATE",
 						desc: "Sends an alarm when the application's heap usage(%) exceeds the configured threshold."
 					},{
-						name: "JVM_CPU_USAGE_RATE",
+						name: "JVM CPU USAGE RATE",
 						desc: "Sends an alarm when the application's CPU usage(%) exceeds the configured threshold."
+					},{
+						name: "DATASOURCE CONNECTION USAGE RATE",
+						desc: "Sends an alarm when the application's DataSource connection usage(%) exceeds the configured threshold."
+					}, {
+						name: "DEADLOCK OCCURRENCE",
+						desc: "Sends an alarm when deadlock condition is detected in application."
 					}]
 				}]
 			},
@@ -79,10 +84,10 @@
 			},
 			depth : {
 				mainStyle: "",
-				title: '<img src="images/inbound.png" width="22px" height="22px" style="margin-top:-4px;"> Inbound 와 <img src="images/outbound.png" width="22px" height="22px" style="margin-top:-4px"> Outbound',
+				title: '<img src="images/inbound.png" width="22px" height="22px" style="margin-top:-4px;"> Inbound and <img src="images/outbound.png" width="22px" height="22px" style="margin-top:-4px"> Outbound',
 				desc: "Search-depth of server map.",
 				category : [{
-					title: "[범례]",
+					title: "[Legend]",
 					items: [{
 						name: "Inbound",
 						desc: "Number of depth to render for requests coming in to the selected node."
@@ -100,7 +105,7 @@
 					title: "[Legend]",
 					items: [{
 						name: "Bidirectional",
-						desc: " Renders inbound/outbound nodes for each and every node (within limit) even if they are not directly related to the selected node.<br>Note that checking this option may lead to overly complex server maps."
+						desc: "Renders inbound/outbound nodes for each and every node (within limit) even if they are not directly related to the selected node.<br>Note that checking this option may lead to overly complex server maps."
 					}]
 				}]
 			},
@@ -141,6 +146,19 @@
 						"<span class='glyphicon glyphicon-filter' style='color:green;'></span> is shown when a filter is applied.",
 						"Clicking an arrow shows information on all transactions passing through the selected section on the right-hand side of the screen."
 				    ]
+				},{
+					title: "[Function of the box]",
+					list: [
+						"When the box is selected, the transaction information flowing into the application is displayed on the right side of the screen."
+					]
+				},{
+					title: "[Function of the arrow]",
+					list: [
+						"Select the arrow to show the transaction information that passes through the selected section on the right side of the screen.",
+						"The Filter in the Context menu shows only the transactions that pass through the selected section.",
+						"Filter wizard allows you to configure more detailed filters.",
+						"When the filter is applied, <span class = 'glyphicon glyphicon-filter' style = 'color: green;'> </span> icon will be displayed on the arrow."
+					]
 				},{
 					title: "[Applying Filter]",
 					list: [
@@ -247,7 +265,7 @@
 					}]
 				}]
 			}
-		},	
+		},
 		nodeInfoDetails: {
 			responseSummary: {
 				mainStyle: "",
@@ -317,7 +335,7 @@
 			},
 			nodeServers: {
 				mainStyle: "width:400px;",
-				title: "Server Instances",
+				title: "Server Information",
 				desc: "List of physical servers and their server instances.",
 				category: [{
 					title: "[Legend]",
@@ -359,8 +377,18 @@
 			},
 			searchAndOrder: {
 				mainStyle: "",
-				title: "Search and Fliter",
-				desc: "Filter by server name or total count.Clicking Name or Count sorts the list in ascending/descending order."
+				title: "Search and Filter",
+				desc: "You can search with server name and Counts.",
+				category: [{
+					title: "[Usage]",
+					items: [{
+						name: "Name",
+						desc: "Sort names in ascending / descending order."
+					},{
+						name: "Count",
+						desc: "Sort counts in ascending / descending order."
+					}]
+				}]
 			},
 			nms: {
 				mainStyle: "",
@@ -450,7 +478,7 @@
 			},
 			linkServers: {
 				mainStyle: "width:350px;",
-				title: "Server Instance",
+				title: "Server Information",
 				desc: "List of physical servers and their server instances.",
 				category: [{
 					title: "[Legend]",
@@ -493,7 +521,17 @@
 			searchAndOrder: {
 				mainStyle: "",
 				title: "Search and Filter",
-				desc: "Filter by server name or total count.<br/>Clicking Name or Count sorts the list in ascending/descending order."
+				desc: "You can search with server name and Counts.",
+				category: [{
+					title: "[Usage]",
+					items: [{
+						name: "Name",
+						desc: "Sort names in ascending / descending order."
+					},{
+						name: "Count",
+						desc: "Sort counts in ascending / descending order."
+					}]
+				}]
 			},
 			nms: {
 				mainStyle: "",
@@ -526,18 +564,18 @@
 						name: "<span class='glyphicon glyphicon-hdd'></span>",
 						desc: "Agent-id of the installed agent"
 					},{
-                        name: "<span class='glyphicon glyphicon-ok-sign' style='color:#40E340'></span>",
-                        desc: "Agent was running at the time of query"
-                    },{
-                        name: "<span class='glyphicon glyphicon-minus-sign' style='color:#F00'></span>",
-                        desc: "Agent was shutdown at the time of query"
-                    },{
-                        name: "<span class='glyphicon glyphicon-remove-sign' style='color:#AAA'></span>",
-                        desc: "Agent was disconnected at the time of query"
-                    },{
-                        name: "<span class='glyphicon glyphicon-question-sign' style='color:#AAA'></span>",
-                        desc: "Agent status was unknown at the time of query"
-                    }]
+						name: "<span class='glyphicon glyphicon-ok-sign' style='color:#40E340'></span>",
+						desc: "Agent was running at the time of query"
+					},{
+						name: "<span class='glyphicon glyphicon-minus-sign' style='color:#F00'></span>",
+						desc: "Agent was shutdown at the time of query"
+					},{
+						name: "<span class='glyphicon glyphicon-remove-sign' style='color:#AAA'></span>",
+						desc: "Agent was disconnected at the time of query"
+					},{
+						name: "<span class='glyphicon glyphicon-question-sign' style='color:#AAA'></span>",
+						desc: "Agent status was unknown at the time of query"
+					}]
 				}]
 			},
 			heap: {
@@ -734,7 +772,7 @@
 				title: "System pu Usage",
 				desc: "CPU usage of agents' whole system - For multi-core CPUs, displays the average CPU usage of all the cores.",
 				category: [{
-					title: "[범례]",
+					title: "[Legend]",
 					items: [{
 						name: "MAX",
 						desc: "Largest system CPU usage of agents"
