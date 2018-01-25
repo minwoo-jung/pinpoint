@@ -18,7 +18,9 @@
 package com.navercorp.test.pinpoint.testweb.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.Pipeline;
 
 import com.nhncorp.redis.cluster.gateway.GatewayClient;
@@ -57,6 +61,20 @@ public class RedisController {
 
         jedis.get("foo");
         // jedis.close();
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/redis/jedisCluster")
+    @ResponseBody
+    public String jedisCluster() {
+        Set<HostAndPort> clusterAddressSet = new HashSet<HostAndPort>();
+        clusterAddressSet.add(new HostAndPort("10.105.178.98", 17000));
+        clusterAddressSet.add(new HostAndPort("10.105.178.98", 17001));
+        clusterAddressSet.add(new HostAndPort("10.105.178.98", 17002));
+
+        JedisCluster jedisCluster = new JedisCluster(clusterAddressSet);
+        jedisCluster.get("foo");
 
         return "OK";
     }
