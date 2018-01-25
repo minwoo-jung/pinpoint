@@ -54,8 +54,8 @@ public class NimmServiceImpl implements NimmService {
     @PostConstruct
     public void init() throws Exception {
         NimmConnector.registerMMNetDriver(NIMM_CONFIG_FILE);
-        NimmAddress bloc3Address = NimmAddress.createUnicastAddress(12371, 12, 25249, 1);
-        NimmAddress bloc4Address = NimmAddress.createUnicastAddress(12371, 12, 46351, 1);
+        NimmAddress bloc3Address = NimmAddress.createUnicastAddress(12372, 12, 22799, 1);
+        NimmAddress bloc4Address = NimmAddress.createUnicastAddress(12372, 12, 60022, 1);
         this.localSocket = NimmConnector.createNimmSocket();
 
         invokers.put("bloc3", new NimmInvoker(bloc3Address, localSocket, 1000));

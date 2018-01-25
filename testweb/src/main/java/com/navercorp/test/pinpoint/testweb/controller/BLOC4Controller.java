@@ -29,8 +29,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class BLOC4Controller {
 
-    private final String BLOC3_ECHO = "http://10.110.241.190:5001/welcome/com.nhncorp.lucy.bloc.welcome.EchoBO/execute?foo=bar";
-    private final String BLOC4_ECHO = "http://10.110.241.190:15001/welcome/test/hello?foo=bar";
+    private final String BLOC3_ECHO = "http://10.105.178.98:5001/welcome/com.nhncorp.lucy.bloc.welcome.EchoBO/execute?foo=bar";
+    private final String BLOC4_ECHO = "http://10.105.178.98:15001/welcome/test/hello?foo=bar";
 
     @RequestMapping(value = "/bloc3/call")
     @ResponseBody

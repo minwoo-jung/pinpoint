@@ -36,8 +36,8 @@ import java.net.InetSocketAddress;
 public class NPCController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final InetSocketAddress bloc3ServerAddress = new InetSocketAddress("10.110.241.190", 5000);
-    private final InetSocketAddress bloc4ServerAddress = new InetSocketAddress("10.110.241.190", 15000);
+    private final InetSocketAddress bloc3ServerAddress = new InetSocketAddress("10.105.178.98", 5000);
+    private final InetSocketAddress bloc4ServerAddress = new InetSocketAddress("10.105.178.98", 15000);
 
     @Autowired
     private NpcService npcService;
