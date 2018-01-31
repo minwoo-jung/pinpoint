@@ -48,7 +48,6 @@ public class ApplicationConfigController {
     
     private static final String SSO_USER = "SSO_USER";
     private static final String APPLICATION_ID = "applicationId";
-    private static final String USER_ID = "userId";
     private static final String MY_ROLE = "myRole";
     private static final String USER_GROUP_AUTH_LIST = "userGroupAuthList";
     

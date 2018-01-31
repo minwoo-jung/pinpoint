@@ -15,12 +15,11 @@
  */
 package com.navercorp.pinpoint.web.batch;
 
-import com.navercorp.pinpoint.web.dao.UserConfigDao;
-import com.navercorp.pinpoint.web.dao.UserGroupDao;
+import com.navercorp.pinpoint.web.service.UserConfigService;
+import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.vo.UserConfiguration;
 import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.UserGroupMember;
-import org.apache.hadoop.hbase.shaded.io.netty.channel.udt.UdtServerChannelConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepContribution;
@@ -39,10 +38,10 @@ public class UpdateUserIdTasklet implements Tasklet {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    UserConfigDao userConfigDao;
+    UserConfigService userConfigService;
 
     @Autowired
-    UserGroupDao userGroupDao;
+    UserGroupService userGroupService;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -54,15 +53,15 @@ public class UpdateUserIdTasklet implements Tasklet {
         for (UserInfo userInfo : userInfoList) {
             try {
                 logger.info(++number + " : ========== " + userInfo + " ===========");
-                UserConfiguration userConfiguration = userConfigDao.selectUserConfiguration(userInfo.getUserId());
+                UserConfiguration userConfiguration = userConfigService.selectUserConfiguration(userInfo.getUserId());
                 if (userInfo.getUserId().equals(userConfiguration.getUserId())) {
                     UserConfiguration newUserConfiguration = new UserConfiguration();
                     newUserConfiguration.setUserId(userInfo.getChangedId());
                     newUserConfiguration.setFavoriteApplications(userConfiguration.getFavoriteApplications());
                     //insert
-                    userConfigDao.insertUserConfiguration(newUserConfiguration);
+                    userConfigService.insertUserConfiguration(newUserConfiguration);
                     //delete
-                    userConfigDao.deleteUserConfiguration(userInfo.getUserId());
+                    userConfigService.deleteUserConfiguration(userInfo.getUserId());
                     logger.info(number + " : ========== " + "find and insert/delete(before) : " + userConfiguration);
                     logger.info(number + " : ========== " + "find and insert/delete(after ) : " + newUserConfiguration);
                 } else {
@@ -78,16 +77,16 @@ public class UpdateUserIdTasklet implements Tasklet {
         logger.info("###############startUpdate user_group_member###############");
         number = 0;
         for(UserInfo userInfo : userInfoList) {
-            List<UserGroup> userGroups = userGroupDao.selectUserGroupByUserId(userInfo.getUserId());
+            List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userInfo.getUserId());
             logger.info(++number + " : ========== " + userInfo + " ===========");
             for (UserGroup userGroup : userGroups) {
                 try {
                     UserGroupMember userGroupMember = new UserGroupMember(userGroup.getId(), userInfo.getUserId());
                     UserGroupMember newUserGroupMember = new UserGroupMember(userGroup.getId(), userInfo.getChangedId());
                     //insert
-                    userGroupDao.insertMember(newUserGroupMember);
+                    userGroupService.insertMember(newUserGroupMember);
                     //delete
-                    userGroupDao.deleteMember(userGroupMember);
+                    userGroupService.deleteMember(userGroupMember);
                     logger.info(number + " : ========== " + "find and insert/delete(before) : " + userGroupMember);
                     logger.info(number + " : ========== " + "find and insert/delete(after ) : " + newUserGroupMember);
                 } catch (Exception e) {

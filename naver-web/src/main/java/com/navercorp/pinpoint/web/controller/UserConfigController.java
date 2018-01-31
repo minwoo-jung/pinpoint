@@ -15,8 +15,7 @@
  */
 package com.navercorp.pinpoint.web.controller;
 
-import com.navercorp.pinpoint.web.dao.UserConfigDao;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
+import com.navercorp.pinpoint.web.service.UserConfigService;
 import com.navercorp.pinpoint.web.vo.UserConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +38,13 @@ public class UserConfigController {
     private static final String SSO_USER = "SSO_USER";
 
     @Autowired
-    private UserConfigDao userConfigDao;
+    private UserConfigService userConfigService;
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> insertUserConfiguration(@RequestBody UserConfiguration userConfiguration, @RequestHeader(SSO_USER) String userId) {
         userConfiguration.setUserId(userId);
-        userConfigDao.insertUserConfiguration(userConfiguration);
+        userConfigService.insertUserConfiguration(userConfiguration);
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");
@@ -55,13 +54,13 @@ public class UserConfigController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public  UserConfiguration getUserConfiguration(@RequestHeader(SSO_USER) String userId) {
-        return userConfigDao.selectUserConfiguration(userId);
+        return userConfigService.selectUserConfiguration(userId);
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
     public Map<String, String> deleteUserConfiguration(@RequestHeader(SSO_USER) String userId) {
-        userConfigDao.deleteUserConfiguration(userId);
+        userConfigService.deleteUserConfiguration(userId);
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");
@@ -72,7 +71,7 @@ public class UserConfigController {
     @ResponseBody
     public Map<String, String> updateUserConfiguration(@RequestBody UserConfiguration userConfiguration, @RequestHeader(SSO_USER) String userId) {
         userConfiguration.setUserId(userId);
-        userConfigDao.updateUserConfiguration(userConfiguration);
+        userConfigService.updateUserConfiguration(userConfiguration);
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");

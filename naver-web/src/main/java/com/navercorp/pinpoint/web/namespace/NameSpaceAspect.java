@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 NAVER Corp.
+ * Copyright 2018 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.batch;
+package com.navercorp.pinpoint.web.namespace;
 
-import java.util.List;
-
-import com.navercorp.pinpoint.web.service.UserService;
-import org.springframework.batch.item.ItemWriter;
+import org.aspectj.lang.JoinPoint;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.navercorp.pinpoint.web.dao.UserDao;
-import com.navercorp.pinpoint.web.vo.User;
+import org.springframework.context.ApplicationContext;
 
 /**
- * @author minwoo.jung <minwoo.jung@navercorp.com>
+ * @author minwoo.jung
  */
-public class UserWriter implements ItemWriter<User> {
-	
+public class NameSpaceAspect {
+
     @Autowired
-	UserService userService;
-	
-	@Override
-	public void write(List<? extends User> users) throws Exception {
-		userService.insertUserList((List<User>) users);
-	}
+    ApplicationContext applicationContext;
+
+    public void before(JoinPoint joinPoint) {
+        NameSpaceInfo nameSpaceInfo = applicationContext.getBean(NameSpaceInfo.class);
+        if (nameSpaceInfo.isInit() == false) {
+            System.out.println("!!!!!!!!!!!!!!!set namespaceinfo!!!!!!!!!!!!! : " + nameSpaceInfo);
+            nameSpaceInfo.initNameSpaceInfo("kr14966", "naver", "pinpoint");
+        }
+    }
 }

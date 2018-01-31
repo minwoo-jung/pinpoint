@@ -18,6 +18,9 @@ package com.navercorp.pinpoint.web.service;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
+import com.navercorp.pinpoint.web.vo.User;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
@@ -39,4 +42,6 @@ public interface ApplicationConfigService {
     void insertAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth);
 
     void initApplicationConfiguration(String applicationId);
+
+    List<User> selectManagerByUserId(String userId);
 }

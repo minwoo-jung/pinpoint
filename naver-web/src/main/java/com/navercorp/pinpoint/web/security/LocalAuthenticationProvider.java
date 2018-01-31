@@ -18,13 +18,13 @@ package com.navercorp.pinpoint.web.security;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.service.UserService;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
@@ -43,7 +43,7 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
     UserGroupService userGroupService;
     
     @Autowired
-    ApplicationConfigDao configDao;
+    ApplicationConfigService configService;
     
     @Override
     public Authentication authenticate(final Authentication auth) throws AuthenticationException {
@@ -90,7 +90,7 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
     }
 
     private boolean isManager(String userId) {
-        List<User> user = configDao.selectManagerByUserId(userId);
+        List<User> user = configService.selectManagerByUserId(userId);
 
         if (user.size() > 0) {
             return true;

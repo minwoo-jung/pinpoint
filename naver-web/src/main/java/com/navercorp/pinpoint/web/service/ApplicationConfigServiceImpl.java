@@ -19,20 +19,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.navercorp.pinpoint.web.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
-import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
-import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
-import com.navercorp.pinpoint.web.vo.UserGroup;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author minwoo.jung
  */
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class ApplicationConfigServiceImpl implements ApplicationConfigService {
 
     @Autowired
@@ -45,6 +44,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     boolean anyOneOccupyAtfirst = true;
     
     @Override
+    @Transactional(readOnly = true)
     public ApplicationConfiguration selectApplicationConfiguration(String applicationId) {
         List<AppUserGroupAuth> appAuthUserGroupList = applicationConfigDao.selectAppUserGroupAuthList(applicationId);
         return new ApplicationConfiguration(applicationId, appAuthUserGroupList);
@@ -60,6 +60,13 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<User> selectManagerByUserId(String userId) {
+        return applicationConfigDao.selectManagerByUserId(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Role searchMyRole(String applicationId, String userId) {
         ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
         Map<String, AppUserGroupAuth> appUserGroupAuthes = appConfig.getAppUserGroupAuthes();
@@ -91,6 +98,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId) {
         ApplicationConfiguration appConfig = selectApplicationConfiguration(appUserGroupAuth.getApplicationId());
         
@@ -110,9 +118,10 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     }
     
     @Override
+    @Transactional(readOnly = true)
     public boolean canEditConfiguration(String applicationId, String userId) {
         Role myRole = searchMyRole(applicationId, userId);
-        if(myRole.equals(Role.MANAGER)) {
+        if (myRole.equals(Role.MANAGER)) {
             return true;
         }
         

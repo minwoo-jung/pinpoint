@@ -43,7 +43,6 @@ import com.navercorp.pinpoint.web.applicationmap.histogram.NodeHistogram;
 import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallData;
 import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallDataMap;
 import com.navercorp.pinpoint.web.exception.AuthorityException;
-import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.Application;
 import com.navercorp.pinpoint.web.websocket.ActiveThreadCountHandler;
@@ -65,12 +64,6 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         serverInstances.add(new ServerInstance(UNAUTHORIZED_AGENT, UNAUTHORIZED_AGENT, ServiceType.UNAUTHORIZED.getCode()));
         serverInstanceList.put("UNKNOWN_AGENT", serverInstances);
     }
-    
-    @Autowired
-    ApplicationConfigService applicationConfigService;
-
-    @Autowired
-    private ApplicationMapBuilderFactory applicationMapBuilderFactory;
     
     @Override
     public boolean filter(Application application) {

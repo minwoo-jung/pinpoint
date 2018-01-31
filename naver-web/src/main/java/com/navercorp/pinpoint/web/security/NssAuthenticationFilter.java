@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +34,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.service.UserService;
 import com.navercorp.pinpoint.web.vo.User;
@@ -54,7 +54,7 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
     UserGroupService userGroupService;
     
     @Autowired
-    ApplicationConfigDao configDao;
+    ApplicationConfigService configService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -86,7 +86,7 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isManager(String userId) {
-        List<User> user = configDao.selectManagerByUserId(userId);
+        List<User> user = configService.selectManagerByUserId(userId);
 
         if (user.size() > 0) {
             return true;

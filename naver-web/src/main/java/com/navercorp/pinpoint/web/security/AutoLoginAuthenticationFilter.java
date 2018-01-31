@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -40,7 +41,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.service.UserService;
 import com.navercorp.pinpoint.web.vo.User;
@@ -61,8 +61,8 @@ public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
     private UserGroupService userGroupService;
     
     @Autowired
-    private ApplicationConfigDao configDao;
-    
+    private ApplicationConfigService configService;
+
     private String userId;
     
     public void setUserId(String userId) {
@@ -93,7 +93,7 @@ public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isManager(String userId) {
-        List<User> user = configDao.selectManagerByUserId(userId);
+        List<User> user = configService.selectManagerByUserId(userId);
 
         if (user.size() > 0) {
             return true;

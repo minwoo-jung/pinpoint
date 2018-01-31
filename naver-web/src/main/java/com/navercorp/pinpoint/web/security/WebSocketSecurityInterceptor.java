@@ -3,6 +3,7 @@ package com.navercorp.pinpoint.web.security;
 import java.util.List;
 import java.util.Map;
 
+import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.service.UserService;
 import com.navercorp.pinpoint.web.vo.User;
@@ -31,7 +31,7 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
     private UserGroupService userGroupService;
     
     @Autowired
-    private ApplicationConfigDao configDao;
+    private ApplicationConfigService configService;
     
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         String userId = request.getHeaders().get(SSO_USER).get(0);
@@ -54,7 +54,7 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
     }
 
     private boolean isManager(String userId) {
-        List<User> user = configDao.selectManagerByUserId(userId);
+        List<User> user = configService.selectManagerByUserId(userId);
 
         if (user.size() > 0) {
             return true;

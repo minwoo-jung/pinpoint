@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.web.batch;
 
+import com.navercorp.pinpoint.web.service.UserService;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -28,11 +29,11 @@ import com.navercorp.pinpoint.web.dao.UserDao;
 public class UserListener implements StepExecutionListener {
 
     @Autowired
-    UserDao userDao;
+    UserService userService;
     
     @Override
     public void beforeStep(StepExecution stepExecution) {
-        userDao.dropAndCreateUserTable();
+        userService.dropAndCreateUserTable();
     }
 
     @Override

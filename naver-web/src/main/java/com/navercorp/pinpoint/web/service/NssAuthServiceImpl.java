@@ -5,6 +5,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
@@ -14,6 +15,7 @@ import java.util.Collections;
  * @author HyunGil Jeong
  */
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class NssAuthServiceImpl implements NssAuthService {
 
     private final NssAuthDao nssAuthDao;
@@ -25,6 +27,7 @@ public class NssAuthServiceImpl implements NssAuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<String> getAuthorizedPrefixes() {
         Collection<String> authorizedPrefixes = nssAuthDao.selectAuthorizedPrefix();
         if (CollectionUtils.isEmpty(authorizedPrefixes)) {
@@ -45,6 +48,7 @@ public class NssAuthServiceImpl implements NssAuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<String> getOverrideUserIds() {
         Collection<String> overrideUserIds = nssAuthDao.selectOverrideUserId();
         if (CollectionUtils.isEmpty(overrideUserIds)) {

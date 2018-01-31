@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
-import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
@@ -16,10 +15,7 @@ import com.navercorp.pinpoint.web.vo.UserGroup;
 public class AppConfigOrganizer {
     @Autowired
     ApplicationConfigService applicationConfigService;
-    
-    @Autowired
-    UserGroupService userGroupService;
-    
+
     protected ApplicationConfiguration getApplicationConfiguration(PinpointAuthentication authentication, String applicationId) {
         ApplicationConfiguration appConfig = authentication.getApplicationConfiguration(applicationId);
         
