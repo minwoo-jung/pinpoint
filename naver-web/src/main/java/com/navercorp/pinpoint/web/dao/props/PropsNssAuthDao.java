@@ -17,8 +17,6 @@
 package com.navercorp.pinpoint.web.dao.props;
 
 import com.navercorp.pinpoint.web.dao.NssAuthDao;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
@@ -32,10 +30,7 @@ public class PropsNssAuthDao implements NssAuthDao {
 
     private final Collection<String> authorizedPrefixes;
 
-    @Autowired
-    public PropsNssAuthDao(
-            @Value("#{pinpointWebProps['nss.override.id'] ?: ''}") String overrideIds,
-            @Value("#{pinpointWebProps['nss.authorized.prefix'] ?: ''}") String authorizedPrefixes) {
+    public PropsNssAuthDao(String overrideIds, String authorizedPrefixes) {
         this.overrideUserIds = StringUtils.commaDelimitedListToSet(overrideIds);
         this.authorizedPrefixes = StringUtils.commaDelimitedListToSet(authorizedPrefixes);
     }

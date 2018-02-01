@@ -120,12 +120,19 @@
         <property name="rowKeyDistributorByHashPrefix" ref="metadataRowKeyDistributor2"></property>
     </bean>
 
-    <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao"/>
+    <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao">
+        <constructor-arg index="0" value="#{pinpointWebProps['nss.override.id'] ?: ''}"/>
+        <constructor-arg index="1" value="#{pinpointWebProps['nss.authorized.prefix'] ?: ''}"/>
+    </bean>
 
     <bean id="nssAuthDaoFactory" class="com.navercorp.pinpoint.web.dao.NssAuthDaoFactory"/>
 
-    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter"/>
-    
+    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter">
+        <constructor-arg index="0" value="#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}"/>
+        <constructor-arg index="1" ref="nssAuthServiceImpl"/>
+        <constructor-arg index="2" ref="jsonObjectMapper"/>
+    </bean>
+
     <!--  Web Socket  -->
     <bean id="handlerRegister" class="com.navercorp.pinpoint.web.websocket.PinpointWebSocketHandlerManager">
         <constructor-arg>
@@ -166,5 +173,11 @@
             </list>
         </property>
     </bean>
+
+    <bean id="applicationsMapCreateExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"/>
+
+    <bean id="nodeHistogramAppendExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"/>
+
+    <bean id="serverInfoAppendExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"/>
 
 </beans>

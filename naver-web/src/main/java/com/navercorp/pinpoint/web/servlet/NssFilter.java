@@ -23,8 +23,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
@@ -59,11 +57,7 @@ public class NssFilter implements Filter {
     private volatile List<String> authorizedPrefixes = Collections.emptyList();
     private volatile Set<String> overrideIds = Collections.emptySet();
 
-    @Autowired
-    public NssFilter(
-            @Value("#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}") String userHeaderKey,
-            NssAuthService nssAuthService,
-            ObjectMapper objectMapper) {
+    public NssFilter(String userHeaderKey, NssAuthService nssAuthService, ObjectMapper objectMapper) {
         Assert.hasLength(userHeaderKey, "userHeaderKey must not be empty");
         Assert.notNull(nssAuthService, "nssAuthService must not be null");
         Assert.notNull(objectMapper, "objectMapper must not be null");

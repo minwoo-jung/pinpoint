@@ -26,11 +26,18 @@
 
     <bean id="tableNameProvider" class="com.navercorp.pinpoint.web.hbase.NaverHbaseTableNameProvider" primary="true"/>
 
-    <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao"/>
+    <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao">
+        <constructor-arg index="0" value="#{pinpointWebProps['nss.override.id'] ?: ''}"/>
+        <constructor-arg index="1" value="#{pinpointWebProps['nss.authorized.prefix'] ?: ''}"/>
+    </bean>
 
     <bean id="nssAuthDaoFactory" class="com.navercorp.pinpoint.web.dao.NssAuthDaoFactory"/>
 
-    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter"/>
+    <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter">
+        <constructor-arg index="0" value="#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}"/>
+        <constructor-arg index="1" ref="nssAuthServiceImpl"/>
+        <constructor-arg index="2" ref="jsonObjectMapper"/>
+    </bean>
 
     <bean id="agentDownloadInfoDao" class="com.navercorp.pinpoint.web.dao.rest.NaverAgentDownloadInfoDao">
     </bean>
