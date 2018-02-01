@@ -24,7 +24,7 @@
     
     <util:properties id="matcherInfo" location="classpath:site-matcher.properties"/>
 
-    <bean id="tableNameProvider" class="com.navercorp.pinpoint.web.hbase.NaverHbaseTableNameProvider"/>
+    <bean id="tableNameProvider" class="com.navercorp.pinpoint.web.hbase.NaverHbaseTableNameProvider" primary="true"/>
 
     <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao"/>
 
