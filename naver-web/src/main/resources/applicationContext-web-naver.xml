@@ -9,7 +9,6 @@
 
     <import resource="classpath:applicationContext-web.xml" />
     <import resource="classpath:batch/applicationContext-batch-naver.xml" />
-    <import resource="classpath:applicationContext-web-namespace.xml"/>
 <!--     <import resource="classpath:applicationContext-web-nelo.xml"/> -->
 
     <bean id="nsightMatcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NsightMatcherGroup">
@@ -24,8 +23,6 @@
     </bean>
     
     <util:properties id="matcherInfo" location="classpath:site-matcher.properties"/>
-
-    <bean id="tableNameProvider" class="com.navercorp.pinpoint.web.hbase.NaverHbaseTableNameProvider" primary="true"/>
 
     <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao">
         <constructor-arg index="0" value="#{pinpointWebProps['nss.override.id'] ?: ''}"/>
