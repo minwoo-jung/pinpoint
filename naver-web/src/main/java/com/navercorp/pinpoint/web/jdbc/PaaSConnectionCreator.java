@@ -17,6 +17,8 @@ package com.navercorp.pinpoint.web.jdbc;
 
 import com.navercorp.pinpoint.web.namespace.NameSpaceInfo;
 import org.apache.hadoop.security.SaslOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -30,22 +32,24 @@ import java.sql.SQLException;
 // 성능상 문제 있는 코드고 일단 동작 시연을 위해서 만듬.
 public class PaaSConnectionCreator implements ConnectionCreator {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     ApplicationContext applicationContext;
 
     @Override
     public Connection createConnection(Connection connection) throws SQLException {
-        System.out.println("this :" + connection.toString());
-        System.out.println("~~~~~~~~~~~~~~~~~~start getConnection(1) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ : " + connection.getCatalog());
+        logger.debug("this : {}", connection.toString());
+        logger.debug("~~~~~~~~~~~~~~~~~~start getConnection(1) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ : {}", connection.getCatalog());
         try {
             NameSpaceInfo nameSpaceInfo = applicationContext.getBean(NameSpaceInfo.class);
-            System.out.println("!!!!!!!!!!!!!!!!!!!! : namespace Info" + nameSpaceInfo);
+            logger.debug("!!!!!!!!!!!!!!!!!!!! : namespace Info ({})", nameSpaceInfo);
             connection.setCatalog(nameSpaceInfo.getMysqlDatabaseName());
         } catch (Exception e) {
             e.printStackTrace();
             connection.setCatalog("naver");
         }
-        System.out.println("~~~~~~~~~~~~~~~~~ set catalog  (2) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ : " + connection.getCatalog());
+        logger.debug("~~~~~~~~~~~~~~~~~ set catalog  (2) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ : {}", connection.getCatalog());
         return new NaverConnectionDelegator(connection);
     }
 }

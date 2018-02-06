@@ -15,6 +15,9 @@
  */
 package com.navercorp.pinpoint.web.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
@@ -24,6 +27,8 @@ import java.util.concurrent.Executor;
  * @author minwoo.jung
  */
 public class NaverConnectionDelegator implements Connection {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static String INIT_DATABASE_NAME = "empty";
     private final Connection delegate;
@@ -45,14 +50,26 @@ public class NaverConnectionDelegator implements Connection {
 
     @Override
     public void close() throws SQLException {
-        delegate.setCatalog(INIT_DATABASE_NAME);
+        try {
+            delegate.setCatalog(INIT_DATABASE_NAME);
+        } catch (Exception e){
+            logger.error("Exception occurred while set Catalog", e);
+        }
+
         delegate.close();
     }
 
     @Override
     public void commit() throws SQLException {
-        delegate.commit();
-        delegate.setCatalog(INIT_DATABASE_NAME);
+        try {
+            delegate.commit();
+        } finally {
+            try {
+                delegate.setCatalog(INIT_DATABASE_NAME);
+            } catch (Exception e) {
+                logger.error("Exception occurred while set Catalog", e);
+            }
+        }
     }
 
     @Override
@@ -227,15 +244,28 @@ public class NaverConnectionDelegator implements Connection {
 
     @Override
     public void rollback() throws SQLException {
-        delegate.rollback();
-        delegate.setCatalog(INIT_DATABASE_NAME);
+        try {
+            delegate.rollback();
+        } finally {
+            try {
+                delegate.setCatalog(INIT_DATABASE_NAME);
+            } catch (Exception e) {
+                logger.error("Exception occurred while set Catalog", e);
+            }
+        }
     }
 
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
-        delegate.rollback(savepoint);
-        delegate.setCatalog(INIT_DATABASE_NAME);
-
+        try {
+            delegate.rollback(savepoint);
+        } finally {
+            try {
+                delegate.setCatalog(INIT_DATABASE_NAME);
+            } catch (Exception e) {
+                logger.error("Exception occurred while set Catalog", e);
+            }
+        }
     }
 
     @Override

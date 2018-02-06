@@ -15,6 +15,9 @@
  */
 package com.navercorp.pinpoint.web.jdbc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
@@ -26,6 +29,8 @@ import java.util.concurrent.Executor;
 public class PaaSConnectionDelegator implements Connection {
 
     private static String INIT_DATABASE_NAME = "empty";
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Connection delegate;
 
     public PaaSConnectionDelegator(Connection delegate) {
@@ -45,22 +50,35 @@ public class PaaSConnectionDelegator implements Connection {
 
     @Override
     public void close() throws SQLException {
-        System.out.println("this :" + delegate.toString());
-        System.out.println("########################start close(1) ######################## : " + delegate.getCatalog());
-        delegate.setCatalog(INIT_DATABASE_NAME);
-        System.out.println("########################set catelog(2)######################## : " + delegate.getCatalog());
+        logger.debug("this : {}", delegate.toString());
+        try {
+            logger.debug("########################start close(1) ######################## : {}", delegate.getCatalog());
+            delegate.setCatalog(INIT_DATABASE_NAME);
+            logger.debug("########################set catelog(2)######################## : {}", delegate.getCatalog());
+        } catch (Exception e){
+            logger.error("Exception occurred while set Catalog", e);
+        }
+
         delegate.close();
-        System.out.println("########################end close(3)######################## : ");
+        logger.debug("########################end close(3)########################");
     }
 
     @Override
     public void commit() throws SQLException {
-        System.out.println("this :" + delegate.toString());
-        System.out.println("============================start commit(1)=============== : " + delegate.getCatalog());
-        delegate.commit();
-        System.out.println("============================set catelog (2)===============  : " + delegate.getCatalog());
-        delegate.setCatalog(INIT_DATABASE_NAME);
-        System.out.println("============================start commit(3)=============== : " + delegate.getCatalog());
+        logger.debug("this : {}", delegate.toString());
+        try {
+            logger.debug("============================start commit(1)=============== : {}", delegate.getCatalog());
+            delegate.commit();
+            logger.debug("============================set catelog (2)===============  : {}", delegate.getCatalog());
+        } finally {
+            try {
+                delegate.setCatalog(INIT_DATABASE_NAME);
+            } catch (Exception e) {
+                logger.error("Exception occurred while set Catalog", e);
+            }
+        }
+        logger.debug("============================start commit(3)=============== : {}", delegate.getCatalog());
+
     }
 
     @Override
@@ -235,23 +253,38 @@ public class PaaSConnectionDelegator implements Connection {
 
     @Override
     public void rollback() throws SQLException {
-        System.out.println("this :" + delegate.toString());
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@start rollback(1)@@@@@@@@@@@@@@@@@@@@@@@@@@  : " + delegate.getCatalog());
-        delegate.rollback();
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@set catalog  (2)@@@@@@@@@@@@@@@@@@@@@@@@@@ : " + delegate.getCatalog());
-        delegate.setCatalog(INIT_DATABASE_NAME);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@start rollback(3)@@@@@@@@@@@@@@@@@@@@@@@@@@ : " + delegate.getCatalog());
+        logger.debug("this : {}" + delegate.toString());
+        try {
+            logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@start rollback(1)@@@@@@@@@@@@@@@@@@@@@@@@@@  : {}", delegate.getCatalog());
+            delegate.rollback();
+            logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@set catalog  (2)@@@@@@@@@@@@@@@@@@@@@@@@@@ : {}", delegate.getCatalog());
+        } finally {
+            try {
+                delegate.setCatalog(INIT_DATABASE_NAME);
+            } catch (Exception e) {
+                logger.error("Exception occurred while set Catalog", e);
+            }
+        }
+
+        logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@start rollback(3)@@@@@@@@@@@@@@@@@@@@@@@@@@ : {}", delegate.getCatalog());
     }
 
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
-        System.out.println("this :" + delegate.toString());
-        System.out.println("*************************start rollback(1)************************* : " + delegate.getCatalog());
-        delegate.rollback(savepoint);
-        System.out.println("*************************set catalog (2)************************* : " + delegate.getCatalog());
-        delegate.setCatalog(INIT_DATABASE_NAME);
-        System.out.println("*************************start rollback(3)************************* : " + delegate.getCatalog());
+        logger.debug("this : {}", delegate.toString());
+        try {
+            logger.debug("*************************start rollback(1)************************* : ", delegate.getCatalog());
+            delegate.rollback(savepoint);
+            logger.debug("*************************set catalog (2)************************* : ", delegate.getCatalog());
+        } finally {
+            try {
+                delegate.setCatalog(INIT_DATABASE_NAME);
+            } catch (Exception e) {
+                logger.error("Exception occurred while set Catalog", e);
+            }
+        }
 
+        logger.debug("*************************start rollback(3)************************* : {}", delegate.getCatalog());
     }
 
     @Override
