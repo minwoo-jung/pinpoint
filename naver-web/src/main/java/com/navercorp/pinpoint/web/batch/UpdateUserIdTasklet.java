@@ -52,7 +52,7 @@ public class UpdateUserIdTasklet implements Tasklet {
         logger.info("###############startUpdate user_configuration###############");
         for (UserInfo userInfo : userInfoList) {
             try {
-                logger.info(++number + " : ========== " + userInfo + " ===========");
+                logger.info("{}  : ========== {} ===========", ++number, userInfo);
                 UserConfiguration userConfiguration = userConfigService.selectUserConfiguration(userInfo.getUserId());
                 if (userInfo.getUserId().equals(userConfiguration.getUserId())) {
                     UserConfiguration newUserConfiguration = new UserConfiguration();
@@ -62,14 +62,13 @@ public class UpdateUserIdTasklet implements Tasklet {
                     userConfigService.insertUserConfiguration(newUserConfiguration);
                     //delete
                     userConfigService.deleteUserConfiguration(userInfo.getUserId());
-                    logger.info(number + " : ========== " + "find and insert/delete(before) : " + userConfiguration);
-                    logger.info(number + " : ========== " + "find and insert/delete(after ) : " + newUserConfiguration);
+                    logger.info("{} : ========== find and insert/delete(before) : {}", number, userConfiguration);
+                    logger.info("{} : ========== find and insert/delete(after ) : {}", number, newUserConfiguration);
                 } else {
 //                    logger.info(number + " : ========== " + "can't find in user_configuration table : " + userInfo );
                 }
-                logger.info("");
             } catch (Exception e) {
-                logger.error("Exception while update user configuration : " + userInfo, e);
+                logger.error("Exception while update user configuration : {}", userInfo, e);
                 throw e;
             }
         }
@@ -78,7 +77,7 @@ public class UpdateUserIdTasklet implements Tasklet {
         number = 0;
         for(UserInfo userInfo : userInfoList) {
             List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userInfo.getUserId());
-            logger.info(++number + " : ========== " + userInfo + " ===========");
+            logger.info("{} : ========== {} ===========", ++number, userInfo);
             for (UserGroup userGroup : userGroups) {
                 try {
                     UserGroupMember userGroupMember = new UserGroupMember(userGroup.getId(), userInfo.getUserId());
@@ -87,10 +86,10 @@ public class UpdateUserIdTasklet implements Tasklet {
                     userGroupService.insertMember(newUserGroupMember);
                     //delete
                     userGroupService.deleteMember(userGroupMember);
-                    logger.info(number + " : ========== " + "find and insert/delete(before) : " + userGroupMember);
-                    logger.info(number + " : ========== " + "find and insert/delete(after ) : " + newUserGroupMember);
+                    logger.info("{} : ========== " + "find and insert/delete(before) : {}", number, userGroupMember);
+                    logger.info("{} : ========== " + "find and insert/delete(after ) : {}", number, newUserGroupMember);
                 } catch (Exception e) {
-                    logger.error("Exception while update user group member : " + userInfo, e);
+                    logger.error("Exception while update user group member : {}", userInfo, e);
                     throw e;
                 }
             }

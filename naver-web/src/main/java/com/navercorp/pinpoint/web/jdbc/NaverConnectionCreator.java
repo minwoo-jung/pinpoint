@@ -15,6 +15,9 @@
  */
 package com.navercorp.pinpoint.web.jdbc;
 
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -25,6 +28,10 @@ public class NaverConnectionCreator implements ConnectionCreator {
     private final String defaultDatabaseName;
 
     public NaverConnectionCreator(String defaultDatabaseName) {
+        if (StringUtils.isEmpty(defaultDatabaseName)) {
+            throw new NullPointerException("defaultDatabaseName must not be null");
+        }
+
         this.defaultDatabaseName = defaultDatabaseName;
     }
 

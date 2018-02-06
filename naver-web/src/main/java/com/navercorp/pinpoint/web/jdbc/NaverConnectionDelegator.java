@@ -17,6 +17,7 @@ package com.navercorp.pinpoint.web.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.sql.*;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class NaverConnectionDelegator implements Connection {
     private final Connection delegate;
 
     public NaverConnectionDelegator(Connection delegate) {
+        Assert.notNull(delegate, "connection must not be null");
         this.delegate = delegate;
     }
 
