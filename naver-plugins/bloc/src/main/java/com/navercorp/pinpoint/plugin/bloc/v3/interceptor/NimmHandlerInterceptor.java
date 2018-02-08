@@ -17,17 +17,13 @@ package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
 import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
-import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.context.TraceId;
-import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
-import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
-import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.LucyNetHeader;
+import com.navercorp.pinpoint.plugin.bloc.LucyNetServerRequestTrace;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor;
 import com.nhncorp.lucy.net.call.Call;
@@ -72,120 +68,32 @@ public class NimmHandlerInterceptor extends AbstractBlocAroundInterceptor {
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
-        NpcMessage npcMessage = (NpcMessage) args[0];
-
-        Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
-
-        String srcAddress = LucyNetUtils.nimmAddressToString((NimmAddress) args[1]);
-
-        boolean sampling = sampleEnable(pinpointOptions);
-        if (!sampling) {
-            final Trace trace = traceContext.disableSampling();
-            if (isDebug) {
-                logger.debug("remotecall sampling flag found. skip trace remoteAddr:{}", srcAddress);
-            }
-            return trace;
-        }
-
+        final NpcMessage npcMessage = (NpcMessage) args[0];
+        final Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
+        final String rpcName = LucyNetUtils.getRpcName(npcMessage);
+        final String remoteAddress = LucyNetUtils.nimmAddressToString((NimmAddress) args[1]);
         String dstAddress = BlocConstants.UNKOWN_ADDRESS;
         if (target instanceof NimmServerSocketAddressAccessor) {
             dstAddress = ((NimmServerSocketAddressAccessor) target)._$PINPOINT$_getNimmAddress();
         }
+        final String endPoint = dstAddress;
 
-        final String rpcName = LucyNetUtils.getRpcName(npcMessage);
-        final TraceId traceId = populateTraceIdFromRequest(pinpointOptions);
-        if (traceId != null) {
-            final Trace trace = traceContext.continueTraceObject(traceId);
-            if (trace.canSampled()) {
-                if (isDebug) {
-                    logger.debug("TraceID exist. continue trace. traceId:{}, srcAddr:{}, dstAddr:{}, rpcName:{}", traceId, srcAddress, dstAddress, rpcName);
-                }
-            } else {
-                if (isDebug) {
-                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, srcAddr:{}, dstAddr:{}, rpcName:{}", traceId, srcAddress, dstAddress, rpcName);
-                }
-            }
-            return trace;
-        } else {
-            final Trace trace = traceContext.newTraceObject();
-            if (trace.canSampled()) {
-                if (isDebug) {
-                    logger.debug("TraceID not exist. start new trace. srcAddr:{}, dstAddr:{}, rpcName:{}", srcAddress, dstAddress, rpcName);
-                }
-            } else {
-                if (isDebug) {
-                    logger.debug("TraceID not exist. camSampled is false. skip trace. srcAddr:{}, dstAddr:{}, rpcName:{}", srcAddress, dstAddress, rpcName);
-                }
-            }
-            return trace;
+        final ServerRequestTrace serverRequestTrace = new LucyNetServerRequestTrace(pinpointOptions, rpcName, endPoint, remoteAddress, endPoint);
+        final Trace trace = this.requestTraceReader.read(serverRequestTrace);
+        if (trace.canSampled()) {
+            SpanRecorder spanRecorder = trace.getSpanRecorder();
+            spanRecorder.recordServiceType(BlocConstants.BLOC);
+            spanRecorder.recordApi(blocMethodApiTag);
+            this.serverRequestRecorder.record(spanRecorder, serverRequestTrace);
         }
-    }
-
-    private boolean sampleEnable(Map<String, String> pinpointOptions) {
-        String samplingFlag = pinpointOptions.get(LucyNetHeader.PINPOINT_SAMPLED.toString());
-        return SamplingFlagUtils.isSamplingFlag(samplingFlag);
-    }
-
-    private TraceId populateTraceIdFromRequest(Map<String, String> pinpointOptions) {
-        String transactionId = pinpointOptions.get(LucyNetHeader.PINPOINT_TRACE_ID.toString());
-        if (transactionId != null) {
-            long parentSpanID = NumberUtils.parseLong(pinpointOptions.get(LucyNetHeader.PINPOINT_PARENT_SPAN_ID.toString()), SpanId.NULL);
-            long spanID = NumberUtils.parseLong(pinpointOptions.get(LucyNetHeader.PINPOINT_SPAN_ID.toString()), SpanId.NULL);
-            short flags = NumberUtils.parseShort(pinpointOptions.get(LucyNetHeader.PINPOINT_FLAGS.toString()), (short) 0);
-
-            final TraceId id = traceContext.createTraceId(transactionId, parentSpanID, spanID, flags);
-            if (isDebug) {
-                logger.debug("TraceID exist. continue trace. {}", id);
-            }
-            return id;
-        } else {
-            return null;
-        }
+        return trace;
     }
 
     @Override
     protected void doInBeforeTrace(Trace trace, Object target, Object[] args) {
-        SpanRecorder spanRecorder = trace.getSpanRecorder();
-
-        try {
-            spanRecorder.recordServiceType(BlocConstants.BLOC);
-
-            NpcMessage npcMessage = (NpcMessage) args[0];
-            spanRecorder.recordRpcName(LucyNetUtils.getRpcName(npcMessage));
-
-            String srcAddress = LucyNetUtils.nimmAddressToString((NimmAddress) args[1]);
-            spanRecorder.recordRemoteAddress(srcAddress);
-
-            String dstAddress = BlocConstants.UNKOWN_ADDRESS;
-            if (target instanceof NimmServerSocketAddressAccessor) {
-                dstAddress = ((NimmServerSocketAddressAccessor) target)._$PINPOINT$_getNimmAddress();
-            }
-            spanRecorder.recordEndPoint(dstAddress);
-
-            if (!spanRecorder.isRoot()) {
-                Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
-
-                final String parentApplicationName = pinpointOptions.get(LucyNetHeader.PINPOINT_PARENT_APPLICATION_NAME.toString());
-                if (parentApplicationName != null) {
-                    final String host = pinpointOptions.get(LucyNetHeader.PINPOINT_HOST.toString());
-                    if (host != null) {
-                        spanRecorder.recordAcceptorHost(host);
-                    } else {
-                        spanRecorder.recordAcceptorHost(dstAddress);
-                    }
-
-                    final String type = pinpointOptions.get(LucyNetHeader.PINPOINT_PARENT_APPLICATION_TYPE.toString());
-                    final short parentApplicationType = NumberUtils.parseShort(type, ServiceType.UNDEFINED.getCode());
-                    spanRecorder.recordParentApplication(parentApplicationName, parentApplicationType);
-                }
-            }
-
-            spanRecorder.recordApi(blocMethodApiTag);
-        } finally {
-            SpanEventRecorder spanEventRecorder = trace.traceBlockBegin();
-            spanEventRecorder.recordApi(methodDescriptor);
-            spanEventRecorder.recordServiceType(BlocConstants.BLOC_INTERNAL_METHOD);
-        }
+        SpanEventRecorder spanEventRecorder = trace.traceBlockBegin();
+        spanEventRecorder.recordApi(methodDescriptor);
+        spanEventRecorder.recordServiceType(BlocConstants.BLOC_INTERNAL_METHOD);
     }
 
     @Override

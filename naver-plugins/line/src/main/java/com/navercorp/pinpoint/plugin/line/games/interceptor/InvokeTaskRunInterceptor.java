@@ -6,30 +6,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.line.LineConfig;
+import com.navercorp.pinpoint.plugin.line.LineServerRequestTrace;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.jboss.netty.util.CharsetUtil;
 
-import com.navercorp.pinpoint.bootstrap.context.Header;
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
-import com.navercorp.pinpoint.bootstrap.context.SpanId;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.interceptor.SpanSimpleAroundInterceptor;
-import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
-import com.navercorp.pinpoint.bootstrap.util.NumberUtils;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.ServiceType;
-import com.navercorp.pinpoint.plugin.line.ChannelHandlerContextAccessor;
 import com.navercorp.pinpoint.plugin.line.MessageEventAccessor;
 
 /**
@@ -48,6 +45,8 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
     private final int paramDumpSize;
     private final int entityDumpSize;
     private final boolean param;
+    private final ServerRequestRecorder serverRequestRecorder = new ServerRequestRecorder();
+    private final RequestTraceReader requestTraceReader;
 
     public InvokeTaskRunInterceptor(TraceContext traceContext, MethodDescriptor descriptor, int paramDumpSize, int entityDumpSize) {
         super(traceContext, descriptor, InvokeTaskRunInterceptor.class);
@@ -56,144 +55,42 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
         this.paramDumpSize = paramDumpSize;
         this.entityDumpSize = entityDumpSize;
         this.param = config.isParam();
+
+        this.requestTraceReader = new RequestTraceReader(traceContext);
     }
 
     @Override
     public void doInBeforeTrace(SpanRecorder recorder, Object target, Object[] args) {
-        ChannelHandlerContext channelHandlerContext = ((ChannelHandlerContextAccessor)target)._$PINPOINT$_getChannelHandlerContext();
-        MessageEvent e = ((MessageEventAccessor)target)._$PINPOINT$_getMessageEvent();
-
-        if (channelHandlerContext == null) {
-            logger.debug("ChannelHandlerContext is null.");
-            return;
-        }
-
-        if (e == null) {
-            logger.debug("MessageEvent is null.");
-            // after에서도 체크하지않으면 사실 로직이 이상해짐.
-            return;
-        }
-
-        if (!(e.getMessage() instanceof org.jboss.netty.handler.codec.http.HttpRequest)) {
-            logger.debug("MessageEvent is not instance of org.jboss.netty.handler.codec.http.HttpRequest. {}", e.getMessage());
-            return;
-        }
-        org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) e.getMessage();
-        Channel channel = e.getChannel();
-        if (channel == null) {
-            logger.debug("Channel is null.");
-            return;
-        }
-
-        String requestURL = request.getUri();
-        // FIXME 모든 address는 / 로 시작하나???
-
-
-        final String endPoint = getLocalAddress(channel);
-
-        if (recorder.canSampled()) {
-
-            recorder.recordServiceType(ServiceType.STAND_ALONE);
-            recorder.recordRpcName(requestURL);
-
-            recorder.recordEndPoint(endPoint);
-
-            final String remoteAddr = getRemoteAddress(channel);
-            recorder.recordRemoteAddress(remoteAddr);
-        }
-
-        // 서버 맵을 통계정보에서 조회하려면 remote로 호출되는 WAS의 관계를 알아야해서 부모의 application
-        // name을 전달받음.
-        if (!recorder.isRoot()) {
-            String parentApplicationName = populateParentApplicationNameFromRequest(request);
-            short parentApplicationType = populateParentApplicationTypeFromRequest(request);
-            if (parentApplicationName != null) {
-                recorder.recordParentApplication(parentApplicationName, parentApplicationType);
-                final String host = request.getHeader(Header.HTTP_HOST.toString());
-                if(host != null) {
-                    recorder.recordAcceptorHost(host);
-                } else {
-                    recorder.recordAcceptorHost(endPoint);
-                }
-            }
-        } else {
-            // TODO 여기에서 client 정보를 수집할 수 있다.
-        }
-
     }
-
-
 
     @Override
     protected Trace createTrace(Object target, Object[] args) {
-        MessageEvent messageEvent = ((MessageEventAccessor)target)._$PINPOINT$_getMessageEvent();
-        org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) messageEvent.getMessage();
-
-        Channel channel = messageEvent.getChannel();
+        final MessageEvent messageEvent = ((MessageEventAccessor) target)._$PINPOINT$_getMessageEvent();
+        if (messageEvent == null) {
+            logger.debug("MessageEvent is null.");
+            return null;
+        }
+        if (!(messageEvent.getMessage() instanceof org.jboss.netty.handler.codec.http.HttpRequest)) {
+            logger.debug("MessageEvent is not instance of org.jboss.netty.handler.codec.http.HttpRequest. {}", messageEvent.getMessage());
+            return null;
+        }
+        final org.jboss.netty.handler.codec.http.HttpRequest request = (org.jboss.netty.handler.codec.http.HttpRequest) messageEvent.getMessage();
+        final Channel channel = messageEvent.getChannel();
         if (channel == null) {
             logger.debug("Channel is null.");
             return null;
         }
-
-        // FIXME 모든 address는 / 로 시작하나???
-//            String remoteAddr = channel.getRemoteAddress().toString().substring(1);
-//            String endPoint = channel.getLocalAddress().toString().substring(1);
-
-        // check sampled
-        final boolean sampling = isSamplingEnabled(request);
-        if (!sampling) {
-            // 샘플링 대상이 아닐 경우도 TraceObject를 생성하여, sampling 대상이 아니라는것을 명시해야
-            // 한다.
-            // sampling 대상이 아닐경우 rpc 호출에서 sampling 대상이 아닌 것에 rpc호출 파라미터에
-            // sampling disable 파라미터를 박을수 있다.
-            final Trace trace = traceContext.disableSampling();
-            if (isDebug) {
-                String requestURL = request.getUri();
-                String remoteAddr = getRemoteAddress(channel);
-                logger.debug("remotecall sampling flag found. skip trace requestUrl:{}, remoteAddr:{}", requestURL, remoteAddr);
-            }
-            return trace;
+        final String endPoint = getLocalAddress(channel);
+        final String remoteAddr = getRemoteAddress(channel);
+        final ServerRequestTrace serverRequestTrace = new LineServerRequestTrace(request, endPoint, remoteAddr, endPoint);
+        final Trace trace = this.requestTraceReader.read(serverRequestTrace);
+        if (trace.canSampled()) {
+            final SpanRecorder recorder = trace.getSpanRecorder();
+            recorder.recordServiceType(ServiceType.STAND_ALONE);
+            recorder.recordApi(this.methodDescriptor);
+            this.serverRequestRecorder.record(recorder, serverRequestTrace);
         }
-
-        final TraceId traceId = populateTraceIdFromRequest(request);
-        if (traceId != null) {
-            // TODO remote에서 sampling flag로 마크가되는 대상으로 왔을 경우도 추가로 샘플링 칠수 있어야
-            // 할것으로 보임.
-            final Trace trace = traceContext.continueTraceObject(traceId);
-            if (trace.canSampled()) {
-                if (isDebug) {
-                    String requestURL = request.getUri();
-                    String remoteAddr = getRemoteAddress(channel);
-                    logger.debug("TraceID exist. continue trace. traceId:{}, requestUrl:{}, remoteAddr:{}", traceId, requestURL, remoteAddr);
-                }
-                return trace;
-            } else {
-                if (isDebug) {
-                    String requestURL = request.getUri();
-                    String remoteAddr = getRemoteAddress(channel);
-                    logger.debug("TraceID exist. camSampled is false. skip trace. traceId:{}, requestUrl:{}, remoteAddr:{}", traceId, requestURL, remoteAddr);
-
-                }
-                return trace;
-            }
-        } else {
-            final Trace trace = traceContext.newTraceObject();
-            if (trace.canSampled()) {
-                if (isDebug) {
-                    String requestURL = request.getUri();
-                    String remoteAddr = getRemoteAddress(channel);
-                    logger.debug("TraceID not exist. start new trace. requestUrl:{}, remoteAddr:{}", requestURL, remoteAddr);
-                }
-                return trace;
-            } else {
-                if (isDebug) {
-                    String requestURL = request.getUri();
-                    String remoteAddr = getRemoteAddress(channel);
-                    logger.debug("TraceID not exist. camSampled is false. skip trace. requestUrl:{}, remoteAddr:{}", requestURL, remoteAddr);
-                }
-                return trace;
-            }
-        }
+        return trace;
     }
 
     private String getLocalAddress(Channel channel) {
@@ -206,16 +103,13 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
 
     @Override
     public void doInAfterTrace(SpanRecorder recorder, Object target, Object[] args, Object result, Throwable throwable) {
-
-        if (recorder.canSampled()) {
-            if(this.param) {
-                MessageEvent e = ((MessageEventAccessor)target)._$PINPOINT$_getMessageEvent();
-                if (e != null) {
-                    recordHttpParameter2(recorder, e);
-                }
+        if (this.param) {
+            MessageEvent e = ((MessageEventAccessor) target)._$PINPOINT$_getMessageEvent();
+            if (e != null) {
+                recordHttpParameter2(recorder, e);
             }
-            recorder.recordApi(methodDescriptor);
         }
+        recorder.recordApi(methodDescriptor);
         recorder.recordException(throwable);
     }
 
@@ -303,68 +197,6 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
             return false;
         }
         return thisMethod.getName().equals(thatMethod.getName());
-    }
-
-    /**
-     * request header에 sampling 정보가 포함되어있는지 확인.
-     *
-     * @param request
-     * @return
-     */
-    private boolean isSamplingEnabled(final org.jboss.netty.handler.codec.http.HttpRequest request) {
-        String samplingFlag = request.getHeader(Header.HTTP_SAMPLED.toString());
-        if (isDebug) {
-            logger.debug("SamplingFlag:{}", samplingFlag);
-        }
-        return SamplingFlagUtils.isSamplingFlag(samplingFlag);
-    }
-
-    /**
-     * request header에서 traceid를 뽑아낸다.
-     *
-     * @param request
-     * @return
-     */
-    private TraceId populateTraceIdFromRequest(final org.jboss.netty.handler.codec.http.HttpRequest request) {
-        String transactionId = request.getHeader(Header.HTTP_TRACE_ID.toString());
-        if (transactionId != null) {
-
-            long parentSpanID = NumberUtils.parseLong(request.getHeader(Header.HTTP_PARENT_SPAN_ID.toString()), SpanId.NULL);
-            long spanID = NumberUtils.parseLong(request.getHeader(Header.HTTP_SPAN_ID.toString()), SpanId.NULL);
-            short flags = NumberUtils.parseShort(request.getHeader(Header.HTTP_FLAGS.toString()), (short) 0);
-
-            TraceId id = traceContext.createTraceId(transactionId, parentSpanID, spanID, flags);
-            if (isDebug) {
-                logger.debug("TraceID exist. continue trace. {}", id);
-            }
-            return id;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * request header에서 parent application name 추출
-     *
-     * @param request
-     * @return
-     */
-    private String populateParentApplicationNameFromRequest(final org.jboss.netty.handler.codec.http.HttpRequest request) {
-        return request.getHeader(Header.HTTP_PARENT_APPLICATION_NAME.toString());
-    }
-
-    /**
-     * request header에서 parent application type 추출
-     *
-     * @param request
-     * @return
-     */
-    private short populateParentApplicationTypeFromRequest(final org.jboss.netty.handler.codec.http.HttpRequest request) {
-        String type = request.getHeader(Header.HTTP_PARENT_APPLICATION_TYPE.toString());
-        if (type != null) {
-            return Short.valueOf(type);
-        }
-        return ServiceType.UNDEFINED.getCode();
     }
 
     /**
