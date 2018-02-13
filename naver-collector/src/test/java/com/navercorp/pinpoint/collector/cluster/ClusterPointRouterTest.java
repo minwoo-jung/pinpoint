@@ -5,7 +5,9 @@ import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConne
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionRepository;
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnector;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
+import com.navercorp.pinpoint.collector.util.Address;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
+import com.navercorp.pinpoint.collector.util.DefaultAddress;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
@@ -35,7 +37,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.SocketUtils;
 
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class ClusterPointRouterTest {
             serverAcceptor.setMessageListener(new PinpointSocketManagerHandler());
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
-            InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            Address address = new DefaultAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             Assert.assertEquals(0, clusterManager.getConnectedAddressList().size());
             clusterManager.connectPointIfAbsent(address);
