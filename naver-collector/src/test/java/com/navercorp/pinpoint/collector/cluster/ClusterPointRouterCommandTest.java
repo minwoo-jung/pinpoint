@@ -25,6 +25,7 @@ import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
 import com.navercorp.pinpoint.thrift.dto.command.TCommandEcho;
 import com.navercorp.pinpoint.thrift.dto.command.TCommandTransfer;
+import com.navercorp.pinpoint.thrift.dto.command.TCommandTransferResponse;
 import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
 import com.navercorp.pinpoint.thrift.io.SerializerFactory;
 import com.navercorp.pinpoint.thrift.util.SerializationUtils;
@@ -46,7 +47,7 @@ import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
-public class ClusterPointRouterTest2 {
+public class ClusterPointRouterCommandTest {
 
     private static final int DEFAULT_COLLECTOR_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22214);
     private static final int DEFAULT_WEB_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22215);
@@ -110,8 +111,10 @@ public class ClusterPointRouterTest2 {
             Future<ResponseMessage> future = writablePinpointServer.request(commandDeliveryPayload);
             future.await();
 
-            TCommandEcho base = (TCommandEcho) SerializationUtils.deserialize(future.getResult().getMessage(), commandDeserializerFactory);
-            Assert.assertEquals(base.getMessage(), "hello");
+            TCommandTransferResponse response = (TCommandTransferResponse) SerializationUtils.deserialize(future.getResult().getMessage(), commandDeserializerFactory);
+            TCommandEcho echoResponse = (TCommandEcho) SerializationUtils.deserialize(response.getPayload(), commandDeserializerFactory);
+
+            Assert.assertEquals(echoResponse.getMessage(), "hello");
         } finally {
             if (clusterManager != null) {
                 clusterManager.stop();
