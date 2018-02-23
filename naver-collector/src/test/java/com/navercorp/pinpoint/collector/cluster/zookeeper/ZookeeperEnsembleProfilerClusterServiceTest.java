@@ -78,7 +78,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             Assert.assertEquals(0, result.size());
 
             byte[] payload = ControlMessageEncodingUtils.encode(getParams());
-            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(payload);
+            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
             pinpointServer.messageReceived(handshakePacket);
             Thread.sleep(1000);
 
@@ -121,7 +121,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             Assert.assertEquals(0, result.size());
 
             byte[] payload = ControlMessageEncodingUtils.encode(getParams());
-            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(payload);
+            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
             pinpointServer.messageReceived(handshakePacket);
             Thread.sleep(1000);
 
@@ -170,7 +170,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             Assert.assertEquals(0, result.size());
 
             byte[] payload = ControlMessageEncodingUtils.encode(getParams());
-            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(payload);
+            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
             pinpointServer.messageReceived(handshakePacket);
             Thread.sleep(1000);
 
