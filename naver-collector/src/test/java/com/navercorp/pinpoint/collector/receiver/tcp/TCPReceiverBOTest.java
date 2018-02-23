@@ -1,6 +1,5 @@
 package com.navercorp.pinpoint.collector.receiver.tcp;
 
-import com.navercorp.pinpoint.collector.receiver.TcpDispatchHandler;
 import com.navercorp.pinpoint.rpc.packet.Packet;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.ResponsePacket;
@@ -14,12 +13,13 @@ import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializerFactory;
 import org.apache.thrift.TBase;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -38,32 +39,42 @@ import java.net.Socket;
 public class TCPReceiverBOTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    TcpDispatchHandler handler;
+    private final AtomicInteger requestId = new AtomicInteger(0);
 
-    @Autowired
-    private AgentBaseDataReceiver tcpReceiver;
+    private Socket socket;
+    private OutputStream os;
+    private InputStream is;
 
+    @Before
+    public void setUp() throws Exception {
+        this.socket = connectTcpReceiver();
+        this.os = socket.getOutputStream();
+        this.is = socket.getInputStream();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if (this.os != null) {
+            os.close();
+        }
+        if (this.is != null) {
+            is.close();
+        }
+        if (socket != null) {
+            socket.close();
+        }
+    }
 
     @Test
     public void agentInfoTest1() throws Exception {
-        Socket socket = connectTcpReceiver();
-        OutputStream os = socket.getOutputStream();
-        InputStream is = socket.getInputStream();
-
         TAgentInfo agentInfo = getAgentInfo();
         encodeAndWrite(os, agentInfo, false);
         ResponsePacket responsePacket = readAndDecode(is, 1000);
         Assert.assertNull(responsePacket);
-
     }
 
     @Test
     public void agentInfoTest2() throws Exception {
-        Socket socket = connectTcpReceiver();
-        OutputStream os = socket.getOutputStream();
-        InputStream is = socket.getInputStream();
-
         TAgentInfo agentInfo = getAgentInfo();
         encodeAndWrite(os, agentInfo, true);
         ResponsePacket responsePacket = readAndDecode(is, 1000);
@@ -75,8 +86,10 @@ public class TCPReceiverBOTest {
     }
 
     private Socket connectTcpReceiver() throws IOException {
+        InetSocketAddress endpoint = new InetSocketAddress("127.0.0.1", 9994);
+
         Socket socket = new Socket();
-        socket.connect(new InetSocketAddress("127.0.0.1", 9994));
+        socket.connect(endpoint);
 
         return socket;
     }
@@ -87,13 +100,17 @@ public class TCPReceiverBOTest {
 
         Packet packet = null;
         if (isReqRes) {
-            packet = new RequestPacket(payload);
+            packet = new RequestPacket(nextRequestId(), payload);
         } else {
             packet = new SendPacket(payload);
         }
 
         os.write(packet.toBuffer().toByteBuffer().array());
         os.flush();
+    }
+
+    private int nextRequestId() {
+        return requestId.incrementAndGet();
     }
 
     private ResponsePacket readAndDecode(InputStream is, long waitTimeMillis) throws Exception {
