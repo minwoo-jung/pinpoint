@@ -89,7 +89,7 @@ public class EncodeMessageInterceptor implements AroundInterceptor {
         }
 
         if (optionMap.size() == 0) {
-            addOption(optionMap, trace, nimmAddress, Collections.EMPTY_SET);
+            addOption(optionMap, trace, nimmAddress, Collections.<String>emptySet());
         } else {
             Collection optionDataSet = optionMap.values();
 
