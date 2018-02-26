@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.jdbc;
+package com.navercorp.pinpoint.web.namespace.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -31,10 +32,11 @@ public class DataSourceDelegator implements DataSource {
 
     private DataSource dataSource;
 
-    @Autowired(required = false)
+    @Autowired
     private ConnectionCreator connectionCreator;
 
     public DataSourceDelegator(DataSource dataSource) {
+        Assert.notNull(dataSource, "dataSource must not be null");
         this.dataSource = dataSource;
     }
 
@@ -92,5 +94,4 @@ public class DataSourceDelegator implements DataSource {
 
         return connectionCreator.createConnection(connection);
     }
-
 }

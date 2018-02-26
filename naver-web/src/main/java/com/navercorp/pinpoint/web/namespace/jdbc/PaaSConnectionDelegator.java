@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.jdbc;
+package com.navercorp.pinpoint.web.namespace.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.sql.*;
 import java.util.Map;
@@ -33,8 +34,9 @@ public class PaaSConnectionDelegator implements Connection {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Connection delegate;
 
-    public PaaSConnectionDelegator(Connection delegate) {
-        this.delegate = delegate;
+    public PaaSConnectionDelegator(Connection connection) {
+        Assert.notNull(connection, "connection must not be null");
+        this.delegate = connection;
     }
 
 
@@ -50,26 +52,19 @@ public class PaaSConnectionDelegator implements Connection {
 
     @Override
     public void close() throws SQLException {
-        logger.debug("this : {}", delegate.toString());
         try {
-            logger.debug("########################start close(1) ######################## : {}", delegate.getCatalog());
             delegate.setCatalog(INIT_DATABASE_NAME);
-            logger.debug("########################set catelog(2)######################## : {}", delegate.getCatalog());
         } catch (Exception e){
             logger.error("Exception occurred while set Catalog", e);
         }
 
         delegate.close();
-        logger.debug("########################end close(3)########################");
     }
 
     @Override
     public void commit() throws SQLException {
-        logger.debug("this : {}", delegate.toString());
         try {
-            logger.debug("============================start commit(1)=============== : {}", delegate.getCatalog());
             delegate.commit();
-            logger.debug("============================set catelog (2)===============  : {}", delegate.getCatalog());
         } finally {
             try {
                 delegate.setCatalog(INIT_DATABASE_NAME);
@@ -77,8 +72,6 @@ public class PaaSConnectionDelegator implements Connection {
                 logger.error("Exception occurred while set Catalog", e);
             }
         }
-        logger.debug("============================start commit(3)=============== : {}", delegate.getCatalog());
-
     }
 
     @Override
@@ -253,11 +246,8 @@ public class PaaSConnectionDelegator implements Connection {
 
     @Override
     public void rollback() throws SQLException {
-        logger.debug("this : {}" + delegate.toString());
         try {
-            logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@start rollback(1)@@@@@@@@@@@@@@@@@@@@@@@@@@  : {}", delegate.getCatalog());
             delegate.rollback();
-            logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@set catalog  (2)@@@@@@@@@@@@@@@@@@@@@@@@@@ : {}", delegate.getCatalog());
         } finally {
             try {
                 delegate.setCatalog(INIT_DATABASE_NAME);
@@ -265,17 +255,12 @@ public class PaaSConnectionDelegator implements Connection {
                 logger.error("Exception occurred while set Catalog", e);
             }
         }
-
-        logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@start rollback(3)@@@@@@@@@@@@@@@@@@@@@@@@@@ : {}", delegate.getCatalog());
     }
 
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
-        logger.debug("this : {}", delegate.toString());
         try {
-            logger.debug("*************************start rollback(1)************************* : ", delegate.getCatalog());
             delegate.rollback(savepoint);
-            logger.debug("*************************set catalog (2)************************* : ", delegate.getCatalog());
         } finally {
             try {
                 delegate.setCatalog(INIT_DATABASE_NAME);
@@ -283,8 +268,6 @@ public class PaaSConnectionDelegator implements Connection {
                 logger.error("Exception occurred while set Catalog", e);
             }
         }
-
-        logger.debug("*************************start rollback(3)************************* : {}", delegate.getCatalog());
     }
 
     @Override

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.jdbc;
+package com.navercorp.pinpoint.web.namespace.jdbc;
 
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.sql.Connection;
@@ -29,7 +28,7 @@ public class NaverConnectionCreator implements ConnectionCreator {
 
     public NaverConnectionCreator(String defaultDatabaseName) {
         if (StringUtils.isEmpty(defaultDatabaseName)) {
-            throw new NullPointerException("defaultDatabaseName must not be null");
+            throw new NullPointerException("defaultDatabaseName must not be empty");
         }
 
         this.defaultDatabaseName = defaultDatabaseName;

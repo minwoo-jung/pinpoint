@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.jdbc;
+package com.navercorp.pinpoint.web.namespace.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +34,9 @@ public class NaverConnectionDelegator implements Connection {
     private static String INIT_DATABASE_NAME = "empty";
     private final Connection delegate;
 
-    public NaverConnectionDelegator(Connection delegate) {
-        Assert.notNull(delegate, "connection must not be null");
-        this.delegate = delegate;
+    public NaverConnectionDelegator(Connection connection) {
+        Assert.notNull(connection, "connection must not be null");
+        this.delegate = connection;
     }
 
 

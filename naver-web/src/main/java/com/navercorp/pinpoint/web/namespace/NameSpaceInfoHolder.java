@@ -15,14 +15,12 @@
  */
 package com.navercorp.pinpoint.web.namespace;
 
-import java.lang.annotation.*;
-
 /**
  * @author minwoo.jung
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Documented
-public @interface NameSpace {
+public interface NameSpaceInfoHolder {
+    public static final String DATABASE_NAME_KEY = "databaseName";
+    public static final String HBASE_NAMESAPCE = "hbaseNameSpace";
+
+    NameSpaceInfo getNameSpaceInfo() throws Exception;
 }

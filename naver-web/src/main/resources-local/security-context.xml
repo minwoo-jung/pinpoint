@@ -67,4 +67,35 @@
     
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
+
+    <!-- #############인증과정 없이 권한 데이터 취득 & PaaS 형태로 동적 namespace 동작 ##############-->
+    <!--
+    <http auto-config="true">
+        <session-management session-fixation-protection="none"/>
+        <custom-filter position="PRE_AUTH_FILTER" ref="autoLoginAuthenticationFilter"/>
+        <intercept-url pattern="/**.pinpoint" access="permitAll" />
+        <csrf disabled="true"/>
+        <access-denied-handler ref="accessDeniedHandler"/>
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
+    </http>
+
+    <beans:bean id="accessDeniedHandler" class="com.navercorp.pinpoint.web.security.AccessDeniedhandlerImpl"/>
+    <beans:bean id="autoLoginAuthenticationFilter" class="com.navercorp.pinpoint.web.namespace.security.AutoLoginAuthenticationFilter">
+        <beans:property name="userId" value="KR14966"/>
+    </beans:bean>
+
+    <authentication-manager>
+        <authentication-provider ref="naverAuthenticationProvider"/>
+    </authentication-manager>
+
+    <beans:bean id="naverAuthenticationProvider" class="com.navercorp.pinpoint.web.security.NaverAuthenticationProvider"/>
+
+    <beans:bean id="webSocketSecurityConfig" class="com.navercorp.pinpoint.web.security.WebSocketSecurityConfig"/>
+    <beans:bean id="handshakeInterceptor" class="com.navercorp.pinpoint.web.security.WebSocketSecurityInterceptor"/>
+
+    <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
+    <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
+    -->
 </beans:beans>

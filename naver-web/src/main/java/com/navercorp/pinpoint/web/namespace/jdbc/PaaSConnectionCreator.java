@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.namespace;
+package com.navercorp.pinpoint.web.namespace.jdbc;
 
-import org.aspectj.lang.JoinPoint;
+import com.navercorp.pinpoint.web.namespace.NameSpaceInfo;
+import com.navercorp.pinpoint.web.namespace.PaaSNameSpaceInfoFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * @author minwoo.jung
  */
-public class NameSpaceAspect {
+public class PaaSConnectionCreator implements ConnectionCreator {
 
     @Autowired
-    ApplicationContext applicationContext;
+    PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory;
 
-    public void before(JoinPoint joinPoint) {
-        NameSpaceInfo nameSpaceInfo = applicationContext.getBean(NameSpaceInfo.class);
-        if (nameSpaceInfo.isInit() == false) {
-            System.out.println("!!!!!!!!!!!!!!!set namespaceinfo!!!!!!!!!!!!! : " + nameSpaceInfo);
-            nameSpaceInfo.initNameSpaceInfo("kr14966", "naver", "pinpoint");
-        }
+    @Override
+    public Connection createConnection(Connection connection) throws SQLException {
+        NameSpaceInfo nameSpaceInfo = paaSNameSpaceInfoFactory.getNameSpaceInfo();
+        connection.setCatalog(nameSpaceInfo.getMysqlDatabaseName());
+        return new PaaSConnectionDelegator(connection);
     }
 }

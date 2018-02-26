@@ -14,6 +14,13 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+    <!-- for request scope-->
+    <!--
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+    -->
+
     <!-- root application context configuration -->
     <context-param>
         <param-name>contextConfigLocation</param-name>

@@ -81,8 +81,11 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
-        chain.doFilter(request, response);
-        SecurityContextHolder.clearContext();
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
     }
 
     private boolean isManager(String userId) {

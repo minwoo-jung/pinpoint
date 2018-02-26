@@ -30,6 +30,8 @@ import org.apache.zookeeper.WatchedEvent;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.SocketUtils;
 
 import java.io.IOException;
@@ -43,6 +45,8 @@ public class FlinkClusterServiceTest {
 
     private static final int DEFAULT_ZOOKEEPER_PORT = SocketUtils.findAvailableTcpPort(22213);
     private static final String PINPOINT_FLINK_CLUSTER_PATH =  "/pinpoint-cluster/flink";
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static CollectorConfiguration config = null;
 
@@ -242,7 +246,7 @@ public class FlinkClusterServiceTest {
                 flinkClusterService.tearDown();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("exception has occurred while closeFlinkClusterService ", e);
         }
     }
 
@@ -264,7 +268,7 @@ public class FlinkClusterServiceTest {
                 serverAcceptor.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("exception has occurred while closeServerAcceptor ", e);
         }
     }
 
@@ -274,7 +278,7 @@ public class FlinkClusterServiceTest {
                 zookeeperServer.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("exception has occurred while closeZookeeperServer ", e);
         }
     }
 

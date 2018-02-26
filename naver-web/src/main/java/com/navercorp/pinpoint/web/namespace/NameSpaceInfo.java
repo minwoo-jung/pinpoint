@@ -15,31 +15,35 @@
  */
 package com.navercorp.pinpoint.web.namespace;
 
+import org.springframework.util.StringUtils;
+
 /**
  * @author minwoo.jung
  */
 public class NameSpaceInfo {
 
-    private volatile String userId = "";
-    private volatile String mysqlDatabaseName = "";
-    private volatile String hbaseNamespace = "";
-    private volatile boolean init = false;
+    private final String userId;
+    private final String mysqlDatabaseName;
+    private final String hbaseNamespace;
 
-    public synchronized void initNameSpaceInfo (String userid, String mysqlDatabaseName, String hbaseNamespace) {
-        if (init == false) {
-            this.userId = userid;
-            this.hbaseNamespace = hbaseNamespace;
-            this.mysqlDatabaseName = mysqlDatabaseName;
-            init = true;
+    public NameSpaceInfo (String userId, String mysqlDatabaseName, String hbaseNamespace) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new IllegalArgumentException("userId must not be empty");
         }
+        if (StringUtils.isEmpty(mysqlDatabaseName)) {
+            throw new IllegalArgumentException("mysqlDatabaseName must not be empty");
+        }
+        if (StringUtils.isEmpty(hbaseNamespace)) {
+            throw new IllegalArgumentException("hbaseNamespace must not be empty");
+        }
+
+        this.userId = userId;
+        this.hbaseNamespace = hbaseNamespace;
+        this.mysqlDatabaseName = mysqlDatabaseName;
     }
 
     public String getHbaseNamespace() {
         return hbaseNamespace;
-    }
-
-    public boolean isInit() {
-        return init;
     }
 
     public String getMysqlDatabaseName() {
@@ -49,6 +53,4 @@ public class NameSpaceInfo {
     public String getUserId() {
         return userId;
     }
-
-
 }

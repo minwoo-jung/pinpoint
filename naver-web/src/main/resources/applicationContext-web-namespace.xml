@@ -4,31 +4,36 @@
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:task="http://www.springframework.org/schema/task"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:batch="http://www.springframework.org/schema/batch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
-		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
 
-    <bean id="connectionCreator" class="com.navercorp.pinpoint.web.jdbc.NaverConnectionCreator">
-        <constructor-arg index="0" value="${jdbc.default.databaseName}"/>
+    <bean id="connectionCreator" class="com.navercorp.pinpoint.web.namespace.jdbc.NaverConnectionCreator">
+    <constructor-arg index="0" value="${jdbc.default.databaseName}"/>
     </bean>
 
     <bean id="tableNameProvider" class="com.navercorp.pinpoint.common.hbase.HbaseTableNameProvider">
         <constructor-arg index="0" value="${hbase.namespace:default}"/>
     </bean>
 
-    <!--<bean id="connectionCreator" class="com.navercorp.pinpoint.web.jdbc.PaaSConnectionCreator"/>-->
-    <!--<bean class="com.navercorp.pinpoint.web.namespace.NameSpaceInfo"  scope="request">-->
-        <!--<aop:scoped-proxy/>-->
-    <!--</bean>-->
+    <!--For PaaS -->
+    <!--
+    <bean id="connectionCreator" class="com.navercorp.pinpoint.web.namespace.jdbc.PaaSConnectionCreator">
+    </bean>
 
-    <!--<bean id="nameSpaceAspect" class="com.navercorp.pinpoint.web.namespace.NameSpaceAspect" />-->
+    <bean id="batchNameSpaceInfoHolder" class="com.navercorp.pinpoint.web.namespace.BatchNameSpaceInfoHolder" scope="step">
+        <constructor-arg index="0" value="#{stepExecution}"/>
+        <aop:scoped-proxy proxy-target-class="false"/>
+    </bean>
+    <bean id="requestNameSpaceInfoHolder" class="com.navercorp.pinpoint.web.namespace.RequestNameSpaceInfoHolder" scope="request">
+        <aop:scoped-proxy proxy-target-class="false"/>
+    </bean>
 
-    <!--<aop:config >-->
-        <!--<aop:aspect id="namespace" ref="nameSpaceAspect" order="0" >-->
-            <!--<aop:pointcut id="pointCutBefore" expression="@within(com.navercorp.pinpoint.web.namespace.NameSpace) || @annotation(com.navercorp.pinpoint.web.namespace.NameSpace)" />-->
-            <!--<aop:before method="before" pointcut-ref="pointCutBefore" />-->
-        <!--</aop:aspect>-->
-    <!--</aop:config>-->
-
+    <bean id="paaSNameSpaceInfoFactory" class="com.navercorp.pinpoint.web.namespace.PaaSNameSpaceInfoFactory">
+        <constructor-arg index="0" ref="batchConfigruation"/>
+    </bean>
+    -->
 </beans>

@@ -30,7 +30,7 @@
         <property name="maxOpenPreparedStatements" value="50"/>
     </bean>
 
-    <bean id="dataSource" class="com.navercorp.pinpoint.web.jdbc.DataSourceDelegator">
+    <bean id="dataSource" class="com.navercorp.pinpoint.web.namespace.jdbc.DataSourceDelegator">
         <constructor-arg index="0" ref="originalDataSource"/>
     </bean>
 </beans>

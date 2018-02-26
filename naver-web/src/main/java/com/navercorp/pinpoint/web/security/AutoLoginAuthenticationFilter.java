@@ -88,8 +88,11 @@ public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
         
         CustomHttpServletRequest customRequest = new CustomHttpServletRequest(request);
         customRequest.putHeader(SSO_USER, userId);
-        chain.doFilter(customRequest, response);
-        SecurityContextHolder.clearContext();
+        try {
+            chain.doFilter(customRequest, response);
+        } finally {
+            SecurityContextHolder.clearContext();
+        }
     }
 
     private boolean isManager(String userId) {

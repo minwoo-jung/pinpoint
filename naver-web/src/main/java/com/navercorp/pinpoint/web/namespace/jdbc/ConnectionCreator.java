@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.jdbc;
+package com.navercorp.pinpoint.web.namespace.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,5 +22,5 @@ import java.sql.SQLException;
  * @author minwoo.jung
  */
 public interface ConnectionCreator {
-    public Connection createConnection(Connection connection) throws SQLException;
+    Connection createConnection(Connection connection) throws SQLException;
 }
