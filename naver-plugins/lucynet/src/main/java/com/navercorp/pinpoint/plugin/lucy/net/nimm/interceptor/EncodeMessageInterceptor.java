@@ -88,7 +88,7 @@ public class EncodeMessageInterceptor implements AroundInterceptor {
             nimmAddress = ((NimmAddressAccessor) target)._$PINPOINT$_getNimmAddress();
         }
 
-        if (optionMap.size() == 0) {
+        if (optionMap.isEmpty()) {
             addOption(optionMap, trace, nimmAddress, Collections.<String>emptySet());
         } else {
             Collection optionDataSet = optionMap.values();
@@ -124,7 +124,7 @@ public class EncodeMessageInterceptor implements AroundInterceptor {
     }
 
     private void addOption0(Map userOptions, List<byte[]> options) {
-        if (userOptions.size() == 0) {
+        if (userOptions.isEmpty()) {
             for (int i = 0; i < options.size(); i++) {
                 userOptions.put(new UserOptionIndex(1, i), options.get(i));
             }
