@@ -19,21 +19,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author minwoo.jung
  */
 public class ApplicationConfiguration {
-    private String applicationId;
-    private Map<String, AppUserGroupAuth> appUserGroupAuthes;
+    private final String applicationId;
+    private final Map<String, AppUserGroupAuth> appUserGroupAuthes;
 
     public ApplicationConfiguration(String applicationId, List<AppUserGroupAuth> appUserGroupAuthList) {
-        this.applicationId = applicationId;
-        this.appUserGroupAuthes = new HashMap<String, AppUserGroupAuth>();
+        this.applicationId = Objects.requireNonNull(applicationId, "applicationId must not be null");
 
+        Objects.requireNonNull(appUserGroupAuthList, "appUserGroupAuthList must not be null");
+        this.appUserGroupAuthes = toMap(appUserGroupAuthList);
+    }
+
+    private Map<String, AppUserGroupAuth> toMap(List<AppUserGroupAuth> appUserGroupAuthList) {
+        Map<String, AppUserGroupAuth> map = new HashMap<>(appUserGroupAuthes.size());
         for (AppUserGroupAuth appAuthUserGroup : appUserGroupAuthList) {
-            this.appUserGroupAuthes.put(appAuthUserGroup.getUserGroupId(), appAuthUserGroup);
+            map.put(appAuthUserGroup.getUserGroupId(), appAuthUserGroup);
         }
+        return map;
     }
 
     public String getApplicationId() {
@@ -41,8 +48,8 @@ public class ApplicationConfiguration {
     }
 
     public boolean isAffiliatedAppUserGroup(List<UserGroup> userGroupList) {
-        for(UserGroup userGroup : userGroupList) {
-            if(appUserGroupAuthes.get(userGroup.getId()) != null) {
+        for (UserGroup userGroup : userGroupList) {
+            if (appUserGroupAuthes.get(userGroup.getId()) != null) {
                 return true;
             }
         }
