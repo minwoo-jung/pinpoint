@@ -33,12 +33,12 @@ public class AppConfigOrganizer {
         List<UserGroup> userGroupList = authentication.getUserGroupList();
         
         List<AppUserGroupAuth> containedUserGroups = new ArrayList<>();
-        for(UserGroup userGroup : userGroupList) {
+        for (UserGroup userGroup : userGroupList) {
             if (appUserGroupAuthes.containsKey(userGroup.getId())) {
                 containedUserGroups.add(appUserGroupAuthes.get(userGroup.getId()));
             }
         }
-        if (containedUserGroups.size() == 0) {
+        if (containedUserGroups.isEmpty()) {
             AppUserGroupAuth appUserGroupAuth = appUserGroupAuthes.get(Role.GUEST.getName());
             if (appUserGroupAuth != null) {
                 containedUserGroups.add(appUserGroupAuth);
@@ -51,7 +51,7 @@ public class AppConfigOrganizer {
     protected boolean isEmptyUserGroup(PinpointAuthentication authentication, String applicationId) {
         ApplicationConfiguration appConfig = getApplicationConfiguration(authentication, applicationId);
         
-        if (appConfig.getAppUserGroupAuthes().size() == 0) {
+        if (appConfig.getAppUserGroupAuthes().isEmpty()) {
             return true;
         }
         

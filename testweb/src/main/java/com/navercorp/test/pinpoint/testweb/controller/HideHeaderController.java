@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author emeroad
@@ -71,13 +72,13 @@ public class HideHeaderController {
             return "fail(getHeader)";
         }
         Enumeration<String> headers = request.getHeaders(PINPOINT_HEADER);
-        ArrayList<String> list = Collections.list(headers);
+        List<String> list = Collections.list(headers);
         if (list.size() != 0) {
             return "fail(getHeaders)";
         }
 
         Enumeration<String> headerNames = request.getHeaderNames();
-        ArrayList<String> headerNamesList = Collections.list(headerNames);
+        List<String> headerNamesList = Collections.list(headerNames);
         logger.debug("headernames:{}", headerNamesList);
         for (String headerName : headerNamesList) {
             if (headerName.regionMatches(true, 0, PINPOINT_HEADER_STARTWITH, 0, PINPOINT_HEADER_STARTWITH.length())) {
@@ -99,8 +100,8 @@ public class HideHeaderController {
 
 
         Enumeration<String> headers = request.getHeaders("noExist");
-        ArrayList<String> list = Collections.list(headers);
-        if (list.size() != 0) {
+        List<String> list = Collections.list(headers);
+        if (list.isEmpty()) {
             return "fail(getHeaders)";
         }
 

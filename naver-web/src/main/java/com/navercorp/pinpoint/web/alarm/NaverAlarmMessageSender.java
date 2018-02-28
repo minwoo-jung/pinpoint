@@ -81,7 +81,7 @@ public class NaverAlarmMessageSender implements AlarmMessageSender {
     public void sendSms(AlarmChecker checker, int sequenceCount) {
         List<String> receivers = userGroupService.selectPhoneNumberOfMember(checker.getuserGroupId());
 
-        if (receivers.size() == 0) {
+        if (receivers.isEmpty()) {
             return;
         }
         

@@ -84,7 +84,7 @@ public class NmsController {
             nmsInfos.add(nmsInfo);
         }
 
-        if (nmsInfos.size() == 0) {
+        if (nmsInfos.isEmpty()) {
             return getNMSGuideMessage();
         }
         
@@ -119,7 +119,7 @@ public class NmsController {
         }
         
         List<String> ports = new ArrayList<>(rsPorts);
-        Collections.sort(ports, new Comparator<String>() {
+        ports.sort(new Comparator<String>() {
             public int compare(String o1, String o2) {
                 final int i1 = Integer.parseInt(o1);
                 final int i2 = Integer.parseInt(o2);

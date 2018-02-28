@@ -53,7 +53,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     @Override
     public void initApplicationConfiguration(String applicationId) {
         List<AppUserGroupAuth> appUserGroupAuthList = applicationConfigDao.selectAppUserGroupAuthList(applicationId);
-        if(appUserGroupAuthList.size() == 0) {
+        if (appUserGroupAuthList.isEmpty()) {
             AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, Role.GUEST.toString(), Role.GUEST.toString(), new AppAuthConfiguration());
             applicationConfigDao.insertAppUserGroupAuth(appUserGroupAuth);
         }
@@ -102,7 +102,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     public boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId) {
         ApplicationConfiguration appConfig = selectApplicationConfiguration(appUserGroupAuth.getApplicationId());
         
-        if (appConfig.getAppUserGroupAuth().size() == 0 || existManager(appConfig) == false) {
+        if (appConfig.getAppUserGroupAuth().isEmpty() || existManager(appConfig) == false) {
             Map<String, UserGroup> userGroups = getUserGroups(userId);
             if (userGroups.containsKey(appUserGroupAuth.getUserGroupId()) && Role.MANAGER.equals(appUserGroupAuth.getRole())) {
                 return anyOneOccupyAtfirst; 
