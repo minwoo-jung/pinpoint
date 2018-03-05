@@ -36,7 +36,7 @@ public class ApplicationConfiguration {
     }
 
     private Map<String, AppUserGroupAuth> toMap(List<AppUserGroupAuth> appUserGroupAuthList) {
-        Map<String, AppUserGroupAuth> map = new HashMap<>(appUserGroupAuthes.size());
+        Map<String, AppUserGroupAuth> map = new HashMap<>(appUserGroupAuthList.size());
         for (AppUserGroupAuth appAuthUserGroup : appUserGroupAuthList) {
             map.put(appAuthUserGroup.getUserGroupId(), appAuthUserGroup);
         }
