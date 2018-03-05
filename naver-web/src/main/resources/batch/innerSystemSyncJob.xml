@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
-	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-	<job id="innerSystemSyncJob" xmlns="http://www.springframework.org/schema/batch" >
-		<step id="step1" xmlns="http://www.springframework.org/schema/batch" >
-			<tasklet>
-				<chunk reader="imdbUserReader" writer="userWriter" commit-interval="200" />
-			</tasklet>
+    <job id="innerSystemSyncJob" xmlns="http://www.springframework.org/schema/batch">
+        <step id="step1" xmlns="http://www.springframework.org/schema/batch">
+            <tasklet>
+                <chunk reader="imdbUserReader" writer="userWriter" commit-interval="200"/>
+            </tasklet>
             <listeners>
                 <listener ref="userListener"/>
             </listeners>
-		</step>
-		<listeners>
-        	<listener ref="jobFailListener"/>
+        </step>
+        <listeners>
+            <listener ref="jobFailListener"/>
         </listeners>
-	</job>
-	
-	<bean id="imdbUserReader" class="com.navercorp.pinpoint.web.batch.CubridCursorItemReader" scope="step" >
-		<property name="dataSource" ref="imdbDataSource" />
-		<property name="rowMapper">
-			<bean class="org.springframework.jdbc.core.BeanPropertyRowMapper">
-				<property name="mappedClass" value="com.navercorp.pinpoint.web.vo.User" />
-			</bean>
-		</property>
-		<property name="fetchSize" value="50000" />
-		<property name="verifyCursorPosition" value="false" />
-		<property name="sql">
-			<value>
-			<![CDATA[
-				SELECT 
+    </job>
+
+    <bean id="imdbUserReader" class="com.navercorp.pinpoint.web.batch.CubridCursorItemReader" scope="step">
+        <property name="dataSource" ref="imdbDataSource"/>
+        <property name="rowMapper">
+            <bean class="org.springframework.jdbc.core.BeanPropertyRowMapper">
+                <property name="mappedClass" value="com.navercorp.pinpoint.web.vo.User"/>
+            </bean>
+        </property>
+        <property name="fetchSize" value="50000"/>
+        <property name="verifyCursorPosition" value="false"/>
+        <property name="sql">
+            <value>
+                <![CDATA[
+				SELECT
 					employeeno AS userId,
 					name,
 					team AS department,
@@ -41,26 +42,26 @@
 				FROM im_tbl_direct_user
                 WHERE retirechk  <> '002'
 			]]>
-	   		</value>
-		</property>
-	</bean>
-	
-	<bean id="userWriter" class="com.navercorp.pinpoint.web.batch.UserWriter"/>
-    
+            </value>
+        </property>
+    </bean>
+
+    <bean id="userWriter" class="com.navercorp.pinpoint.web.batch.UserWriter"/>
+
     <bean id="userListener" class="com.navercorp.pinpoint.web.batch.UserListener"/>
 
     <bean id="imdbDataSource" class="org.apache.commons.dbcp2.BasicDataSource">
-		<property name="driverClassName" value="${imdb.jdbc.driverClassName}" />
-		<property name="url" value="${imdb.jdbc.url}" />
-		<property name="username" value="${imdb.jdbc.username}" />
-		<property name="password" value="${imdb.jdbc.password}" />
-        
-                <property name="initialSize" value="30"/>
-<!--         <property name="maxActive" value="30"/> -->
+        <property name="driverClassName" value="${imdb.jdbc.driverClassName}"/>
+        <property name="url" value="${imdb.jdbc.url}"/>
+        <property name="username" value="${imdb.jdbc.username}"/>
+        <property name="password" value="${imdb.jdbc.password}"/>
+
+        <property name="initialSize" value="30"/>
+        <!--         <property name="maxActive" value="30"/> -->
         <property name="maxTotal" value="30"/>
         <property name="maxIdle" value="30"/>
         <property name="minIdle" value="30"/>
-<!--         <property name="maxWait" value="3000"/> -->
+        <!--         <property name="maxWait" value="3000"/> -->
         <property name="maxWaitMillis" value="3000"/>
 
         <property name="testOnBorrow" value="false"/>
@@ -76,5 +77,5 @@
         <property name="poolPreparedStatements" value="true"/>
         <property name="maxOpenPreparedStatements" value="50"/>
     </bean>
-    
+
 </beans>
