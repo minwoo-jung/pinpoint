@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <nimm-connector>
   <dncp-server-list component-full-name="DEV-PINTPOINT-TESTCLIENT">
-    <dncp-server ip="10.98.133.99" port="42000" /> 
+    <dncp-server ip="10.113.115.186" port="42000" />
   </dncp-server-list>
 </nimm-connector>
