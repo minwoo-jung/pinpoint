@@ -15,14 +15,12 @@
  */
 package com.navercorp.pinpoint.web.namespace.jdbc;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
-
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -30,14 +28,13 @@ import java.util.logging.Logger;
  */
 public class DataSourceDelegator implements DataSource {
 
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
-    @Autowired
-    private ConnectionCreator connectionCreator;
+    private final DelegatorConnectionFactory delegatorConnectionFactory;
 
-    public DataSourceDelegator(DataSource dataSource) {
-        Assert.notNull(dataSource, "dataSource must not be null");
-        this.dataSource = dataSource;
+    public DataSourceDelegator(DataSource dataSource, DelegatorConnectionFactory delegatorConnectionFactory) {
+        this.dataSource = Objects.requireNonNull(dataSource, "dataSource must not be null");
+        this.delegatorConnectionFactory = Objects.requireNonNull(delegatorConnectionFactory, "delegatorConnectionFactory must not be null");
     }
 
     @Override
@@ -78,20 +75,24 @@ public class DataSourceDelegator implements DataSource {
     @Override
     public Connection getConnection() throws SQLException {
         Connection connection = dataSource.getConnection();
-        return makeConnection(connection);
+        return wrapConnection(connection);
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
         Connection connection = dataSource.getConnection(username, password);
-        return makeConnection(connection);
+        return wrapConnection(connection);
     }
 
-    private Connection makeConnection(Connection connection) throws SQLException {
-        if (connectionCreator == null) {
-            return connection;
-        }
+    private Connection wrapConnection(Connection connection) throws SQLException {
+        return delegatorConnectionFactory.createConnection(connection);
+    }
 
-        return connectionCreator.createConnection(connection);
+    @Override
+    public String toString() {
+        return "DataSourceDelegator{" +
+                "dataSource=" + dataSource +
+                ", delegatorConnectionFactory=" + delegatorConnectionFactory +
+                '}';
     }
 }

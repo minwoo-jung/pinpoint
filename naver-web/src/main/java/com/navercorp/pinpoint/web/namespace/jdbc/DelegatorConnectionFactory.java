@@ -21,6 +21,6 @@ import java.sql.SQLException;
 /**
  * @author minwoo.jung
  */
-public interface ConnectionCreator {
+public interface DelegatorConnectionFactory {
     Connection createConnection(Connection connection) throws SQLException;
 }

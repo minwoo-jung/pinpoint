@@ -17,26 +17,26 @@ package com.navercorp.pinpoint.web.namespace.jdbc;
 
 import com.navercorp.pinpoint.web.namespace.NameSpaceInfo;
 import com.navercorp.pinpoint.web.namespace.PaaSNameSpaceInfoFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * @author minwoo.jung
  */
-public class PaaSConnectionCreator implements ConnectionCreator {
+public class PaaSConnectionCreator implements DelegatorConnectionFactory {
 
-    @Autowired
-    PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory;
+    private final PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory;
+
+    public PaaSConnectionCreator(PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory) {
+        this.paaSNameSpaceInfoFactory = Objects.requireNonNull(paaSNameSpaceInfoFactory, "paaSNameSpaceInfoFactory must not be null");
+    }
 
     @Override
     public Connection createConnection(Connection connection) throws SQLException {
         NameSpaceInfo nameSpaceInfo = paaSNameSpaceInfoFactory.getNameSpaceInfo();
         connection.setCatalog(nameSpaceInfo.getMysqlDatabaseName());
-        return new PaaSConnectionDelegator(connection);
+        return GuardConnection.wrap(connection);
     }
 }

@@ -17,28 +17,45 @@ package com.navercorp.pinpoint.web.namespace.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.NClob;
+import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Savepoint;
+import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
  * @author minwoo.jung
  */
-public class PaaSConnectionDelegator implements Connection {
-
-    private static String INIT_DATABASE_NAME = "empty";
+public class GuardConnection implements Connection {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private static final String INIT_DATABASE_NAME = "empty";
+
     private final Connection delegate;
 
-    public PaaSConnectionDelegator(Connection connection) {
-        Assert.notNull(connection, "connection must not be null");
-        this.delegate = connection;
+    public static Connection wrap(Connection connection) {
+        return new GuardConnection(connection);
     }
 
+    private GuardConnection(Connection delegate) {
+        this.delegate = Objects.requireNonNull(delegate, "delegate must not be null");
+    }
 
     @Override
     public void abort(Executor executor) throws SQLException {
@@ -52,11 +69,7 @@ public class PaaSConnectionDelegator implements Connection {
 
     @Override
     public void close() throws SQLException {
-        try {
-            delegate.setCatalog(INIT_DATABASE_NAME);
-        } catch (Exception e){
-            logger.error("Exception occurred while set Catalog", e);
-        }
+        resetCatalog();
 
         delegate.close();
     }
@@ -66,11 +79,15 @@ public class PaaSConnectionDelegator implements Connection {
         try {
             delegate.commit();
         } finally {
-            try {
-                delegate.setCatalog(INIT_DATABASE_NAME);
-            } catch (Exception e) {
-                logger.error("Exception occurred while set Catalog", e);
-            }
+            resetCatalog();
+        }
+    }
+
+    private void resetCatalog() {
+        try {
+            delegate.setCatalog(INIT_DATABASE_NAME);
+        } catch (SQLException e) {
+            logger.error("Exception occurred while set Catalog", e);
         }
     }
 
@@ -249,11 +266,7 @@ public class PaaSConnectionDelegator implements Connection {
         try {
             delegate.rollback();
         } finally {
-            try {
-                delegate.setCatalog(INIT_DATABASE_NAME);
-            } catch (Exception e) {
-                logger.error("Exception occurred while set Catalog", e);
-            }
+            resetCatalog();
         }
     }
 
@@ -262,11 +275,7 @@ public class PaaSConnectionDelegator implements Connection {
         try {
             delegate.rollback(savepoint);
         } finally {
-            try {
-                delegate.setCatalog(INIT_DATABASE_NAME);
-            } catch (Exception e) {
-                logger.error("Exception occurred while set Catalog", e);
-            }
+            resetCatalog();
         }
     }
 
@@ -338,5 +347,10 @@ public class PaaSConnectionDelegator implements Connection {
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         return delegate.unwrap(iface);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

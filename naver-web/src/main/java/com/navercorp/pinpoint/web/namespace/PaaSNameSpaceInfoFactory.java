@@ -16,8 +16,6 @@
 package com.navercorp.pinpoint.web.namespace;
 
 import com.navercorp.pinpoint.web.batch.BatchConfiguration;
-import com.navercorp.pinpoint.web.batch.NaverBatchConfiguration;
-import com.navercorp.pinpoint.web.batch.NaverBatchJobLauncher;
 import com.navercorp.pinpoint.web.util.BatchUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

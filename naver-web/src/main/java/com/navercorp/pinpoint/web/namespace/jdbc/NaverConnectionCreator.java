@@ -23,7 +23,7 @@ import java.sql.SQLException;
 /**
  * @author minwoo.jung
  */
-public class NaverConnectionCreator implements ConnectionCreator {
+public class NaverConnectionCreator implements DelegatorConnectionFactory {
     private final String defaultDatabaseName;
 
     public NaverConnectionCreator(String defaultDatabaseName) {
@@ -37,6 +37,6 @@ public class NaverConnectionCreator implements ConnectionCreator {
     @Override
     public Connection createConnection(Connection connection) throws SQLException {
         connection.setCatalog(defaultDatabaseName);
-        return new NaverConnectionDelegator(connection);
+        return GuardConnection.wrap(connection);
     }
 }

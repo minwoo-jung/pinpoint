@@ -7,11 +7,11 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <job id="updateUserIdJob" xmlns="http://www.springframework.org/schema/batch" >
-        <step id="updateUserIdStep" xmlns="http://www.springframework.org/schema/batch" >
-            <tasklet ref="updateUserIdTasklet"/>
-        </step>
-    </job>
+    <batch:job id="updateUserIdJob">
+        <batch:step id="updateUserIdStep">
+            <batch:tasklet ref="updateUserIdTasklet"/>
+        </batch:step>
+    </batch:job>
 
     <bean id="updateUserIdTasklet" class="com.navercorp.pinpoint.web.batch.UpdateUserIdTasklet"/>
 </beans>

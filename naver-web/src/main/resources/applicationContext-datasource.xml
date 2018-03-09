@@ -32,5 +32,6 @@
 
     <bean id="dataSource" class="com.navercorp.pinpoint.web.namespace.jdbc.DataSourceDelegator">
         <constructor-arg index="0" ref="originalDataSource"/>
+        <constructor-arg index="1" ref="connectionCreator"/>
     </bean>
 </beans>
