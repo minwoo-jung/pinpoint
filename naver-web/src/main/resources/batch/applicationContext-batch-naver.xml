@@ -15,9 +15,8 @@
         <constructor-arg index="0" ref="naverBatchConfiguration"/>
     </bean>
 
-    <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration">
-        <property name="properties" ref="naverBatchProps"/>
-    </bean>
+    <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration"/>
+
     <util:properties id="naverBatchProps" location="classpath:batch.properties"/>
 
     <bean id="naverJobFailMessageSender" class="com.navercorp.pinpoint.web.batch.NaverJobFailMessageSender">

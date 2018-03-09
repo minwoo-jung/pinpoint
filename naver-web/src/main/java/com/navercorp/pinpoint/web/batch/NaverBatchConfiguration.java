@@ -15,55 +15,48 @@
  */
 package com.navercorp.pinpoint.web.batch;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
 /**
  * @author minwoo.jung
  */
+@Configuration
 public class NaverBatchConfiguration implements InitializingBean {
     private static final Logger logger = LoggerFactory.getLogger(BatchConfiguration.class);
-    private Properties properties;
 
+    @Value("#{naverBatchProps['batch.server.env']}")
     private String batchEnv;
+
+    @Value("#{naverBatchProps['alarm.sms.url']}")
     private String mexServerUrl;
+
+    @Value("#{naverBatchProps['alarm.sms.serviceId']}")
     private String serviceID;
+
+    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['alarm.sms.cellphone.number'] ?: ''), ',')}")
     private List<String> cellPhoneNumberList;
 
-    private String pinpointUrl;
+    @Value("#{naverBatchProps['alarm.mail.url']}")
     private String emailServerUrl;
 
-    public void setProperties(Properties properties) {
-        this.properties = properties;
+    @Value("#{naverBatchProps['pinpoint.url']}")
+    private String pinpointUrl;
+
+
+    public NaverBatchConfiguration() {
     }
 
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        batchEnv = readString(properties, "batch.server.env", null);
-        mexServerUrl = readString(properties, "alarm.sms.url", null);
-        serviceID = readString(properties, "alarm.sms.serviceId", null);
-        pinpointUrl = readString(properties, "pinpoint.url", null);
-        emailServerUrl = readString(properties, "alarm.mail.url", null);
-
-        String[] cellPhoneNumbers = StringUtils.split(readString(properties, "alarm.sms.cellphone.number", null), ",");
-        if (cellPhoneNumbers == null) {
-            this.cellPhoneNumberList = Collections.emptyList();
-        } else {
-            this.cellPhoneNumberList = new ArrayList<>(cellPhoneNumbers.length);
-            for (String cellPhoneNumber : cellPhoneNumbers) {
-                if (!StringUtils.isEmpty(cellPhoneNumber)) {
-                    this.cellPhoneNumberList.add(StringUtils.trim(cellPhoneNumber));
-                }
-            }
-        }
+        logger.info("NaverBatchConfiguration:{}", this.toString());
     }
 
     private String readString(Properties properties, String propertyName, String defaultValue) {
@@ -96,5 +89,17 @@ public class NaverBatchConfiguration implements InitializingBean {
 
     public String getEmailServerUrl() {
         return emailServerUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "NaverBatchConfiguration{" +
+                "batchEnv='" + batchEnv + '\'' +
+                ", mexServerUrl='" + mexServerUrl + '\'' +
+                ", serviceID='" + serviceID + '\'' +
+                ", cellPhoneNumberList=" + cellPhoneNumberList +
+                ", emailServerUrl='" + emailServerUrl + '\'' +
+                ", pinpointUrl='" + pinpointUrl + '\'' +
+                '}';
     }
 }
