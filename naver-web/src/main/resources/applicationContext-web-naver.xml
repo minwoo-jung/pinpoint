@@ -8,6 +8,7 @@
        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <import resource="classpath:applicationContext-web.xml" />
+    <import resource="classpath:applicationContext-dao-config-naver.xml" />
     <import resource="classpath:batch/applicationContext-batch-naver.xml" />
 <!--     <import resource="classpath:applicationContext-web-nelo.xml"/> -->
 

@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.web.namespace;
 
+import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.util.Assert;
 
@@ -28,9 +29,8 @@ public class BatchNameSpaceInfoHolder implements NameSpaceInfoHolder {
 
     public BatchNameSpaceInfoHolder(StepExecution stepExecution) {
         Assert.notNull(stepExecution, "stepExecution must not be null.");
-        String databaseName = (String) stepExecution.getExecutionContext().get(DATABASE_NAME_KEY);
-        String hbaseNameSpace = (String) stepExecution.getExecutionContext().get(HBASE_NAMESAPCE);
-        batchNameSpaceInfo = new NameSpaceInfo(BATCH_USER, databaseName, hbaseNameSpace);
+        PaaSOrganizationInfo paaSOrganizationInfo = (PaaSOrganizationInfo) stepExecution.getExecutionContext().get(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO);
+        batchNameSpaceInfo = new NameSpaceInfo(paaSOrganizationInfo.getUserId(), paaSOrganizationInfo.getDatabaseName(), paaSOrganizationInfo.getHbaseNameSpace());
     }
 
     @Override

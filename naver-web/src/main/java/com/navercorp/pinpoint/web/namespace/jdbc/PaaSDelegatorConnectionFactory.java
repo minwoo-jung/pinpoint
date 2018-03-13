@@ -25,11 +25,11 @@ import java.util.Objects;
 /**
  * @author minwoo.jung
  */
-public class PaaSConnectionCreator implements DelegatorConnectionFactory {
+public class PaaSDelegatorConnectionFactory implements DelegatorConnectionFactory {
 
     private final PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory;
 
-    public PaaSConnectionCreator(PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory) {
+    public PaaSDelegatorConnectionFactory(PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory) {
         this.paaSNameSpaceInfoFactory = Objects.requireNonNull(paaSNameSpaceInfoFactory, "paaSNameSpaceInfoFactory must not be null");
     }
 

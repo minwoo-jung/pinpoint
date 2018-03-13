@@ -66,7 +66,10 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String userId = request.getHeader(SSO_USER);
+        final String userId = request.getHeader(SSO_USER);
+
+        StaticOrganizationInfoAllocator.allocate(userId);
+
         User user = userService.selectUserByUserId(userId);
         List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
         boolean pinpointManager = isManager(userId);

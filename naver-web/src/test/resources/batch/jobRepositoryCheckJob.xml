@@ -7,9 +7,9 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <job id="jobRepositoryCheckJob" xmlns="http://www.springframework.org/schema/batch" >
-        <step id="jobRepositoryCheckStep" xmlns="http://www.springframework.org/schema/batch" >
-            <tasklet ref="jobRepositoryCheckTasklet"/>
+    <job id="jobRepositoryCheckJob" xmlns="http://www.springframework.org/schema/batch">
+        <step id="jobRepositoryCheckStep" xmlns="http://www.springframework.org/schema/batch">
+            <tasklet transaction-manager="metaDataTransactionManager" ref="jobRepositoryCheckTasklet"/>
         </step>
     </job>
 

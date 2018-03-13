@@ -38,55 +38,58 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     UserService userService;
-    
+
     @Autowired
     UserGroupService userGroupService;
-    
+
     @Autowired
     ApplicationConfigService configService;
-    
+
     @Override
     public Authentication authenticate(final Authentication auth) throws AuthenticationException {
-      final String userId = String.valueOf(auth.getPrincipal());
-      User user = userService.selectUserByUserId(userId);
-      List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-      boolean pinpointManager = isManager(userId);
-      PinpointAuthentication authentication;
+        final String userId = String.valueOf(auth.getPrincipal());
 
-      if (user != null) {
-          authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, null, true, pinpointManager) {
-              @Override
-              public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
-                  return null;
-              }
-              
-              @Override
-              public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
-              }
-          };
-          GrantedAuthority grantedAuthority = new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return "ROLE_USER";
-            }
-          };
-          List authorities = new ArrayList<GrantedAuthority>(1);
-          authorities.add(grantedAuthority);
-          authentication.setAuthorities(authorities);
-      } else {
-          authentication = new PinpointAuthentication() {
-              @Override
-              public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
-                  return null;
-              }
-              
-              @Override
-              public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
-              }
-          };
-      }
+        StaticOrganizationInfoAllocator.allocateForSessionScope(userId);
 
-      return authentication;
+        User user = userService.selectUserByUserId(userId);
+        List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
+        boolean pinpointManager = isManager(userId);
+        PinpointAuthentication authentication;
+
+        if (user != null) {
+            authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, null, true, pinpointManager) {
+                @Override
+                public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
+                    return null;
+                }
+
+                @Override
+                public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
+                }
+            };
+            GrantedAuthority grantedAuthority = new GrantedAuthority() {
+                @Override
+                public String getAuthority() {
+                    return "ROLE_USER";
+                }
+            };
+            List authorities = new ArrayList<GrantedAuthority>(1);
+            authorities.add(grantedAuthority);
+            authentication.setAuthorities(authorities);
+        } else {
+            authentication = new PinpointAuthentication() {
+                @Override
+                public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
+                    return null;
+                }
+
+                @Override
+                public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
+                }
+            };
+        }
+
+        return authentication;
     }
 
     private boolean isManager(String userId) {

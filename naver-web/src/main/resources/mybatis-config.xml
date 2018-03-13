@@ -50,8 +50,7 @@
         <typeAlias type="com.navercorp.pinpoint.web.vo.Range" alias="Range"/>
 
         <typeAlias type="com.navercorp.pinpoint.web.vo.AppUserGroupAuth" alias="AppUserGroupAuth"/>
-
-
+        <typeAlias type="com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo" alias="PaaSOrganizationInfo"/>
     </typeAliases>
 
 </configuration>

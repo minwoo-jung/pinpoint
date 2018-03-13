@@ -32,6 +32,36 @@
 
     <bean id="dataSource" class="com.navercorp.pinpoint.web.namespace.jdbc.DataSourceDelegator">
         <constructor-arg index="0" ref="originalDataSource"/>
-        <constructor-arg index="1" ref="connectionCreator"/>
+        <constructor-arg index="1" ref="paaSDelegatorConnectionFactory"/>
+    </bean>
+
+    <bean id="paaSDelegatorConnectionFactory" class="com.navercorp.pinpoint.web.namespace.jdbc.PaaSDelegatorConnectionFactory">
+        <constructor-arg index="0" ref="paaSNameSpaceInfoFactory"/>
+    </bean>
+
+    <bean id="metaDataDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${meta.jdbc.driverClassName}"/>
+        <property name="url" value="${meta.jdbc.url}"/>
+        <property name="username" value="${meta.jdbc.username}"/>
+        <property name="password" value="${meta.jdbc.password}"/>
+
+        <property name="initialSize" value="30"/>
+        <property name="maxTotal" value="30"/>
+        <property name="maxIdle" value="30"/>
+        <property name="minIdle" value="30"/>
+        <property name="maxWaitMillis" value="3000"/>
+
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+        <property name="testWhileIdle" value="true"/>
+
+        <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+        <property name="numTestsPerEvictionRun" value="6"/>
+        <property name="minEvictableIdleTimeMillis" value="-1"/>
+        <property name="validationQuery" value="SELECT 1"/>
+
+        <!-- use cache or not for preparedStatement-->
+        <property name="poolPreparedStatements" value="true"/>
+        <property name="maxOpenPreparedStatements" value="50"/>
     </bean>
 </beans>

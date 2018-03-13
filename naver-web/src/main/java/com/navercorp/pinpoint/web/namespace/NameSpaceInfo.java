@@ -53,4 +53,13 @@ public class NameSpaceInfo {
     public String getUserId() {
         return userId;
     }
+
+    @Override
+    public String toString() {
+        return "NameSpaceInfo{" +
+            "userId='" + userId + '\'' +
+            ", hbaseNamespace='" + hbaseNamespace + '\'' +
+            ", mysqlDatabaseName='" + mysqlDatabaseName + '\'' +
+            '}';
+    }
 }

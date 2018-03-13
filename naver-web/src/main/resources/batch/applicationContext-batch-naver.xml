@@ -34,4 +34,6 @@
 
     <import resource="classpath:batch/innerSystemSyncJob.xml"/>
 
+    <bean id="divider" class="com.navercorp.pinpoint.web.batch.job.PaaSRepositoryDivider"/>
+
 </beans>

@@ -17,7 +17,7 @@ public class MysqlNssAuthDao implements NssAuthDao {
     private static final String NAMESPACE = NssAuthDao.class.getPackage().getName() + "." + NssAuthDao.class.getSimpleName() + ".";
 
     @Autowired
-    @Qualifier("sqlSessionTemplate")
+    @Qualifier("metaDataSqlSessionTemplate")
     private SqlSessionTemplate sqlSessionTemplate;
 
     @Override

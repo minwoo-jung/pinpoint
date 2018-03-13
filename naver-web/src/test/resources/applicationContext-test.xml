@@ -49,6 +49,7 @@
     <import resource="classpath:applicationContext-datasource.xml" />
     <import resource="classpath:applicationContext-dao-config.xml" />
     <import resource="classpath:applicationContext-web-namespace.xml" />
+    <import resource="classpath:applicationContext-dao-config-naver.xml" />
 
     <bean id="trace" class="com.navercorp.pinpoint.collector.dao.hbase.HbaseTraceDaoV2"/>
     <bean class="com.navercorp.pinpoint.collector.dao.hbase.HbaseAgentInfoDao"/>
@@ -181,4 +182,7 @@
 
     <bean id="serverInfoAppendExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"/>
 
+    <bean id="batchConfiguration" class="com.navercorp.pinpoint.web.batch.BatchConfiguration"/>
+
+    <util:properties id="batchProps" location="classpath:batch.properties"/>
 </beans>

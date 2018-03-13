@@ -15,28 +15,38 @@
  */
 package com.navercorp.pinpoint.web.dao.mysql;
 
+import com.navercorp.pinpoint.web.namespace.RequestContextInitializer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.navercorp.pinpoint.web.vo.User;
 import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.UserGroupMember;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
  * @author minwoo.jung <minwoo.jung@navercorp.com>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-web-naver.xml")
-@Transactional
-public class MysqlUserGroupDaoTest {
-   
+@WebAppConfiguration
+public class MysqlUserGroupDaoTest extends RequestContextInitializer {
+    @Autowired
+    @Qualifier("transactionManager")
+    DataSourceTransactionManager transactionManager;
+
     @Autowired
     MysqlUserGroupDao dao;
     
@@ -48,6 +58,7 @@ public class MysqlUserGroupDaoTest {
     
     @Before
     public void before() {
+        super.before();
         userDao.insertUser(user1);
         userDao.insertUser(user2);
     }
@@ -56,10 +67,22 @@ public class MysqlUserGroupDaoTest {
     public void after() {
         userDao.deleteUser(user1);
         userDao.deleteUser(user2);
+        super.after();
     }
-   
+
     @Test
-    public void createAndDeleteUserGroup() {
+    public void createAndDeleteUserGroupWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            createAndDeleteUserGroup();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+    private void createAndDeleteUserGroup() {
         UserGroup group = new UserGroup("", "test_group");
         dao.createUserGroup(group);
         int before = dao.selectUserGroup().size();
@@ -69,7 +92,17 @@ public class MysqlUserGroupDaoTest {
     }
     
     @Test
-    public void updateUsergroup() {
+    public void updateUsergroupWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            updateUsergroup();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+    private void updateUsergroup() {
         UserGroup group = new UserGroup("", "test_group");
         group.setNumber(dao.createUserGroup(group));
         
@@ -79,7 +112,18 @@ public class MysqlUserGroupDaoTest {
     }
     
     @Test
-    public void insertAndDeleteMember() {
+    public void insertAndDeleteMemberWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            insertAndDeleteMember();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+    private void insertAndDeleteMember() {
         UserGroupMember member1 = new UserGroupMember("test_group", "userId1");
         UserGroupMember member2 = new UserGroupMember("test_group", "userId2");
         dao.insertMember(member1);
@@ -92,7 +136,18 @@ public class MysqlUserGroupDaoTest {
     }
   
     @Test
-    public void deleteMemberByUserGroupId() {
+    public void deleteMemberByUserGroupIdWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            deleteMemberByUserGroupId();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+    private void deleteMemberByUserGroupId() {
         UserGroupMember member = new UserGroupMember("test_group", "userId1");
         
         dao.insertMember(member);
@@ -103,7 +158,18 @@ public class MysqlUserGroupDaoTest {
     }
     
     @Test
-    public void updateUserGroupIdOfMember() {
+    public void updateUserGroupIdOfMemberWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            updateUserGroupIdOfMember();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+    private void updateUserGroupIdOfMember() {
         UserGroup group = new UserGroup("", "test_group");
         group.setId(dao.createUserGroup(group));
         
@@ -121,7 +187,18 @@ public class MysqlUserGroupDaoTest {
     }
     
     @Test
-    public void selectUserGroupByUserId() {
+    public void selectUserGroupByUserIdWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            selectUserGroupByUserId();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+    private void selectUserGroupByUserId() {
         UserGroup group1 = new UserGroup("", "test_group1");
         UserGroup group2 = new UserGroup("", "test_group2");
         dao.createUserGroup(group1);
@@ -141,7 +218,18 @@ public class MysqlUserGroupDaoTest {
     }
     
     @Test
-    public void selectInformationOfMember() {
+    public void selectInformationOfMemberWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            selectInformationOfMember();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+    private void selectInformationOfMember() {
         UserGroupMember member1 = new UserGroupMember("test_group", "userId1");
         UserGroupMember member2 = new UserGroupMember("test_group", "userId2");
         dao.insertMember(member1);

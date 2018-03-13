@@ -71,6 +71,8 @@ public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+        StaticOrganizationInfoAllocator.allocate(userId);
+
         User user = userService.selectUserByUserId(userId);
         List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
         boolean pinpointManager = isManager(userId);

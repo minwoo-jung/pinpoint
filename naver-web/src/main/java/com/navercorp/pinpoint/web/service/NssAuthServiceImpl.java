@@ -15,7 +15,7 @@ import java.util.Collections;
  * @author HyunGil Jeong
  */
 @Service
-@Transactional(rollbackFor = {Exception.class})
+@Transactional(transactionManager="metaDataTransactionManager", rollbackFor = {Exception.class})
 public class NssAuthServiceImpl implements NssAuthService {
 
     private final NssAuthDao nssAuthDao;
@@ -27,7 +27,7 @@ public class NssAuthServiceImpl implements NssAuthService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager="metaDataTransactionManager", readOnly = true)
     public Collection<String> getAuthorizedPrefixes() {
         Collection<String> authorizedPrefixes = nssAuthDao.selectAuthorizedPrefix();
         if (CollectionUtils.isEmpty(authorizedPrefixes)) {
@@ -48,7 +48,7 @@ public class NssAuthServiceImpl implements NssAuthService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(transactionManager="metaDataTransactionManager", readOnly = true)
     public Collection<String> getOverrideUserIds() {
         Collection<String> overrideUserIds = nssAuthDao.selectOverrideUserId();
         if (CollectionUtils.isEmpty(overrideUserIds)) {

@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.web.namespace;
 
-
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +25,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 /**
  * @author minwoo.jung
  */
-public class RequestNameSpaceInfoHolder implements NameSpaceInfoHolder {
-
+public class SessionRequestNameSpaceInfoHolder implements NameSpaceInfoHolder {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final NameSpaceInfo requestNameSpaceInfo;
 
-    public RequestNameSpaceInfoHolder() {
+    public SessionRequestNameSpaceInfoHolder() {
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-        PaaSOrganizationInfo paaSOrganizationInfo = (PaaSOrganizationInfo) attributes.getAttribute(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO, RequestAttributes.SCOPE_REQUEST);
+        PaaSOrganizationInfo paaSOrganizationInfo = (PaaSOrganizationInfo) attributes.getAttribute(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO, RequestAttributes.SCOPE_SESSION);
         Assert.notNull(paaSOrganizationInfo, "PaaSOrganizationInfo must not be null.");
 
         String databaseName = paaSOrganizationInfo.getDatabaseName();

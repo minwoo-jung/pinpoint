@@ -14,10 +14,12 @@
 
     <bean id="jobLauncherTestUtils" class="org.springframework.batch.test.JobLauncherTestUtils"/>
 
-    <batch:job-repository id="jobRepository" data-source="dataSource"/>
+    <batch:job-repository id="jobRepository" data-source="metaDataDataSource" transaction-manager="metaDataTransactionManager"/>
 
     <bean id="jobLauncher"
           class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
         <property name="jobRepository" ref="jobRepository" />
     </bean>
+
+    <bean id="batchConfiguration" class="com.navercorp.pinpoint.web.batch.TestBatchConfiguration" primary="true"/>
 </beans>

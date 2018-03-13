@@ -15,43 +15,83 @@
  */
 package com.navercorp.pinpoint.web.dao.mysql;
 
+import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.TransactionSampler;
+import com.navercorp.pinpoint.web.namespace.RequestContextInitializer;
+import net.sf.ehcache.transaction.manager.TransactionManagerLookup;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.navercorp.pinpoint.web.alarm.CheckerCategory;
 import com.navercorp.pinpoint.web.alarm.vo.Rule;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
  * @author minwoo.jung <minwoo.jung@navercorp.com>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-web-naver.xml")
-@Transactional
-public class MysqlAlarmDaoTest {
-	
+@WebAppConfiguration
+public class MysqlAlarmDaoTest extends RequestContextInitializer {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	@Autowired
 	MysqlAlarmDao dao;
+
+    @Autowired
+    @Qualifier("transactionManager")
+    DataSourceTransactionManager transactionManager;
 	
 	@Test
-	public void insertAndDelete() {
-		Rule rule = new Rule("applicationId", "serviceType", CheckerCategory.ERROR_COUNT.getName(), 5, "userGroupId", true, true, "");
-		String ruleId = dao.insertRule(rule);
-		rule.setRuleId(ruleId);
-		
-		Assert.assertEquals(1, dao.selectRuleByApplicationId("applicationId").size());
-		
-		dao.deleteRule(rule);
-		
-		Assert.assertEquals(0, dao.selectRuleByApplicationId("applicationId").size());
-	}
-	
-	@Test
-	public void deleteRuleByUserGroupId() {
+	public void insertAndDeleteWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            insertAndDelete();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+    private void insertAndDelete() {
+        Rule rule = new Rule("applicationId", "serviceType", CheckerCategory.ERROR_COUNT.getName(), 5, "userGroupId", true, true, "");
+        String ruleId = dao.insertRule(rule);
+        rule.setRuleId(ruleId);
+
+        Assert.assertEquals(1, dao.selectRuleByApplicationId("applicationId").size());
+
+        dao.deleteRule(rule);
+
+        Assert.assertEquals(0, dao.selectRuleByApplicationId("applicationId").size());
+    }
+
+    @Test
+    public void deleteRuleByUserGroupIdWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            deleteRuleByUserGroupId();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+
+	private void deleteRuleByUserGroupId() {
 		Rule rule = new Rule("applicationId", "serviceType", CheckerCategory.ERROR_COUNT.getName(), 5, "userGroupId", true, true, "");
 		String ruleId = dao.insertRule(rule);
 		rule.setRuleId(ruleId);
@@ -62,9 +102,20 @@ public class MysqlAlarmDaoTest {
 		
 		Assert.assertEquals(0, dao.selectRuleByApplicationId("applicationId").size());
 	}
+
+    @Test
+    public void selectWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            select();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
 	
-	@Test
-	public void select() {
+	private void select() {
 		Rule rule = new Rule("applicationId", "serviceType", CheckerCategory.ERROR_COUNT.getName(), 5, "userGroupId", true, true, "");
 		dao.insertRule(rule);
 		
@@ -73,9 +124,20 @@ public class MysqlAlarmDaoTest {
 		
 		dao.deleteRuleByUserGroupId("userGroupId");
 	}
-	
-	@Test
-	public void update() {
+
+    @Test
+    public void updateWithTx() {
+        TransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+
+        try {
+            update();
+        } finally {
+            transactionManager.rollback(txStatus);
+        }
+    }
+
+	private void update() {
 		Rule rule = new Rule("applicationId", "serviceType", CheckerCategory.ERROR_COUNT.getName(), 5, "userGroupId", true, true, "");
 		String ruleId = dao.insertRule(rule);
 		rule.setRuleId(ruleId);
