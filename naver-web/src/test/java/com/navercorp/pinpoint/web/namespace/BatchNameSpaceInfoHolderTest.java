@@ -46,11 +46,11 @@ public class BatchNameSpaceInfoHolderTest {
         assertEquals(nameSpaceInfo.getHbaseNamespace(), hbaseNameSpace);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected=IllegalArgumentException.class)
     public void get2() {
         StepExecution stepExecution = new StepExecution("test_step", new JobExecution(1L, new JobParameters(), "jobConfig"));
         BatchNameSpaceInfoHolder batchNameSpaceInfoHolder = new BatchNameSpaceInfoHolder(stepExecution);
-        NameSpaceInfo nameSpaceInfo = batchNameSpaceInfoHolder.getNameSpaceInfo();
+        batchNameSpaceInfoHolder.getNameSpaceInfo();
     }
 
 }
