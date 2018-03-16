@@ -41,7 +41,7 @@ public class SessionRequestNameSpaceInfoHolder implements NameSpaceInfoHolder {
     }
 
     @Override
-    public NameSpaceInfo getNameSpaceInfo() throws Exception {
+    public NameSpaceInfo getNameSpaceInfo() {
         return requestNameSpaceInfo;
     }
 }

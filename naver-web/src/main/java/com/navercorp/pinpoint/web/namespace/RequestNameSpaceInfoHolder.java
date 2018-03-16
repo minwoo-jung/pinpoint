@@ -43,7 +43,7 @@ public class RequestNameSpaceInfoHolder implements NameSpaceInfoHolder {
     }
 
     @Override
-    public NameSpaceInfo getNameSpaceInfo() throws Exception {
+    public NameSpaceInfo getNameSpaceInfo() {
         return requestNameSpaceInfo;
     }
 }

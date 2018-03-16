@@ -38,7 +38,7 @@ public class NaverPermissionEvaluator extends AppConfigOrganizer implements Perm
     public static final String AGENT_PARAM = "agentParam";
     
     @Autowired
-    ServerMapDataFilter ServerMapDataFilter;
+    ServerMapDataFilter serverMapDataFilter;
     
     @Autowired
     AgentInfoService agentInfoService;
@@ -69,12 +69,12 @@ public class NaverPermissionEvaluator extends AppConfigOrganizer implements Perm
     private boolean hasPermissionForAppAuth(Serializable target, String targetType, String permission) {
         if (APPLICATION.equals(targetType)) {
             String applicationId = (String)target;
-            boolean filtered = ServerMapDataFilter.filter(new Application(applicationId, ServiceType.UNKNOWN));
+            boolean filtered = serverMapDataFilter.filter(new Application(applicationId, ServiceType.UNKNOWN));
             return !filtered;
         } else if (AGENT_PARAM.equals(targetType)) {
             AgentParam agentParam = (AgentParam)target;
             AgentInfo agentInfo = agentInfoService.getAgentInfo(agentParam.getAgentId(), agentParam.getTimeStamp());
-            boolean filtered = ServerMapDataFilter.filter(new Application(agentInfo.getApplicationName(), ServiceType.UNKNOWN));
+            boolean filtered = serverMapDataFilter.filter(new Application(agentInfo.getApplicationName(), ServiceType.UNKNOWN));
             return !filtered;
         }
         

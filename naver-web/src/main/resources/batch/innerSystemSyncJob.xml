@@ -7,19 +7,19 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <job id="innerSystemSyncJob" xmlns="http://www.springframework.org/schema/batch">
-        <step id="step1" xmlns="http://www.springframework.org/schema/batch">
-            <tasklet>
-                <chunk reader="imdbUserReader" writer="userWriter" commit-interval="200"/>
-            </tasklet>
-            <listeners>
-                <listener ref="initListener"/>
-            </listeners>
-        </step>
-        <listeners>
-            <listener ref="jobFailListener"/>
-        </listeners>
-    </job>
+    <batch:job id="innerSystemSyncJob">
+        <batch:step id="step1">
+            <batch:tasklet>
+                <batch:chunk reader="imdbUserReader" writer="userWriter" commit-interval="200"/>
+            </batch:tasklet>
+            <batch:listeners>
+                <batch:listener ref="initListener"/>
+            </batch:listeners>
+        </batch:step>
+        <batch:listeners>
+            <batch:listener ref="jobFailListener"/>
+        </batch:listeners>
+    </batch:job>
 
     <bean id="imdbUserReader" class="com.navercorp.pinpoint.web.batch.CubridCursorItemReader" scope="step">
         <property name="dataSource" ref="imdbDataSource"/>

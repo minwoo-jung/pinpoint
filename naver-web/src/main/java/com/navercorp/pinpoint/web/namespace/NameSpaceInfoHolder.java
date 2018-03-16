@@ -22,5 +22,5 @@ public interface NameSpaceInfoHolder {
     public static final String DATABASE_NAME_KEY = "databaseName";
     public static final String HBASE_NAMESAPCE = "hbaseNameSpace";
 
-    NameSpaceInfo getNameSpaceInfo() throws Exception;
+    NameSpaceInfo getNameSpaceInfo();
 }

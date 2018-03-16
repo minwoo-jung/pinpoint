@@ -24,17 +24,19 @@ import org.springframework.util.Assert;
  */
 public class BatchNameSpaceInfoHolder implements NameSpaceInfoHolder {
 
-    private static final String BATCH_USER = "batchJob";
     private final NameSpaceInfo batchNameSpaceInfo;
 
     public BatchNameSpaceInfoHolder(StepExecution stepExecution) {
         Assert.notNull(stepExecution, "stepExecution must not be null.");
+
         PaaSOrganizationInfo paaSOrganizationInfo = (PaaSOrganizationInfo) stepExecution.getExecutionContext().get(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO);
+        Assert.notNull(paaSOrganizationInfo, "PaaSOrganizationInfo must not be null.");
+
         batchNameSpaceInfo = new NameSpaceInfo(paaSOrganizationInfo.getUserId(), paaSOrganizationInfo.getDatabaseName(), paaSOrganizationInfo.getHbaseNameSpace());
     }
 
     @Override
-    public NameSpaceInfo getNameSpaceInfo() throws Exception {
+    public NameSpaceInfo getNameSpaceInfo() {
         return batchNameSpaceInfo;
     }
 }
