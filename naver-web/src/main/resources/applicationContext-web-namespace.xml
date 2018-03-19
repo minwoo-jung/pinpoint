@@ -5,6 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
+<!--
     <bean id="batchNameSpaceInfoHolder" class="com.navercorp.pinpoint.web.namespace.BatchNameSpaceInfoHolder" scope="step">
         <constructor-arg index="0" value="#{stepExecution}"/>
         <aop:scoped-proxy proxy-target-class="false"/>
@@ -15,6 +16,13 @@
 
     <bean id="paaSNameSpaceInfoFactory" class="com.navercorp.pinpoint.web.namespace.PaaSNameSpaceInfoFactory">
         <constructor-arg index="0" ref="batchConfiguration"/>
+    </bean>
+-->
+
+    <bean id="paaSNameSpaceInfoFactory" class="com.navercorp.pinpoint.web.namespace.StaticNameSpaceInfoFactory">
+        <constructor-arg index="0" value="defaultUser"/>
+        <constructor-arg index="1" value="pinpoint"/>
+        <constructor-arg index="2" value="default"/>
     </bean>
 
     <bean id="tableNameProvider" class="com.navercorp.pinpoint.web.namespace.hbase.PaaSHbaseTableNameProvider">

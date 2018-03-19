@@ -16,7 +16,7 @@
 package com.navercorp.pinpoint.web.namespace.jdbc;
 
 import com.navercorp.pinpoint.web.namespace.NameSpaceInfo;
-import com.navercorp.pinpoint.web.namespace.PaaSNameSpaceInfoFactory;
+import com.navercorp.pinpoint.web.namespace.NameSpaceInfoFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,15 +27,15 @@ import java.util.Objects;
  */
 public class PaaSDelegatorConnectionFactory implements DelegatorConnectionFactory {
 
-    private final PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory;
+    private final NameSpaceInfoFactory nameSpaceInfoFactory;
 
-    public PaaSDelegatorConnectionFactory(PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory) {
-        this.paaSNameSpaceInfoFactory = Objects.requireNonNull(paaSNameSpaceInfoFactory, "paaSNameSpaceInfoFactory must not be null");
+    public PaaSDelegatorConnectionFactory(NameSpaceInfoFactory nameSpaceInfoFactory) {
+        this.nameSpaceInfoFactory = Objects.requireNonNull(nameSpaceInfoFactory, "nameSpaceInfoFactory must not be null");
     }
 
     @Override
     public Connection createConnection(Connection connection) throws SQLException {
-        NameSpaceInfo nameSpaceInfo = paaSNameSpaceInfoFactory.getNameSpaceInfo();
+        NameSpaceInfo nameSpaceInfo = nameSpaceInfoFactory.getNameSpaceInfo();
         connection.setCatalog(nameSpaceInfo.getMysqlDatabaseName());
         return GuardConnection.wrap(connection);
     }

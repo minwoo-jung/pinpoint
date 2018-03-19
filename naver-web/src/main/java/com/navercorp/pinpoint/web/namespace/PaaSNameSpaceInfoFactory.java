@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 /**
  * @author minwoo.jung
  */
-public class PaaSNameSpaceInfoFactory {
+public class PaaSNameSpaceInfoFactory implements NameSpaceInfoFactory {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

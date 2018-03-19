@@ -19,7 +19,7 @@ package com.navercorp.pinpoint.web.namespace.hbase;
 import com.navercorp.pinpoint.common.hbase.TableNameProvider;
 import com.navercorp.pinpoint.common.hbase.util.HbaseTableNameCache;
 import com.navercorp.pinpoint.web.namespace.NameSpaceInfo;
-import com.navercorp.pinpoint.web.namespace.PaaSNameSpaceInfoFactory;
+import com.navercorp.pinpoint.web.namespace.NameSpaceInfoFactory;
 import org.apache.hadoop.hbase.TableName;
 import org.springframework.util.StringUtils;
 
@@ -32,15 +32,15 @@ public class PaaSHbaseTableNameProvider implements TableNameProvider {
 
     private static final HbaseTableNameCache CACHE = new HbaseTableNameCache();
 
-    private final PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory;
+    private final NameSpaceInfoFactory nameSpaceInfoFactory;
 
-    public PaaSHbaseTableNameProvider(PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory) {
-        this.paaSNameSpaceInfoFactory = Objects.requireNonNull(paaSNameSpaceInfoFactory, "paaSNameSpaceInfoFactory must not be null");
+    public PaaSHbaseTableNameProvider(NameSpaceInfoFactory nameSpaceInfoFactory) {
+        this.nameSpaceInfoFactory = Objects.requireNonNull(nameSpaceInfoFactory, "nameSpaceInfoFactory must not be null");
     }
 
     @Override
     public TableName getTableName(String tableName) {
-        NameSpaceInfo nameSpaceInfo = paaSNameSpaceInfoFactory.getNameSpaceInfo();
+        NameSpaceInfo nameSpaceInfo = nameSpaceInfoFactory.getNameSpaceInfo();
         if (nameSpaceInfo == null) {
             throw new IllegalStateException("NameSpaceInfo should not be null");
         }
