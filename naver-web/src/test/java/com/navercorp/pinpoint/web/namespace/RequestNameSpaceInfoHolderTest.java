@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 public class RequestNameSpaceInfoHolderTest {
 
     @Test
-    public void getNameSpaceInfo() throws Exception {
+    public void getNameSpaceInfo() {
         RequestContextInitializer requestContextInitializer = new RequestContextInitializer();
         requestContextInitializer.before();
 

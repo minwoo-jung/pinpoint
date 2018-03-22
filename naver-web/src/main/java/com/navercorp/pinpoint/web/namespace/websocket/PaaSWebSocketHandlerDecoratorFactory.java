@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.batch;
+package com.navercorp.pinpoint.web.namespace.websocket;
+
+import com.navercorp.pinpoint.web.websocket.PinpointWebSocketHandler;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 
 /**
  * @author minwoo.jung
  */
-public class TestBatchConfiguration extends BatchConfiguration {
+public class PaaSWebSocketHandlerDecoratorFactory implements WebSocketHandlerDecoratorFactory {
 
     @Override
-    public String getBatchServerIp() {
-        return "127.0.0.1";
+    public WebSocketHandler decorate(WebSocketHandler handler) {
+        return new WebSocketContextHandlerDecorator(handler);
     }
-
 }

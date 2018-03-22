@@ -17,8 +17,17 @@
 package com.navercorp.pinpoint.web.namespace;
 
 import com.navercorp.pinpoint.web.batch.BatchConfiguration;
+import com.navercorp.pinpoint.web.namespace.websocket.WebSocketAttributes;
+import com.navercorp.pinpoint.web.namespace.websocket.WebSocketContextHolder;
 import org.junit.Test;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -29,11 +38,10 @@ import static org.mockito.Mockito.*;
 public class PaaSNameSpaceInfoFactoryTest {
 
     @Test
-    public void getNameSpaceInfo() throws Exception {
-        BatchConfiguration batchConfiguration = mock(BatchConfiguration.class);
-        when(batchConfiguration.getBatchServerIp()).thenReturn("127.0.0.1");
-        PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory = new PaaSNameSpaceInfoFactory(batchConfiguration);
+    public void batchScopeTest() throws Exception {
+        StepSynchronizationManager.register(new StepExecution("test_step", new JobExecution(new Date().getTime())));
 
+        PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory = new PaaSNameSpaceInfoFactory();
         BatchNameSpaceInfoHolder batchNameSpaceInfoHolder = mock(BatchNameSpaceInfoHolder.class);
         NameSpaceInfo nameSpaceInfo = new NameSpaceInfo("userId", "mysqlDatabaseName", "hbaseNamespace");
         when(batchNameSpaceInfoHolder.getNameSpaceInfo()).thenReturn(nameSpaceInfo);
@@ -41,28 +49,16 @@ public class PaaSNameSpaceInfoFactoryTest {
 
         NameSpaceInfo result = paaSNameSpaceInfoFactory.getNameSpaceInfo();
         assertEquals(result, nameSpaceInfo);
-    }
 
-    @Test(expected = RuntimeException.class)
-    public void getNameSpaceInfo2() throws Exception {
-        BatchConfiguration batchConfiguration = mock(BatchConfiguration.class);
-        when(batchConfiguration.getBatchServerIp()).thenReturn("127.0.0.1");
-        PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory = new PaaSNameSpaceInfoFactory(batchConfiguration);
-
-        BatchNameSpaceInfoHolder batchNameSpaceInfoHolder = mock(BatchNameSpaceInfoHolder.class);
-        NameSpaceInfo nameSpaceInfo = new NameSpaceInfo("userId", "mysqlDatabaseName", "hbaseNamespace");
-        when(batchNameSpaceInfoHolder.getNameSpaceInfo()).thenThrow(new IllegalArgumentException("testException"));
-        ReflectionTestUtils.setField(paaSNameSpaceInfoFactory, "batchNameSpaceInfoHolder", batchNameSpaceInfoHolder);
-
-        paaSNameSpaceInfoFactory.getNameSpaceInfo();
+        StepSynchronizationManager.release();
     }
 
     @Test
-    public void getNameSpaceInfo3() throws Exception {
-        BatchConfiguration batchConfiguration = mock(BatchConfiguration.class);
-        when(batchConfiguration.getBatchServerIp()).thenReturn("127.0.0.127");
-        PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory = new PaaSNameSpaceInfoFactory(batchConfiguration);
+    public void requestScopeTest() throws Exception {
+        RequestContextInitializer requestContextInitializer = new RequestContextInitializer();
+        requestContextInitializer.before();
 
+        PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory = new PaaSNameSpaceInfoFactory();
         RequestNameSpaceInfoHolder requestNameSpaceInfoHolder = mock(RequestNameSpaceInfoHolder.class);
         NameSpaceInfo nameSpaceInfo = new NameSpaceInfo("userId", "mysqlDatabaseName", "hbaseNamespace");
         when(requestNameSpaceInfoHolder.getNameSpaceInfo()).thenReturn(nameSpaceInfo);
@@ -70,13 +66,35 @@ public class PaaSNameSpaceInfoFactoryTest {
 
         NameSpaceInfo result = paaSNameSpaceInfoFactory.getNameSpaceInfo();
         assertEquals(result, nameSpaceInfo);
+
+        requestContextInitializer.after();
+
+        assertTrue(RequestContextHolder.getRequestAttributes() == null);
+    }
+
+    @Test
+    public void webSocketScopeTest() throws Exception {
+        WebSocketAttributes webSocketAttributes  = new WebSocketAttributes(new ConcurrentHashMap<String, Object>());
+        WebSocketContextHolder.setAttributes(webSocketAttributes);
+
+        PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory = new PaaSNameSpaceInfoFactory();
+        WebSocketNameSpaceInfoHolder webSocketNameSpaceInfoHolder = mock(WebSocketNameSpaceInfoHolder.class);
+        NameSpaceInfo nameSpaceInfo = new NameSpaceInfo("userId", "mysqlDatabaseName", "hbaseNamespace");
+        when(webSocketNameSpaceInfoHolder.getNameSpaceInfo()).thenReturn(nameSpaceInfo);
+        ReflectionTestUtils.setField(paaSNameSpaceInfoFactory, "webSocketNameSpaceInfoHolder", webSocketNameSpaceInfoHolder);
+
+        NameSpaceInfo result = paaSNameSpaceInfoFactory.getNameSpaceInfo();
+        assertEquals(result, nameSpaceInfo);
+
+        WebSocketContextHolder.resetAttributes();
+        assertTrue(WebSocketContextHolder.getAttributes() == null);
     }
 
     @Test(expected = RuntimeException.class)
-    public void getNameSpaceInfo4() throws Exception {
+    public void nonScopeTest() throws Exception {
         BatchConfiguration batchConfiguration = mock(BatchConfiguration.class);
         when(batchConfiguration.getBatchServerIp()).thenReturn("127.0.0.127");
-        PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory = new PaaSNameSpaceInfoFactory(batchConfiguration);
+        PaaSNameSpaceInfoFactory paaSNameSpaceInfoFactory = new PaaSNameSpaceInfoFactory();
 
         paaSNameSpaceInfoFactory.getNameSpaceInfo();
     }

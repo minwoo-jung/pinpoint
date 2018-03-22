@@ -16,12 +16,16 @@
 package com.navercorp.pinpoint.web.namespace;
 
 import com.navercorp.pinpoint.web.batch.BatchConfiguration;
+import com.navercorp.pinpoint.web.namespace.websocket.WebSocketContextHolder;
 import com.navercorp.pinpoint.web.util.BatchUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.util.Assert;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * @author minwoo.jung
@@ -29,8 +33,6 @@ import org.springframework.util.Assert;
 public class PaaSNameSpaceInfoFactory implements NameSpaceInfoFactory {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final boolean batchServer;
 
     @Autowired
     @Qualifier("batchNameSpaceInfoHolder")
@@ -41,28 +43,37 @@ public class PaaSNameSpaceInfoFactory implements NameSpaceInfoFactory {
     NameSpaceInfoHolder requestNameSpaceInfoHolder;
 
     @Autowired
-    public PaaSNameSpaceInfoFactory(BatchConfiguration batchConfiguration) {
-        Assert.notNull(batchConfiguration, "batchConfiguration must not be empty");
-        batchServer = BatchUtils.decisionBatchServer(batchConfiguration.getBatchServerIp());
-    }
+    @Qualifier("webSocketNameSpaceInfoHolder")
+    NameSpaceInfoHolder webSocketNameSpaceInfoHolder;
 
     public NameSpaceInfo getNameSpaceInfo() {
-        try {
-            if (batchServer) {
-                NameSpaceInfo nameSpaceInfo = batchNameSpaceInfoHolder.getNameSpaceInfo();
-                return nameSpaceInfo;
-            }
-        } catch (Exception e) {
-            logger.error("Exception occurred while get nameSpaceInfo [Thread name : {} ]", Thread.currentThread().getName(), e);
-        }
+        Scope scope = checkScope();
 
-        try {
-            NameSpaceInfo nameSpaceInfo = requestNameSpaceInfoHolder.getNameSpaceInfo();
-            return nameSpaceInfo;
-        } catch (Exception e) {
-            logger.error("Exception occurred while get nameSpaceInfo [Thread name : {} ]", Thread.currentThread().getName() ,e);
+        switch (scope) {
+            case REQUEST:
+                return requestNameSpaceInfoHolder.getNameSpaceInfo();
+            case BATCH:
+                return batchNameSpaceInfoHolder.getNameSpaceInfo();
+            case WEBSOCKET:
+                return webSocketNameSpaceInfoHolder.getNameSpaceInfo();
+            default :
+                throw new RuntimeException("can't get NameSpaceInfo from NameSpaceInfoHolder [Thread name : " + Thread.currentThread().getName() + "]");
         }
+    }
 
-        throw new RuntimeException("can't get NameSpaceInfo in batchNameSpaceInfoHolder and requestNameSpaceInfoHolder [Thread name : " + Thread.currentThread().getName() + "]");
+    private Scope checkScope() {
+        if (RequestContextHolder.getRequestAttributes() != null) {
+            return Scope.REQUEST;
+        } else if (WebSocketContextHolder.getAttributes() != null) {
+            return Scope.WEBSOCKET;
+        } else if (StepSynchronizationManager.getContext() != null) {
+            return Scope.BATCH;
+        } else {
+            return Scope.NONE;
+        }
+    }
+
+    private enum Scope {
+        REQUEST, WEBSOCKET, BATCH, NONE
     }
 }

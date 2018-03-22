@@ -2,31 +2,37 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:batch="http://www.springframework.org/schema/batch"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
 
-<!--
     <bean id="batchNameSpaceInfoHolder" class="com.navercorp.pinpoint.web.namespace.BatchNameSpaceInfoHolder" scope="step">
         <constructor-arg index="0" value="#{stepExecution}"/>
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
+
     <bean id="requestNameSpaceInfoHolder" class="com.navercorp.pinpoint.web.namespace.RequestNameSpaceInfoHolder" scope="request">
         <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
 
-    <bean id="paaSNameSpaceInfoFactory" class="com.navercorp.pinpoint.web.namespace.PaaSNameSpaceInfoFactory">
-        <constructor-arg index="0" ref="batchConfiguration"/>
+    <bean id="webSocketCustom" class="com.navercorp.pinpoint.web.namespace.websocket.WebSocketScope"/>
+    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="webSocketCustom" value-ref="webSocketCustom"/>
+            </map>
+        </property>
     </bean>
--->
-
-    <bean id="paaSNameSpaceInfoFactory" class="com.navercorp.pinpoint.web.namespace.StaticNameSpaceInfoFactory">
-        <constructor-arg index="0" value="defaultUser"/>
-        <constructor-arg index="1" value="pinpoint"/>
-        <constructor-arg index="2" value="default"/>
+    <bean id="webSocketNameSpaceInfoHolder" class="com.navercorp.pinpoint.web.namespace.WebSocketNameSpaceInfoHolder" scope="webSocketCustom">
+        <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
+    <bean id="paaSWebSocketHandlerDecoratorFactory" class="com.navercorp.pinpoint.web.namespace.websocket.PaaSWebSocketHandlerDecoratorFactory"/>
 
-    <bean id="tableNameProvider" class="com.navercorp.pinpoint.web.namespace.hbase.PaaSHbaseTableNameProvider">
-        <constructor-arg index="0" ref="paaSNameSpaceInfoFactory"/>
+    <bean id="paaSNameSpaceInfoFactory" class="com.navercorp.pinpoint.web.namespace.PaaSNameSpaceInfoFactory"/>
+
+    <bean id="tableNameProvider" class="com.navercorp.pinpoint.common.hbase.HbaseTableNameProvider">
+        <constructor-arg index="0" value="${hbase.namespace:default}"/>
     </bean>
 
 </beans>

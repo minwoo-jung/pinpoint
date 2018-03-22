@@ -181,8 +181,4 @@
     <bean id="nodeHistogramAppendExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"/>
 
     <bean id="serverInfoAppendExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"/>
-
-    <bean id="batchConfiguration" class="com.navercorp.pinpoint.web.batch.BatchConfiguration"/>
-
-    <util:properties id="batchProps" location="classpath:batch.properties"/>
 </beans>
