@@ -17,8 +17,12 @@ package com.navercorp.pinpoint.web.namespace.websocket;
 
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.web.security.PinpointAuthentication;
+import com.navercorp.pinpoint.web.security.UserInformationAcquirer;
+import com.navercorp.pinpoint.web.service.MetaDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -31,6 +35,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author minwoo.jung
  */
 public class WebSocketContextHandlerDecorator extends WebSocketHandlerDecorator {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    protected UserInformationAcquirer userInformationAcquirer;
 
     public WebSocketContextHandlerDecorator(WebSocketHandler delegate) {
         super(delegate);
@@ -50,13 +59,6 @@ public class WebSocketContextHandlerDecorator extends WebSocketHandlerDecorator 
 
     private void initialized(WebSocketSession session) {
         PaaSOrganizationInfo paaSOrganizationInfo = (PaaSOrganizationInfo) session.getAttributes().get(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO);
-
-        if (Objects.isNull(paaSOrganizationInfo)) {
-            PinpointAuthentication authentication = (PinpointAuthentication) session.getPrincipal();
-            paaSOrganizationInfo = new PaaSOrganizationInfo("navercorp", authentication.getPrincipal(), "pinpoint", "default");
-            session.getAttributes().put(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO, paaSOrganizationInfo);
-        }
-
         WebSocketAttributes webSocketAttributes  = new WebSocketAttributes(new ConcurrentHashMap<String, Object>());
         webSocketAttributes.setAttribute(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO, paaSOrganizationInfo);
         WebSocketContextHolder.setAttributes(webSocketAttributes);

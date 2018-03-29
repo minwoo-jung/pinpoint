@@ -59,8 +59,8 @@ public class MysqlApplicationConfigDao implements ApplicationConfigDao {
     }
 
     @Override
-    public List<User> selectManagerByUserId(String userId) {
-        return sqlSessionTemplate.selectList(NAMESPACE + "selectManagerByUserId", userId);
+    public boolean isManager(String userId) {
+        return sqlSessionTemplate.selectOne(NAMESPACE + "isManager", userId);
     }
     
 }

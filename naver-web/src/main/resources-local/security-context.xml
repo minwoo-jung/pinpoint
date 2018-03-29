@@ -60,7 +60,7 @@
     
     <beans:bean id="accessDeniedHandler" class="com.navercorp.pinpoint.web.security.AccessDeniedhandlerImpl"/>
     <beans:bean id="autoLoginAuthenticationFilter" class="com.navercorp.pinpoint.web.security.AutoLoginAuthenticationFilter">
-        <beans:property name="userId" value="KR14966"/>
+        <beans:constructor-arg index="0" value="KR14966"/>
     </beans:bean>
 
     <authentication-manager>

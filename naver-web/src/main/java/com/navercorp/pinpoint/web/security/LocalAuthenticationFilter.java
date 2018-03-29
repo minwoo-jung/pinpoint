@@ -14,15 +14,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.navercorp.pinpoint.web.security.AutoLoginAuthenticationFilter.CustomHttpServletRequest;
+
 
 public class LocalAuthenticationFilter extends OncePerRequestFilter {
-    
-    private static final String SSO_USER = "SSO_USER";
+
+    @Value("#{pinpointWebProps['security.header.key.userId']}")
+    private String userIdHeaderName;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -32,7 +36,7 @@ public class LocalAuthenticationFilter extends OncePerRequestFilter {
             String userId = (String) authentication.getPrincipal();
             if (!StringUtils.isEmpty(userId)) {
                 CustomHttpServletRequest customRequest = new CustomHttpServletRequest(request);
-                customRequest.putHeader(SSO_USER, userId);
+                customRequest.putHeader(userIdHeaderName, userId);
                 chain.doFilter(customRequest, response);
                 return;
             }
@@ -41,56 +45,4 @@ public class LocalAuthenticationFilter extends OncePerRequestFilter {
         
         chain.doFilter(request, response);
     }
-    
-    
-    private static class CustomHttpServletRequest extends HttpServletRequestWrapper {
-        private final Map<String, String> headers;
-     
-        public CustomHttpServletRequest(HttpServletRequest request){
-            super(request);
-            this.headers = new HashMap<String, String>();
-        }
-        
-        public void putHeader(String name, String value){
-            this.headers.put(name, value);
-        }
-     
-        public String getHeader(String name) {
-            String headerValue = headers.get(name);
-            if (headerValue != null){
-                return headerValue;
-            }
-            return ((HttpServletRequest) getRequest()).getHeader(name);
-        }
-     
-        public Enumeration<String> getHeaderNames() {
-            Set<String> set = new HashSet<String>(headers.keySet());
-            Enumeration<String> e = ((HttpServletRequest) getRequest()).getHeaderNames();
-            while (e.hasMoreElements()) {
-                String n = e.nextElement();
-                set.add(n);
-            }
-     
-            return Collections.enumeration(set);
-        }
-        
-        public Enumeration<String> getHeaders(String name) {
-            Set<String> set = new HashSet<String>();
-            String headerValue = headers.get(name);
-            if (headerValue != null){
-                set.add(headerValue);
-            }
-            
-            Enumeration<String> headers = super.getHeaders(name);
-            while (headers.hasMoreElements()) {
-                String value = headers.nextElement();
-                set.add(value);
-            }
-            
-            return Collections.enumeration(set);
-        };
-        
-    }
-    
-
 }

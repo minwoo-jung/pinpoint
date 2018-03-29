@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.dao;
+package com.navercorp.pinpoint.web.service;
 
-import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
-
-import java.util.List;
+import com.navercorp.pinpoint.web.security.PinpointAuthentication;
 
 /**
  * @author minwoo.jung
  */
-public interface MetaDataDao {
-    List<PaaSOrganizationInfo> selectPaaSOrganizationInfoList();
-
-    PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
+public interface SecurityService {
+    PinpointAuthentication createPinpointAuthentication(String userId);
 }

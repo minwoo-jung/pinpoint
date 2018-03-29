@@ -27,7 +27,7 @@ public class NssAuthServiceImpl implements NssAuthService {
     }
 
     @Override
-    @Transactional(transactionManager="metaDataTransactionManager", readOnly = true)
+    @Transactional(transactionManager="metaDataTransactionManager", readOnly = true, rollbackFor = {Exception.class})
     public Collection<String> getAuthorizedPrefixes() {
         Collection<String> authorizedPrefixes = nssAuthDao.selectAuthorizedPrefix();
         if (CollectionUtils.isEmpty(authorizedPrefixes)) {
@@ -48,7 +48,7 @@ public class NssAuthServiceImpl implements NssAuthService {
     }
 
     @Override
-    @Transactional(transactionManager="metaDataTransactionManager", readOnly = true)
+    @Transactional(transactionManager="metaDataTransactionManager", readOnly = true, rollbackFor = {Exception.class})
     public Collection<String> getOverrideUserIds() {
         Collection<String> overrideUserIds = nssAuthDao.selectOverrideUserId();
         if (CollectionUtils.isEmpty(overrideUserIds)) {

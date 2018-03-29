@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.dao;
+package com.navercorp.pinpoint.web.security;
 
-import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
+import org.springframework.http.server.ServerHttpRequest;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author minwoo.jung
  */
-public interface MetaDataDao {
-    List<PaaSOrganizationInfo> selectPaaSOrganizationInfoList();
+public interface UserInformationAcquirer {
+    String acquireUserId(HttpServletRequest request);
 
-    PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
+    String acquireUserId(ServerHttpRequest request);
+
+    String acquireOrganizationName(HttpServletRequest request);
+
+    String acquireOrganizationName(ServerHttpRequest request);
+
+    String getUserIdHeaderName();
+
+    boolean validCheckHeader(String userId, String organizationName);
 }

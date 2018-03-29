@@ -61,8 +61,8 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> selectManagerByUserId(String userId) {
-        return applicationConfigDao.selectManagerByUserId(userId);
+    public boolean isManager(String userId) {
+        return applicationConfigDao.isManager(userId);
     }
 
     @Override

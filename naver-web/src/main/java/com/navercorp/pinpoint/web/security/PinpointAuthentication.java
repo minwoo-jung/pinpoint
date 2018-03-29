@@ -15,43 +15,57 @@
  */
 package com.navercorp.pinpoint.web.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.navercorp.pinpoint.common.util.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 import com.navercorp.pinpoint.web.vo.UserGroup;
+import org.springframework.util.Assert;
 
 /**
  * @author minwoo.jung
  */
 public class PinpointAuthentication implements Authentication {
 
-    private String userId;
-    private String name;
-    private String password;
-    private List<UserGroup> affiliatedUserGroupList = new ArrayList<>(0);
-    private Map<String, ApplicationConfiguration> appConfigCache = new HashMap<String, ApplicationConfiguration>();
-    private boolean authenticated = false;
-    private Collection<? extends GrantedAuthority> authorities;
-    private boolean PinpointManager = false;
-    
-    public PinpointAuthentication(String userId, String name, List<UserGroup> affiliatedUserGroupList, String password, boolean authenticated, boolean pinpointManager) {
+    private static final String EMPTY_STRING = "";
+
+    private final String userId;
+    private final String name;
+    private final List<UserGroup> affiliatedUserGroupList;
+    private final Map<String, ApplicationConfiguration> appConfigCache;
+    private final Collection<GrantedAuthority> authorities;
+    private final boolean PinpointManager;
+    private boolean authenticated;
+
+    public PinpointAuthentication(String userId, String name, List<UserGroup> affiliatedUserGroupList, boolean authenticated, boolean pinpointManager) {
+        if (StringUtils.isEmpty(userId)) {
+            throw new IllegalArgumentException("userId must not be empty");
+        }
+        if (StringUtils.isEmpty(name)) {
+            throw new IllegalArgumentException("name must not be empty");
+        }
+        Objects.requireNonNull(affiliatedUserGroupList, "affiliatedUserGroupList must not be empty");
+
         this.userId = userId;
         this.name = name;
-        this.password = password;
         this.affiliatedUserGroupList = affiliatedUserGroupList;
         this.authenticated = authenticated;
         this.PinpointManager = pinpointManager;
+        this.authorities = new ArrayList<>(0);
+        appConfigCache = new HashMap<String, ApplicationConfiguration>();
     }
-    
-    
+
     public PinpointAuthentication() {
+        userId = EMPTY_STRING;
+        name = EMPTY_STRING;
+        affiliatedUserGroupList = new ArrayList<>(0);
+        appConfigCache = new HashMap<String, ApplicationConfiguration>();
+        authenticated = false;
+        authorities = new ArrayList<>(0);
+        PinpointManager = false;
     }
 
     public boolean isPinpointManager() {
@@ -64,17 +78,18 @@ public class PinpointAuthentication implements Authentication {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         return authorities;
     }
-    
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
+
+    public void addAuthority(GrantedAuthority authoritiy)
+    {
+        this.authorities.add(authoritiy);
     }
 
     @Override
     public String getCredentials() {
-        return password;
+        return EMPTY_STRING;
     }
 
     @Override

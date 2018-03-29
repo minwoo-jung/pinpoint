@@ -18,12 +18,12 @@ package com.navercorp.pinpoint.web.batch.job;
 import com.navercorp.pinpoint.web.batch.Divider;
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.web.service.MetaDataService;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author minwoo.jung
@@ -36,16 +36,18 @@ public class PaaSRepositoryDivider implements Divider {
     @Override
     public Map<String, ExecutionContext> divide(final String partitionNamePrefix, final String batchName) {
         final Map<String, ExecutionContext> mapContext = new HashMap<>();
-        final List<PaaSOrganizationInfo> paaSOrganizationInfoList = metaDataService.selectPaaSOrganizationInfoList();
+        final List<PaaSOrganizationInfo> paaSOrganizationInfoList = metaDataService.selectPaaSOrganizationInfoListForBatchPartitioning(batchName);
 
         int i = 0;
         for (PaaSOrganizationInfo paaSOrganizationInfo : paaSOrganizationInfoList) {
             ExecutionContext executionContext = new ExecutionContext();
-            paaSOrganizationInfo.setUserId(batchName);
             executionContext.put(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO, paaSOrganizationInfo);
             mapContext.put(partitionNamePrefix + i++, executionContext);
         }
 
         return mapContext;
     }
+
+
+
 }

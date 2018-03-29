@@ -33,6 +33,6 @@ public interface ApplicationConfigDao {
 
     List<AppUserGroupAuth> selectAppUserGroupAuthList(String applicationId);
 
-    List<User> selectManagerByUserId(String userId);
+    boolean isManager(String userId);
     
 }

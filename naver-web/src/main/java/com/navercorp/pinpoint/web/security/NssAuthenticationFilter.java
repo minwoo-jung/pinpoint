@@ -16,14 +16,16 @@
 package com.navercorp.pinpoint.web.security;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.navercorp.pinpoint.web.service.ApplicationConfigService;
+import com.navercorp.pinpoint.web.service.MetaDataService;
+import com.navercorp.pinpoint.web.service.SecurityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,53 +36,43 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.navercorp.pinpoint.web.service.UserGroupService;
-import com.navercorp.pinpoint.web.service.UserService;
-import com.navercorp.pinpoint.web.vo.User;
-import com.navercorp.pinpoint.web.vo.UserGroup;
-
 /**
  * @author minwoo.jung
  */
 @Component
 public class NssAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String SSO_USER = "SSO_USER";
-    
+    private final static String ERROR_MESSAGE_USER_INFO_EMPTY = "{\"error code\" : \"401\", \"error message\" : \"error occurred in login process. May be userId or organization is empty.\"}";
+    private final static String ERROR_MESSAGE_NOT_FOUND_ORGANIZATION = "{\"error code\" : \"401\", \"error message\" : \"error occurred in finding organization.\"}";
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
-    UserService userService;
-    
+    private MetaDataService metaDataService;
+
     @Autowired
-    UserGroupService userGroupService;
-    
+    private SecurityService securityService;
+
     @Autowired
-    ApplicationConfigService configService;
+    protected UserInformationAcquirer userInformationAcquirer;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        if (StringUtils.isEmpty(request.getHeader(SSO_USER))) {
-            HttpServletResponse httpServletResponse = response; 
-            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-            httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            httpServletResponse.getWriter().print("{\"error code\" : \"" + 401 + "\"," + "\"error message\" : \"" + "you should login." + "\"}");
+        final String userId = userInformationAcquirer.acquireUserId(request);
+        final String organizationName = userInformationAcquirer.acquireOrganizationName(request);
+        if (userInformationAcquirer.validCheckHeader(userId, organizationName) == false) {
+            logger.error("error occurred in checking userId({}), organizationName({}). Maybe userId or organizationName is null.", userId, organizationName);
+            responseForUnauthorized(response, ERROR_MESSAGE_USER_INFO_EMPTY);
             return;
         }
 
-        final String userId = request.getHeader(SSO_USER);
-
-        StaticOrganizationInfoAllocator.allocate(userId);
-
-        User user = userService.selectUserByUserId(userId);
-        List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-        boolean pinpointManager = isManager(userId);
-        Authentication authentication;
-        
-        if (user != null) {
-            authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, null, true, pinpointManager);
-        } else {
-            authentication = new PinpointAuthentication();
+        boolean allocateSuccess = metaDataService.allocatePaaSOrganizationInfoRequestScope(userId, organizationName);
+        if (allocateSuccess == false) {
+            logger.error("error occurred in allocatePaaSOrganizationInfo userId({}), organizationName({}).", userId, organizationName);
+            responseForUnauthorized(response, ERROR_MESSAGE_NOT_FOUND_ORGANIZATION);
+            return;
         }
 
+        Authentication authentication = securityService.createPinpointAuthentication(userId);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -91,15 +83,10 @@ public class NssAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean isManager(String userId) {
-        List<User> user = configService.selectManagerByUserId(userId);
-
-        if (user.size() > 0) {
-            return true;
-        }
-
-        return false;
+    private void responseForUnauthorized(HttpServletResponse response, String errorMessage) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getWriter().print(errorMessage);
     }
-
 
 }

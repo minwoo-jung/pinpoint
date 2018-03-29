@@ -26,10 +26,12 @@
         WHERE application_id = #{applicationId}
     </select>
     
-    <select id="selectManagerByUserId" resultType="User">
-        SELECT *
-        FROM manager
-        WHERE user_id = #{userId}
+    <select id="isManager" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM manager
+            WHERE user_id = #{userId}
+        )
     </select>
     
 </mapper>

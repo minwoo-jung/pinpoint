@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.dao;
-
-import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
-
-import java.util.List;
+package com.navercorp.pinpoint.web.vo.exception;
 
 /**
  * @author minwoo.jung
  */
-public interface MetaDataDao {
-    List<PaaSOrganizationInfo> selectPaaSOrganizationInfoList();
+public class PinpointWebSocketException extends Exception {
 
-    PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
+    public PinpointWebSocketException(String message) {
+        super(message);
+    }
 }

@@ -23,5 +23,10 @@
         SELECT *
         FROM paas_organization
     </select>
-    
+
+    <select id="selectPaaSOrganizationInfo" resultType="PaaSOrganizationInfo">
+        SELECT *
+        FROM paas_organization
+        WHERE organization = #{organization}
+    </select>
 </mapper>

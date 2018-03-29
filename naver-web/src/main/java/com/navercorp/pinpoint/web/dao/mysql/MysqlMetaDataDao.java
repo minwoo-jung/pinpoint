@@ -40,4 +40,9 @@ public class MysqlMetaDataDao implements MetaDataDao {
     public List<PaaSOrganizationInfo> selectPaaSOrganizationInfoList() {
         return sqlSessionTemplate.selectList(NAMESPACE + "selectPaaSOrganizationInfoList");
     }
+
+    @Override
+    public PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName) {
+        return sqlSessionTemplate.selectOne(NAMESPACE + "selectPaaSOrganizationInfo", organizationName);
+    }
 }

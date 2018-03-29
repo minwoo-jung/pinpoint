@@ -18,6 +18,9 @@ package com.navercorp.pinpoint.web.batch;
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.web.service.MetaDataService;
 import com.navercorp.pinpoint.web.service.UserService;
+import com.navercorp.pinpoint.web.vo.exception.PinpointWebSocketException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -32,6 +35,9 @@ import java.util.List;
  */
 public class InitListener implements StepExecutionListener {
     private static final String BATCH_NAME = "inner_system_batch";
+    private static final String NAVER_ORGANIZATION_NAME = "KR";
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private MetaDataService metaDataService;
@@ -43,20 +49,15 @@ public class InitListener implements StepExecutionListener {
     public void beforeStep(StepExecution stepExecution) {
         insertNamespace(stepExecution);
         initTable();
-
-
     }
 
     private void insertNamespace(StepExecution stepExecution) {
-        final List<PaaSOrganizationInfo> paaSOrganizationInfoList = metaDataService.selectPaaSOrganizationInfoList();
         PaaSOrganizationInfo paaSOrganizationInfo = null;
-
-        for (PaaSOrganizationInfo paaSOrgInfo : paaSOrganizationInfoList) {
-            if (paaSOrgInfo.getOrganization().equals("navercorp")) {
-                paaSOrgInfo.setUserId(BATCH_NAME);
-                paaSOrganizationInfo = paaSOrgInfo;
-                break;
-            }
+        try {
+            paaSOrganizationInfo = metaDataService.selectPaaSOrganizationInfo(BATCH_NAME, NAVER_ORGANIZATION_NAME);
+        } catch (PinpointWebSocketException e) {
+            logger.error("exception occured while create PaaSOrganizationInfo.",e);
+            throw new RuntimeException(e);
         }
 
         stepExecution.getExecutionContext().put(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO, paaSOrganizationInfo);

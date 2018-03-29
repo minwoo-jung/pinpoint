@@ -15,7 +15,9 @@
  */
 package com.navercorp.pinpoint.web.service;
 
+import com.navercorp.pinpoint.exception.PinpointException;
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.web.vo.exception.PinpointWebSocketException;
 
 import java.util.List;
 
@@ -23,5 +25,14 @@ import java.util.List;
  * @author minwoo.jung
  */
 public interface MetaDataService {
+
+    PaaSOrganizationInfo selectPaaSOrganizationInfo(String userId, String organizationName) throws PinpointWebSocketException;
+
     List<PaaSOrganizationInfo> selectPaaSOrganizationInfoList();
+
+    List<PaaSOrganizationInfo> selectPaaSOrganizationInfoListForBatchPartitioning(String batchName);
+
+    boolean allocatePaaSOrganizationInfoRequestScope(String userId, String organizationName);
+
+    boolean allocatePaaSOrganizationInfoSessionScope(String userId, String organizationName);
 }

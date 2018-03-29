@@ -18,14 +18,10 @@
 
 package com.navercorp.pinpoint.web.security;
 
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -33,81 +29,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import com.navercorp.pinpoint.web.service.ApplicationConfigService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.navercorp.pinpoint.web.service.UserGroupService;
-import com.navercorp.pinpoint.web.service.UserService;
-import com.navercorp.pinpoint.web.vo.User;
-import com.navercorp.pinpoint.web.vo.UserGroup;
-
 /**
  * @author minwoo.jung
  */
 @Component
-public class AutoLoginAuthenticationFilter extends OncePerRequestFilter {
-    
-    private static final String SSO_USER = "SSO_USER";
-    
-    @Autowired
-    private UserService userService;
-    
-    @Autowired
-    private UserGroupService userGroupService;
-    
-    @Autowired
-    private ApplicationConfigService configService;
+public class AutoLoginAuthenticationFilter extends NssAuthenticationFilter {
 
-    private String userId;
-    
-    public void setUserId(String userId) {
+    private final String userId;
+
+    public AutoLoginAuthenticationFilter(String userId) {
+        Objects.requireNonNull(userId, "defaultUserId must not be empty");
         this.userId = userId;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        StaticOrganizationInfoAllocator.allocate(userId);
+        final CustomHttpServletRequest customRequest = new CustomHttpServletRequest(request);
+        customRequest.putHeader(userInformationAcquirer.getUserIdHeaderName(), userId);
 
-        User user = userService.selectUserByUserId(userId);
-        List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-        boolean pinpointManager = isManager(userId);
-        Authentication authentication;
-        
-        if (user != null) {
-            authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, null, true, pinpointManager);
-        } else {
-            authentication = new PinpointAuthentication();
-        }
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
-        
-        CustomHttpServletRequest customRequest = new CustomHttpServletRequest(request);
-        customRequest.putHeader(SSO_USER, userId);
-        try {
-            chain.doFilter(customRequest, response);
-        } finally {
-            SecurityContextHolder.clearContext();
-        }
+        super.doFilterInternal(customRequest, response, chain);
     }
 
-    private boolean isManager(String userId) {
-        List<User> user = configService.selectManagerByUserId(userId);
-
-        if (user.size() > 0) {
-            return true;
-        }
-
-        return false;
-    }
-    
-    private static class CustomHttpServletRequest extends HttpServletRequestWrapper {
+    public static class CustomHttpServletRequest extends HttpServletRequestWrapper {
         private final Map<String, String> headers;
      
         public CustomHttpServletRequest(HttpServletRequest request){

@@ -18,18 +18,17 @@ package com.navercorp.pinpoint.web.security;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.navercorp.pinpoint.web.service.ApplicationConfigService;
+import com.navercorp.pinpoint.web.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.navercorp.pinpoint.web.service.UserGroupService;
-import com.navercorp.pinpoint.web.service.UserService;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 import com.navercorp.pinpoint.web.vo.User;
 import com.navercorp.pinpoint.web.vo.UserGroup;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * @author minwoo.jung
@@ -37,69 +36,24 @@ import com.navercorp.pinpoint.web.vo.UserGroup;
 public class LocalAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
-    UserService userService;
+    private MetaDataService metaDataService;
 
     @Autowired
-    UserGroupService userGroupService;
-
-    @Autowired
-    ApplicationConfigService configService;
+    private SecurityService securityService;
 
     @Override
-    public Authentication authenticate(final Authentication auth) throws AuthenticationException {
+public Authentication authenticate(final Authentication auth) throws AuthenticationException {
         final String userId = String.valueOf(auth.getPrincipal());
+        final String organizationName =  userId.substring(0,2);
 
-        StaticOrganizationInfoAllocator.allocateForSessionScope(userId);
+        metaDataService.allocatePaaSOrganizationInfoSessionScope(userId, organizationName);
 
-        User user = userService.selectUserByUserId(userId);
-        List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-        boolean pinpointManager = isManager(userId);
-        PinpointAuthentication authentication;
-
-        if (user != null) {
-            authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, null, true, pinpointManager) {
-                @Override
-                public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
-                    return null;
-                }
-
-                @Override
-                public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
-                }
-            };
-            GrantedAuthority grantedAuthority = new GrantedAuthority() {
-                @Override
-                public String getAuthority() {
-                    return "ROLE_USER";
-                }
-            };
-            List authorities = new ArrayList<GrantedAuthority>(1);
-            authorities.add(grantedAuthority);
-            authentication.setAuthorities(authorities);
-        } else {
-            authentication = new PinpointAuthentication() {
-                @Override
-                public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
-                    return null;
-                }
-
-                @Override
-                public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
-                }
-            };
+        PinpointAuthentication authentication = securityService.createPinpointAuthentication(userId);
+        if (authentication.getPrincipal().isEmpty() == false) {
+            authentication.addAuthority(new SimpleGrantedAuthority("ROLE_USER"));
         }
 
         return authentication;
-    }
-
-    private boolean isManager(String userId) {
-        List<User> user = configService.selectManagerByUserId(userId);
-
-        if (user.size() > 0) {
-            return true;
-        }
-
-        return false;
     }
 
     @Override
