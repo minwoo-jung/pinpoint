@@ -64,27 +64,30 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         serverInstances.add(new ServerInstance(UNAUTHORIZED_AGENT, UNAUTHORIZED_AGENT, ServiceType.UNAUTHORIZED.getCode()));
         serverInstanceList.put("UNKNOWN_AGENT", serverInstances);
     }
-    
+
     @Override
     public boolean filter(Application application) {
         PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
         return isAuthorized(authentication, application.getName()) ? false : true;
     }
-    
+
     @Override
     public boolean filter(WebSocketSession webSocketSession, RequestMessage requestMessage) {
         String applicationId = (String)requestMessage.getParameters().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY);
         PinpointAuthentication authentication = (PinpointAuthentication)webSocketSession.getPrincipal();
-        
+
         return isAuthorized(authentication, applicationId) ? false : true;
     }
-    
-    private boolean isAuthorized(Application application) {
+
+    private boolean isAuthorized(Node node) {
+        if (!node.getServiceType().isWas()) {
+            return true;
+        }
         PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
-        return isAuthorized(authentication, application.getName());
+        return isAuthorized(authentication, node.getApplication().getName());
     }
 
-    
+
     private boolean isAuthorized(PinpointAuthentication authentication, String applicationId) {
         if (authentication == null) {
             logger.info("Authorization is fail. Because authentication is null.");
@@ -113,7 +116,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         if (isPinpointManager(authentication)) {
             return map;
         }
-        
+
         return createApplicationMap(map);
     }
 
@@ -130,14 +133,14 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
             throw new AuthorityException("Can't create ApplicationMap class while filtering data");
         }
     }
-    
+
     private ApplicationMap createDefaultApplicationMap(final DefaultApplicationMap map) {
         Collection<Node> nodes = map.getNodes();
         NodeList nodeList = new NodeList();
         for(Node node : nodes) {
             nodeList.addNode(nodeDataFiltering(node));
         }
-        
+
         LinkList linkList = new LinkList();
         Collection<Link> links = map.getLinks();
         for(Link link : links) {
@@ -148,13 +151,13 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
     }
 
     private Node nodeDataFiltering(Node node) {
-        final boolean authorized = isAuthorized(node.getApplication());
+        final boolean authorized = isAuthorized(node);
         if (authorized) {
             return node;
         }
         return createUnauthorizedNode(node);
     }
-    
+
     private Node createUnauthorizedNode(Node node) {
         Application unAuthApp = new Application(node.getApplication().getName(), ServiceType.UNAUTHORIZED);
         Node newNode = new Node(unAuthApp);
@@ -165,33 +168,33 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
     }
 
     private Link linkDataFiltering(Link link, NodeList nodeList) {
-      final boolean isAuthFromApp = isAuthorized(link.getFrom().getApplication());
-      final boolean isAuthToApp = isAuthorized(link.getTo().getApplication());
-      
-      if (isAuthFromApp && isAuthToApp) {
-          return link;
-      }
-      
-      Node from = link.getFrom();
-      Node to = link.getTo();
-      
-      if (isAuthFromApp == false) {
-          from = createOrFindUnauthorizedNode(from, nodeList);
-      }
-      if (isAuthToApp == false) {
-          to = createOrFindUnauthorizedNode(to, nodeList);
-      }
-      
-      Link newLink = new Link(link.getLinkType(), link.getCreateType(), from, to, link.getRange());
+        Node from = link.getFrom();
+        Node to = link.getTo();
 
-      if (isAuthFromApp == false || isAuthToApp == false) {
-          LinkCallDataMap newSourceLinkCallDataMap = createLinkCallDataMap(link.getSourceLinkCallDataMap(), isAuthFromApp, isAuthToApp);
-          newLink.addSource(newSourceLinkCallDataMap);
-          LinkCallDataMap newTargetLinkCallDataMap = createLinkCallDataMap(link.getTargetLinkCallDataMap(), isAuthFromApp, isAuthToApp);
-          newLink.addTarget(newTargetLinkCallDataMap);
-      }
-      
-      return newLink;
+        final boolean isAuthFromApp = isAuthorized(from);
+        final boolean isAuthToApp = isAuthorized(to);
+
+        if (isAuthFromApp && isAuthToApp) {
+            return link;
+        }
+
+        if (isAuthFromApp == false) {
+            from = createOrFindUnauthorizedNode(from, nodeList);
+        }
+        if (isAuthToApp == false) {
+            to = createOrFindUnauthorizedNode(to, nodeList);
+        }
+
+        Link newLink = new Link(link.getLinkType(), link.getCreateType(), from, to, link.getRange());
+
+        if (isAuthFromApp == false || isAuthToApp == false) {
+            LinkCallDataMap newSourceLinkCallDataMap = createLinkCallDataMap(link.getSourceLinkCallDataMap(), isAuthFromApp, isAuthToApp);
+            newLink.addSource(newSourceLinkCallDataMap);
+            LinkCallDataMap newTargetLinkCallDataMap = createLinkCallDataMap(link.getTargetLinkCallDataMap(), isAuthFromApp, isAuthToApp);
+            newLink.addTarget(newTargetLinkCallDataMap);
+        }
+
+        return newLink;
     }
 
     private Node createOrFindUnauthorizedNode(Node node, NodeList nodeList) {
@@ -218,24 +221,24 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
                 fromId = UNAUTHORIZED_AGENT;
                 fromServiceType = ServiceType.UNAUTHORIZED;
             }
-            
+
             String toId;
             ServiceType toServiceType;
             if (isAuthToApp) {
                 toId = linkCallData.getTarget();
                 toServiceType = linkCallData.getTargetServiceType();
-            } else {  
+            } else {
                 toId = UNAUTHORIZED_AGENT;
                 toServiceType = ServiceType.UNAUTHORIZED;
             }
-            
+
             newLinkCallDataMap.addCallData(fromId, fromServiceType, toId, toServiceType, linkCallData.getTimeHistogram());
         }
-        
+
         return newLinkCallDataMap;
     }
-    
-    
+
+
     @Override
     public CloseStatus getCloseStatus(RequestMessage requestMessage) {
         return CloseStatus.POLICY_VIOLATION.withReason("you don't have authorization for " + requestMessage.getParameters().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY) + ".");
