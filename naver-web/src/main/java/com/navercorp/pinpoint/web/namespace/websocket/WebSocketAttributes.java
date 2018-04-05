@@ -17,6 +17,7 @@ package com.navercorp.pinpoint.web.namespace.websocket;
 
 import org.springframework.util.Assert;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -33,6 +34,10 @@ public class WebSocketAttributes {
 
     public Object getAttribute(String name) {
         return attributes.get(name);
+    }
+
+    public Map<String, Object> getAttributes() {
+        return Collections.unmodifiableMap(attributes);
     }
 
     public void setAttribute(String name, Object value) {

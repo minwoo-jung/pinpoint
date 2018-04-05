@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       ">
+
+    <bean id="agentService" class="com.navercorp.pinpoint.web.service.AgentServiceImpl">
+    </bean>
+
+    <bean id="pinpointWebSocketTimerTaskDecoratorFactory" class="com.navercorp.pinpoint.web.websocket.PinpointWebSocketTimerTaskDecoratorFactory"/>
+    <bean id="paasWebSocketTimerTaskDecoratorFactory" class="com.navercorp.pinpoint.web.websocket.PaaSWebSocketTimerTaskDecoratorFactory">
+        <constructor-arg ref="pinpointWebSocketTimerTaskDecoratorFactory"/>
+    </bean>
+
+    <bean id="activeThreadHandler" class="com.navercorp.pinpoint.web.websocket.ActiveThreadCountHandler">
+        <!-- default value.
+        <constructor-arg value="/agent/activeThread" />
+        -->
+        <constructor-arg ref="agentService" />
+        <constructor-arg ref="paasWebSocketTimerTaskDecoratorFactory" />
+    </bean>
+
+
+    <bean id="handlerRegister" class="com.navercorp.pinpoint.web.websocket.PinpointWebSocketHandlerManager">
+        <constructor-arg>
+            <list>
+                <ref bean="activeThreadHandler" />
+            </list>
+        </constructor-arg>
+    </bean>
+
+
+</beans>
