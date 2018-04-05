@@ -22,10 +22,10 @@ import org.springframework.core.NamedThreadLocal;
  */
 public class WebSocketContextHolder {
 
-    private static final ThreadLocal webSocketAttributesHolder = new NamedThreadLocal("WebSocket attributes");
+    private static final ThreadLocal<WebSocketAttributes> webSocketAttributesHolder = new NamedThreadLocal<>("WebSocket attributes");
 
     public static void resetAttributes() {
-        WebSocketAttributes attributes = (WebSocketAttributes) webSocketAttributesHolder.get();
+        WebSocketAttributes attributes = webSocketAttributesHolder.get();
 
         if (attributes != null) {
             attributes.clear();
@@ -35,7 +35,7 @@ public class WebSocketContextHolder {
     }
 
     public static WebSocketAttributes getAttributes() {
-        return (WebSocketAttributes) webSocketAttributesHolder.get();
+        return webSocketAttributesHolder.get();
     }
 
     public static void setAttributes(WebSocketAttributes attributes) {
@@ -47,7 +47,7 @@ public class WebSocketContextHolder {
     }
 
     public static WebSocketAttributes currentAttributes() throws IllegalStateException {
-        WebSocketAttributes attributes = (WebSocketAttributes) webSocketAttributesHolder.get();
+        WebSocketAttributes attributes = webSocketAttributesHolder.get();
 
         if (attributes == null) {
             throw new IllegalStateException("No thread-bound websocketfound ");
