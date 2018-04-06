@@ -20,6 +20,7 @@ import com.navercorp.pinpoint.web.namespace.websocket.WebSocketAttributes;
 import com.navercorp.pinpoint.web.namespace.websocket.WebSocketContextHolder;
 import com.navercorp.pinpoint.web.task.TimerTaskDecorator;
 import com.navercorp.pinpoint.web.task.TimerTaskDecoratorFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,13 +31,10 @@ import java.util.TimerTask;
 /**
  * @author HyunGil Jeong
  */
+@Component
 public class PaaSWebSocketTimerTaskDecoratorFactory implements TimerTaskDecoratorFactory {
 
-    private final PinpointWebSocketTimerTaskDecoratorFactory pinpointWebSocketTimerTaskDecoratorFactory;
-
-    public PaaSWebSocketTimerTaskDecoratorFactory(PinpointWebSocketTimerTaskDecoratorFactory pinpointWebSocketTimerTaskDecoratorFactory) {
-        this.pinpointWebSocketTimerTaskDecoratorFactory = Objects.requireNonNull(pinpointWebSocketTimerTaskDecoratorFactory, "pinpointWebSocketTimerTaskDecoratorFactory must not be null");
-    }
+    private final PinpointWebSocketTimerTaskDecoratorFactory pinpointWebSocketTimerTaskDecoratorFactory = new PinpointWebSocketTimerTaskDecoratorFactory();
 
     @Override
     public TimerTaskDecorator createTimerTaskDecorator() {
