@@ -16,66 +16,65 @@
 
 package com.navercorp.pinpoint.web.websocket;
 
-//import com.navercorp.pinpoint.web.namespace.websocket.WebSocketAttributes;
-//import com.navercorp.pinpoint.web.namespace.websocket.WebSocketContextHolder;
-//import com.navercorp.pinpoint.web.task.TimerTaskDecorator;
-//import com.navercorp.pinpoint.web.task.TimerTaskDecoratorFactory;
+import com.navercorp.pinpoint.web.namespace.websocket.WebSocketAttributes;
+import com.navercorp.pinpoint.web.namespace.websocket.WebSocketContextHolder;
+import com.navercorp.pinpoint.web.task.TimerTaskDecorator;
+import com.navercorp.pinpoint.web.task.TimerTaskDecoratorFactory;
 import org.springframework.stereotype.Component;
 
-//import java.util.Collections;
-//import java.util.HashMap;
-//import java.util.Map;
-//import java.util.Objects;
-//import java.util.TimerTask;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TimerTask;
 
 /**
  * @author HyunGil Jeong
  */
 @Component
-public class PaaSWebSocketTimerTaskDecoratorFactory {
-//public class PaaSWebSocketTimerTaskDecoratorFactory implements TimerTaskDecoratorFactory {
-//
-//    private final PinpointWebSocketTimerTaskDecoratorFactory pinpointWebSocketTimerTaskDecoratorFactory = new PinpointWebSocketTimerTaskDecoratorFactory();
-//
-//    @Override
-//    public TimerTaskDecorator createTimerTaskDecorator() {
-//        TimerTaskDecorator decorator = pinpointWebSocketTimerTaskDecoratorFactory.createTimerTaskDecorator();
-//        return new WebSocketContextPreservingTimerTaskDecorator(decorator);
-//    }
-//
-//    private static class WebSocketContextPreservingTimerTaskDecorator implements TimerTaskDecorator {
-//
-//        private final TimerTaskDecorator pinpointWebSocketTimerTaskDecorator;
-//        private final Map<String, Object> attributes;
-//
-//        private WebSocketContextPreservingTimerTaskDecorator(TimerTaskDecorator pinpointWebSocketTimerTaskDecorator) {
-//            this.pinpointWebSocketTimerTaskDecorator = Objects.requireNonNull(pinpointWebSocketTimerTaskDecorator, "pinpointWebSocketTimerTaskDecorator must not be null");
-//
-//            WebSocketAttributes webSocketAttributes = WebSocketContextHolder.getAttributes();
-//            if (webSocketAttributes == null) {
-//                this.attributes = Collections.emptyMap();
-//            } else {
-//                this.attributes = new HashMap<>(webSocketAttributes.getAttributes());
-//            }
-//        }
-//
-//        @Override
-//        public TimerTask decorate(TimerTask timerTask) {
-//            return new TimerTask() {
-//                @Override
-//                public void run() {
-//                    WebSocketAttributes previousWebSocketAttributes = WebSocketContextHolder.getAttributes();
-//                    Map<String, Object> copy = new HashMap<>(attributes);
-//                    WebSocketAttributes webSocketAttributes = new WebSocketAttributes(copy);
-//                    WebSocketContextHolder.setAttributes(webSocketAttributes);
-//                    try {
-//                        TimerTask delegate = pinpointWebSocketTimerTaskDecorator.decorate(timerTask);
-//                        delegate.run();
-//                    } finally {
-//                        WebSocketContextHolder.setAttributes(previousWebSocketAttributes);
-//                    }
-//                }
-//            };
-//        }
-//    }
+public class PaaSWebSocketTimerTaskDecoratorFactory implements TimerTaskDecoratorFactory {
+
+    private final PinpointWebSocketTimerTaskDecoratorFactory pinpointWebSocketTimerTaskDecoratorFactory = new PinpointWebSocketTimerTaskDecoratorFactory();
+
+    @Override
+    public TimerTaskDecorator createTimerTaskDecorator() {
+        TimerTaskDecorator decorator = pinpointWebSocketTimerTaskDecoratorFactory.createTimerTaskDecorator();
+        return new WebSocketContextPreservingTimerTaskDecorator(decorator);
+    }
+
+    private static class WebSocketContextPreservingTimerTaskDecorator implements TimerTaskDecorator {
+
+        private final TimerTaskDecorator pinpointWebSocketTimerTaskDecorator;
+        private final Map<String, Object> attributes;
+
+        private WebSocketContextPreservingTimerTaskDecorator(TimerTaskDecorator pinpointWebSocketTimerTaskDecorator) {
+            this.pinpointWebSocketTimerTaskDecorator = Objects.requireNonNull(pinpointWebSocketTimerTaskDecorator, "pinpointWebSocketTimerTaskDecorator must not be null");
+
+            WebSocketAttributes webSocketAttributes = WebSocketContextHolder.getAttributes();
+            if (webSocketAttributes == null) {
+                this.attributes = Collections.emptyMap();
+            } else {
+                this.attributes = new HashMap<>(webSocketAttributes.getAttributes());
+            }
+        }
+
+        @Override
+        public TimerTask decorate(TimerTask timerTask) {
+            return new TimerTask() {
+                @Override
+                public void run() {
+                    WebSocketAttributes previousWebSocketAttributes = WebSocketContextHolder.getAttributes();
+                    Map<String, Object> copy = new HashMap<>(attributes);
+                    WebSocketAttributes webSocketAttributes = new WebSocketAttributes(copy);
+                    WebSocketContextHolder.setAttributes(webSocketAttributes);
+                    try {
+                        TimerTask delegate = pinpointWebSocketTimerTaskDecorator.decorate(timerTask);
+                        delegate.run();
+                    } finally {
+                        WebSocketContextHolder.setAttributes(previousWebSocketAttributes);
+                    }
+                }
+            };
+        }
+    }
 }
