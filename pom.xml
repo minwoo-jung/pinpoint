@@ -62,6 +62,8 @@
 
     <modules>
         <module>naver-agent</module>
+        <module>naver-profiler</module>
+        <module>naver-ssl</module>
         <module>naver-collector</module>
         <module>naver-web</module>
         <module>naver-it7</module>
@@ -91,7 +93,16 @@
                 <version>${project.version}</version>
                 <type>zip</type>
             </dependency>
-
+            <dependency>
+                <groupId>com.navercorp.pinpoint</groupId>
+                <artifactId>pinpoint-naver-profiler</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.navercorp.pinpoint</groupId>
+                <artifactId>pinpoint-naver-ssl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.nhncorp</groupId>
                 <artifactId>triples-redis-client</artifactId>
@@ -229,6 +240,14 @@
             <id>release</id>
             <properties>
                 <env>release</env>
+            </properties>
+        </profile>
+
+        <!-- ssl local server -->
+        <profile>
+            <id>ssl-local</id>
+            <properties>
+                <env>ssl-local</env>
             </properties>
         </profile>
 
