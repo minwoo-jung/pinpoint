@@ -37,10 +37,6 @@ public class HttpServerRequestTrace implements ServerRequestTrace {
     }
 
     @Override
-    public void setHeader(String name, String value) {
-    }
-
-    @Override
     public String getRpcName() {
         final String requestURL = request.requestURI().toString();
         return requestURL;

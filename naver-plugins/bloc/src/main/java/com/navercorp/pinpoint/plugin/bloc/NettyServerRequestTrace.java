@@ -46,10 +46,6 @@ public class NettyServerRequestTrace implements ServerRequestTrace {
     }
 
     @Override
-    public void setHeader(String name, String value) {
-    }
-
-    @Override
     public String getRpcName() {
         return this.rpcName;
     }

@@ -17,10 +17,11 @@
 
 package com.navercorp.test.pinpoint.testweb.controller;
 
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -32,8 +33,9 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+
 /**
- * Created by nbp on 2015-09-07.
+ * @author jaehong.kim
  */
 
 @Controller
@@ -68,13 +70,13 @@ public class OkHttpController {
         try {
             client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onFailure(Request request, IOException e) {
+                public void onFailure(Call call, IOException e) {
                     logger.info("Failed to enqueue", e);
                     latch.countDown();
                 }
 
                 @Override
-                public void onResponse(Response response) throws IOException {
+                public void onResponse(Call call, Response response) throws IOException {
                     logger.info("Response {}", response.body().string());
                     latch.countDown();
                 }
@@ -98,13 +100,13 @@ public class OkHttpController {
         try {
             client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onFailure(Request request, IOException e) {
+                public void onFailure(Call call, IOException e) {
                     logger.info("Failed to enqueue", e);
                     latch.countDown();
                 }
 
                 @Override
-                public void onResponse(Response response) throws IOException {
+                public void onResponse(Call call, Response response) throws IOException {
                     logger.info("Response {}", response.body().string());
 
                     Request request = new Request.Builder().url("http://google.com").build();
@@ -160,6 +162,4 @@ public class OkHttpController {
 
         return "Ok";
     }
-
-
 }
