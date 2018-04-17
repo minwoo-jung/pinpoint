@@ -13,47 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.web.namespace.websocket;
+package com.navercorp.pinpoint.flink.namespace;
 
 import org.springframework.core.NamedThreadLocal;
 
 /**
  * @author minwoo.jung
  */
-public class WebSocketContextHolder {
+public class FlinkContextHolder {
 
-    private static final ThreadLocal<WebSocketAttributes> webSocketAttributesHolder = new NamedThreadLocal<>("WebSocket attributes");
+    private static final ThreadLocal<FlinkAttributes> flinkAttributesHolder = new NamedThreadLocal<>("Flink attributes");
 
     public static void resetAttributes() {
-        WebSocketAttributes attributes = webSocketAttributesHolder.get();
+        FlinkAttributes attributes = flinkAttributesHolder.get();
 
         if (attributes != null) {
             attributes.clear();
         }
 
-        webSocketAttributesHolder.remove();
+        flinkAttributesHolder.remove();
     }
 
-    public static WebSocketAttributes getAttributes() {
-        return webSocketAttributesHolder.get();
+    public static FlinkAttributes getAttributes() {
+        return flinkAttributesHolder.get();
     }
 
-    public static void setAttributes(WebSocketAttributes attributes) {
+    public static void setAttributes(FlinkAttributes attributes) {
         if (attributes == null) {
             resetAttributes();
         } else {
-            webSocketAttributesHolder.set(attributes);
+            flinkAttributesHolder.set(attributes);
         }
     }
 
-    public static WebSocketAttributes currentAttributes() throws IllegalStateException {
-        WebSocketAttributes attributes = webSocketAttributesHolder.get();
+    public static FlinkAttributes currentAttributes() throws IllegalStateException {
+        FlinkAttributes attributes = flinkAttributesHolder.get();
 
         if (attributes == null) {
-            throw new IllegalStateException("No thread-bound WebSocketAttributes found ");
+            throw new IllegalStateException("No thread-bound FlinkAttributes found ");
         }
 
         return attributes;
     }
-
 }
