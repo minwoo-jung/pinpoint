@@ -27,9 +27,6 @@
 
     <beans:bean id="naverAuthenticationProvider" class="com.navercorp.pinpoint.web.security.NaverAuthenticationProvider"/>
 
-    <beans:bean id="webSocketSecurityConfig" class="com.navercorp.pinpoint.web.security.WebSocketSecurityConfig"/>
-    <beans:bean id="handshakeInterceptor" class="com.navercorp.pinpoint.web.security.WebSocketSecurityInterceptor"/>
-
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
 
