@@ -13,6 +13,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
@@ -33,7 +35,7 @@ import com.navercorp.pinpoint.common.buffer.Buffer;
 import com.navercorp.pinpoint.common.hbase.HBaseTables;
 import com.navercorp.pinpoint.common.hbase.HbaseSystemException;
 import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
-import com.navercorp.pinpoint.common.hbase.PooledHTableFactory;
+import com.navercorp.pinpoint.common.hbase.HbaseTableFactory;
 import com.navercorp.pinpoint.web.mapper.TraceIndexScatterMapper;
 import com.navercorp.pinpoint.web.vo.Range;
 import com.navercorp.pinpoint.web.vo.ResponseTimeRange;
@@ -46,7 +48,7 @@ import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash;
 public class HbaseFilterPerformanceTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static ExecutorService executorService;
+    private static Connection connection;
     private static HbaseTemplate2 hbaseTemplate2;
     private static AbstractRowKeyDistributor traceIdRowKeyDistributor;
     private static TableNameProvider tableNameProvider = new HbaseTableNameProvider(NamespaceDescriptor.DEFAULT_NAMESPACE_NAME_STR);
@@ -59,10 +61,10 @@ public class HbaseFilterPerformanceTest {
         cfg.set("hbase.zookeeper.quorum", "dev.zk.pinpoint.navercorp.com");
         cfg.set("hbase.zookeeper.property.clientPort", "2181");
 
-        executorService = Executors.newFixedThreadPool(10);
+        connection = ConnectionFactory.createConnection(cfg);
         hbaseTemplate2 = new HbaseTemplate2();
         hbaseTemplate2.setConfiguration(cfg);
-        hbaseTemplate2.setTableFactory(new PooledHTableFactory(cfg, executorService));
+        hbaseTemplate2.setTableFactory(new HbaseTableFactory(connection));
         hbaseTemplate2.afterPropertiesSet();
 
         OneByteSimpleHash applicationTraceIndexHash = new com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash(32);
@@ -74,8 +76,8 @@ public class HbaseFilterPerformanceTest {
         if (hbaseTemplate2 != null) {
             hbaseTemplate2.destroy();
         }
-        if (executorService != null) {
-            executorService.shutdown();
+        if (connection != null) {
+            connection.close();
         }
     }
 

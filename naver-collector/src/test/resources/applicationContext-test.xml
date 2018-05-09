@@ -41,11 +41,6 @@
     <import resource="classpath:applicationContext-hbase.xml"/>
     <import resource="classpath:applicationContext-collector-namespace.xml"/>
 
-    <bean id="hBaseAdminTemplate" class="com.navercorp.pinpoint.common.hbase.HBaseAdminTemplate" destroy-method="close">
-        <constructor-arg ref="hbaseConfiguration" index="0"></constructor-arg>
-    </bean>
-
-
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry">
     </bean>
 
