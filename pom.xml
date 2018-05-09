@@ -72,6 +72,7 @@
         <module>testweb</module>
         <module>naver-web-oss</module>
         <module>test-vertx</module>
+        <module>naver-cloud-manager</module>
         <!--<module>spark</module>-->
     </modules>
 

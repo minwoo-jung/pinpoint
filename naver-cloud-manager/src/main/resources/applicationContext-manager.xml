@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <import resource="classpath:applicationContext-hbase.xml" />
+    <import resource="classpath:applicationContext-datasource.xml"/>
+    <import resource="classpath:applicationContext-dao-config.xml"/>
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.navercorp.pinpoint.manager.controller,
+                                          com.navercorp.pinpoint.manager.service,
+                                          com.navercorp.pinpoint.manager.dao"/>
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:hbase.properties</value>
+                <value>classpath:jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="pinpointManagerProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location" value="classpath:pinpoint-manager.properties"/>
+        <property name="fileEncoding" value="UTF-8"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="hbaseConfiguration" class="com.navercorp.pinpoint.common.hbase.HbaseConfigurationFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="hbase.zookeeper.quorum">${hbase.client.host}</prop>
+                <prop key="hbase.zookeeper.property.clientPort">${hbase.client.port}</prop>
+
+                <!--Root ZNode for HBase in ZooKeeper.-->
+                <prop key="zookeeper.znode.parent">${hbase.zookeeper.znode.parent:/hbase}</prop>
+
+                <!-- hbase default:true -->
+                <prop key="hbase.ipc.client.tcpnodelay">${hbase.ipc.client.tcpnodelay}</prop>
+                <!-- hbase default:60000 -->
+                <prop key="hbase.rpc.timeout">${hbase.rpc.timeout}</prop>
+                <!-- hbase default:Integer.MAX_VALUE -->
+                <prop key="hbase.client.operation.timeout">${hbase.client.operation.timeout}</prop>
+
+                <!-- hbase socket read timeout. default: 200000-->
+                <prop key="hbase.ipc.client.socket.timeout.read">${hbase.ipc.client.socket.timeout.read}</prop>
+                <!-- socket write timeout. hbase default: 600000-->
+                <prop key="hbase.ipc.client.socket.timeout.write">${hbase.ipc.client.socket.timeout.write}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="connectionFactory" class="com.navercorp.pinpoint.common.hbase.ConnectionFactoryBean">
+        <constructor-arg type="org.apache.hadoop.conf.Configuration" ref="hbaseConfiguration"/>
+    </bean>
+
+    <bean id="hbaseAdminFactory" class="com.navercorp.pinpoint.common.hbase.HbaseAdminFactory">
+        <constructor-arg ref="connectionFactory"/>
+    </bean>
+
+    <bean id="hbaseManagerAdminTemplate" class="com.navercorp.pinpoint.manager.hbase.HBaseManagerAdminTemplate">
+        <constructor-arg ref="hbaseAdminFactory"/>
+    </bean>
+
+</beans>
