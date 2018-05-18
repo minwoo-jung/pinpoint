@@ -136,13 +136,11 @@ public class SslHandlerProvider {
         SSLEngine engine = sslContext.createSSLEngine();
         List<String> supportedCipherSuites = new ArrayList<String>(Arrays.asList(engine.getSupportedCipherSuites()));
         supportedCipherSuites.retainAll(getSupportCipherSuite());
-        String[] supportCipherSuiteArray =  new String[supportedCipherSuites.size()];
-        supportedCipherSuites.toArray(supportCipherSuiteArray);
+        String[] supportCipherSuiteArray = supportedCipherSuites.toArray(new String[0]);
 
         List<String> supportProtocols = new ArrayList<String>(Arrays.asList(engine.getSupportedProtocols()));
         supportProtocols.retainAll(getSupportProtocolList());
-        String[] supportProtocolArray =  new String[supportProtocols.size()];
-        supportProtocols.toArray(supportProtocolArray);
+        String[] supportProtocolArray = supportProtocols.toArray(new String[0]);
 
         if (logger.isDebugEnabled()) {
             logger.debug("support cipher suites : " + Arrays.asList(supportCipherSuiteArray));
