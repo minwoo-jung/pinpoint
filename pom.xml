@@ -64,6 +64,7 @@
         <module>naver-agent</module>
         <module>naver-profiler</module>
         <module>naver-ssl</module>
+        <module>naver-thrift</module>
         <module>naver-collector</module>
         <module>naver-web</module>
         <module>naver-it7</module>
@@ -102,6 +103,11 @@
             <dependency>
                 <groupId>com.navercorp.pinpoint</groupId>
                 <artifactId>pinpoint-naver-ssl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.navercorp.pinpoint</groupId>
+                <artifactId>pinpoint-naver-thrift</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
