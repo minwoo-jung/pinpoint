@@ -1,0 +1,51 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="naver" id="naver-1.8.0_1">
+        <createTable tableName="manager">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="naver" id="naver-1.8.0_2">
+        <createTable tableName="app_auth_user_group">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="application_id" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_group_id" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="configuration" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="naver" id="naver-1.8.0_3">
+        <createTable tableName="user_configuration">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="configuration" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="naver" id="naver-1.8.0_4">
+        <addUniqueConstraint columnNames="application_id, user_group_id" constraintName="application_id_user_group_id_idx" tableName="app_auth_user_group"/>
+    </changeSet>
+</databaseChangeLog>

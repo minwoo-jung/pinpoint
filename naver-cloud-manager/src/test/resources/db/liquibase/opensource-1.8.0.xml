@@ -1,0 +1,109 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="opensource" id="opensource-1.8.0_1">
+        <createTable tableName="user_group">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="id" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="opensource" id="opensource-1.8.0_2">
+        <createTable tableName="user_group_member">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_group_id" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="opensource" id="opensource-1.8.0_3">
+        <addUniqueConstraint columnNames="user_group_id, member_id" constraintName="user_group_id_member_id_idx" tableName="user_group_member"/>
+    </changeSet>
+
+    <changeSet author="opensource" id="opensource-1.8.0_4">
+        <createTable tableName="puser">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="department" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phonenumber" type="VARCHAR(100)"/>
+            <column name="email" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="opensource" id="opensource-1.8.0_5">
+        <createTable tableName="alarm_rule">
+            <column autoIncrement="true" name="rule_id" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="application_id" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service_type" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="checker_name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="threshold" type="INT"/>
+            <column name="user_group_id" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sms_send" type="CHAR(1)"/>
+            <column name="email_send" type="CHAR(1)"/>
+            <column name="notes" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="opensource" id="opensource-1.8.0_6">
+        <addUniqueConstraint columnNames="application_id, user_group_id, checker_name" constraintName="application_id_checker_name_user_group_id_idx" tableName="alarm_rule"/>
+    </changeSet>
+
+    <changeSet author="opensource" id="opensource-1.8.0_7">
+        <createTable tableName="alarm_history">
+            <column autoIncrement="true" name="history_id" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="application_id" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="checker_name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="detected" type="CHAR(1)"/>
+            <column name="sequence_count" type="INT"/>
+            <column name="timing_count" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="opensource" id="opensource-1.8.0_8">
+        <addUniqueConstraint columnNames="application_id, checker_name" constraintName="application_id_checker_name_idx" tableName="alarm_history"/>
+    </changeSet>
+
+    <changeSet author="opensource" id="opensource-1.8.0_9">
+        <createTable tableName="agent_statistics">
+            <column name="agent_count" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_val" type="datetime">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
