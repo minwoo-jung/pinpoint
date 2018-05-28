@@ -18,45 +18,32 @@ package com.navercorp.pinpoint.manager.hbase;
 
 import com.navercorp.pinpoint.common.hbase.AdminFactory;
 import com.navercorp.pinpoint.common.hbase.HBaseAdminTemplate;
-import com.navercorp.pinpoint.common.hbase.HbaseSystemException;
 import com.navercorp.pinpoint.common.util.ArrayUtils;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author HyunGil Jeong
  */
 public class HBaseManagerAdminTemplate extends HBaseAdminTemplate {
 
-    private final AdminFactory adminFactory;
-
     public HBaseManagerAdminTemplate(AdminFactory adminFactory) {
         super(adminFactory);
-        this.adminFactory = Objects.requireNonNull(adminFactory, "adminFactory must not be null");
     }
 
     public List<String> getTableNames(String namespace) {
-        List<String> qualifiers = Collections.emptyList();
-        Admin admin = adminFactory.getAdmin();
-        try {
+        return execute(admin -> {
             TableName[] tableNames = admin.listTableNamesByNamespace(namespace);
             if (!ArrayUtils.isEmpty(tableNames)) {
-                qualifiers = new ArrayList<>(tableNames.length);
-                for (TableName tableName : tableNames) {
-                    qualifiers.add(tableName.getQualifierAsString());
-                }
+                return Arrays.stream(tableNames)
+                        .map(TableName::getQualifierAsString)
+                        .collect(Collectors.toList());
             }
-        } catch (IOException e) {
-            throw new HbaseSystemException(e);
-        } finally {
-            adminFactory.releaseAdmin(admin);
-        }
-        return qualifiers;
+            return Collections.emptyList();
+        });
     }
 }
