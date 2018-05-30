@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+
+    <!-- #############인증과정  거쳐서 권한 데이터 취득 ##############-->
+
+    <!--
+    <http auto-config="true">
+        <custom-filter position="PRE_AUTH_FILTER" ref="localAuthenticationFilter"/>
+        <intercept-url pattern="/index.html" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/*.html" access="permitAll" />
+        <intercept-url pattern="/login.pinpoint" access="permitAll" />
+        <intercept-url pattern="/**/*.pinpoint" access="hasRole('ROLE_USER')" />
+        <form-login login-page="/login.pinpoint" login-processing-url="/j_spring_security_check.pinpoint"
+                    default-target-url="/" authentication-failure-url="/login.pinpoint?error"
+                    username-parameter="username" password-parameter="password" />
+        <logout logout-success-url="/login.pinpoint?logout" logout-url="/j_spring_security_logout.pinpoint"/>
+        <csrf disabled="true" />
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
+    </http>
+
+    <beans:bean id="localAuthenticationFilter" class="com.navercorp.pinpoint.manager.security.LocalAuthenticationFilter"/>
+
+    <authentication-manager>
+        <authentication-provider ref="localAuthenticationProvider"/>
+    </authentication-manager>
+    <beans:bean id="localAuthenticationProvider" class="com.navercorp.pinpoint.manager.security.LocalAuthenticationProvider"/>
+
+    <beans:bean id="userInformationAcquirer" class="com.navercorp.pinpoint.manager.security.NaverUserInformationAcquirer"/>
+    -->
+
+    <!-- #############인증과정 없이 권한 데이터 취득 ##############-->
+    <!--
+    <http pattern="/getApplicationHostInfo.pinpoint" security="none"/>
+
+    <http auto-config="true">
+        <session-management session-fixation-protection="none"/>
+        <custom-filter position="PRE_AUTH_FILTER" ref="autoLoginAuthenticationFilter"/>
+        <intercept-url pattern="/**.pinpoint" access="permitAll" />
+        <csrf disabled="true"/>
+        <access-denied-handler ref="accessDeniedHandler"/>
+        <headers>
+            <frame-options policy="SAMEORIGIN" />
+        </headers>
+    </http>
+    
+    <beans:bean id="accessDeniedHandler" class="com.navercorp.pinpoint.manager.security.AccessDeniedhandlerImpl"/>
+    <beans:bean id="autoLoginAuthenticationFilter" class="com.navercorp.pinpoint.manager.security.AutoLoginAuthenticationFilter">
+        <beans:constructor-arg index="0" value="KR14966"/>
+    </beans:bean>
+
+    <authentication-manager>
+        <authentication-provider ref="naverAuthenticationProvider"/>
+    </authentication-manager>
+
+    <beans:bean id="naverAuthenticationProvider" class="com.navercorp.pinpoint.manager.security.NaverAuthenticationProvider"/>
+
+    <beans:bean id="userInformationAcquirer" class="com.navercorp.pinpoint.manager.security.NaverUserInformationAcquirer"/>
+    -->
+</beans:beans>

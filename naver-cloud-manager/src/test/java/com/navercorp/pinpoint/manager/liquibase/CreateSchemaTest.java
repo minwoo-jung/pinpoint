@@ -51,7 +51,7 @@ public class CreateSchemaTest {
         Connection connection = dataSource.getConnection();
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
         try {
-        Liquibase liquibase = new Liquibase("db/liquibase/metadata/metadata-table-schema.xml", new ClassLoaderResourceAccessor(), database);
+        Liquibase liquibase = new Liquibase("db/liquibase/test/test.xml", new ClassLoaderResourceAccessor(), database);
         liquibase.update(new Contexts());
         } finally {
             if (database != null) {
