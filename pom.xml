@@ -119,7 +119,7 @@
             <dependency>
                 <groupId>com.navercorp</groupId>
                 <artifactId>nbase-arc-java-client</artifactId>
-                <version>1.5.1</version>
+                <version>1.5.1.1</version>
             </dependency>
 
             <dependency>
