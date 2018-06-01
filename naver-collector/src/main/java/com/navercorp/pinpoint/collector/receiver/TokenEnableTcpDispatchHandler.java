@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  */
 public class TokenEnableTcpDispatchHandler extends TcpDispatchHandler {
 
+    @Autowired
     @Qualifier("createTokenHandler")
     private CreateTokenHandler createTokenHandler;
 

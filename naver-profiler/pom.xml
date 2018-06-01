@@ -26,6 +26,10 @@
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-naver-ssl</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-naver-thrift</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
