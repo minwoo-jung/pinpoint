@@ -86,11 +86,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.naver.nelo2</groupId>
             <artifactId>nelo2-java-sdk-log4j</artifactId>
             <exclusions>

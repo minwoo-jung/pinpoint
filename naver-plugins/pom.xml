@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>bom</module>
         <module>bloc</module>
         <module>line</module>
         <module>lucynet</module>
