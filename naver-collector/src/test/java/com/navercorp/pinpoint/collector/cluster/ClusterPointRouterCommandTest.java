@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
+import com.navercorp.pinpoint.rpc.server.ServerMessageListenerFactory;
 import com.navercorp.pinpoint.thrift.dto.command.TCommandEcho;
 import com.navercorp.pinpoint.thrift.dto.command.TCommandTransfer;
 import com.navercorp.pinpoint.thrift.dto.command.TCommandTransferResponse;
@@ -136,7 +137,7 @@ public class ClusterPointRouterCommandTest {
 
     private PinpointServerAcceptor createServerAcceptor(String host, int port) {
         PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
-        serverAcceptor.setMessageListener(new PinpointSocketManagerHandler());
+        serverAcceptor.setMessageListenerFactory(new PinpointSocketManagerHandlerFactory());
         serverAcceptor.bind(host, port);
 
 
@@ -162,7 +163,17 @@ public class ClusterPointRouterCommandTest {
         return payload;
     }
 
-    private class PinpointSocketManagerHandler implements ServerMessageListener {
+    private static class PinpointSocketManagerHandlerFactory implements ServerMessageListenerFactory {
+
+        @Override
+        public ServerMessageListener create() {
+            return new PinpointSocketManagerHandler();
+        }
+    }
+
+    private static class PinpointSocketManagerHandler implements ServerMessageListener {
+
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         @Override
         public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {

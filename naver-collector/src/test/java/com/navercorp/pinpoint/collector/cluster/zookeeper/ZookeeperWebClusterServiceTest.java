@@ -1,6 +1,7 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.UnsupportedServerMessageListenerFactory;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
@@ -55,7 +56,7 @@ public class ZookeeperWebClusterServiceTest {
             service.setUp();
 
             PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
-            serverAcceptor.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
+            serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             ZookeeperClient client = new DefaultZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {

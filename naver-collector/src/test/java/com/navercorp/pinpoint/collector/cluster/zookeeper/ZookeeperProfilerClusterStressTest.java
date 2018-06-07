@@ -1,6 +1,7 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.UnsupportedServerMessageListenerFactory;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.rpc.PinpointSocketException;
 import com.navercorp.pinpoint.rpc.MessageListener;
@@ -68,7 +69,7 @@ public class ZookeeperProfilerClusterStressTest {
 
             serverAcceptor = new PinpointServerAcceptor();
             serverAcceptor.addStateChangeEventHandler(service.getChannelStateChangeEventHandler());
-            serverAcceptor.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
+            serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
@@ -90,7 +91,10 @@ public class ZookeeperProfilerClusterStressTest {
             service.tearDown();
         } finally {
             closeZookeeperServer(ts);
-            serverAcceptor.close();
+
+            if (serverAcceptor != null) {
+                serverAcceptor.close();
+            }
         }
     }
 
@@ -110,7 +114,7 @@ public class ZookeeperProfilerClusterStressTest {
 
             serverAcceptor = new PinpointServerAcceptor();
             serverAcceptor.addStateChangeEventHandler(service.getChannelStateChangeEventHandler());
-            serverAcceptor.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
+            serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);

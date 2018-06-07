@@ -3,13 +3,8 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 import com.navercorp.pinpoint.rpc.MessageListener;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
-import com.navercorp.pinpoint.rpc.packet.PingPayloadPacket;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
-import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
 import org.apache.curator.test.TestingServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +21,6 @@ public final class ZookeeperTestUtils {
 
     static MessageListener getMessageListener()  {
         return new SimpleMessageListener();
-    }
-
-    public static ServerMessageListener getServerMessageListener() {
-        return new SimpleServerMessageListener();
     }
 
     static Map<String, Object> getParams() {
@@ -72,30 +63,6 @@ public final class ZookeeperTestUtils {
         public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
             LOGGER.info("Received RequestPacket{} {}", requestPacket, pinpointSocket);
         }
-    }
-
-    private static class SimpleServerMessageListener implements ServerMessageListener {
-        @Override
-        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
-            LOGGER.warn("Unsupport send received {} {}", sendPacket, pinpointSocket);
-        }
-
-        @Override
-        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
-            LOGGER.warn("Unsupport request received {} {}", requestPacket, pinpointSocket);
-        }
-
-        @Override
-        public HandshakeResponseCode handleHandshake(Map properties) {
-            LOGGER.warn("do handleEnableWorker {}", properties);
-            return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
-        }
-
-        @Override
-        public void handlePing(PingPayloadPacket pingPacket, PinpointServer pinpointServer) {
-            LOGGER.warn("Unsupported ping received packet:{}, remote:{}", pingPacket, pinpointServer);
-        }
-
     }
 
 }

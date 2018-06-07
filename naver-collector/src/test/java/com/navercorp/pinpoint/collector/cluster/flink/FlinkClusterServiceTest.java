@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.collector.cluster.flink;
 
+import com.navercorp.pinpoint.collector.cluster.UnsupportedServerMessageListenerFactory;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.DefaultZookeeperClient;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClient;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperEventWatcher;
@@ -264,7 +265,7 @@ public class FlinkClusterServiceTest {
 
     private PinpointServerAcceptor createPinpointServerAcceptor(int acceptorSocketPort) {
         PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
-        serverAcceptor.setMessageListener(ZookeeperTestUtils.getServerMessageListener());
+        serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
         serverAcceptor.bind("127.0.0.1", acceptorSocketPort);
         return serverAcceptor;
     }

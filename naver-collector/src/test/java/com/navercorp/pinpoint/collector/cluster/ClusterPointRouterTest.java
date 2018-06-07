@@ -87,7 +87,7 @@ public class ClusterPointRouterTest {
             clusterManager.start();
 
             PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
-            serverAcceptor.setMessageListener(new PinpointSocketManagerHandler());
+            serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             Address address = new DefaultAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
@@ -134,31 +134,6 @@ public class ClusterPointRouterTest {
 
         Assert.assertEquals(0, clusterPointList.size());
         Assert.assertNull(findClusterPoint("application", "agent", currentTime, clusterPointList));
-    }
-
-    private class PinpointSocketManagerHandler implements ServerMessageListener {
-
-        @Override
-        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
-            logger.warn("Unsupport send received {} {}", sendPacket, pinpointSocket);
-        }
-
-        @Override
-        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
-            logger.warn("Unsupport request received {} {}", requestPacket, pinpointSocket);
-        }
-
-        @Override
-        public HandshakeResponseCode handleHandshake(Map properties) {
-            logger.warn("do Handshake {}", properties);
-            return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
-        }
-
-        @Override
-        public void handlePing(PingPayloadPacket pingPacket, PinpointServer pinpointServer) {
-            logger.warn("Unsupported ping received packet:{}, remote:{}", pingPacket, pinpointServer);
-        }
-
     }
 
     private Map<Object, Object> getParams() {
