@@ -20,6 +20,9 @@ import com.navercorp.pinpoint.collector.service.LoginService;
 import com.navercorp.pinpoint.collector.service.TokenService;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
+import com.navercorp.pinpoint.io.request.ServerRequest;
+import com.navercorp.pinpoint.rpc.util.ClassUtils;
+import com.navercorp.pinpoint.thrift.dto.ThriftRequest;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationToken;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationTokenRes;
 import com.navercorp.pinpoint.thrift.dto.command.TTokenResponseCode;
@@ -44,6 +47,16 @@ public class CreateTokenHandler implements RequestResponseHandler {
 
     @Autowired
     private LoginService loginService;
+
+    @Override
+    public TBase<?, ?> handleRequest(ServerRequest thriftRequest) {
+        if (thriftRequest instanceof ThriftRequest) {
+            return handleRequest(((ThriftRequest) thriftRequest).getData());
+        } else {
+            logger.warn("{} is not support type : ", ClassUtils.simpleClassName(thriftRequest));
+            return createResponse(TTokenResponseCode.BAD_REQUEST);
+        }
+    }
 
     @Override
     public TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
