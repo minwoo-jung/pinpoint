@@ -23,10 +23,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <include file="public-1.8.0.xml"  relativeToChangelogFile="true"/>
-    <include file="public-1.8.1.xml"  relativeToChangelogFile="true"/>
 
-    <include file="private-1.8.0.xml"  relativeToChangelogFile="true"/>
-    <include file="private-1.8.1.xml"  relativeToChangelogFile="true"/>
-
+    <changeSet id="naver-1.8.1_1" author="pinpoint" runInTransaction="true">
+        <addColumn tableName="naverTable2">
+            <column name="autor2" type="varchar(36)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright 2018 NAVER Corp.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+
+    <!--<changeSet id="opensource-1.8.0_1" author="pinpoint" runInTransaction="true">-->
+        <!--<createTable tableName="testTable">-->
+            <!--<column name="id" type="int"/>-->
+            <!--<column name="heading" type="varchar(36)"/>-->
+            <!--<column name="author" type="varchar(36)"/>-->
+        <!--</createTable>-->
+        <!--<rollback>-->
+            <!--<dropTable tableName="testTable"/>-->
+        <!--</rollback>-->
+    <!--</changeSet>-->
+
+    <!--<changeSet id="opensource-1.8.0_2" author="pinpoint" runInTransaction="true">-->
+        <!--<createTable tableName="testTable2">-->
+            <!--<column name="id" type="int"/>-->
+            <!--<column name="heading" type="varchar(36)"/>-->
+            <!--<column name="author" type="varchar(36)"/>-->
+        <!--</createTable>-->
+        <!--<rollback>-->
+            <!--<dropTable tableName="testTable2"/>-->
+        <!--</rollback>-->
+    <!--</changeSet>-->
+
+
+    <changeSet id="opensource-1.8.0_1" author="pinpoint" runInTransaction="true">
+        <createTable tableName="testTable">
+            <column name="id" type="int"/>
+            <column name="heading" type="varchar(36)"/>
+            <column name="author" type="varchar(36)"/>
+        </createTable>
+        <!--<rollback>-->
+            <!--<dropTable tableName="testTable"/>-->
+        <!--</rollback>-->
+
+        <createTable tableName="testTable2">
+            <column name="id" type="int"/>
+            <column name="heading" type="varchar(36)"/>
+            <column name="author" type="varchar(36)"/>
+        </createTable>
+        <rollback>
+            <!--<dropTable tableName="testTable"/>-->
+            <!--<dropTable tableName="testTable2"/>-->
+        </rollback>
+    </changeSet>
+
+
+    <changeSet author="opensource" id="opensource-1.8.0_4" runInTransaction="true">
+        <createTable tableName="puser">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="department" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phonenumber" type="VARCHAR(100)"/>
+            <column name="email" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

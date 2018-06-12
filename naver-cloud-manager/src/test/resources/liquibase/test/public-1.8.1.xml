@@ -23,7 +23,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="opensource-1.8.1" author="pinpoint">
+    <changeSet id="opensource-1.8.1" author="pinpoint" runInTransaction="true">
         <addColumn tableName="testTable2">
             <column name="autor2" type="varchar(36)"/>
         </addColumn>

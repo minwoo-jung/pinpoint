@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Copyright 2018 NAVER Corp.
   ~
@@ -24,8 +23,8 @@
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 
-    <changeSet id="opensource-1.8.0_1" author="pinpoint">
-        <createTable tableName="testTable">
+    <changeSet id="naver-1.8.0_1" author="pinpoint" runInTransaction="true" failOnError="">
+        <createTable tableName="naverTable">
             <column name="id" type="int"/>
             <column name="heading" type="varchar(36)"/>
             <column name="author" type="varchar(36)"/>
@@ -35,34 +34,14 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="opensource-1.8.0_2" author="pinpoint">
-        <createTable tableName="testTable2">
+    <changeSet id="naver-1.8.0_2" author="pinpoint" runInTransaction="true">
+        <createTable tableName="naverTable2">
             <column name="id" type="int"/>
             <column name="heading" type="varchar(36)"/>
             <column name="author" type="varchar(36)"/>
         </createTable>
         <rollback>
-            <dropTable tableName="testTable2"/>
+            <dropTable tableName="testTable"/>
         </rollback>
     </changeSet>
-
-    <changeSet author="opensource" id="opensource-1.8.0_4">
-        <createTable tableName="puser">
-            <column autoIncrement="true" name="number" type="INT UNSIGNED">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="user_id" type="VARCHAR(30)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="name" type="VARCHAR(150)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="department" type="VARCHAR(150)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="phonenumber" type="VARCHAR(100)"/>
-            <column name="email" type="VARCHAR(100)"/>
-        </createTable>
-    </changeSet>
-
 </databaseChangeLog>

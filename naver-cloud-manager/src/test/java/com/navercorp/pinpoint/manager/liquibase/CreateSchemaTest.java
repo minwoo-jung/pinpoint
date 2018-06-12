@@ -51,7 +51,7 @@ public class CreateSchemaTest {
         Connection connection = dataSource.getConnection();
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
         try {
-        Liquibase liquibase = new Liquibase("db/liquibase/test/test.xml", new ClassLoaderResourceAccessor(), database);
+        Liquibase liquibase = new Liquibase("liquibase/test/test.xml", new ClassLoaderResourceAccessor(), database);
         liquibase.update(new Contexts());
         } finally {
             if (database != null) {
@@ -67,7 +67,7 @@ public class CreateSchemaTest {
         Connection connection = dataSource.getConnection();
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
         try {
-            Liquibase liquibase = new Liquibase("db/liquibase/pinpoint-table-schema.xml", new ClassLoaderResourceAccessor(), database);
+            Liquibase liquibase = new Liquibase("liquibase/pinpoint-table-schema.xml", new ClassLoaderResourceAccessor(), database);
             liquibase.update(new Contexts());
         } finally {
             if (database != null) {
@@ -86,7 +86,7 @@ public class CreateSchemaTest {
     public void generateChangeLogTest() throws Exception {
         Connection connection = dataSource.getConnection();
         Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-        Liquibase liquibase = new Liquibase("db/liquibase/generateChangeLog.xml", new ClassLoaderResourceAccessor(), database);
+        Liquibase liquibase = new Liquibase("liquibase/generateChangeLog.xml", new ClassLoaderResourceAccessor(), database);
         liquibase.generateChangeLog(new CatalogAndSchema(null, null), new DiffToChangeLog(new DiffOutputControl()), new PrintStream("F:\\text2.txt"));
     }
 

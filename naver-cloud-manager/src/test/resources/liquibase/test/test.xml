@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   ~ Copyright 2018 NAVER Corp.
   ~
@@ -22,26 +23,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
+    <include file="public-1.8.0.xml"  relativeToChangelogFile="true"/>
+    <!--<include file="public-1.8.1.xml"  relativeToChangelogFile="true"/>-->
 
-    <changeSet id="naver-1.8.0_1" author="pinpoint">
-        <createTable tableName="naverTable">
-            <column name="id" type="int"/>
-            <column name="heading" type="varchar(36)"/>
-            <column name="author" type="varchar(36)"/>
-        </createTable>
-        <rollback>
-            <dropTable tableName="testTable"/>
-        </rollback>
-    </changeSet>
+    <!--<include file="private-1.8.0.xml"  relativeToChangelogFile="true"/>-->
+    <!--<include file="private-1.8.1.xml"  relativeToChangelogFile="true"/>-->
 
-    <changeSet id="naver-1.8.0_2" author="pinpoint">
-        <createTable tableName="naverTable2">
-            <column name="id" type="int"/>
-            <column name="heading" type="varchar(36)"/>
-            <column name="author" type="varchar(36)"/>
-        </createTable>
-        <rollback>
-            <dropTable tableName="testTable"/>
-        </rollback>
-    </changeSet>
 </databaseChangeLog>

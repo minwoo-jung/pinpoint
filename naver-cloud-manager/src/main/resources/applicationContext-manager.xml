@@ -30,4 +30,9 @@
         <property name="fileEncoding" value="UTF-8"/>
     </bean>
 
+    <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+        <!-- another filter caches -->
+        <property name="disableCaching" value="false"/>
+    </bean>
+
 </beans>

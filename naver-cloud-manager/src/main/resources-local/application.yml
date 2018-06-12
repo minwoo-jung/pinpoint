@@ -2,9 +2,16 @@ spring:
     application:
         name: pinpoint-cloud-manager
     thymeleaf:
-      prefix: classpath:/webapp/WEB-INF/
+        prefix: classpath:/webapp/WEB-INF/
 server:
     port: 80
+
+security:
+    basic:
+        enabled: false
+management:
+    security:
+        enabled: false
 
 liquibase:
     enabled: false
