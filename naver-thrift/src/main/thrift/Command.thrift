@@ -27,3 +27,12 @@ enum TTokenResponseCode {
     UNAUTHORIZED = 401,
     INTERNAL_SERVER_ERROR = 500;
 }
+
+struct TCmdAuthenticationToken {
+    1: optional binary token
+}
+
+struct TCmdAuthenticationTokenRes {
+    1: optional TTokenResponseCode code
+    2: optional string message
+}

@@ -20,6 +20,7 @@
     </bean>
 
     <beans profile="tokenAuthentication">
+
         <bean id="tokenEnableTcpDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.TokenEnableTcpDispatchHandler">
         </bean>
 
@@ -50,6 +51,31 @@
             <constructor-arg ref="tcpDispatchHandlerWrapper"/>
             <constructor-arg ref="clusterService"/>
         </bean>
+
+        <bean id="tokenService" class="com.navercorp.pinpoint.collector.service.TokenServiceImpl"/>
+
+        <bean id="spanTcpReceiver" class="com.navercorp.pinpoint.collector.receiver.tcp.security.token.TokenTCPReceiverBean">
+            <property name="bindIp" value="#{spanReceiverConfig.tcpBindIp}"/>
+            <property name="bindPort" value="#{spanReceiverConfig.tcpBindPort}"/>
+            <property name="acceptorProvider" ref="spanAcceptorProvider"/>
+            <property name="dispatchHandler" ref="spanDispatchHandlerWrapper"/>
+            <!-- TCP & UDP share threadpool for span -->
+            <property name="executor" ref="spanReceiverExecutor"/>
+            <property name="enable" value="#{spanReceiverConfig.isTcpEnable()}"/>
+            <property name="tokenService" ref="tokenService"/>
+        </bean>
+
+        <bean id="statTcpReceiver" class="com.navercorp.pinpoint.collector.receiver.tcp.security.token.TokenTCPReceiverBean">
+            <property name="bindIp" value="#{statReceiverConfig.tcpBindIp}"/>
+            <property name="bindPort" value="#{statReceiverConfig.tcpBindPort}"/>
+            <property name="acceptorProvider" ref="statAcceptorProvider"/>
+            <property name="dispatchHandler" ref="statDispatchHandlerWrapper"/>
+            <!-- TCP & UDP share threadpool for stat -->
+            <property name="executor" ref="statReceiverExecutor"/>
+            <property name="enable" value="#{statReceiverConfig.isTcpEnable()}"/>
+            <property name="tokenService" ref="tokenService"/>
+        </bean>
+
     </beans>
 
 </beans>
