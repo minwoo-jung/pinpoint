@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,15 +20,21 @@ import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenType;
 import com.navercorp.pinpoint.io.header.Header;
 import com.navercorp.pinpoint.io.header.v2.HeaderV2;
+import com.navercorp.pinpoint.io.request.DefaultMessage;
+import com.navercorp.pinpoint.io.request.DefaultServerRequest;
+import com.navercorp.pinpoint.io.request.Message;
+import com.navercorp.pinpoint.io.request.ServerRequest;
+import com.navercorp.pinpoint.io.request.ServerResponse;
 import com.navercorp.pinpoint.thrift.dto.TResult;
-import com.navercorp.pinpoint.thrift.dto.ThriftRequest;
-import com.navercorp.pinpoint.thrift.io.DefaultTBaseLocator;
+import org.apache.thrift.TBase;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Taejin Koo
@@ -58,44 +64,56 @@ public class AttachTokenDispatchHandlerTest {
     public void dispatchSendMessageTest1() {
         CountingDispatchHandler countingDispatchHandler = new CountingDispatchHandler();
 
-        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler, new DefaultTBaseLocator());
+        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler);
+
 
         TResult tBase = new TResult();
+        ServerRequest<TBase<?, ?>> serverRequest = newServerRequest(tBase);
 
-        attachTokenDispatchHandler.dispatchSendMessage(tBase);
+        attachTokenDispatchHandler.dispatchSendMessage(serverRequest);
 
-        Assert.assertTrue(countingDispatchHandler.checkCount(0, 1, 0, 0));
+        Assert.assertTrue(countingDispatchHandler.checkCount( 1, 0));
 
         Object latestPuttedObject = countingDispatchHandler.getLatestPuttedObject();
-        Assert.assertTrue(latestPuttedObject instanceof ThriftRequest);
-        Assert.assertEquals(tBase, ((ThriftRequest) latestPuttedObject).getData());
+        Assert.assertTrue(latestPuttedObject instanceof ServerRequest);
+        Assert.assertEquals(tBase, ((ServerRequest) latestPuttedObject).getData());
 
-        Header header = ((ThriftRequest) latestPuttedObject).getHeader();
+        Header header = ((ServerRequest) latestPuttedObject).getHeader();
         Map<String, String> headerData = header.getHeaderData();
         Assert.assertEquals(headerData.get(HEADER_KEY_ORG), HEADER_VALUE_ORG);
         Assert.assertEquals(headerData.get(HEADER_KEY_DATABASE_NAME), token.getNamespace());
         Assert.assertEquals(headerData.get(HEADER_KEY_HBASE_NAMESPACE), token.getNamespace());
     }
 
+    private ServerRequest<TBase<?, ?>> newServerRequest(TResult tBase) {
+        Header header = new HeaderV2(Header.SIGNATURE, HeaderV2.VERSION, (short) 100, new HashMap<String, String>());
+        return newServerRequest(header, tBase);
+    }
+
+    private ServerRequest<TBase<?, ?>> newServerRequest(Header header, TResult tBase) {
+        Message<TBase<?, ?>> message = new DefaultMessage<>(header, tBase);
+        return new DefaultServerRequest<>(message);
+    }
+
     @Test
     public void dispatchSendMessageTest2() {
         CountingDispatchHandler countingDispatchHandler = new CountingDispatchHandler();
 
-        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler, new DefaultTBaseLocator());
+        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler);
 
-        HeaderV2 headerV2 = createHeader(null, "dbName", null);
+        Header h = createHeader(null, "dbName", null);
         TResult tBase = new TResult();
-        ThriftRequest thriftRequest = new ThriftRequest(headerV2, tBase);
+        ServerRequest<TBase<?, ?>> request = newServerRequest(h, tBase);
 
-        attachTokenDispatchHandler.dispatchSendMessage(thriftRequest);
+        attachTokenDispatchHandler.dispatchSendMessage(request);
 
-        Assert.assertTrue(countingDispatchHandler.checkCount(0, 1, 0, 0));
+        Assert.assertTrue(countingDispatchHandler.checkCount(1, 0));
 
         Object latestPuttedObject = countingDispatchHandler.getLatestPuttedObject();
-        Assert.assertTrue(latestPuttedObject instanceof ThriftRequest);
-        Assert.assertEquals(tBase, ((ThriftRequest) latestPuttedObject).getData());
+        Assert.assertTrue(latestPuttedObject instanceof ServerRequest);
+        Assert.assertEquals(tBase, ((ServerRequest) latestPuttedObject).getData());
 
-        Header header = ((ThriftRequest) latestPuttedObject).getHeader();
+        Header header = ((ServerRequest) latestPuttedObject).getHeader();
         Map<String, String> headerData = header.getHeaderData();
         Assert.assertEquals(headerData.get(HEADER_KEY_ORG), HEADER_VALUE_ORG);
         Assert.assertNotEquals(headerData.get(HEADER_KEY_DATABASE_NAME), token.getNamespace());
@@ -106,19 +124,21 @@ public class AttachTokenDispatchHandlerTest {
     public void dispatchRequestMessageTest1() {
         CountingDispatchHandler countingDispatchHandler = new CountingDispatchHandler();
 
-        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler, new DefaultTBaseLocator());
+        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler);
 
         TResult tBase = new TResult();
+        ServerRequest<TBase<?, ?>> request = newServerRequest(tBase);
+        ServerResponse serverResponse = mock(ServerResponse.class);
 
-        attachTokenDispatchHandler.dispatchRequestMessage(tBase);
+        attachTokenDispatchHandler.dispatchRequestMessage(request, serverResponse);
 
-        Assert.assertTrue(countingDispatchHandler.checkCount(0, 0, 0, 1));
+        Assert.assertTrue(countingDispatchHandler.checkCount(0, 1));
 
         Object latestPuttedObject = countingDispatchHandler.getLatestPuttedObject();
-        Assert.assertTrue(latestPuttedObject instanceof ThriftRequest);
-        Assert.assertEquals(tBase, ((ThriftRequest) latestPuttedObject).getData());
+        Assert.assertTrue(latestPuttedObject instanceof ServerRequest);
+        Assert.assertEquals(tBase, ((ServerRequest<Object>) latestPuttedObject).getData());
 
-        Header header = ((ThriftRequest) latestPuttedObject).getHeader();
+        Header header = ((ServerRequest) latestPuttedObject).getHeader();
         Map<String, String> headerData = header.getHeaderData();
         Assert.assertEquals(headerData.get(HEADER_KEY_ORG), HEADER_VALUE_ORG);
         Assert.assertEquals(headerData.get(HEADER_KEY_DATABASE_NAME), token.getNamespace());
@@ -129,28 +149,29 @@ public class AttachTokenDispatchHandlerTest {
     public void dispatchRequestMessageTest2() {
         CountingDispatchHandler countingDispatchHandler = new CountingDispatchHandler();
 
-        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler, new DefaultTBaseLocator());
+        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler);
 
-        HeaderV2 headerV2 = createHeader(null, null, "hbaseName");
+        Header headerV2 = createHeader(null, null, "hbaseName");
         TResult tBase = new TResult();
-        ThriftRequest thriftRequest = new ThriftRequest(headerV2, tBase);
+        ServerRequest serverRequest = newServerRequest(headerV2, tBase);
+        ServerResponse serverResponse = mock(ServerResponse.class);
 
-        attachTokenDispatchHandler.dispatchRequestMessage(thriftRequest);
+        attachTokenDispatchHandler.dispatchRequestMessage(serverRequest, serverResponse);
 
-        Assert.assertTrue(countingDispatchHandler.checkCount(0, 0, 0, 1));
+        Assert.assertTrue(countingDispatchHandler.checkCount( 0,  1));
 
         Object latestPuttedObject = countingDispatchHandler.getLatestPuttedObject();
-        Assert.assertTrue(latestPuttedObject instanceof ThriftRequest);
-        Assert.assertEquals(tBase, ((ThriftRequest) latestPuttedObject).getData());
+        Assert.assertTrue(latestPuttedObject instanceof ServerRequest);
+        Assert.assertEquals(tBase, ((ServerRequest) latestPuttedObject).getData());
 
-        Header header = ((ThriftRequest) latestPuttedObject).getHeader();
+        Header header = ((ServerRequest) latestPuttedObject).getHeader();
         Map<String, String> headerData = header.getHeaderData();
         Assert.assertEquals(headerData.get(HEADER_KEY_ORG), HEADER_VALUE_ORG);
         Assert.assertEquals(headerData.get(HEADER_KEY_DATABASE_NAME), token.getNamespace());
         Assert.assertNotEquals(headerData.get(HEADER_KEY_HBASE_NAMESPACE), token.getNamespace());
     }
 
-    private HeaderV2 createHeader(String org, String databaseName, String hbaseNamespace) {
+    private Header createHeader(String org, String databaseName, String hbaseNamespace) {
         Map<String, String> headerData = new HashMap<>();
         if (org != null) {
             headerData.put(HEADER_KEY_ORG, org);

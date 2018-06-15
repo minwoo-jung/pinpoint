@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,8 @@
 package com.navercorp.pinpoint.profiler.context.service;
 
 import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.io.request.EmptyMessage;
+import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.profiler.ResponseMessageFutureListener;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.rpc.DefaultFuture;
@@ -127,7 +129,8 @@ public class TcpTokenService implements TokenService {
 
     private TCmdGetAuthenticationTokenRes getResult(ResponseMessage responseMessage) {
         byte[] message = responseMessage.getMessage();
-        TBase<?, ?> tbase = SerializationUtils.deserialize(message, deserializerFactory, null);
+        final Message<TBase<?, ?>> deserialize = SerializationUtils.deserialize(message, deserializerFactory, EmptyMessage.INSTANCE);
+        TBase<?, ?> tbase = deserialize.getData();
         if (tbase == null) {
             logger.warn("tbase is null");
             return null;

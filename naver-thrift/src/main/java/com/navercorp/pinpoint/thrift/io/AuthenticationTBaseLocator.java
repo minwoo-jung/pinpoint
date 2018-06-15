@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,10 +32,10 @@ public class AuthenticationTBaseLocator implements TBaseLocator {
 
     private final DefaultTBaseLocator defaultTBaseLocator = new DefaultTBaseLocator();
 
-    private static final short GET_AUTHENTICATION_TOKEN = 760;
+    public static final short GET_AUTHENTICATION_TOKEN = 760;
     private static final Header GET_AUTHENTICATION_TOKEN_HEADER = createHeader(GET_AUTHENTICATION_TOKEN);
 
-    private static final short GET_AUTHENTICATION_TOKEN_RESPONSE = 761;
+    public static final short GET_AUTHENTICATION_TOKEN_RESPONSE = 761;
     private static final Header GET_AUTHENTICATION_TOKEN_RESPONSE_HEADER = createHeader(GET_AUTHENTICATION_TOKEN_RESPONSE);
 
     private static final short AUTHENTICATION_TOKEN = 762;

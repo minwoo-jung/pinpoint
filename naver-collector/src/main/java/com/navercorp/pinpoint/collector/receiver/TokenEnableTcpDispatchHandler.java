@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,10 @@ package com.navercorp.pinpoint.collector.receiver;
 
 import com.navercorp.pinpoint.collector.handler.CreateTokenHandler;
 import com.navercorp.pinpoint.collector.handler.RequestResponseHandler;
+import com.navercorp.pinpoint.io.header.Header;
+import com.navercorp.pinpoint.io.request.ServerRequest;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationToken;
+import com.navercorp.pinpoint.thrift.io.AuthenticationTBaseLocator;
 import org.apache.thrift.TBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,13 +36,15 @@ public class TokenEnableTcpDispatchHandler extends TcpDispatchHandler {
     private CreateTokenHandler createTokenHandler;
 
     @Override
-    protected RequestResponseHandler getRequestResponseHandler(TBase<?, ?> tBase) {
-        RequestResponseHandler requestResponseHandler = super.getRequestResponseHandler(tBase);
+    protected RequestResponseHandler getRequestResponseHandler(ServerRequest serverRequest) {
+        RequestResponseHandler requestResponseHandler = super.getRequestResponseHandler(serverRequest);
         if (requestResponseHandler != null) {
             return requestResponseHandler;
         }
 
-        if (tBase instanceof TCmdGetAuthenticationToken) {
+        final Header header = serverRequest.getHeader();
+        final short type = header.getType();
+        if (type == AuthenticationTBaseLocator.GET_AUTHENTICATION_TOKEN) {
             return createTokenHandler;
         }
 

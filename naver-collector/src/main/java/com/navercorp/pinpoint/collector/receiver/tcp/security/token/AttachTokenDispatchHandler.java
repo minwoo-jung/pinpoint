@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,13 +19,15 @@ package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.common.util.MapUtils;
 import com.navercorp.pinpoint.io.header.Header;
 import com.navercorp.pinpoint.io.header.v2.HeaderV2;
+import com.navercorp.pinpoint.io.request.DefaultMessage;
+import com.navercorp.pinpoint.io.request.DefaultServerRequest;
+import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.io.request.ServerRequest;
-import com.navercorp.pinpoint.thrift.dto.ThriftRequest;
-import com.navercorp.pinpoint.thrift.io.TBaseLocator;
+import com.navercorp.pinpoint.io.request.ServerResponse;
 import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +44,11 @@ class AttachTokenDispatchHandler implements DispatchHandler {
 
     private final Map<String, String> headerData;
     private final DispatchHandler dispatchHandler;
-    private final TBaseLocator tBaseLocator;
 
-    AttachTokenDispatchHandler(Token token, DispatchHandler dispatchHandler, TBaseLocator tBaseLocator) {
+
+    AttachTokenDispatchHandler(Token token, DispatchHandler dispatchHandler) {
         Assert.requireNonNull(token, "token must not be null");
         this.dispatchHandler = Assert.requireNonNull(dispatchHandler, "dispatchHandler must not be null");
-        this.tBaseLocator = Assert.requireNonNull(tBaseLocator, "tBaseLocator must not be null");
 
         // need to change it later.
         Map<String, String> headerData = new HashMap<>();
@@ -59,90 +60,71 @@ class AttachTokenDispatchHandler implements DispatchHandler {
     }
 
     @Override
-    public void dispatchSendMessage(TBase<?, ?> tBase) {
-        Header header = createHeader(getType(tBase), headerData);
-        ThriftRequest serverRequest = new ThriftRequest(header, tBase);
-
-        dispatchHandler.dispatchSendMessage(serverRequest);
-    }
-
-    private short getType(TBase<?, ?> tBase) {
-        try {
-            Header header = tBaseLocator.headerLookup(tBase);
-            return header.getType();
-        } catch (TException e) {
-            logger.warn("can't find type. tBase:{}", tBase);
-        }
-        return -1;
-    }
-
-    @Override
     public void dispatchSendMessage(ServerRequest serverRequest) {
-        if (serverRequest instanceof ThriftRequest) {
+        final Object data = serverRequest.getData();
+        if (data instanceof TBase<?, ?>) {
             Header serverRequestHeader = serverRequest.getHeader();
 
             Map<String, String> mergedHeadData = createHeaderData(serverRequestHeader.getHeaderData(), headerData);
             Header header = createHeader(serverRequestHeader.getType(), mergedHeadData);
 
-            dispatchHandler.dispatchSendMessage(new ThriftRequest(header, (TBase<?, ?>) serverRequest.getData()));
+            Message<TBase<?, ?>> message = new DefaultMessage<>(header, (TBase<?, ?>) data);
+            ServerRequest<TBase<?, ?>> copyRequest = new DefaultServerRequest<>(message);
+
+            dispatchHandler.dispatchSendMessage(copyRequest);
         } else {
             dispatchHandler.dispatchSendMessage(serverRequest);
         }
+
     }
 
-    @Override
-    public TBase dispatchRequestMessage(TBase<?, ?> tBase) {
-        Header header = createHeader(getType(tBase), headerData);
-        ThriftRequest serverRequest = new ThriftRequest(header, tBase);
-
-        return dispatchHandler.dispatchRequestMessage(serverRequest);
-    }
 
     @Override
-    public TBase dispatchRequestMessage(ServerRequest serverRequest) {
-        if (serverRequest instanceof ThriftRequest) {
+    public void dispatchRequestMessage(ServerRequest serverRequest, ServerResponse serverResponse) {
+        final Object data = serverRequest.getData();
+        if (data instanceof TBase<?, ?>) {
             Header serverRequestHeader = serverRequest.getHeader();
 
             Map<String, String> mergedHeadData = createHeaderData(serverRequestHeader.getHeaderData(), headerData);
             Header header = createHeader(serverRequestHeader.getType(), mergedHeadData);
-
-            return dispatchHandler.dispatchRequestMessage(new ThriftRequest(header, (TBase<?, ?>) serverRequest.getData()));
+            Message<TBase<?, ?>> message = new DefaultMessage<>(header, (TBase<?, ?>) data);
+            ServerRequest<TBase<?, ?>> copyRequest = new DefaultServerRequest<>(message);
+            dispatchHandler.dispatchRequestMessage(copyRequest, serverResponse);
         } else {
-            return dispatchHandler.dispatchRequestMessage(serverRequest);
+            dispatchHandler.dispatchRequestMessage(serverRequest, serverResponse);
         }
     }
 
 
-    private Header createHeader(Map<String, String> headerData) {
-        return createHeader((short) -1, headerData);
-    }
 
     private Header createHeader(short type, Map<String, String> headerData) {
         return new HeaderV2(Header.SIGNATURE, HeaderV2.VERSION, type, headerData);
     }
 
     private Map<String, String> createHeaderData(Map<String, String> headerData1, Map<String, String> headerData2) {
-        int initialSize = 0;
-        if (headerData1 != null) {
-            initialSize += headerData1.size();
-        }
-        if (headerData2 != null) {
-            initialSize += headerData2.size();
-        }
+        final int initialSize = MapUtils.nullSafeSize(headerData1) + MapUtils.nullSafeSize(headerData2);
 
         Map<String, String> headerData = new HashMap<>(initialSize);
-        if (headerData1 != null) {
-            for (Map.Entry<String, String> entry : headerData1.entrySet()) {
-                headerData.putIfAbsent(entry.getKey(), entry.getValue());
-            }
-        }
-        if (headerData2 != null) {
-            for (Map.Entry<String, String> entry : headerData2.entrySet()) {
-                headerData.putIfAbsent(entry.getKey(), entry.getValue());
-            }
-        }
+        addAll(headerData, headerData1);
+        addAll(headerData, headerData2);
 
         return headerData;
+    }
+
+    private void addAll(Map<String, String> headerData, Map<String, String> append) {
+        if (append == null) {
+            return;
+        }
+        for (Map.Entry<String, String> entry : append.entrySet()) {
+            headerData.putIfAbsent(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private int getLength(Map<String, String> headerData1) {
+        if (MapUtils.isEmpty(headerData1)) {
+            return 0;
+        }
+        return headerData1.size();
     }
 
 }

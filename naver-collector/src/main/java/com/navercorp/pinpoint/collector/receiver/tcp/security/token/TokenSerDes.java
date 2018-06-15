@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 
+import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.thrift.io.AuthenticationTBaseLocator;
 import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializer;
@@ -60,7 +61,8 @@ class TokenSerDes {
     }
 
     <T extends TBase> T deserialize(byte[] payload, Class<T> type) {
-        TBase tBase = SerializationUtils.deserialize(payload, deserializerFactory, null);
+        Message<TBase<?, ?>> deserialize = SerializationUtils.deserialize(payload, deserializerFactory, null);
+        TBase tBase = deserialize.getData();
         if (tBase.getClass() == type) {
             return type.cast(tBase);
         } else {

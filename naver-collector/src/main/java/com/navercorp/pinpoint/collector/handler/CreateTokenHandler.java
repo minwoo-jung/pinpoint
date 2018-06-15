@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@ import com.navercorp.pinpoint.collector.service.TokenService;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
 import com.navercorp.pinpoint.io.request.ServerRequest;
+import com.navercorp.pinpoint.io.request.ServerResponse;
 import com.navercorp.pinpoint.rpc.util.ClassUtils;
-import com.navercorp.pinpoint.thrift.dto.ThriftRequest;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationToken;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationTokenRes;
 import com.navercorp.pinpoint.thrift.dto.command.TTokenResponseCode;
@@ -49,17 +49,23 @@ public class CreateTokenHandler implements RequestResponseHandler {
     private LoginService loginService;
 
     @Override
-    public TBase<?, ?> handleRequest(ServerRequest thriftRequest) {
-        if (thriftRequest instanceof ThriftRequest) {
-            return handleRequest(((ThriftRequest) thriftRequest).getData());
+    public void handleRequest(ServerRequest serverRequest, ServerResponse serverResponse) {
+        final Object data = serverRequest.getData();
+        if (data instanceof TBase) {
+            TBase<?, ?> response = handleRequest((TBase<?, ?>) data);
+
+            serverResponse.write(response);
+            return;
         } else {
-            logger.warn("{} is not support type : ", ClassUtils.simpleClassName(thriftRequest));
-            return createResponse(TTokenResponseCode.BAD_REQUEST);
+            logger.warn("{} is not support type : ", ClassUtils.simpleClassName(serverRequest));
+            TCmdGetAuthenticationTokenRes response = createResponse(TTokenResponseCode.BAD_REQUEST);
+
+            serverResponse.write(response);
+            return;
         }
     }
 
-    @Override
-    public TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
+    TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
         if (tbase instanceof TCmdGetAuthenticationToken) {
             TokenCreateRequest tokenCreateRequest = createTokenCreateRequest((TCmdGetAuthenticationToken) tbase);
             if (tokenCreateRequest == null) {
