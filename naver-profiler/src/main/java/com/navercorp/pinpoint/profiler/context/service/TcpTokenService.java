@@ -28,18 +28,15 @@ import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationTokenRes;
 import com.navercorp.pinpoint.thrift.dto.command.TTokenResponseCode;
 import com.navercorp.pinpoint.thrift.dto.command.TTokenType;
 import com.navercorp.pinpoint.thrift.io.AuthenticationTBaseLocator;
-import com.navercorp.pinpoint.thrift.io.ChainedTBaseLocator;
-import com.navercorp.pinpoint.thrift.io.DefaultTBaseLocator;
+import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
+import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializer;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializerFactory;
-import com.navercorp.pinpoint.thrift.io.TBaseLocator;
 import com.navercorp.pinpoint.thrift.util.SerializationUtils;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,7 +47,7 @@ public class TcpTokenService implements TokenService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final EnhancedDataSender dataSender;
-    public final HeaderTBaseDeserializerFactory deserializerFactory;
+    private final DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory;
 
     public TcpTokenService(EnhancedDataSender dataSender) {
         this.dataSender = Assert.requireNonNull(dataSender, "dataSender must not be null");
