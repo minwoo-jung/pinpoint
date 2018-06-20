@@ -11,7 +11,7 @@
 
     <artifactId>pinpoint-cloud-manager</artifactId>
     <name>naver-pinpoint-cloud-manager</name>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <properties>
         <jdk.version>1.8</jdk.version>
