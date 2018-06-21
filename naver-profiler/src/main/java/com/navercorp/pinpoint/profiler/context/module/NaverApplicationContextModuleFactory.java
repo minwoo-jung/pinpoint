@@ -31,7 +31,7 @@ public class NaverApplicationContextModuleFactory implements ModuleFactory {
         final Module config = new ConfigModule(agentOption);
         final Module pluginModule = new PluginModule();
         final Module applicationContextModule = new ApplicationContextModule();
-        final Module rpcModule = new NaverRpcModule();
+        final Module rpcModule = new NaverRpcModule(agentOption.getProfilerConfig());
         final Module statsModule = new StatsModule();
 
         return Modules.combine(config, pluginModule, applicationContextModule, rpcModule, statsModule);
