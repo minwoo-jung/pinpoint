@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 NAVER Corp.
+ * Copyright 2018 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,6 +32,7 @@ import com.navercorp.pinpoint.thrift.io.FlinkTBaseLocator;
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.WatchedEvent;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -52,10 +53,10 @@ public class FlinkClusterServiceTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static CollectorConfiguration config = null;
+    private CollectorConfiguration config;
 
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setUp() {
         config = new CollectorConfiguration();
         config.setFlinkClusterEnable(true);
         config.setFlinkClusterZookeeperAddress("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT);
@@ -77,7 +78,8 @@ public class FlinkClusterServiceTest {
 
             SendAgentStatService sendAgentStatService = new SendAgentStatService(config);
             TcpDataSenderRepository tcpDataSenderRepository = new TcpDataSenderRepository(sendAgentStatService);
-            FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(new FlinkTBaseLocator(HeaderV1.VERSION, new DefaultCustomHeadergenerator()));
+            FlinkTBaseLocator flinkTBaseLocator = new FlinkTBaseLocator(HeaderV1.VERSION, new DefaultCustomHeadergenerator());
+            FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(flinkTBaseLocator.getTypeLocator());
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory);
             flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
             flinkClusterService.setUp();
@@ -110,7 +112,8 @@ public class FlinkClusterServiceTest {
 
             SendAgentStatService sendAgentStatService = new SendAgentStatService(config);
             TcpDataSenderRepository tcpDataSenderRepository = new TcpDataSenderRepository(sendAgentStatService);
-            FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(new FlinkTBaseLocator(HeaderV1.VERSION, new DefaultCustomHeadergenerator()));
+            FlinkTBaseLocator flinkTBaseLocator = new FlinkTBaseLocator(HeaderV1.VERSION, new DefaultCustomHeadergenerator());
+            FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(flinkTBaseLocator.getTypeLocator());
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory);
             flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
             flinkClusterService.setUp();
@@ -154,7 +157,8 @@ public class FlinkClusterServiceTest {
 
             SendAgentStatService sendAgentStatService = new SendAgentStatService(config);
             TcpDataSenderRepository tcpDataSenderRepository = new TcpDataSenderRepository(sendAgentStatService);
-            FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(new FlinkTBaseLocator(HeaderV1.VERSION, new DefaultCustomHeadergenerator()));
+            FlinkTBaseLocator flinkTBaseLocator = new FlinkTBaseLocator(HeaderV1.VERSION, new DefaultCustomHeadergenerator());
+            FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(flinkTBaseLocator.getTypeLocator());
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory);
             flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
             flinkClusterService.setUp();
@@ -213,7 +217,8 @@ public class FlinkClusterServiceTest {
 
             SendAgentStatService sendAgentStatService = new SendAgentStatService(config);
             TcpDataSenderRepository tcpDataSenderRepository = new TcpDataSenderRepository(sendAgentStatService);
-            FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(new FlinkTBaseLocator(HeaderV1.VERSION, new DefaultCustomHeadergenerator()));
+            FlinkTBaseLocator flinkTBaseLocator = new FlinkTBaseLocator(HeaderV1.VERSION, new DefaultCustomHeadergenerator());
+            FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(flinkTBaseLocator.getTypeLocator());
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory);
             flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
             flinkClusterService.setUp();

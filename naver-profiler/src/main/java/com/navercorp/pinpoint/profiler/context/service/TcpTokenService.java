@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.profiler.context.service;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.io.request.EmptyMessage;
 import com.navercorp.pinpoint.io.request.Message;
+import com.navercorp.pinpoint.io.util.TypeLocator;
 import com.navercorp.pinpoint.profiler.ResponseMessageFutureListener;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.rpc.DefaultFuture;
@@ -52,8 +53,8 @@ public class TcpTokenService implements TokenService {
     public TcpTokenService(EnhancedDataSender dataSender) {
         this.dataSender = Assert.requireNonNull(dataSender, "dataSender must not be null");
 
-        AuthenticationTBaseLocator authenticationTBaseLocator = new AuthenticationTBaseLocator();
-        this.deserializerFactory = new HeaderTBaseDeserializerFactory(authenticationTBaseLocator);
+        TypeLocator<TBase<?, ?>> typeLocator = AuthenticationTBaseLocator.getTypeLocator();
+        this.deserializerFactory = new HeaderTBaseDeserializerFactory(typeLocator);
     }
 
     @Override

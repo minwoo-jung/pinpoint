@@ -16,112 +16,71 @@
 
 package com.navercorp.pinpoint.thrift.io;
 
-import com.navercorp.pinpoint.io.header.Header;
-import com.navercorp.pinpoint.io.header.v1.HeaderV1;
+import com.navercorp.pinpoint.io.util.BodyFactory;
+import com.navercorp.pinpoint.io.util.TypeLocator;
+import com.navercorp.pinpoint.io.util.TypeLocatorBuilder;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdAuthenticationToken;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdAuthenticationTokenRes;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationToken;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationTokenRes;
 import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
 
 /**
  * @author Taejin Koo
  */
-public class AuthenticationTBaseLocator implements TBaseLocator {
-
-    private final DefaultTBaseLocator defaultTBaseLocator = new DefaultTBaseLocator();
+public class AuthenticationTBaseLocator {
 
     public static final short GET_AUTHENTICATION_TOKEN = 760;
-    private static final Header GET_AUTHENTICATION_TOKEN_HEADER = createHeader(GET_AUTHENTICATION_TOKEN);
 
     public static final short GET_AUTHENTICATION_TOKEN_RESPONSE = 761;
-    private static final Header GET_AUTHENTICATION_TOKEN_RESPONSE_HEADER = createHeader(GET_AUTHENTICATION_TOKEN_RESPONSE);
 
     private static final short AUTHENTICATION_TOKEN = 762;
-    private static final Header AUTHENTICATION_TOKEN_HEADER = createHeader(AUTHENTICATION_TOKEN);
 
     private static final short AUTHENTICATION_TOKEN_RESPONSE = 763;
-    private static final Header AUTHENTICATION_TOKEN_RESPONSE_HEADER = createHeader(AUTHENTICATION_TOKEN_RESPONSE);
 
-    private static Header createHeader(short type) {
-        return new HeaderV1(type);
+    private static final TypeLocator<TBase<?, ?>> typeLocator = build();
+
+    public static TypeLocator<TBase<?, ?>> build() {
+
+        TypeLocatorBuilder<TBase<?, ?>> builder = new TypeLocatorBuilder<TBase<?, ?>>();
+        DefaultTBaseLocator.addBodyFactory(builder);
+        addBodyFactory(builder);
+        return builder.build();
     }
 
-    @Override
-    public TBase<?, ?> tBaseLookup(short type) throws TException {
-        switch (type) {
-            case GET_AUTHENTICATION_TOKEN:
+    public static void addBodyFactory(TypeLocatorBuilder<TBase<?, ?>> builder) {
+        builder.addBodyFactory(GET_AUTHENTICATION_TOKEN, new BodyFactory<TBase<?, ?>>() {
+            @Override
+            public TBase<?, ?> getObject() {
                 return new TCmdGetAuthenticationToken();
-            case GET_AUTHENTICATION_TOKEN_RESPONSE:
+            }
+        });
+
+        builder.addBodyFactory(GET_AUTHENTICATION_TOKEN_RESPONSE, new BodyFactory<TBase<?, ?>>() {
+            @Override
+            public TBase<?, ?> getObject() {
                 return new TCmdGetAuthenticationTokenRes();
-            case AUTHENTICATION_TOKEN:
+            }
+        });
+
+        builder.addBodyFactory(AUTHENTICATION_TOKEN, new BodyFactory<TBase<?, ?>>() {
+            @Override
+            public TBase<?, ?> getObject() {
                 return new TCmdAuthenticationToken();
-            case AUTHENTICATION_TOKEN_RESPONSE:
+            }
+        });
+
+        builder.addBodyFactory(AUTHENTICATION_TOKEN_RESPONSE, new BodyFactory<TBase<?, ?>>() {
+            @Override
+            public TBase<?, ?> getObject() {
                 return new TCmdAuthenticationTokenRes();
-        }
+            }
 
-        return defaultTBaseLocator.tBaseLookup(type);
+        });
     }
 
-    public Header headerLookup(TBase<?, ?> tbase) throws TException {
-        if (tbase == null) {
-            throw new IllegalArgumentException("tbase must not be null");
-        }
-        if (tbase instanceof TCmdGetAuthenticationToken) {
-            return GET_AUTHENTICATION_TOKEN_HEADER;
-        }
-        if (tbase instanceof TCmdGetAuthenticationTokenRes) {
-            return GET_AUTHENTICATION_TOKEN_RESPONSE_HEADER;
-        }
-        if (tbase instanceof TCmdAuthenticationToken) {
-            return AUTHENTICATION_TOKEN_HEADER;
-        }
-        if (tbase instanceof TCmdAuthenticationTokenRes) {
-            return AUTHENTICATION_TOKEN_RESPONSE_HEADER;
-        }
-
-        return defaultTBaseLocator.headerLookup(tbase);
-    }
-
-    @Override
-    public boolean isSupport(short type) {
-        try {
-            tBaseLookup(type);
-            return true;
-        } catch (TException ignore) {
-            // skip
-        }
-
-        return defaultTBaseLocator.isSupport(type);
-    }
-
-    @Override
-    public boolean isSupport(Class<? extends TBase> clazz) {
-        if (clazz.equals(TCmdGetAuthenticationToken.class)) {
-            return true;
-        }
-        if (clazz.equals(TCmdGetAuthenticationTokenRes.class)) {
-            return true;
-        }
-        if (clazz.equals(TCmdAuthenticationToken.class)) {
-            return true;
-        }
-        if (clazz.equals(TCmdAuthenticationTokenRes.class)) {
-            return true;
-        }
-
-        return defaultTBaseLocator.isSupport(clazz);
-    }
-
-    @Override
-    public Header getChunkHeader() {
-        return defaultTBaseLocator.getChunkHeader();
-    }
-
-    @Override
-    public boolean isChunkHeader(short type) {
-        return defaultTBaseLocator.isChunkHeader(type);
+    public static TypeLocator<TBase<?, ?>> getTypeLocator() {
+        return typeLocator;
     }
 
 }

@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 
 import com.navercorp.pinpoint.io.request.Message;
+import com.navercorp.pinpoint.io.util.TypeLocator;
 import com.navercorp.pinpoint.thrift.io.AuthenticationTBaseLocator;
 import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializer;
@@ -35,7 +36,7 @@ import org.apache.thrift.TBase;
  */
 class TokenSerDes {
 
-    private final TBaseLocator tBaseLocator = new AuthenticationTBaseLocator();
+    private final TypeLocator<TBase<?, ?>> tBaseLocator = AuthenticationTBaseLocator.getTypeLocator();
 
     private final SerializerFactory<HeaderTBaseSerializer> serializerFactory;
     private final DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory;
@@ -70,7 +71,7 @@ class TokenSerDes {
         }
     }
 
-    TBaseLocator getTBaseLocator() {
+    TypeLocator<TBase<?, ?>> getTBaseLocator() {
         return tBaseLocator;
     }
 
