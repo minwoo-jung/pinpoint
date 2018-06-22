@@ -37,15 +37,15 @@ public class TokenEnableTcpDispatchHandler extends TcpDispatchHandler {
 
     @Override
     protected RequestResponseHandler getRequestResponseHandler(ServerRequest serverRequest) {
-        RequestResponseHandler requestResponseHandler = super.getRequestResponseHandler(serverRequest);
-        if (requestResponseHandler != null) {
-            return requestResponseHandler;
-        }
-
         final Header header = serverRequest.getHeader();
         final short type = header.getType();
         if (type == AuthenticationTBaseLocator.GET_AUTHENTICATION_TOKEN) {
             return createTokenHandler;
+        }
+
+        RequestResponseHandler requestResponseHandler = super.getRequestResponseHandler(serverRequest);
+        if (requestResponseHandler != null) {
+            return requestResponseHandler;
         }
 
         return null;
