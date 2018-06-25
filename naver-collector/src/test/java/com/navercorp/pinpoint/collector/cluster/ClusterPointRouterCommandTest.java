@@ -231,7 +231,7 @@ public class ClusterPointRouterCommandTest {
         @Override
         public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
             byte[] payload = requestPacket.getPayload();
-            pinpointSocket.response(requestPacket, payload);
+            pinpointSocket.response(requestPacket.getRequestId(), payload);
         }
     }
     

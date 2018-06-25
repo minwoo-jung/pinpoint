@@ -348,7 +348,7 @@ public class ZookeeperProfilerClusterServiceTest {
         public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
             requestPacketRepository.add(requestPacket);
 
-            pinpointSocket.response(requestPacket, requestPacket.getPayload());
+            pinpointSocket.response(requestPacket.getRequestId(), requestPacket.getPayload());
         }
 
         @Override
