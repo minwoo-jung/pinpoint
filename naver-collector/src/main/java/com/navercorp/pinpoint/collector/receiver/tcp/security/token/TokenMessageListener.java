@@ -153,7 +153,7 @@ class TokenMessageListener extends ParallelMessageListener implements ServerMess
             return;
         }
 
-        pinpointSocket.response(requestPacket, payload);
+        pinpointSocket.response(requestPacket.getRequestId(), payload);
     }
 
     @Override
