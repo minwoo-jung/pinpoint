@@ -17,33 +17,31 @@
 
 package com.navercorp.test.pinpoint.testweb.configuration;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import java.util.List;
+import java.util.Random;
+
 /**
- * 
  * @author netspider
- * 
  */
-public abstract class DemoURLHolder {
+public class DemoURLHolder {
 
-    public abstract String getBackendWebURL();
+    private final Random random = new Random();
 
-    public abstract String getBackendApiURL();
+    @Value("#{testWebProps['backendweb.url.list'].split(',')}")
+    private List<String> backendWebUrlList;
 
-    public static DemoURLHolder getHolder() {
-        try {
-            String hostname = java.net.InetAddress.getLocalHost().getHostName();
+    @Value("#{testWebProps['backendapi.url.list'].split(',')}")
+    private List<String> backendApiUrlList;
 
-            if (hostname == null) {
-                return new DemoURLHolderLocal();
-            }
-
-            if (hostname.endsWith("nhnsystem.com")) {
-                return new DemoURLHolderDev();
-            } else {
-                return new DemoURLHolderLocal();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new DemoURLHolderLocal();
-        }
+    public String getBackendWebURL() {
+        return backendWebUrlList.get(random.nextInt()%backendApiUrlList.size());
     }
+
+    public String getBackendApiURL() {
+        return backendApiUrlList.get(random.nextInt()%backendApiUrlList.size());
+    }
+
+
 }

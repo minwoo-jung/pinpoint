@@ -49,9 +49,11 @@ public class DemoController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final DemoURLHolder urls;
 
     private final Random random = new Random();
+
+    @Autowired
+    private DemoURLHolder demoURLHolder;
 
     @Autowired
     private CacheService cacheService;
@@ -70,7 +72,6 @@ public class DemoController {
     private ApacheHttpClient4 apacheHttpClient;
 
     public DemoController() {
-        urls = DemoURLHolder.getHolder();
     }
 
     @RequestMapping(value = "/netspider")
@@ -79,7 +80,7 @@ public class DemoController {
         accessNaverBlog();
         accessNaverCafe();
         randomSlowMethod();
-        callRemote(urls.getBackendApiURL());
+        callRemote(demoURLHolder.getBackendApiURL());
         return "OK";
     }
 
@@ -87,7 +88,7 @@ public class DemoController {
     @ResponseBody
     public String demo2() {
         randomSlowMethod();
-        callRemote(urls.getBackendWebURL());
+        callRemote(demoURLHolder.getBackendWebURL());
         return "OK";
     }
 
@@ -113,7 +114,7 @@ public class DemoController {
         cacheService.arcus();
         mysqlService.list();
         if (random.nextBoolean()) {
-            callRemote(urls.getBackendApiURL());
+            callRemote(demoURLHolder.getBackendApiURL());
         }
         return "OK";
     }

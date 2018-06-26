@@ -20,6 +20,10 @@
 
     <util:properties id="thriftServerProps" location="classpath:thrift.properties"/>
 
+    <util:properties id="testWebProps" location="classpath:testweb.properties"/>
+
+    <bean id="demoUrlHolder" class="com.navercorp.test.pinpoint.testweb.configuration.DemoURLHolder"/>
+
     <bean id="jdbcTemplateMysql" class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg ref="mysqlDataSource"/>
     </bean>
