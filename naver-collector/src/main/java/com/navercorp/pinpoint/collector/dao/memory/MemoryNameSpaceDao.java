@@ -33,14 +33,14 @@ public class MemoryNameSpaceDao implements NameSpaceDao {
     private final ConcurrentHashMap<String, String> namespaceMap = new ConcurrentHashMap<>();
 
     @Override
-    public boolean create(String userId, String namespace) {
-        String oldValue = namespaceMap.putIfAbsent(userId, namespace);
+    public boolean create(String licenseKey, String namespace) {
+        String oldValue = namespaceMap.putIfAbsent(licenseKey, namespace);
         return oldValue == null;
     }
 
     @Override
-    public String get(String userId) {
-        return namespaceMap.get(userId);
+    public String get(String licenseKey) {
+        return namespaceMap.get(licenseKey);
     }
 
 }

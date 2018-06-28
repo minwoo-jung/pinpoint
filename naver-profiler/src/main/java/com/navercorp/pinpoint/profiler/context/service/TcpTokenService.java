@@ -58,14 +58,12 @@ public class TcpTokenService implements TokenService {
     }
 
     @Override
-    public byte[] getToken(String userId, String password, String tokenType) {
-        Assert.requireNonNull(userId, "userId must not be null");
-        Assert.requireNonNull(password, "password must not be null");
+    public byte[] getToken(String licenseKey, String tokenType) {
+        Assert.requireNonNull(licenseKey, "licenseKey must not be null");
         Assert.requireNonNull(tokenType, "tokenType must not be null");
 
         TCmdGetAuthenticationToken tokenRequest = new TCmdGetAuthenticationToken();
-        tokenRequest.setUserId(userId);
-        tokenRequest.setPassword(password);
+        tokenRequest.setLicenseKey(licenseKey);
 
         TTokenType tTokenType = getTokenType(tokenType);
         if (tTokenType == TTokenType.UNKNOWN) {

@@ -24,13 +24,11 @@ import com.navercorp.pinpoint.thrift.dto.command.TTokenType;
  */
 public class TokenCreateRequest {
 
-    private final String userId;
-    private final String password;
+    private final String licenseKey;
     private final TokenType tokenType;
 
-    public TokenCreateRequest(String userId, String password, TTokenType tokenType) {
-        this.userId = Assert.requireNonNull(userId, "userId must not be null");
-        this.password = Assert.requireNonNull(password, "password must not be null");
+    public TokenCreateRequest(String licenseKey, TTokenType tokenType) {
+        this.licenseKey = Assert.requireNonNull(licenseKey, "licenseKey must not be null");
         Assert.requireNonNull(tokenType, "tokenType must not be null");
 
         TokenType type = TokenType.valueOf(tokenType.name());
@@ -38,12 +36,8 @@ public class TokenCreateRequest {
         this.tokenType = type;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getPassword() {
-        return password;
+    public String getLicenseKey() {
+        return licenseKey;
     }
 
     public TokenType getTokenType() {

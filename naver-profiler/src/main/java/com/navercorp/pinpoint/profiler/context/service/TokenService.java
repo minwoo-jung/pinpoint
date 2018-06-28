@@ -21,6 +21,6 @@ package com.navercorp.pinpoint.profiler.context.service;
  */
 public interface TokenService {
 
-    byte[] getToken(String userId, String password, String tokenType);
+    byte[] getToken(String licenseKey, String tokenType);
 
 }

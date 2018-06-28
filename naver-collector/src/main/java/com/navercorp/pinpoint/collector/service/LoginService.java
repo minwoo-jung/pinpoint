@@ -21,6 +21,6 @@ package com.navercorp.pinpoint.collector.service;
  */
 public interface LoginService {
 
-    boolean login(String userId, String password);
+    boolean login(String licenseKey);
 
 }

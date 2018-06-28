@@ -75,7 +75,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Token create(TokenCreateRequest request) {
-        String nameSpace = nameSpaceService.getNameSpace(request.getUserId());
+        String nameSpace = nameSpaceService.getNameSpace(request.getLicenseKey());
         if (nameSpace == null) {
             throw new TokenException("Can't find nameSpace");
         }

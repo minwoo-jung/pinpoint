@@ -35,6 +35,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.UUID;
+
 /**
  * @author Taejin Koo
  */
@@ -43,8 +45,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ActiveProfiles("tokenAuthentication")
 public class CreateTokenHandlerTest {
 
-    private static final String USER = "user";
-    private static final String PASSWORD = "password";
+    private static final String LICENSE_KEY = UUID.randomUUID().toString();
     private static final String NAMESPACE = "namespace";
 
     @Autowired
@@ -58,14 +59,13 @@ public class CreateTokenHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        nameSpaceDao.create(USER, NAMESPACE);
+        nameSpaceDao.create(LICENSE_KEY, NAMESPACE);
     }
 
     @Test
-    public void tokenHandlerTsst() {
+    public void tokenHandlerTest() {
         TCmdGetAuthenticationToken tokenRequest = new TCmdGetAuthenticationToken();
-        tokenRequest.setUserId(USER);
-        tokenRequest.setPassword(PASSWORD);
+        tokenRequest.setLicenseKey(LICENSE_KEY);
         tokenRequest.setTokenType(TTokenType.SPAN);
 
         TCmdGetAuthenticationTokenRes tokenResponse = (TCmdGetAuthenticationTokenRes) createTokenHandler.handleRequest(tokenRequest);
@@ -76,8 +76,7 @@ public class CreateTokenHandlerTest {
     @Test
     public void getNameSpaceFailTest() {
         TCmdGetAuthenticationToken tokenRequest = new TCmdGetAuthenticationToken();
-        tokenRequest.setUserId(USER + "fail");
-        tokenRequest.setPassword(PASSWORD);
+        tokenRequest.setLicenseKey(LICENSE_KEY);
         tokenRequest.setTokenType(TTokenType.SPAN);
 
         TCmdGetAuthenticationTokenRes tokenResponse = (TCmdGetAuthenticationTokenRes) createTokenHandler.handleRequest(tokenRequest);

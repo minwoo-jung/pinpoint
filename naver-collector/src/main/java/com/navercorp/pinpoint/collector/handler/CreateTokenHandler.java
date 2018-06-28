@@ -71,7 +71,7 @@ public class CreateTokenHandler implements RequestResponseHandler {
             if (tokenCreateRequest == null) {
                 return createResponse(TTokenResponseCode.BAD_REQUEST);
             }
-            if (!loginService.login(tokenCreateRequest.getUserId(), tokenCreateRequest.getPassword())) {
+            if (!loginService.login(tokenCreateRequest.getLicenseKey())) {
                 return createResponse(TTokenResponseCode.UNAUTHORIZED);
             }
 
@@ -109,7 +109,7 @@ public class CreateTokenHandler implements RequestResponseHandler {
 
     private TokenCreateRequest createTokenCreateRequest(TCmdGetAuthenticationToken request) {
         try {
-            TokenCreateRequest tokenCreateRequest = new TokenCreateRequest(request.getUserId(), request.getPassword(), request.getTokenType());
+            TokenCreateRequest tokenCreateRequest = new TokenCreateRequest(request.getLicenseKey(), request.getTokenType());
             return tokenCreateRequest;
         } catch (Exception e) {
             // skip

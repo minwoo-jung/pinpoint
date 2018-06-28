@@ -21,8 +21,8 @@ package com.navercorp.pinpoint.collector.dao;
  */
 public interface NameSpaceDao {
 
-    boolean create(String userId, String namespace);
+    boolean create(String licenseKey, String namespace);
 
-    String get(String userId);
+    String get(String licenseKey);
 
 }

@@ -1,11 +1,9 @@
 namespace java com.navercorp.pinpoint.thrift.dto.command
 
 struct TCmdGetAuthenticationToken {
-    1: string userId
-    2: string password
-    3: optional TTokenType tokenType
+    1: string licenseKey
+    2: optional TTokenType tokenType
 }
-
 struct TCmdGetAuthenticationTokenRes {
     1: TTokenResponseCode code
     2: optional string message
