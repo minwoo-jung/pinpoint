@@ -1,5 +1,22 @@
+/*
+ * Copyright 2018 NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.pinpoint.collector.receiver.tcp;
 
+import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.rpc.packet.Packet;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.ResponsePacket;
@@ -77,10 +94,12 @@ public class TCPReceiverBOTest {
     public void agentInfoTest2() throws Exception {
         TAgentInfo agentInfo = getAgentInfo();
         encodeAndWrite(os, agentInfo, true);
-        ResponsePacket responsePacket = readAndDecode(is, 1000);
+        ResponsePacket responsePacket = readAndDecode(is, 3000);
 
         HeaderTBaseDeserializer deserializer = new HeaderTBaseDeserializerFactory().createDeserializer();
-        TResult result = (TResult) deserializer.deserialize(responsePacket.getPayload());
+        byte[] payload = responsePacket.getPayload();
+        Message<TBase<?, ?>> deserialize = deserializer.deserialize(payload);
+        TResult result = (TResult) deserialize.getData();
 
         Assert.assertTrue(result.isSuccess());
     }
@@ -89,6 +108,7 @@ public class TCPReceiverBOTest {
         InetSocketAddress endpoint = new InetSocketAddress("127.0.0.1", 9994);
 
         Socket socket = new Socket();
+        socket.setSoTimeout(3000);
         socket.connect(endpoint);
 
         return socket;
@@ -114,7 +134,7 @@ public class TCPReceiverBOTest {
     }
 
     private ResponsePacket readAndDecode(InputStream is, long waitTimeMillis) throws Exception {
-        long startTimeMillis = System.currentTimeMillis();
+        final long startTimeMillis = System.currentTimeMillis();
 
         while (true) {
             int avaiableRead = is.available();
@@ -136,9 +156,9 @@ public class TCPReceiverBOTest {
                 return responsePacket;
             }
 
-            Thread.sleep(20);
-            if (waitTimeMillis < System.currentTimeMillis() - startTimeMillis) {
-                return null;
+            final long executionTime = System.currentTimeMillis() - startTimeMillis;
+            if (waitTimeMillis < executionTime) {
+                throw new RuntimeException("timeout " + executionTime);
             }
         }
     }

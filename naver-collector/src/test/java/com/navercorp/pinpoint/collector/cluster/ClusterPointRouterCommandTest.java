@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConne
 import com.navercorp.pinpoint.collector.util.Address;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.collector.util.DefaultAddress;
+import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.rpc.Future;
 import com.navercorp.pinpoint.rpc.MessageListener;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
@@ -128,8 +129,10 @@ public class ClusterPointRouterCommandTest {
             Future<ResponseMessage> future = writablePinpointServer.request(commandDeliveryPayload);
             future.await();
 
-            TCommandTransferResponse response = (TCommandTransferResponse) SerializationUtils.deserialize(future.getResult().getMessage(), commandDeserializerFactory);
-            TCommandEcho echoResponse = (TCommandEcho) SerializationUtils.deserialize(response.getPayload(), commandDeserializerFactory);
+            Message message1 = SerializationUtils.deserialize(future.getResult().getMessage(), commandDeserializerFactory);
+            TCommandTransferResponse response = (TCommandTransferResponse) message1.getData();
+            Message message2 = SerializationUtils.deserialize(response.getPayload(), commandDeserializerFactory);
+            TCommandEcho echoResponse = (TCommandEcho) message2.getData();
 
             Assert.assertEquals(echoResponse.getMessage(), "hello");
         } finally {
