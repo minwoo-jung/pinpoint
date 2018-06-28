@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.line.LineConfig;
-import com.navercorp.pinpoint.plugin.line.LineServerRequestTrace;
+import com.navercorp.pinpoint.plugin.line.LineServerRequestWrapper;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.MessageEvent;
@@ -82,13 +82,13 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
         }
         final String endPoint = getLocalAddress(channel);
         final String remoteAddr = getRemoteAddress(channel);
-        final ServerRequestTrace serverRequestTrace = new LineServerRequestTrace(request, endPoint, remoteAddr, endPoint);
-        final Trace trace = this.requestTraceReader.read(serverRequestTrace);
+        final ServerRequestWrapper serverRequestWrapper = new LineServerRequestWrapper(request, endPoint, remoteAddr, endPoint);
+        final Trace trace = this.requestTraceReader.read(serverRequestWrapper);
         if (trace.canSampled()) {
             final SpanRecorder recorder = trace.getSpanRecorder();
             recorder.recordServiceType(ServiceType.STAND_ALONE);
             recorder.recordApi(this.methodDescriptor);
-            this.serverRequestRecorder.record(recorder, serverRequestTrace);
+            this.serverRequestRecorder.record(recorder, serverRequestWrapper);
         }
         return trace;
     }

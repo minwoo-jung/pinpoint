@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.plugin.line;
+package com.navercorp.pinpoint.plugin.bloc;
 
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.common.util.Assert;
-import org.jboss.netty.handler.codec.http.HttpRequest;
+import com.navercorp.pinpoint.common.util.StringUtils;
+
+import java.util.Map;
 
 /**
  * @author jaehong.kim
  */
-public class LineServerRequestTrace implements ServerRequestTrace {
-    private HttpRequest request;
+public class LucyNetServerRequestWrapper implements ServerRequestWrapper {
+
+    private final Map<String, String> pinpointOptions;
+    private final String rpcName;
     private final String endPoint;
     private final String remoteAddress;
     private final String acceptorHost;
 
-    public LineServerRequestTrace(final HttpRequest request, final String endPoint, final String remoteAddress, final String acceptorHost) {
-        this.request = Assert.requireNonNull(request, "request must not be null");
+
+    public LucyNetServerRequestWrapper(final Map<String, String> pinpointOptions, final String rpcName, final String endPoint, final String remoteAddress, final String acceptorHost) {
+        this.pinpointOptions = Assert.requireNonNull(pinpointOptions, "pinpointOptions must not be null");
+        this.rpcName = rpcName;
         this.endPoint = endPoint;
         this.remoteAddress = remoteAddress;
         this.acceptorHost = acceptorHost;
@@ -38,12 +44,16 @@ public class LineServerRequestTrace implements ServerRequestTrace {
 
     @Override
     public String getHeader(String name) {
-        return this.request.getHeader(name);
+        final String value = pinpointOptions.get(name);
+        if (StringUtils.hasLength(value)) {
+            return value;
+        }
+        return null;
     }
 
     @Override
     public String getRpcName() {
-        return request.getUri();
+        return this.rpcName;
     }
 
     @Override

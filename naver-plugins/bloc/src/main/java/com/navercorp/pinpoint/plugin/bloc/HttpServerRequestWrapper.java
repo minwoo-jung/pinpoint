@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.plugin.bloc;
 
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import com.navercorp.pinpoint.common.util.Assert;
 import external.org.apache.coyote.Request;
@@ -24,10 +24,10 @@ import external.org.apache.coyote.Request;
 /**
  * @author jaehong.kim
  */
-public class HttpServerRequestTrace implements ServerRequestTrace {
+public class HttpServerRequestWrapper implements ServerRequestWrapper {
     private final Request request;
 
-    public HttpServerRequestTrace(Request request) {
+    public HttpServerRequestWrapper(Request request) {
         this.request = Assert.requireNonNull(request, "request must not be null");
     }
 

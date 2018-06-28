@@ -14,29 +14,23 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.plugin.bloc;
+package com.navercorp.pinpoint.plugin.line;
 
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.common.util.StringUtils;
-
-import java.util.Map;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 
 /**
  * @author jaehong.kim
  */
-public class LucyNetServerRequestTrace implements ServerRequestTrace {
-
-    private final Map<String, String> pinpointOptions;
-    private final String rpcName;
+public class LineServerRequestWrapper implements ServerRequestWrapper {
+    private HttpRequest request;
     private final String endPoint;
     private final String remoteAddress;
     private final String acceptorHost;
 
-
-    public LucyNetServerRequestTrace(final Map<String, String> pinpointOptions, final String rpcName, final String endPoint, final String remoteAddress, final String acceptorHost) {
-        this.pinpointOptions = Assert.requireNonNull(pinpointOptions, "pinpointOptions must not be null");
-        this.rpcName = rpcName;
+    public LineServerRequestWrapper(final HttpRequest request, final String endPoint, final String remoteAddress, final String acceptorHost) {
+        this.request = Assert.requireNonNull(request, "request must not be null");
         this.endPoint = endPoint;
         this.remoteAddress = remoteAddress;
         this.acceptorHost = acceptorHost;
@@ -44,16 +38,12 @@ public class LucyNetServerRequestTrace implements ServerRequestTrace {
 
     @Override
     public String getHeader(String name) {
-        final String value = pinpointOptions.get(name);
-        if (StringUtils.hasLength(value)) {
-            return value;
-        }
-        return null;
+        return this.request.getHeader(name);
     }
 
     @Override
     public String getRpcName() {
-        return this.rpcName;
+        return request.getUri();
     }
 
     @Override

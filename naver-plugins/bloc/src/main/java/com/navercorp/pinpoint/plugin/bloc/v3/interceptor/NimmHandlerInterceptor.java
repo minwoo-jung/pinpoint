@@ -20,10 +20,10 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.LucyNetServerRequestTrace;
+import com.navercorp.pinpoint.plugin.bloc.LucyNetServerRequestWrapper;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor;
 import com.nhncorp.lucy.net.call.Call;
@@ -78,13 +78,13 @@ public class NimmHandlerInterceptor extends AbstractBlocAroundInterceptor {
         }
         final String endPoint = dstAddress;
 
-        final ServerRequestTrace serverRequestTrace = new LucyNetServerRequestTrace(pinpointOptions, rpcName, endPoint, remoteAddress, endPoint);
-        final Trace trace = this.requestTraceReader.read(serverRequestTrace);
+        final ServerRequestWrapper serverRequestWrapper = new LucyNetServerRequestWrapper(pinpointOptions, rpcName, endPoint, remoteAddress, endPoint);
+        final Trace trace = this.requestTraceReader.read(serverRequestWrapper);
         if (trace.canSampled()) {
             SpanRecorder spanRecorder = trace.getSpanRecorder();
             spanRecorder.recordServiceType(BlocConstants.BLOC);
             spanRecorder.recordApi(blocMethodApiTag);
-            this.serverRequestRecorder.record(spanRecorder, serverRequestTrace);
+            this.serverRequestRecorder.record(spanRecorder, serverRequestWrapper);
         }
         return trace;
     }

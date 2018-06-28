@@ -5,13 +5,13 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.NettyServerRequestTrace;
+import com.navercorp.pinpoint.plugin.bloc.NettyServerRequestWrapper;
 import com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
@@ -68,14 +68,14 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
         final String rpcName = request.getUri();
         final String endPoint = getIpPort(ctx.channel().localAddress());
         final String remoteAddress = getIp(ctx.channel().remoteAddress());
-        final ServerRequestTrace serverRequestTrace = new NettyServerRequestTrace(headers, rpcName, endPoint, remoteAddress, endPoint);
-        final Trace trace = this.requestTraceReader.read(serverRequestTrace);
+        final ServerRequestWrapper serverRequestWrapper = new NettyServerRequestWrapper(headers, rpcName, endPoint, remoteAddress, endPoint);
+        final Trace trace = this.requestTraceReader.read(serverRequestWrapper);
         if (trace.canSampled()) {
             SpanRecorder spanRecorder = trace.getSpanRecorder();
             spanRecorder.recordServiceType(BlocConstants.BLOC);
             spanRecorder.recordApi(blocMethodApiTag);
-            this.serverRequestRecorder.record(spanRecorder, serverRequestTrace);
-            this.proxyHttpHeaderRecorder.record(spanRecorder, serverRequestTrace);
+            this.serverRequestRecorder.record(spanRecorder, serverRequestWrapper);
+            this.proxyHttpHeaderRecorder.record(spanRecorder, serverRequestWrapper);
         }
         return trace;
     }

@@ -16,20 +16,20 @@
 
 package com.navercorp.pinpoint.plugin.bloc;
 
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import io.netty.handler.codec.http.HttpHeaders;
 
 /**
  * @author jaehong.kim
  */
-public class NettyServerRequestTrace implements ServerRequestTrace {
+public class NettyServerRequestWrapper implements ServerRequestWrapper {
     private final HttpHeaders headers;
     private final String rpcName;
     private final String endPoint;
     private final String remoteAddress;
     private final String acceptorHost;
 
-    public NettyServerRequestTrace(HttpHeaders headers, final String rpcName, final String endPoint, final String remoteAddress, final String acceptorHost) {
+    public NettyServerRequestWrapper(HttpHeaders headers, final String rpcName, final String endPoint, final String remoteAddress, final String acceptorHost) {
         this.headers = headers;
         this.rpcName = rpcName;
         this.endPoint = endPoint;

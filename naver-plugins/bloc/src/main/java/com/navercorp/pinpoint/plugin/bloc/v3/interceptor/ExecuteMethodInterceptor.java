@@ -5,13 +5,13 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestTrace;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.HttpServerRequestTrace;
+import com.navercorp.pinpoint.plugin.bloc.HttpServerRequestWrapper;
 import external.org.apache.coyote.Request;
 
 import java.util.Enumeration;
@@ -48,15 +48,15 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
     @Override
     protected Trace createTrace(Object target, Object[] args) {
         final Request request = (Request) args[0];
-        final ServerRequestTrace serverRequestTrace = new HttpServerRequestTrace(request);
-        final Trace trace = requestTraceReader.read(serverRequestTrace);
+        final ServerRequestWrapper serverRequestWrapper = new HttpServerRequestWrapper(request);
+        final Trace trace = requestTraceReader.read(serverRequestWrapper);
         if (trace.canSampled()) {
             SpanRecorder spanRecorder = trace.getSpanRecorder();
             spanRecorder.recordServiceType(BlocConstants.BLOC);
             spanRecorder.recordApi(blocMethodApiTag);
-            this.serverRequestRecorder.record(spanRecorder, serverRequestTrace);
+            this.serverRequestRecorder.record(spanRecorder, serverRequestWrapper);
             // record proxy HTTP headers.
-            this.proxyHttpHeaderRecorder.record(spanRecorder, serverRequestTrace);
+            this.proxyHttpHeaderRecorder.record(spanRecorder, serverRequestWrapper);
         }
         return trace;
     }
