@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 class CountingDispatchHandler implements DispatchHandler {
 
-    private Object latestPuttedObject;
+    private ServerRequest<?> latestPuttedObject;
 
 
     private final AtomicInteger calledSendServerRequestCount = new AtomicInteger();
@@ -49,7 +49,7 @@ class CountingDispatchHandler implements DispatchHandler {
 
     }
 
-    Object getLatestPuttedObject() {
+    ServerRequest<?> getLatestServerRequest() {
         return latestPuttedObject;
     }
 
@@ -60,18 +60,6 @@ class CountingDispatchHandler implements DispatchHandler {
 
     int getCalledRequestServerRequestCount() {
         return calledRequestServerRequestCount.get();
-    }
-
-    boolean checkCount(int calledSendServerRequestCount, int calledRequestServerRequestCount) {
-
-        if (this.calledSendServerRequestCount.get() != calledSendServerRequestCount) {
-            return false;
-        }
-
-        if (this.calledRequestServerRequestCount.get() != calledRequestServerRequestCount) {
-            return false;
-        }
-        return true;
     }
 
 }

@@ -43,14 +43,8 @@ public class AttachTokenDispatchHandlerTest {
 
     private Token token;
 
-    private static String HEADER_KEY_ORG = "organization";
-    private static String HEADER_VALUE_ORG = "kR";
-
-    private static String HEADER_KEY_DATABASE_NAME = "databaseName";
     private static String HEADER_VALUE_DATABASE_NAME = "namespace";
 
-    private static String HEADER_KEY_HBASE_NAMESPACE = "hbaseNameSpace";
-    private static String HEADER_VALUE_HBASE_NAMESPACE = "namespace";
 
     @Before
     public void setUp() throws Exception {
@@ -66,23 +60,17 @@ public class AttachTokenDispatchHandlerTest {
 
         AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler);
 
-
         TResult tBase = new TResult();
         ServerRequest<TBase<?, ?>> serverRequest = newServerRequest(tBase);
-
         attachTokenDispatchHandler.dispatchSendMessage(serverRequest);
 
-        Assert.assertTrue(countingDispatchHandler.checkCount( 1, 0));
+        Assert.assertEquals(countingDispatchHandler.getCalledSendServerRequestCount(), 1);
+        Assert.assertEquals(countingDispatchHandler.getCalledRequestServerRequestCount(), 0);
 
-        Object latestPuttedObject = countingDispatchHandler.getLatestPuttedObject();
-        Assert.assertTrue(latestPuttedObject instanceof ServerRequest);
-        Assert.assertEquals(tBase, ((ServerRequest) latestPuttedObject).getData());
+        ServerRequest<?> latestServerRequest = countingDispatchHandler.getLatestServerRequest();
+        Assert.assertEquals(tBase, latestServerRequest.getData());
+        Assert.assertNotNull(latestServerRequest.getAttribute(AttachTokenDispatchHandler.NAMESPACE_KEY));
 
-        Header header = ((ServerRequest) latestPuttedObject).getHeader();
-        Map<String, String> headerData = header.getHeaderData();
-        Assert.assertEquals(headerData.get(HEADER_KEY_ORG), HEADER_VALUE_ORG);
-        Assert.assertEquals(headerData.get(HEADER_KEY_DATABASE_NAME), token.getNamespace());
-        Assert.assertEquals(headerData.get(HEADER_KEY_HBASE_NAMESPACE), token.getNamespace());
     }
 
     private ServerRequest<TBase<?, ?>> newServerRequest(TResult tBase) {
@@ -92,98 +80,10 @@ public class AttachTokenDispatchHandlerTest {
 
     private ServerRequest<TBase<?, ?>> newServerRequest(Header header, TResult tBase) {
         Message<TBase<?, ?>> message = new DefaultMessage<>(header, tBase);
-        return new DefaultServerRequest<>(message);
+        return new DefaultServerRequest<TBase<?, ?>>(message);
     }
 
-    @Test
-    public void dispatchSendMessageTest2() {
-        CountingDispatchHandler countingDispatchHandler = new CountingDispatchHandler();
 
-        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler);
 
-        Header h = createHeader(null, "dbName", null);
-        TResult tBase = new TResult();
-        ServerRequest<TBase<?, ?>> request = newServerRequest(h, tBase);
-
-        attachTokenDispatchHandler.dispatchSendMessage(request);
-
-        Assert.assertTrue(countingDispatchHandler.checkCount(1, 0));
-
-        Object latestPuttedObject = countingDispatchHandler.getLatestPuttedObject();
-        Assert.assertTrue(latestPuttedObject instanceof ServerRequest);
-        Assert.assertEquals(tBase, ((ServerRequest) latestPuttedObject).getData());
-
-        Header header = ((ServerRequest) latestPuttedObject).getHeader();
-        Map<String, String> headerData = header.getHeaderData();
-        Assert.assertEquals(headerData.get(HEADER_KEY_ORG), HEADER_VALUE_ORG);
-        Assert.assertNotEquals(headerData.get(HEADER_KEY_DATABASE_NAME), token.getNamespace());
-        Assert.assertEquals(headerData.get(HEADER_KEY_HBASE_NAMESPACE), token.getNamespace());
-    }
-
-    @Test
-    public void dispatchRequestMessageTest1() {
-        CountingDispatchHandler countingDispatchHandler = new CountingDispatchHandler();
-
-        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler);
-
-        TResult tBase = new TResult();
-        ServerRequest<TBase<?, ?>> request = newServerRequest(tBase);
-        ServerResponse serverResponse = mock(ServerResponse.class);
-
-        attachTokenDispatchHandler.dispatchRequestMessage(request, serverResponse);
-
-        Assert.assertTrue(countingDispatchHandler.checkCount(0, 1));
-
-        Object latestPuttedObject = countingDispatchHandler.getLatestPuttedObject();
-        Assert.assertTrue(latestPuttedObject instanceof ServerRequest);
-        Assert.assertEquals(tBase, ((ServerRequest<Object>) latestPuttedObject).getData());
-
-        Header header = ((ServerRequest) latestPuttedObject).getHeader();
-        Map<String, String> headerData = header.getHeaderData();
-        Assert.assertEquals(headerData.get(HEADER_KEY_ORG), HEADER_VALUE_ORG);
-        Assert.assertEquals(headerData.get(HEADER_KEY_DATABASE_NAME), token.getNamespace());
-        Assert.assertEquals(headerData.get(HEADER_KEY_HBASE_NAMESPACE), token.getNamespace());
-    }
-
-    @Test
-    public void dispatchRequestMessageTest2() {
-        CountingDispatchHandler countingDispatchHandler = new CountingDispatchHandler();
-
-        AttachTokenDispatchHandler attachTokenDispatchHandler = new AttachTokenDispatchHandler(token, countingDispatchHandler);
-
-        Header headerV2 = createHeader(null, null, "hbaseName");
-        TResult tBase = new TResult();
-        ServerRequest serverRequest = newServerRequest(headerV2, tBase);
-        ServerResponse serverResponse = mock(ServerResponse.class);
-
-        attachTokenDispatchHandler.dispatchRequestMessage(serverRequest, serverResponse);
-
-        Assert.assertTrue(countingDispatchHandler.checkCount( 0,  1));
-
-        Object latestPuttedObject = countingDispatchHandler.getLatestPuttedObject();
-        Assert.assertTrue(latestPuttedObject instanceof ServerRequest);
-        Assert.assertEquals(tBase, ((ServerRequest) latestPuttedObject).getData());
-
-        Header header = ((ServerRequest) latestPuttedObject).getHeader();
-        Map<String, String> headerData = header.getHeaderData();
-        Assert.assertEquals(headerData.get(HEADER_KEY_ORG), HEADER_VALUE_ORG);
-        Assert.assertEquals(headerData.get(HEADER_KEY_DATABASE_NAME), token.getNamespace());
-        Assert.assertNotEquals(headerData.get(HEADER_KEY_HBASE_NAMESPACE), token.getNamespace());
-    }
-
-    private Header createHeader(String org, String databaseName, String hbaseNamespace) {
-        Map<String, String> headerData = new HashMap<>();
-        if (org != null) {
-            headerData.put(HEADER_KEY_ORG, org);
-        }
-        if (databaseName != null) {
-            headerData.put(HEADER_KEY_DATABASE_NAME, databaseName);
-        }
-        if (hbaseNamespace != null) {
-            headerData.put(HEADER_KEY_HBASE_NAMESPACE, hbaseNamespace);
-        }
-
-        return new HeaderV2(Header.SIGNATURE, HeaderV2.VERSION, (short) -1, headerData);
-    }
 
 }

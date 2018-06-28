@@ -16,7 +16,6 @@
 
 package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 
-import com.navercorp.pinpoint.collector.dao.NameSpaceDao;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.common.util.Assert;
@@ -25,10 +24,6 @@ import com.navercorp.pinpoint.io.request.ServerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Taejin Koo
  */
@@ -36,25 +31,20 @@ class AttachTokenDispatchHandler implements DispatchHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final Map<String, String> namespace;
+    public static final String NAMESPACE_KEY = "pinpoint.namespace";
+    private final Namespace namespace;
     private final DispatchHandler dispatchHandler;
 
 
     AttachTokenDispatchHandler(Token token, DispatchHandler dispatchHandler) {
         Assert.requireNonNull(token, "token must not be null");
         this.dispatchHandler = Assert.requireNonNull(dispatchHandler, "dispatchHandler must not be null");
-        namespace = newNamespace(token);
+        this.namespace = newNamespace(token);
 
     }
 
-    private Map<String, String> newNamespace(Token token) {
-        // TODO need to change it later.
-        Map<String, String> headerData = new HashMap<>();
-        headerData.put("organization", "kR");
-        headerData.put("databaseName", token.getNamespace());
-        headerData.put("hbaseNameSpace", token.getNamespace());
-
-        return Collections.unmodifiableMap(headerData);
+    private Namespace newNamespace(Token token) {
+        return new Namespace("kR", token.getNamespace(), token.getNamespace());
     }
 
     @Override
@@ -73,13 +63,7 @@ class AttachTokenDispatchHandler implements DispatchHandler {
     }
 
     private void setNamespace(ServerRequest serverRequest) {
-        // TODO conceptual code
-        for (Map.Entry<String, String> entry : namespace.entrySet()) {
-            serverRequest.setAttribute(entry.getKey(), entry.getValue());
-        }
-
-//        Namespace namespace = new Namespace(xx, yy, mm);
-//        serverRequest.setAttribute("pinpoint.namespace", namespace);
+        serverRequest.setAttribute(NAMESPACE_KEY, namespace);
     }
 
 }

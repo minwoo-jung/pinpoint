@@ -153,7 +153,14 @@ public class TokenMessageListenerTest {
         boolean await = awaitUtils.await(new TestAwaitTaskUtils() {
             @Override
             public boolean checkCompleted() {
-                return countingDispatchHandler.checkCount(2,  1);
+
+                if (!(countingDispatchHandler.getCalledSendServerRequestCount() == 2)) {
+                    return false;
+                }
+                if (!(countingDispatchHandler.getCalledRequestServerRequestCount() == 1)) {
+                    return false;
+                }
+                return true;
             }
         });
 
