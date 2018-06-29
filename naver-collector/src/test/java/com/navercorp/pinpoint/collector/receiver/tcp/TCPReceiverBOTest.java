@@ -158,7 +158,7 @@ public class TCPReceiverBOTest {
 
             final long executionTime = System.currentTimeMillis() - startTimeMillis;
             if (waitTimeMillis < executionTime) {
-                throw new RuntimeException("timeout " + executionTime);
+                throw new RuntimeException("timeout " + executionTime + "ms");
             }
         }
     }
