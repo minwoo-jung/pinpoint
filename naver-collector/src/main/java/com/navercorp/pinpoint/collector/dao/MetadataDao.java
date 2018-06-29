@@ -13,32 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.manager.dao;
+package com.navercorp.pinpoint.collector.dao;
 
-import com.navercorp.pinpoint.manager.vo.PaaSOrganizationInfo;
-import com.navercorp.pinpoint.manager.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 
 /**
  * @author minwoo.jung
  */
 public interface MetadataDao {
-    boolean existOrganization(String organizationName);
-
-    boolean insertPaaSOrganizationInfo(String organizationName);
-
-    void deletePaaSOrganizationInfo(String organizationName);
-
     PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
-
-    boolean createDatabase(String organizationName);
-
-    void dropDatabase(String organizationName);
-
-    boolean insertPaaSOrganizationKey(PaaSOrganizationKey paaSOrganizationKey);
-
-    boolean existPaaSOrganizationKey(String organizationName);
-
-    void deletePaaSOrganizationKey(String organizationName);
 
     PaaSOrganizationKey selectPaaSOrganizationkey(String key);
 }

@@ -11,15 +11,47 @@
         )
     </select>
 
+    <select id="existOrganizationKey" parameterType="string" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM organization_key
+            WHERE organization = #{organizationKey}
+        )
+    </select>
+
     <delete id="deleteOrganizationInfo" parameterType="string">
         DELETE
         FROM paas_organization
         WHERE organization = #{organizationName}
     </delete>
 
+    <delete id="deleteOrganizationKey" parameterType="string">
+        DELETE
+        FROM organization_key
+        WHERE organization = #{organizationName}
+    </delete>
+
+    <select id="selectOrganizationInfo" resultType="PaaSOrganizationInfo">
+        SELECT *
+        FROM paas_organization
+        WHERE organization = #{organization}
+    </select>
+
     <insert id="insertOrganizationInfo" parameterType="PaaSOrganizationInfo">
         INSERT INTO paas_organization (organization, database_name, hbase_namespace)
         VALUES (#{organization}, #{databaseName}, #{hbaseNameSpace})
     </insert>
+
+    <insert id="insertOrganizationKey" parameterType="PaaSOrganizationKey">
+        INSERT INTO organization_key (uu_key, organization)
+        VALUES (#{uuKey}, #{organization})
+    </insert>
+
+    <select id="selectOrganizationKey" resultType="PaaSOrganizationKey">
+        SELECT *
+        FROM organization_key
+        WHERE uu_key = #{key}
+    </select>
+
 
 </mapper>

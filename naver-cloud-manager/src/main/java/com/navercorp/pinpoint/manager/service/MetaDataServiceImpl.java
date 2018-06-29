@@ -16,13 +16,16 @@
 package com.navercorp.pinpoint.manager.service;
 
 import com.navercorp.pinpoint.manager.dao.MetadataDao;
+import com.navercorp.pinpoint.manager.vo.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.manager.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.manager.vo.exception.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 /**
  * @author minwoo.jung
@@ -44,22 +47,50 @@ public class MetaDataServiceImpl implements MetadataService {
 
     @Override
     public void createOrganizationInfo(String organizationName) {
-        if (!metadataDao.createDatabase(organizationName)) {
-            String message = "can not create database. organizationName :" + organizationName;
-            logger.error(message);
-            throw new RepositoryException(message);
-        };
+        createDatabase(organizationName);
+        insertOrganizationInfo(organizationName);
+        insertPaaSOrganizationKey(organizationName);
+    }
 
-        if (!metadataDao.insertOrganizationInfo(organizationName)) {
+    private void insertOrganizationInfo(String organizationName) {
+        if (!metadataDao.insertPaaSOrganizationInfo(organizationName)) {
             String message = "can not insert data for OrganizationInfo. organizationName :" + organizationName;
             logger.error(message);
             throw new RepositoryException(message);
         }
     }
 
+
+    private void createDatabase(String organizationName) {
+        if (!metadataDao.createDatabase(organizationName)) {
+            String message = "can not create database. organizationName :" + organizationName;
+            logger.error(message);
+            throw new RepositoryException(message);
+        };
+    }
+
+    private void insertPaaSOrganizationKey(String organizationName) {
+        for (int i=0 ; i < 10; i++) {
+            String uuid = UUID.nameUUIDFromBytes((organizationName+i).getBytes()).toString().replace("-", "");
+            boolean existOrganizationKey = metadataDao.existPaaSOrganizationKey(organizationName);
+
+            if (existOrganizationKey == false) {
+                if (!metadataDao.insertPaaSOrganizationKey(new PaaSOrganizationKey(uuid, organizationName))) {
+                    break;
+                }
+                return;
+            }
+        }
+
+        String message = "can not generate organization key. organizationName :" + organizationName;
+        logger.error(message);
+        throw new RepositoryException(message);
+    }
+
     @Override
     public void dropDatabaseAndDeleteOrganizationInfo(String organizationName) {
-        metadataDao.deleteOrganizationInfo(organizationName);
+        metadataDao.deletePaaSOrganizationInfo(organizationName);
+        metadataDao.deletePaaSOrganizationKey(organizationName);
         metadataDao.dropDatabase(organizationName);
     }
 }

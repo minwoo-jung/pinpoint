@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.manager.dao.mysql;
 import com.navercorp.pinpoint.manager.dao.MetadataDao;
 import com.navercorp.pinpoint.manager.dao.mybatis.MetadataMapper;
 import com.navercorp.pinpoint.manager.vo.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.manager.vo.PaaSOrganizationKey;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,7 +54,7 @@ public class MysqlMetadataDao implements MetadataDao {
     }
 
     @Override
-    public boolean insertOrganizationInfo(String organizationName) {
+    public boolean insertPaaSOrganizationInfo(String organizationName) {
         int result = sqlSessionTemplate.insert(NAMESPACE+ "insertOrganizationInfo", new PaaSOrganizationInfo(organizationName, organizationName, organizationName, organizationName));
 
         if (result == 1) {
@@ -69,7 +70,38 @@ public class MysqlMetadataDao implements MetadataDao {
     }
 
     @Override
-    public void deleteOrganizationInfo(String organizationName) {
+    public void deletePaaSOrganizationInfo(String organizationName) {
         sqlSessionTemplate.delete(NAMESPACE+ "deleteOrganizationInfo", organizationName);
+    }
+
+    @Override
+    public boolean existPaaSOrganizationKey(String organizationName) {
+        return sqlSessionTemplate.selectOne(NAMESPACE + "existOrganizationKey", organizationName);
+    }
+
+    @Override
+    public boolean insertPaaSOrganizationKey(PaaSOrganizationKey paaSOrganizationKey) {
+        int result = sqlSessionTemplate.insert(NAMESPACE + "insertOrganizationKey", paaSOrganizationKey);
+
+        if (result == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void deletePaaSOrganizationKey(String organizationName) {
+        sqlSessionTemplate.delete(NAMESPACE + "deleteOrganizationKey", organizationName);
+    }
+
+    @Override
+    public PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName) {
+        return sqlSessionTemplate.selectOne(NAMESPACE + "selectOrganizationInfo", organizationName);
+    }
+
+    @Override
+    public PaaSOrganizationKey selectPaaSOrganizationkey(String key) {
+        return sqlSessionTemplate.selectOne(NAMESPACE + "selectOrganizationKey", key);
     }
 }

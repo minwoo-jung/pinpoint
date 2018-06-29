@@ -22,9 +22,21 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <import resource="classpath:applicationContext-collector.xml" />
+    <import resource="classpath:applicationContext-datasource.xml"/>
+    <import resource="classpath:applicationContext-dao-config.xml"/>
+    <import resource="classpath:applicationContext-cache.xml"/>
 
     <context:component-scan
-            base-package="com.navercorp.pinpoint.collector.dao.memory"/>
+            base-package="com.navercorp.pinpoint.collector.dao.memory,
+                        com.navercorp.pinpoint.collector.dao.mysql"/>
+
+    <bean id="propertyConfigurerNaver" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
 
     <bean id="pipelineFactory" class="com.navercorp.pinpoint.collector.NaverCollectorPipelineFactory">
         <constructor-arg ref="pinpoint_collector_properties"/>
