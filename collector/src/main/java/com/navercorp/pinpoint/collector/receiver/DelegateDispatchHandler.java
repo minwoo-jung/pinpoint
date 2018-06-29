@@ -37,10 +37,13 @@ public class DelegateDispatchHandler implements DispatchHandler {
 
     private final HandlerManager handlerManager;
 
-    public DelegateDispatchHandler(AcceptedTimeService acceptedTimeService, DispatchHandler delegate, HandlerManager handlerManager) {
+    private final DispatchHandlerInterceptor dispatchHandlerInterceptor;
+
+    public DelegateDispatchHandler(AcceptedTimeService acceptedTimeService, DispatchHandler delegate, HandlerManager handlerManager, DispatchHandlerInterceptor dispatchHandlerInterceptor) {
         this.acceptedTimeService = Objects.requireNonNull(acceptedTimeService, "acceptedTimeService must not be null");
         this.delegate = Objects.requireNonNull(delegate, "delegate must not be null");
         this.handlerManager = Objects.requireNonNull(handlerManager, "handlerManager must not be null");
+        this.dispatchHandlerInterceptor = dispatchHandlerInterceptor;
     }
 
 
@@ -53,7 +56,12 @@ public class DelegateDispatchHandler implements DispatchHandler {
             return;
         }
 
-        this.delegate.dispatchSendMessage(serverRequest);
+        dispatchHandlerInterceptor.beforeInterceptor(serverRequest);
+        try {
+            this.delegate.dispatchSendMessage(serverRequest);
+        } finally {
+            dispatchHandlerInterceptor.afterInterceptor(serverRequest);
+        }
     }
 
 
@@ -69,7 +77,13 @@ public class DelegateDispatchHandler implements DispatchHandler {
             return;
         }
 
-        delegate.dispatchRequestMessage(serverRequest, serverResponse);
+        dispatchHandlerInterceptor.beforeInterceptor(serverRequest, serverResponse);
+
+        try {
+            delegate.dispatchRequestMessage(serverRequest, serverResponse);
+        } finally {
+            dispatchHandlerInterceptor.afterInterceptor(serverRequest, serverResponse);
+        }
 
     }
 

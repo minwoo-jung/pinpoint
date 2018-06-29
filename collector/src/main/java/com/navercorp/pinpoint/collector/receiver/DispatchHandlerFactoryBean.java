@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.common.server.util.AcceptedTimeService;
 import com.navercorp.pinpoint.collector.manage.HandlerManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Objects;
 
@@ -31,6 +32,11 @@ public class DispatchHandlerFactoryBean implements FactoryBean<DispatchHandler> 
 
     @Autowired
     private AcceptedTimeService acceptedTimeService;
+
+    @Autowired(required = false)
+    @Qualifier("delegateDispatchHandlerInterceptor")
+    private DispatchHandlerInterceptor dispatchHandlerInterceptor = new EmptyDispatchHandlerInterceptor();
+
     private final DispatchHandler delegate;
 
     private final HandlerManager handlerManager;
@@ -45,7 +51,7 @@ public class DispatchHandlerFactoryBean implements FactoryBean<DispatchHandler> 
 
     @Override
     public DispatchHandler getObject() throws Exception {
-        return new DelegateDispatchHandler(acceptedTimeService, delegate, handlerManager);
+        return new DelegateDispatchHandler(acceptedTimeService, delegate, handlerManager, dispatchHandlerInterceptor);
     }
 
     @Override
