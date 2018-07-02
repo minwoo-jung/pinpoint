@@ -80,10 +80,7 @@ public class AttachTokenDispatchHandlerTest {
 
     private ServerRequest<TBase<?, ?>> newServerRequest(Header header, TResult tBase) {
         Message<TBase<?, ?>> message = new DefaultMessage<>(header, tBase);
-        return new DefaultServerRequest<TBase<?, ?>>(message);
+        return new DefaultServerRequest<TBase<?, ?>>(message, "127.0.0.1", -1);
     }
-
-
-
 
 }
