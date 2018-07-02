@@ -65,18 +65,6 @@ public class HideHeaderController {
     @RequestMapping(value = "/hideHeaderNestedTest")
     @ResponseBody
     public String hideHeaderTest(HttpServletRequest request) {
-        logger.debug("{}", "hideHeaderTest");
-        String pinpointHeader = request.getHeader(PINPOINT_HEADER);
-        if (pinpointHeader != null) {
-            logger.debug("getHeader:{}", pinpointHeader);
-            return "fail(getHeader)";
-        }
-        Enumeration<String> headers = request.getHeaders(PINPOINT_HEADER);
-        List<String> list = Collections.list(headers);
-        if (list.size() != 0) {
-            return "fail(getHeaders)";
-        }
-
         Enumeration<String> headerNames = request.getHeaderNames();
         List<String> headerNamesList = Collections.list(headerNames);
         logger.debug("headernames:{}", headerNamesList);
@@ -93,23 +81,11 @@ public class HideHeaderController {
     @ResponseBody
     public String assertHeaderTest(HttpServletRequest request) {
         logger.debug("{}", "assertExistHeaderTest");
-        String noExist = request.getHeader("noExist");
-        if (noExist != null) {
-            return "fail(noExist)";
-        }
-
-
-        Enumeration<String> headers = request.getHeaders("noExist");
-        List<String> list = Collections.list(headers);
-        if (list.isEmpty()) {
-            return "fail(getHeaders)";
-        }
-
         Enumeration<String> headerNames = request.getHeaderNames();
         ArrayList<String> headerNamesList = Collections.list(headerNames);
         for (String headerName : headerNamesList) {
             if (headerName.startsWith(PINPOINT_HEADER_STARTWITH)) {
-                return "fail(getHeaderNames)";
+                return "fail(getHeaderNames) " + headerName;
             }
         }
 

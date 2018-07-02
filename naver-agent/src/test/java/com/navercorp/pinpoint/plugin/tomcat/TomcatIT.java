@@ -14,11 +14,9 @@
  */
 package com.navercorp.pinpoint.plugin.tomcat;
 
-import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 import static org.junit.Assert.*;
 
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
@@ -48,9 +46,6 @@ import com.navercorp.pinpoint.test.plugin.TraceObjectManagable;
 @TraceObjectManagable
 public class TomcatIT {
     private static final String TOMCAT = "TOMCAT";
-    private static final String TOMCAT_METHOD = "TOMCAT_METHOD";
-    private static final String JDK_HTTPURLCONNECTOR = "JDK_HTTPURLCONNECTOR";
-    private static final String HTTP_PARAM = "http.param";
 
     @Test
     public void testServerType() throws Exception {
@@ -59,31 +54,6 @@ public class TomcatIT {
         verifier.verifyServerInfo(ServerInfo.getServerInfo());
         verifier.verifyConnector("HTTP/1.1", 8972);
         verifier.verifyService("Catalina/localhost/test", Arrays.asList("hamcrest-core-1.3.jar", "junit-4.12.jar", "pinpoint-test-" + Version.VERSION + ".jar"));
-    }
-    
-    @Test
-    public void testRequest() throws Exception {
-        String params = "param0=maru";
-        String endPoint = "localhost:8972";
-        String rpc = "/test/index.html";
-        
-        URL url = new URL("http://" + endPoint + rpc + "?" + params);
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-        assertEquals(HttpURLConnection.HTTP_OK, connection.getResponseCode());
-        connection.disconnect();
-
-        Class<?> standardHostValve = Class.forName("org.apache.catalina.core.StandardHostValve");
-        Class<?> request = Class.forName("org.apache.catalina.connector.Request");
-        Class<?> response = Class.forName("org.apache.catalina.connector.Response");
-        Method invoke = standardHostValve.getMethod("invoke", request, response);
-
-        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
-        verifier.printCache();
-        
-        verifier.ignoreServiceType(JDK_HTTPURLCONNECTOR);
-        verifier.verifyTrace(root(TOMCAT, "Tomcat Servlet Process", rpc, endPoint, "127.0.0.1"));        
-        verifier.verifyTrace(event(TOMCAT_METHOD, invoke, annotation(HTTP_PARAM, params)));
-        verifier.verifyTraceCount(0);
     }
     
     @Test
@@ -108,32 +78,6 @@ public class TomcatIT {
         for (Header h : Header.values()) {
             String headerName = h.toString();
             assertFalse(names.contains(headerName));
-        }
-    }
-    
-    @Test
-    public void testGetHeader() throws Exception {
-        
-        for (Header h : Header.values()) {
-            URL url = new URL("http://localhost:8972/test/getHeader?name=" + h.toString());
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-            
-            String value = null;
-            
-            try {
-                Scanner scanner = new Scanner(connection.getInputStream());
-                
-                if (scanner.hasNextLine()) {
-                    value = scanner.nextLine();
-                } else {
-                    fail("No response");
-                }
-            } finally {
-                connection.disconnect();
-            }
-            
-            
-            assertEquals("null", value);
         }
     }
 }

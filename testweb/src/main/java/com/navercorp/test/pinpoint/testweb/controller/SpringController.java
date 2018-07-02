@@ -68,4 +68,18 @@ public class SpringController {
 
         return result;
     }
+
+    @RequestMapping(value = "/spring/mvc/async/error")
+    @ResponseBody
+    public Callable<String> springMvcError() throws Exception {
+        Callable<String> callback = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+
+                TimeUnit.SECONDS.sleep(3);
+                throw new Exception("Failed to asynchronous operation");
+            }
+        };
+        return callback;
+    }
 }
