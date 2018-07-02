@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 NAVER Corp.
+ * Copyright 2018 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.navercorp.pinpoint.bootstrap.util.InterceptorUtils;
 import com.navercorp.pinpoint.common.server.bo.AnnotationBo;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.web.calltree.span.CallTreeNode;
@@ -113,7 +112,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
         if (MetaData.PARAM.equals(metaData)) {
             for(AnnotationBo annotationBo : annotationBoList) {
                 if(AnnotationKey.HTTP_URL.getCode() == annotationBo.getKey()) {
-                    String url = InterceptorUtils.getHttpUrl(String.valueOf(annotationBo.getValue()), false);
+                    String url = getHttpUrl(String.valueOf(annotationBo.getValue()), false);
                     annotationBo.setValue(url);
                 } else if(AnnotationKey.HTTP_PARAM.getCode() == annotationBo.getKey()) {
                     annotationBo.setValue("you don't have authorization for " + spanAlign.getApplicationId() + ".");
@@ -128,6 +127,24 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
     @Override
     public Record createRecord(CallTreeNode node, RecordFactory factory) {
         return factory.getFilteredRecord(node, "you don't have authorization for " + node.getValue().getApplicationId() + ".");
+    }
+
+
+    public String getHttpUrl(final String uriString, final boolean param) {
+        if (com.navercorp.pinpoint.common.util.StringUtils.isEmpty(uriString)) {
+            return "";
+        }
+
+        if (param) {
+            return uriString;
+        }
+
+        int queryStart = uriString.indexOf('?');
+        if (queryStart != -1) {
+            return uriString.substring(0, queryStart);
+        }
+
+        return uriString;
     }
 
 }
