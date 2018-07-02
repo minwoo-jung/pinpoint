@@ -33,7 +33,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.util.SocketUtils;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -117,6 +119,8 @@ public class TokenMessageListenerTest {
 
     private void authenticate(TokenMessageListener tokenMessageListener, boolean success) {
         PinpointSocket pinpointSocket = Mockito.mock(PinpointSocket.class);
+        int availablePort = SocketUtils.findAvailableTcpPort(22214);
+        Mockito.when(pinpointSocket.getRemoteAddress()).thenReturn(new InetSocketAddress("127.0.0.1", availablePort));
 
         byte[] payload = null;
         if (success) {
@@ -145,6 +149,8 @@ public class TokenMessageListenerTest {
 
     private void checkMessageReceived(CountingDispatchHandler countingDispatchHandler, TokenMessageListener tokenMessageListener, boolean success) {
         PinpointSocket pinpointSocket = Mockito.mock(PinpointSocket.class);
+        int availablePort = SocketUtils.findAvailableTcpPort(22214);
+        Mockito.when(pinpointSocket.getRemoteAddress()).thenReturn(new InetSocketAddress("127.0.0.1", availablePort));
 
         tokenMessageListener.handleSend(createSendPacket(new TResult()), pinpointSocket);
         tokenMessageListener.handleSend(createSendPacket(new TResult()), pinpointSocket);
