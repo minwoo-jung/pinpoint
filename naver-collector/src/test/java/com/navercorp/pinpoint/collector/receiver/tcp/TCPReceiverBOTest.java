@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author koo.taejin
  */
-@ContextConfiguration("classpath:applicationContext-collector.xml")
+@ContextConfiguration("classpath:applicationContext-collector-naver.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TCPReceiverBOTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -82,12 +82,11 @@ public class TCPReceiverBOTest {
         }
     }
 
-    @Test
+    @Test(expected = RuntimeException.class)
     public void agentInfoTest1() throws Exception {
         TAgentInfo agentInfo = getAgentInfo();
         encodeAndWrite(os, agentInfo, false);
         ResponsePacket responsePacket = readAndDecode(is, 1000);
-        Assert.assertNull(responsePacket);
     }
 
     @Test
