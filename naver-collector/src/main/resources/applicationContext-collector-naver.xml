@@ -57,13 +57,13 @@
             <constructor-arg ref="handlerManager"/>
         </bean>
 
-        <bean id="authenticationTBaseLocator" class="com.navercorp.pinpoint.thrift.io.AuthenticationTBaseLocator" />
+        <bean id="authenticationTypeLocator" class="com.navercorp.pinpoint.thrift.io.AuthenticationTBaseLocator"  factory-method="build"/>
 
         <bean id="authenticationTBaseSerializerFactory" class="com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializerFactory">
-            <constructor-arg type="com.navercorp.pinpoint.thrift.io.TBaseLocator" ref="authenticationTBaseLocator"/>
+            <constructor-arg type="com.navercorp.pinpoint.io.util.TypeLocator" ref="authenticationTypeLocator"/>
         </bean>
         <bean id="authenticationTBaseDeserializerFactory" class="com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializerFactory">
-            <constructor-arg type="com.navercorp.pinpoint.thrift.io.TBaseLocator" ref="authenticationTBaseLocator"/>
+            <constructor-arg type="com.navercorp.pinpoint.io.util.TypeLocator" ref="authenticationTypeLocator"/>
         </bean>
 
         <bean id="authenticationTCPPacketHandlerFactory" class="com.navercorp.pinpoint.collector.receiver.tcp.DefaultTCPPacketHandlerFactory">
