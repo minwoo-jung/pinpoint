@@ -2,8 +2,6 @@ package com.navercorp.pinpoint.web.dao.hbase.filter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import com.navercorp.pinpoint.common.hbase.HbaseTableNameProvider;
 import com.navercorp.pinpoint.common.hbase.TableNameProvider;
@@ -85,9 +83,9 @@ public class HbaseFilterPerformanceTest {
         Scan scan = new Scan();
         scan.setCaching(256);
 
-        byte[] bAgent = Bytes.toBytes(applicationName);
-        byte[] traceIndexStartKey = SpanUtils.getTraceIndexRowKey(bAgent, range.getFrom());
-        byte[] traceIndexEndKey = SpanUtils.getTraceIndexRowKey(bAgent, range.getTo());
+        byte[] bApplicationName = Bytes.toBytes(applicationName);
+        byte[] traceIndexStartKey = SpanUtils.getApplicationTraceIndexRowKey(bApplicationName, range.getFrom());
+        byte[] traceIndexEndKey = SpanUtils.getApplicationTraceIndexRowKey(bApplicationName, range.getTo());
 
         scan.setStartRow(traceIndexEndKey);
         scan.setStopRow(traceIndexStartKey);
