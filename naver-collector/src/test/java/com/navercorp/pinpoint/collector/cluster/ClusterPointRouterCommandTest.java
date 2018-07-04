@@ -48,6 +48,7 @@ import com.navercorp.pinpoint.thrift.io.DeserializerFactory;
 import com.navercorp.pinpoint.thrift.io.SerializerFactory;
 import com.navercorp.pinpoint.thrift.util.SerializationUtils;
 import org.apache.thrift.TException;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,8 +85,18 @@ public class ClusterPointRouterCommandTest {
     @Autowired
     private DeserializerFactory commandDeserializerFactory;
 
+    @After
+    public void cleanup() {
+        ClusterPointRepository<TargetClusterPoint> targetClusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
+        List<TargetClusterPoint> clusterPointList = targetClusterPointRepository.getClusterPointList();
+        for (TargetClusterPoint clusterPoint : clusterPointList) {
+            targetClusterPointRepository.removeClusterPoint(clusterPoint);
+        }
+    }
+
+
     @Test
-    public void profilerClusterPointtest() throws TException, InterruptedException {
+    public void profilerClusterPointTest() throws TException, InterruptedException {
         String serverIdentifier = CollectorUtils.getServerIdentifier();
 
         CollectorClusterConnectionRepository clusterRepository = new CollectorClusterConnectionRepository();

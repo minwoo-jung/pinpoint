@@ -8,18 +8,10 @@ import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClust
 import com.navercorp.pinpoint.collector.util.Address;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.collector.util.DefaultAddress;
-import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
-import com.navercorp.pinpoint.rpc.packet.PingPayloadPacket;
-import com.navercorp.pinpoint.rpc.packet.RequestPacket;
-import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
-import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
 import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
 import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
@@ -76,7 +68,7 @@ public class ClusterPointRouterTest {
     }
 
     @Test
-    public void webClusterPointtest() {
+    public void webClusterPointTest() {
         CollectorClusterConnectionRepository clusterRepository = new CollectorClusterConnectionRepository();
         CollectorClusterConnectionFactory clusterConnectionFactory = new CollectorClusterConnectionFactory(serverIdentifier, clusterPointRouter, clusterPointRouter);
         CollectorClusterConnector clusterConnector = clusterConnectionFactory.createConnector();
@@ -110,7 +102,7 @@ public class ClusterPointRouterTest {
     }
 
     @Test
-    public void profilerClusterPointtest() {
+    public void profilerClusterPointTest() {
         ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
 
         DefaultPinpointServer pinpointServer = createPinpointServer();
