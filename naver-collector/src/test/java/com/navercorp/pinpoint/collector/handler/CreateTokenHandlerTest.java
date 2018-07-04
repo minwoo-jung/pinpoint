@@ -16,16 +16,16 @@
 
 package com.navercorp.pinpoint.collector.handler;
 
-import com.navercorp.pinpoint.collector.dao.NameSpaceDao;
-import com.navercorp.pinpoint.collector.service.NameSpaceService;
+import com.navercorp.pinpoint.collector.dao.MetadataDao;
+import com.navercorp.pinpoint.collector.dao.memory.MemoryMetadataDao;
 import com.navercorp.pinpoint.collector.service.TokenConfig;
-import com.navercorp.pinpoint.collector.service.TokenService;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.thrift.dto.TResult;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationToken;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationTokenRes;
 import com.navercorp.pinpoint.thrift.dto.command.TTokenResponseCode;
 import com.navercorp.pinpoint.thrift.dto.command.TTokenType;
-import org.apache.thrift.TBase;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,9 @@ import java.util.UUID;
 public class CreateTokenHandlerTest {
 
     private static final String LICENSE_KEY = UUID.randomUUID().toString();
+    private static final String ORGANIZATION = "org";
     private static final String NAMESPACE = "namespace";
+    private static final String REMOTE_ADDRESS = "127.0.0.1";
 
     @Autowired
     private CreateTokenHandler createTokenHandler;
@@ -55,11 +57,17 @@ public class CreateTokenHandlerTest {
     private TokenConfig tokenConfig;
 
     @Autowired
-    private NameSpaceDao nameSpaceDao;
+    private MetadataDao metadataDao;
 
     @Before
     public void setUp() throws Exception {
-        nameSpaceDao.create(LICENSE_KEY, NAMESPACE);
+        if (metadataDao instanceof MemoryMetadataDao) {
+            PaaSOrganizationKey paaSOrganizationKey = new PaaSOrganizationKey(LICENSE_KEY, ORGANIZATION);
+            ((MemoryMetadataDao) metadataDao).createPaaSOrganizationkey(LICENSE_KEY, paaSOrganizationKey);
+
+            PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo(ORGANIZATION, "userId", NAMESPACE, NAMESPACE);
+            ((MemoryMetadataDao) metadataDao).createPaaSOrganizationInfo(ORGANIZATION, paaSOrganizationInfo);
+        }
     }
 
     @Test
@@ -68,7 +76,7 @@ public class CreateTokenHandlerTest {
         tokenRequest.setLicenseKey(LICENSE_KEY);
         tokenRequest.setTokenType(TTokenType.SPAN);
 
-        TCmdGetAuthenticationTokenRes tokenResponse = (TCmdGetAuthenticationTokenRes) createTokenHandler.handleRequest(tokenRequest);
+        TCmdGetAuthenticationTokenRes tokenResponse = (TCmdGetAuthenticationTokenRes) createTokenHandler.handleRequest(tokenRequest, REMOTE_ADDRESS);
 
         Assert.assertEquals(TTokenResponseCode.OK, tokenResponse.getCode());
     }
@@ -79,13 +87,13 @@ public class CreateTokenHandlerTest {
         tokenRequest.setLicenseKey(LICENSE_KEY + "fail");
         tokenRequest.setTokenType(TTokenType.SPAN);
 
-        TCmdGetAuthenticationTokenRes tokenResponse = (TCmdGetAuthenticationTokenRes) createTokenHandler.handleRequest(tokenRequest);
-        Assert.assertEquals(TTokenResponseCode.INTERNAL_SERVER_ERROR, tokenResponse.getCode());
+        TCmdGetAuthenticationTokenRes tokenResponse = (TCmdGetAuthenticationTokenRes) createTokenHandler.handleRequest(tokenRequest, REMOTE_ADDRESS);
+        Assert.assertEquals(TTokenResponseCode.UNAUTHORIZED, tokenResponse.getCode());
     }
 
     @Test
     public void badRequestTest() {
-        TCmdGetAuthenticationTokenRes tokenResponse = (TCmdGetAuthenticationTokenRes) createTokenHandler.handleRequest(new TResult());
+        TCmdGetAuthenticationTokenRes tokenResponse = (TCmdGetAuthenticationTokenRes) createTokenHandler.handleRequest(new TResult(), REMOTE_ADDRESS);
         Assert.assertEquals(TTokenResponseCode.BAD_REQUEST, tokenResponse.getCode());
     }
 

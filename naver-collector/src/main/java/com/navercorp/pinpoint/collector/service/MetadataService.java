@@ -23,7 +23,7 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
  */
 public interface MetadataService {
 
-    PaaSOrganizationKey selectPaaSOrganizationkey(String key);
+    PaaSOrganizationKey selectPaaSOrganizationkey(String licenseKey);
 
     PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
 }

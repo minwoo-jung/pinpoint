@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.collector.service;
 
 import com.navercorp.pinpoint.collector.dao.TokenDao;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
 import com.navercorp.pinpoint.collector.vo.TokenType;
@@ -46,9 +47,6 @@ public class TokenServiceImpl implements TokenService {
     private TokenConfig tokenConfig;
 
     @Autowired
-    private NameSpaceService nameSpaceService;
-
-    @Autowired
     private TokenDao tokenDao;
 
     private Timer timer;
@@ -75,13 +73,8 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Token create(TokenCreateRequest request) {
-        String nameSpace = nameSpaceService.getNameSpace(request.getLicenseKey());
-        if (nameSpace == null) {
-            throw new TokenException("Can't find nameSpace");
-        }
-
         for (int i = 0; i < tokenConfig.getMaxRetryCount(); i++) {
-            Token token = createToken(nameSpace, request.getTokenType());
+            Token token = createToken(request);
             if (tokenDao.create(token)) {
 
                 ExpiredTokenTask expiredTokenTask = new ExpiredTokenTask(token.getKey());
@@ -93,13 +86,15 @@ public class TokenServiceImpl implements TokenService {
         return null;
     }
 
-    private Token createToken(String namespace, TokenType tokenType) {
+    private Token createToken(TokenCreateRequest request) {
         String tokenKey = UUID.randomUUID().toString();
+
+        PaaSOrganizationInfo paaSOrganizationInfo = request.getPaaSOrganizationInfo();
 
         long currentTime = System.currentTimeMillis();
         long expiryTime = currentTime + tokenConfig.getTtl();
 
-        return new Token(tokenKey, namespace, currentTime, expiryTime, tokenType);
+        return new Token(tokenKey, paaSOrganizationInfo, expiryTime, request.getRemoteAddress(), request.getTokenType());
     }
 
     @Override

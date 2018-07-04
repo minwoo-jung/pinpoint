@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 
 import com.navercorp.pinpoint.collector.receiver.tcp.DefaultTCPPacketHandlerFactory;
 import com.navercorp.pinpoint.collector.service.TokenService;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenType;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
@@ -61,7 +62,9 @@ public class TokenMessageListenerTest {
         long startTime = System.currentTimeMillis();
         long endTime = startTime + 3000;
 
-        Token token = new Token("key", "namespace", startTime, endTime, TokenType.SPAN);
+        PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo("org", "userId", "namespace", "hbaseNamespace");
+
+        Token token = new Token("key", paaSOrganizationInfo, endTime, "127.0.0.1", TokenType.SPAN);
 
         TokenService tokenService = Mockito.mock(TokenService.class);
         Mockito.when(tokenService.getAndRemove("success", TokenType.ALL)).thenReturn(token);

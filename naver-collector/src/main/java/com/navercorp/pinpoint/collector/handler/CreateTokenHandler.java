@@ -16,16 +16,20 @@
 
 package com.navercorp.pinpoint.collector.handler;
 
-import com.navercorp.pinpoint.collector.service.LoginService;
+import com.navercorp.pinpoint.collector.service.MetadataService;
 import com.navercorp.pinpoint.collector.service.TokenService;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
+import com.navercorp.pinpoint.collector.vo.TokenType;
 import com.navercorp.pinpoint.io.request.ServerRequest;
 import com.navercorp.pinpoint.io.request.ServerResponse;
 import com.navercorp.pinpoint.rpc.util.ClassUtils;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationToken;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationTokenRes;
 import com.navercorp.pinpoint.thrift.dto.command.TTokenResponseCode;
+import com.navercorp.pinpoint.thrift.dto.command.TTokenType;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +50,13 @@ public class CreateTokenHandler implements RequestResponseHandler {
     private TokenService tokenService;
 
     @Autowired
-    private LoginService loginService;
+    private MetadataService metadataService;
 
     @Override
     public void handleRequest(ServerRequest serverRequest, ServerResponse serverResponse) {
         final Object data = serverRequest.getData();
         if (data instanceof TBase) {
-            TBase<?, ?> response = handleRequest((TBase<?, ?>) data);
+            TBase<?, ?> response = handleRequest((TBase<?, ?>) data, serverRequest.getRemoteAddress());
 
             serverResponse.write(response);
             return;
@@ -65,15 +69,26 @@ public class CreateTokenHandler implements RequestResponseHandler {
         }
     }
 
-    TBase<?, ?> handleRequest(TBase<?, ?> tbase) {
+    TBase<?, ?> handleRequest(TBase<?, ?> tbase, String remoteAddress) {
         if (tbase instanceof TCmdGetAuthenticationToken) {
-            TokenCreateRequest tokenCreateRequest = createTokenCreateRequest((TCmdGetAuthenticationToken) tbase);
-            if (tokenCreateRequest == null) {
+            TCmdGetAuthenticationToken getTokenCommand = (TCmdGetAuthenticationToken) tbase;
+            if (!verifyRequest(getTokenCommand)) {
                 return createResponse(TTokenResponseCode.BAD_REQUEST);
             }
-            if (!loginService.login(tokenCreateRequest.getLicenseKey())) {
+
+            String licenseKey = getTokenCommand.getLicenseKey();
+            PaaSOrganizationKey paasKey = metadataService.selectPaaSOrganizationkey(licenseKey);
+            if (paasKey == null) {
                 return createResponse(TTokenResponseCode.UNAUTHORIZED);
             }
+
+            String organization = paasKey.getOrganization();
+            PaaSOrganizationInfo organizationInfo = metadataService.selectPaaSOrganizationInfo(organization);
+            if (organizationInfo == null || !verifyPaaSOrganizationInfo(organizationInfo)) {
+                return createResponse(TTokenResponseCode.INTERNAL_SERVER_ERROR);
+            }
+
+            TokenCreateRequest tokenCreateRequest = createTokenCreateRequest(getTokenCommand, organizationInfo, remoteAddress);
 
             TCmdGetAuthenticationTokenRes response = null;
             try {
@@ -107,9 +122,50 @@ public class CreateTokenHandler implements RequestResponseHandler {
         return response;
     }
 
-    private TokenCreateRequest createTokenCreateRequest(TCmdGetAuthenticationToken request) {
+    private boolean verifyRequest(TCmdGetAuthenticationToken request) {
+        String licenseKey = request.getLicenseKey();
+        if (licenseKey == null) {
+            return false;
+        }
+
+        TTokenType tokenType = request.getTokenType();
+        if (tokenType == null) {
+            return false;
+        }
+
+        TokenType type = TokenType.valueOf(tokenType.name());
+        if (type == TokenType.UNKNOWN) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean verifyPaaSOrganizationInfo(PaaSOrganizationInfo organizationInfo) {
+        String databaseName = organizationInfo.getDatabaseName();
+        if (databaseName == null) {
+            return false;
+        }
+
+        String hbaseNameSpace = organizationInfo.getHbaseNameSpace();
+        if (hbaseNameSpace == null) {
+            return false;
+        }
+
+        String organization = organizationInfo.getOrganization();
+        if (organization == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private TokenCreateRequest createTokenCreateRequest(TCmdGetAuthenticationToken getTokenCommand, PaaSOrganizationInfo organizationInfo, String remoteAddress) {
         try {
-            TokenCreateRequest tokenCreateRequest = new TokenCreateRequest(request.getLicenseKey(), request.getTokenType());
+            TTokenType ttokenType = getTokenCommand.getTokenType();
+            TokenType tokenType = TokenType.valueOf(ttokenType.name());
+
+            TokenCreateRequest tokenCreateRequest = new TokenCreateRequest(organizationInfo, tokenType, remoteAddress);
             return tokenCreateRequest;
         } catch (Exception e) {
             // skip

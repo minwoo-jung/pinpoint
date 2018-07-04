@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.io.request.ServerRequest;
@@ -44,7 +45,8 @@ class AttachTokenDispatchHandler implements DispatchHandler {
     }
 
     private Namespace newNamespace(Token token) {
-        return new Namespace("kR", token.getNamespace(), token.getNamespace());
+        PaaSOrganizationInfo paaSOrganizationInfo = token.getPaaSOrganizationInfo();
+        return new Namespace("kR", paaSOrganizationInfo.getDatabaseName(), paaSOrganizationInfo.getHbaseNameSpace());
     }
 
     @Override

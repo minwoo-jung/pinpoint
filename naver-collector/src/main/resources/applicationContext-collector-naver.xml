@@ -80,6 +80,8 @@
             <constructor-arg ref="clusterService"/>
         </bean>
 
+        <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.mysql.MysqlMetadataDao"/>
+
         <bean id="tokenService" class="com.navercorp.pinpoint.collector.service.TokenServiceImpl"/>
 
         <bean id="spanTcpReceiver" class="com.navercorp.pinpoint.collector.receiver.tcp.security.token.TokenTCPReceiverBean">

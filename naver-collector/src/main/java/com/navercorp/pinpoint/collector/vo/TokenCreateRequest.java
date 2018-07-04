@@ -17,31 +17,32 @@
 package com.navercorp.pinpoint.collector.vo;
 
 import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.thrift.dto.command.TTokenType;
 
 /**
  * @author Taejin Koo
  */
 public class TokenCreateRequest {
 
-    private final String licenseKey;
+    private final PaaSOrganizationInfo paaSOrganizationInfo;
     private final TokenType tokenType;
+    private final String remoteAddress;
 
-    public TokenCreateRequest(String licenseKey, TTokenType tokenType) {
-        this.licenseKey = Assert.requireNonNull(licenseKey, "licenseKey must not be null");
-        Assert.requireNonNull(tokenType, "tokenType must not be null");
-
-        TokenType type = TokenType.valueOf(tokenType.name());
-        Assert.isTrue(type != TokenType.UNKNOWN, "unknown token type");
-        this.tokenType = type;
+    public TokenCreateRequest(PaaSOrganizationInfo paaSOrganizationInfo, TokenType tokenType, String remoteAddress) {
+        this.paaSOrganizationInfo = Assert.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo must not be null");
+        this.tokenType = Assert.requireNonNull(tokenType, "tokenType must not be null");
+        this.remoteAddress = Assert.requireNonNull(remoteAddress, "remoteAddress must not be null");
     }
 
-    public String getLicenseKey() {
-        return licenseKey;
+    public PaaSOrganizationInfo getPaaSOrganizationInfo() {
+        return paaSOrganizationInfo;
     }
 
     public TokenType getTokenType() {
         return tokenType;
+    }
+
+    public String getRemoteAddress() {
+        return remoteAddress;
     }
 
 }

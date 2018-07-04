@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.collector.vo;
 
+import com.navercorp.pinpoint.common.util.Assert;
+
 import java.util.Objects;
 
 /**
@@ -24,35 +26,38 @@ import java.util.Objects;
 public class Token {
 
     private final String key;
-    private final String namespace;
+    private final PaaSOrganizationInfo paaSOrganizationInfo;
 
-    private final long createdTime;
     private final long expiryTime;
 
+    private final String remoteAddress;
     private final TokenType tokenType;
 
-    public Token(String key, String namespace, long createdTime, long expiryTime, TokenType tokenType) {
-        this.key = key;
-        this.namespace = namespace;
-        this.createdTime = createdTime;
+    public Token(String key, PaaSOrganizationInfo paaSOrganizationInfo, long expiryTime, String remoteAddress, TokenType tokenType) {
+        this.key = Assert.requireNonNull(key, "key must not be null");
+        this.paaSOrganizationInfo = Assert.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo must not be null");
+
+        Assert.isTrue(expiryTime > 0, "expiryTime must be greater than 0");
         this.expiryTime = expiryTime;
-        this.tokenType = tokenType;
+
+        this.remoteAddress = Assert.requireNonNull(remoteAddress, "remoteAddress must not be null");
+        this.tokenType = Assert.requireNonNull(tokenType, "tokenType must not be null");
     }
 
     public String getKey() {
         return key;
     }
 
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public long getCreatedTime() {
-        return createdTime;
+    public PaaSOrganizationInfo getPaaSOrganizationInfo() {
+        return paaSOrganizationInfo;
     }
 
     public long getExpiryTime() {
         return expiryTime;
+    }
+
+    public String getRemoteAddress() {
+        return remoteAddress;
     }
 
     public TokenType getTokenType() {
@@ -64,28 +69,28 @@ public class Token {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Token token = (Token) o;
-        return createdTime == token.createdTime &&
-                expiryTime == token.expiryTime &&
+        return expiryTime == token.expiryTime &&
                 Objects.equals(key, token.key) &&
-                Objects.equals(namespace, token.namespace) &&
+                Objects.equals(paaSOrganizationInfo, token.paaSOrganizationInfo) &&
+                Objects.equals(remoteAddress, token.remoteAddress) &&
                 tokenType == token.tokenType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, namespace, createdTime, expiryTime, tokenType);
+
+        return Objects.hash(key, paaSOrganizationInfo, expiryTime, remoteAddress, tokenType);
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Token{");
-        sb.append("key='").append(key).append('\'');
-        sb.append(", namespace='").append(namespace).append('\'');
-        sb.append(", createdTime=").append(createdTime);
-        sb.append(", expiryTime=").append(expiryTime);
-        sb.append(", tokenType=").append(tokenType);
-        sb.append('}');
-        return sb.toString();
+        return "Token{" +
+                "key='" + key + '\'' +
+                ", paaSOrganizationInfo=" + paaSOrganizationInfo +
+                ", expiryTime=" + expiryTime +
+                ", remoteAddress='" + remoteAddress + '\'' +
+                ", tokenType=" + tokenType +
+                '}';
     }
 
 }

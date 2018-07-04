@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenType;
 import com.navercorp.pinpoint.io.header.Header;
@@ -24,7 +25,6 @@ import com.navercorp.pinpoint.io.request.DefaultMessage;
 import com.navercorp.pinpoint.io.request.DefaultServerRequest;
 import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.io.request.ServerRequest;
-import com.navercorp.pinpoint.io.request.ServerResponse;
 import com.navercorp.pinpoint.thrift.dto.TResult;
 import org.apache.thrift.TBase;
 import org.junit.Assert;
@@ -32,9 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.Map;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * @author Taejin Koo
@@ -43,7 +40,10 @@ public class AttachTokenDispatchHandlerTest {
 
     private Token token;
 
-    private static String HEADER_VALUE_DATABASE_NAME = "namespace";
+    private static String HEADER_VALUE_DATABASE_NAME = "databaseName";
+    private static String HEADER_VALUE_HBASE_NAMESPACE = "hbaseNameSpace";
+
+    private static String REMOTE_ADDRESS = "127.0.0.1";
 
 
     @Before
@@ -51,7 +51,9 @@ public class AttachTokenDispatchHandlerTest {
         long startTime = System.currentTimeMillis();
         long endTime = startTime + 3000;
 
-        this.token = new Token("key", HEADER_VALUE_DATABASE_NAME, startTime, endTime, TokenType.SPAN);
+        PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo("org", "userId", HEADER_VALUE_DATABASE_NAME, HEADER_VALUE_HBASE_NAMESPACE);
+
+        this.token = new Token("key", paaSOrganizationInfo, endTime, REMOTE_ADDRESS, TokenType.SPAN);
     }
 
     @Test

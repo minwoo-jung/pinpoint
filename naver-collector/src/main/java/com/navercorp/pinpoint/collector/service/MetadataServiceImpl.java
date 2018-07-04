@@ -21,15 +21,17 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author minwoo.jung
  */
-@Service
+@Service("metadataService")
 @Transactional(rollbackFor = {Exception.class})
+@Profile("tokenAuthentication")
 public class MetadataServiceImpl implements MetadataService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -39,13 +41,16 @@ public class MetadataServiceImpl implements MetadataService {
 
     @Override
     @Transactional(readOnly = true)
-    public PaaSOrganizationKey selectPaaSOrganizationkey(String key) {
-        return metadataDao.selectPaaSOrganizationkey(key);
+    public PaaSOrganizationKey selectPaaSOrganizationkey(String licenseKey) {
+        return metadataDao.selectPaaSOrganizationkey(licenseKey);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName) {
+        if (organizationName == null) {
+            return null;
+        }
         return metadataDao.selectPaaSOrganizationInfo(organizationName);
     }
 }
