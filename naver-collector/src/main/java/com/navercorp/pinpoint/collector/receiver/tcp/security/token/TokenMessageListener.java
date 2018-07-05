@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.collector.service.TokenService;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenType;
 import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.common.util.BytesUtils;
 import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
 import com.navercorp.pinpoint.rpc.packet.PingPayloadPacket;
@@ -98,8 +99,9 @@ class TokenMessageListener extends ParallelMessageListener implements ServerMess
         try {
             logger.info("authentication start() started. remote:{}", pinpointSocket);
 
-            byte[] tokenPayload = request.getToken();
-            final Token token = tokenService.getAndRemove(new String(tokenPayload), TokenType.ALL);
+            final byte[] tokenPayload = request.getToken();
+            final String tokenPayloadString = BytesUtils.toString(tokenPayload);
+            final Token token = tokenService.getAndRemove(tokenPayloadString, TokenType.ALL);
             if (token != null) {
                 handleSuccess(pinpointSocket, requestPacket, token);
             } else {

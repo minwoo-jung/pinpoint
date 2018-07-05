@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
 import com.navercorp.pinpoint.collector.vo.TokenType;
+import com.navercorp.pinpoint.common.util.BytesUtils;
 import com.navercorp.pinpoint.io.request.ServerRequest;
 import com.navercorp.pinpoint.io.request.ServerResponse;
 import com.navercorp.pinpoint.rpc.util.ClassUtils;
@@ -107,7 +108,8 @@ public class CreateTokenHandler implements RequestResponseHandler {
     private TCmdGetAuthenticationTokenRes createResponse(String token) {
         TCmdGetAuthenticationTokenRes response = new TCmdGetAuthenticationTokenRes();
         response.setCode(TTokenResponseCode.OK);
-        response.setToken(token.getBytes());
+        byte[] tokenBytes = BytesUtils.toBytes(token);
+        response.setToken(tokenBytes);
         return response;
     }
 

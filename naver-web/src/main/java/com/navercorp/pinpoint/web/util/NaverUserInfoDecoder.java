@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 NAVER Corp.
+ * Copyright 2018 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.web.util;
 
+import com.navercorp.pinpoint.common.util.BytesUtils;
 import com.navercorp.pinpoint.common.util.CollectionUtils;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -35,14 +36,20 @@ public class NaverUserInfoDecoder implements UserInfoDecoder {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static String ALGORITHM = "AES";
-    private static String TRANSFORMATION = "AES/CBC/PKCS5Padding";
+    private static final String ALGORITHM = "AES";
+    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
     private final byte[] keys;
     private final byte[] initialVectors;
 
     public NaverUserInfoDecoder(String encodeKey) {
         keys = parseEncodeKey(encodeKey);
-        initialVectors = StringUtils.reverse(StringUtils.toEncodedString(keys, StandardCharsets.UTF_8)).getBytes();
+        initialVectors = newInitialVector(keys);
+    }
+
+    private byte[] newInitialVector(byte[] keys) {
+        String keysString = BytesUtils.toString(keys);
+        String reverseKey = StringUtils.reverse(keysString);
+        return BytesUtils.toBytes(reverseKey);
     }
 
     private byte[] parseEncodeKey(String encodeKey) {
@@ -86,6 +93,6 @@ public class NaverUserInfoDecoder implements UserInfoDecoder {
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpecy, ivParameterSpec);
         byte[] plainBytes = cipher.doFinal(cipherTextBytes);
 
-        return new String(plainBytes);
+        return BytesUtils.toString(plainBytes);
     }
 }

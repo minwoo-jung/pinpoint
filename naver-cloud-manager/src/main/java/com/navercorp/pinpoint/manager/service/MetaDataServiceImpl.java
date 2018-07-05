@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,7 +71,7 @@ public class MetaDataServiceImpl implements MetadataService {
 
     private void insertPaaSOrganizationKey(String organizationName) {
         for (int i=0 ; i < 10; i++) {
-            String uuid = UUID.nameUUIDFromBytes((organizationName+i).getBytes()).toString().replace("-", "");
+            final String uuid = newUUID();
             boolean existOrganizationKey = metadataDao.existPaaSOrganizationKey(organizationName);
 
             if (existOrganizationKey == false) {
@@ -85,6 +85,11 @@ public class MetaDataServiceImpl implements MetadataService {
         String message = "can not generate organization key. organizationName :" + organizationName;
         logger.error(message);
         throw new RepositoryException(message);
+    }
+
+    private String newUUID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString().replace("-", "");
     }
 
     @Override
