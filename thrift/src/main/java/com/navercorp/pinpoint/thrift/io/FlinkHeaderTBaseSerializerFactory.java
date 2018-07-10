@@ -17,11 +17,12 @@ package com.navercorp.pinpoint.thrift.io;
 
 import com.navercorp.pinpoint.io.util.TypeLocator;
 import org.apache.thrift.TBase;
+import org.apache.thrift.protocol.TProtocolFactory;
 
 /**
  * @author minwoo.jung
  */
-public class FlinkHeaderTBaseSerializerFactory implements SerializerFactory<HeaderTBaseSerializer> {
+public class FlinkHeaderTBaseSerializerFactory {
 
     private final TypeLocator<TBase<?, ?>> tBaseLocator;
     private final HeaderTBaseSerializerFactory headerTBaseSerializerFactory;
@@ -35,18 +36,10 @@ public class FlinkHeaderTBaseSerializerFactory implements SerializerFactory<Head
         headerTBaseSerializerFactory = new HeaderTBaseSerializerFactory(tBaseLocator);
     }
 
-    @Override
-    public HeaderTBaseSerializer createSerializer() {
-        return headerTBaseSerializerFactory.createSerializer();
+    public FlinkHeaderTBaseSerializer createSerializer() {
+        ResettableByteArrayOutputStream baos = headerTBaseSerializerFactory.createResettableByteArrayOutputStream();
+        TProtocolFactory protocolFactory = headerTBaseSerializerFactory.getProtocolFactory();
+        TypeLocator<TBase<?, ?>> locator = headerTBaseSerializerFactory.getLocator();
+        return new FlinkHeaderTBaseSerializer(baos, protocolFactory, locator);
     }
-
-    @Override
-    public boolean isSupport(Object target) {
-        if (target instanceof TBase<?, ?>) {
-            return tBaseLocator.isSupport((Class<? extends TBase<?, ?>>) target.getClass());
-        }
-
-        return false;
-    }
-
 }

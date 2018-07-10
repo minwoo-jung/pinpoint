@@ -17,13 +17,18 @@ package com.navercorp.pinpoint.collector.service;
 
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.mapper.thrift.stat.TFAgentStatBatchMapper;
+import com.navercorp.pinpoint.collector.sender.FlinkTcpDataSender;
 import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
-import com.navercorp.pinpoint.profiler.sender.TcpDataSender;
+import com.navercorp.pinpoint.io.header.Header;
+import com.navercorp.pinpoint.io.header.v2.HeaderV2;
+import com.navercorp.pinpoint.io.request.FlinkRequest;
 import com.navercorp.pinpoint.thrift.dto.flink.TFAgentStatBatch;
+import com.navercorp.pinpoint.thrift.io.FlinkTBaseLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,7 +43,7 @@ public class SendAgentStatService implements AgentStatService {
     private final boolean flinkClusterEnable;
     private final TFAgentStatBatchMapper tFAgentStatBatchMapper = new TFAgentStatBatchMapper();
 
-    private volatile List<TcpDataSender> flinkServerList = new CopyOnWriteArrayList<>();
+    private volatile List<FlinkTcpDataSender> flinkTcpDataSenderList = new CopyOnWriteArrayList<>();
     private AtomicInteger callCount = new AtomicInteger(1);
 
     public SendAgentStatService(CollectorConfiguration config) {
@@ -52,10 +57,10 @@ public class SendAgentStatService implements AgentStatService {
         }
 
         try {
-            TcpDataSender tcpDataSender = roundRobinTcpDataSender();
+            FlinkTcpDataSender tcpDataSender = roundRobinTcpDataSender();
 
             if (tcpDataSender == null) {
-                logger.warn("not send flink server. Because TcpDataSender is null");
+                logger.warn("not send flink server. Because FlinkTcpDataSender is null");
                 return;
             }
 
@@ -65,19 +70,21 @@ public class SendAgentStatService implements AgentStatService {
                 logger.debug("send to flinkserver : {}", tFAgentStatBatch);
             }
 
-            tcpDataSender.send(tFAgentStatBatch);
+            FlinkRequest flinkRequest = new FlinkRequest(new HeaderV2(Header.SIGNATURE, HeaderV2.VERSION, FlinkTBaseLocator.AGENT_STAT_BATCH, Collections.EMPTY_MAP), tFAgentStatBatch);
+            FlinkTcpDataSender flinkTcpDataSender = (FlinkTcpDataSender)tcpDataSender;
+            flinkTcpDataSender.send(flinkRequest);
         } catch (Exception e) {
             logger.error("Error sending to flink server. Caused:{}", e.getMessage(), e);
         }
     }
 
-    private TcpDataSender roundRobinTcpDataSender() {
-        if (flinkServerList.isEmpty()) {
+    private FlinkTcpDataSender roundRobinTcpDataSender() {
+        if (flinkTcpDataSenderList.isEmpty()) {
             return null;
         }
 
         int count = callCount.getAndIncrement();
-        int tcpDataSenderIndex = count % flinkServerList.size();
+        int tcpDataSenderIndex = count % flinkTcpDataSenderList.size();
 
         if (tcpDataSenderIndex < 0) {
             tcpDataSenderIndex = tcpDataSenderIndex * -1;
@@ -85,15 +92,15 @@ public class SendAgentStatService implements AgentStatService {
         }
 
         try {
-            return flinkServerList.get(tcpDataSenderIndex);
+            return flinkTcpDataSenderList.get(tcpDataSenderIndex);
         } catch (Exception e) {
-            logger.warn("not get TcpDataSender", e);
+            logger.warn("not get FlinkTcpDataSender", e);
         }
 
         return null;
     }
 
-    public void replaceFlinkServerList(List<TcpDataSender> flinkServerList) {
-        this.flinkServerList = new CopyOnWriteArrayList<>(flinkServerList);
+    public void replaceFlinkTcpDataSenderList(List<FlinkTcpDataSender> flinkTcpDataSenderList) {
+        this.flinkTcpDataSenderList = new CopyOnWriteArrayList<FlinkTcpDataSender>(flinkTcpDataSenderList);
     }
 }
