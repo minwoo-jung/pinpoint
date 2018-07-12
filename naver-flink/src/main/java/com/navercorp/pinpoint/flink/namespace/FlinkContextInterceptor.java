@@ -43,7 +43,7 @@ public abstract class FlinkContextInterceptor {
         FlinkContextHolder.setAttributes(flinkAttributes);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("initFlinkcontextHolder paaSOrganizationInfo :" + paaSOrganizationInfo);
+            logger.debug("initFlinkContextHolder paaSOrganizationInfo : {}", paaSOrganizationInfo);
         }
     }
 

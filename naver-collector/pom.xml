@@ -132,6 +132,11 @@
             <artifactId>ehcache-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
         <!-- for zookeeper test -->
         <dependency>
             <groupId>org.apache.curator</groupId>

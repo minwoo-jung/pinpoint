@@ -22,7 +22,6 @@ import org.springframework.util.StringUtils;
  */
 public class PaaSOrganizationInfo {
 
-    private String userId;
     private String organization;
     private String databaseName;
     private String hbaseNameSpace;
@@ -30,12 +29,9 @@ public class PaaSOrganizationInfo {
     public PaaSOrganizationInfo() {
     }
 
-    public PaaSOrganizationInfo(String company, String userId, String databaseName, String hbaseNameSpace) {
-        if (StringUtils.isEmpty(company)) {
-            throw new IllegalArgumentException("company must not be empty");
-        }
-        if (StringUtils.isEmpty(userId)) {
-            throw new IllegalArgumentException("userId must not be empty");
+    public PaaSOrganizationInfo(String organization, String databaseName, String hbaseNameSpace) {
+        if (StringUtils.isEmpty(organization)) {
+            throw new IllegalArgumentException("organization must not be empty");
         }
         if (StringUtils.isEmpty(databaseName)) {
             throw new IllegalArgumentException("databaseName must not be empty");
@@ -44,14 +40,9 @@ public class PaaSOrganizationInfo {
             throw new IllegalArgumentException("hbaseNameSpace must not be empty");
         }
 
-        this.organization = company;
-        this.userId = userId;
+        this.organization = organization;
         this.databaseName = databaseName;
         this.hbaseNameSpace = hbaseNameSpace;
-    }
-
-    public String getUserId() {
-        return userId;
     }
 
     public String getHbaseNameSpace() {
@@ -78,18 +69,9 @@ public class PaaSOrganizationInfo {
         this.organization = organization;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     @Override
     public String toString() {
-        return "PaaSOrganizationInfo{" +
-            "databaseName='" + databaseName + '\'' +
-            ", userId='" + userId + '\'' +
-            ", organization='" + organization + '\'' +
-            ", hbaseNameSpace='" + hbaseNameSpace + '\'' +
-            '}';
+        return "PaaSOrganizationInfo{" + "organization='" + organization + '\'' + ", databaseName='" + databaseName + '\'' + ", hbaseNameSpace='" + hbaseNameSpace + '\'' + '}';
     }
 
     @Override
@@ -99,17 +81,14 @@ public class PaaSOrganizationInfo {
 
         PaaSOrganizationInfo that = (PaaSOrganizationInfo) o;
 
-        if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
         if (organization != null ? !organization.equals(that.organization) : that.organization != null) return false;
         if (databaseName != null ? !databaseName.equals(that.databaseName) : that.databaseName != null) return false;
         return hbaseNameSpace != null ? hbaseNameSpace.equals(that.hbaseNameSpace) : that.hbaseNameSpace == null;
-
     }
 
     @Override
     public int hashCode() {
-        int result = userId != null ? userId.hashCode() : 0;
-        result = 31 * result + (organization != null ? organization.hashCode() : 0);
+        int result = organization != null ? organization.hashCode() : 0;
         result = 31 * result + (databaseName != null ? databaseName.hashCode() : 0);
         result = 31 * result + (hbaseNameSpace != null ? hbaseNameSpace.hashCode() : 0);
         return result;

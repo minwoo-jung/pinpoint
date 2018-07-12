@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 
+import com.navercorp.pinpoint.collector.namespace.NameSpaceInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenType;
@@ -25,6 +26,7 @@ import com.navercorp.pinpoint.io.request.DefaultMessage;
 import com.navercorp.pinpoint.io.request.DefaultServerRequest;
 import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.io.request.ServerRequest;
+import com.navercorp.pinpoint.io.request.ServerResponse;
 import com.navercorp.pinpoint.thrift.dto.TResult;
 import org.apache.thrift.TBase;
 import org.junit.Assert;
@@ -51,7 +53,7 @@ public class AttachTokenDispatchHandlerTest {
         long startTime = System.currentTimeMillis();
         long endTime = startTime + 3000;
 
-        PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo("org", "userId", HEADER_VALUE_DATABASE_NAME, HEADER_VALUE_HBASE_NAMESPACE);
+        PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo("org", HEADER_VALUE_DATABASE_NAME, HEADER_VALUE_HBASE_NAMESPACE);
 
         this.token = new Token("key", paaSOrganizationInfo, endTime, REMOTE_ADDRESS, TokenType.SPAN);
     }
@@ -71,7 +73,7 @@ public class AttachTokenDispatchHandlerTest {
 
         ServerRequest<?> latestServerRequest = countingDispatchHandler.getLatestServerRequest();
         Assert.assertEquals(tBase, latestServerRequest.getData());
-        Assert.assertNotNull(latestServerRequest.getAttribute(AttachTokenDispatchHandler.NAMESPACE_KEY));
+        Assert.assertNotNull(latestServerRequest.getAttribute(NameSpaceInfo.NAMESPACE_INFO));
 
     }
 

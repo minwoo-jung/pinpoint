@@ -62,7 +62,7 @@ public class TokenMessageListenerTest {
         long startTime = System.currentTimeMillis();
         long endTime = startTime + 3000;
 
-        PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo("org", "userId", "namespace", "hbaseNamespace");
+        PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo("org", "namespace", "hbaseNamespace");
 
         Token token = new Token("key", paaSOrganizationInfo, endTime, "127.0.0.1", TokenType.SPAN);
 

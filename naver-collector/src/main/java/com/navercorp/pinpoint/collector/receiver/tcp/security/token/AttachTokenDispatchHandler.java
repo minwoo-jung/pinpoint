@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 
+import com.navercorp.pinpoint.collector.namespace.NameSpaceInfo;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
@@ -32,26 +33,25 @@ class AttachTokenDispatchHandler implements DispatchHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static final String NAMESPACE_KEY = "pinpoint.namespace";
-    private final Namespace namespace;
+    private final NameSpaceInfo namespaceInfo;
     private final DispatchHandler dispatchHandler;
 
 
     AttachTokenDispatchHandler(Token token, DispatchHandler dispatchHandler) {
         Assert.requireNonNull(token, "token must not be null");
         this.dispatchHandler = Assert.requireNonNull(dispatchHandler, "dispatchHandler must not be null");
-        this.namespace = newNamespace(token);
+        this.namespaceInfo = newNamespaceInfo(token);
 
     }
 
-    private Namespace newNamespace(Token token) {
+    private NameSpaceInfo newNamespaceInfo(Token token) {
         PaaSOrganizationInfo paaSOrganizationInfo = token.getPaaSOrganizationInfo();
-        return new Namespace("kR", paaSOrganizationInfo.getDatabaseName(), paaSOrganizationInfo.getHbaseNameSpace());
+        return new NameSpaceInfo(paaSOrganizationInfo.getOrganization(), paaSOrganizationInfo.getDatabaseName(), paaSOrganizationInfo.getHbaseNameSpace());
     }
 
     @Override
     public void dispatchSendMessage(ServerRequest serverRequest) {
-        setNamespace(serverRequest);
+        setNamespaceInfo(serverRequest);
         dispatchHandler.dispatchSendMessage(serverRequest);
     }
 
@@ -59,13 +59,13 @@ class AttachTokenDispatchHandler implements DispatchHandler {
 
     @Override
     public void dispatchRequestMessage(ServerRequest serverRequest, ServerResponse serverResponse) {
-        setNamespace(serverRequest);
+        setNamespaceInfo(serverRequest);
         dispatchHandler.dispatchRequestMessage(serverRequest, serverResponse);
 
     }
 
-    private void setNamespace(ServerRequest serverRequest) {
-        serverRequest.setAttribute(NAMESPACE_KEY, namespace);
+    private void setNamespaceInfo(ServerRequest serverRequest) {
+        serverRequest.setAttribute(NameSpaceInfo.NAMESPACE_INFO, namespaceInfo);
     }
 
 }

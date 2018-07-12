@@ -23,7 +23,8 @@ import java.util.Map;
 /**
  * @author minwoo.jung
  */
-public class PaaSCustomHeadergenerator implements HeaderDataGenerator {
+@Deprecated
+public class StaticNameSpaceInfoHeadergenerator implements HeaderDataGenerator {
 
     @Override
     public Map<String, String> generate() {

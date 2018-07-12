@@ -65,7 +65,7 @@ public class CreateTokenHandlerTest {
             PaaSOrganizationKey paaSOrganizationKey = new PaaSOrganizationKey(LICENSE_KEY, ORGANIZATION);
             ((MemoryMetadataDao) metadataDao).createPaaSOrganizationkey(LICENSE_KEY, paaSOrganizationKey);
 
-            PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo(ORGANIZATION, "userId", NAMESPACE, NAMESPACE);
+            PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo(ORGANIZATION, NAMESPACE, NAMESPACE);
             ((MemoryMetadataDao) metadataDao).createPaaSOrganizationInfo(ORGANIZATION, paaSOrganizationInfo);
         }
     }
