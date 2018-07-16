@@ -21,15 +21,12 @@ import com.navercorp.pinpoint.flink.namespace.FlinkAttributes;
 import com.navercorp.pinpoint.flink.namespace.FlinkContextHolder;
 import com.navercorp.pinpoint.flink.namespace.FlinkContextInterceptor;
 import com.navercorp.pinpoint.flink.namespace.vo.PaaSOrganizationInfo;
-import com.navercorp.pinpoint.io.request.ServerRequest;
-import com.navercorp.pinpoint.io.header.Header;
-import com.navercorp.pinpoint.io.header.v2.HeaderV2;
+import com.navercorp.pinpoint.flink.vo.RawData;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.util.FlinkRuntimeException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author minwoo.jung
@@ -37,17 +34,10 @@ import java.util.Map;
 public class PaaSTBaseFlatMapperInterceptor extends FlinkContextInterceptor implements TBaseFlatMapperInterceptor {
 
     @Override
-    public void before(ServerRequest serverRequest) {
-        Header header = serverRequest.getHeader();
-
-        if (header.getVersion() != HeaderV2.VERSION) {
-            return;
-        }
-
-        Map<String, String> data = header.getHeaderData();
-        String organization = data.get("organization");
-        String databaseName = data.get("databaseName");
-        String hbaseNameSpace = data.get("hbaseNameSpace");
+    public void before(RawData rawData) {
+        String organization = rawData.getMetaInfo("organization");
+        String databaseName = rawData.getMetaInfo("databaseName");
+        String hbaseNameSpace = rawData.getMetaInfo("hbaseNameSpace");
         initFlinkcontextHolder(new PaaSOrganizationInfo(organization, FLINK, databaseName, hbaseNameSpace));
     }
 

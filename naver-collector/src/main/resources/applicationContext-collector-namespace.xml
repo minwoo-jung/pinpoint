@@ -7,16 +7,20 @@
         <constructor-arg index="0" value="${hbase.namespace:default}"/>
     </bean>
 
-    <bean id="flinkHeaderDataGenerator" class="com.navercorp.pinpoint.collector.cluster.flink.StaticNameSpaceInfoHeadergenerator"/>
-
     <bean id="dispatchHandlerFactoryBeanInterceptor" class="com.navercorp.pinpoint.collector.receiver.DispatchHandlerFactoryBeanInterceptor">
         <constructor-arg value="${namespaceInfo.use.defaultValue}"/>
     </bean>
+    <bean id="flinkRequestFactoryInterceptor" class="com.navercorp.pinpoint.collector.sender.FlinkRequestFactoryInterceptor"/>
 
     <aop:config>
-        <aop:aspect id="dispatchHandlerFactoryBeanInterceptorAop" ref="dispatchHandlerFactoryBeanInterceptor">
+        <aop:aspect id="delegateDispatchHandlerInterceptorAop" ref="dispatchHandlerFactoryBeanInterceptor">
             <aop:pointcut id="dispatchHandlerFactoryBeanPointCut" expression="execution(public com.navercorp.pinpoint.collector.receiver.DispatchHandler com.navercorp.pinpoint.collector.receiver.DispatchHandlerFactoryBean.getObject())"/>
             <aop:around pointcut-ref="dispatchHandlerFactoryBeanPointCut" method="aroundIntercept"/>
         </aop:aspect>
+        <aop:aspect id="flinkHeaderTBaseSerializerFactoryInterceptorAop" ref="flinkRequestFactoryInterceptor">
+            <aop:pointcut id="flinkHeaderTBaseSerializerFactoryPointCut" expression="execution(public com.navercorp.pinpoint.io.request.FlinkRequest com.navercorp.pinpoint.collector.sender.FlinkRequestFactory.createFlinkRequest(org.apache.thrift.TBase, java.util.Map))"/>
+            <aop:before pointcut-ref="flinkHeaderTBaseSerializerFactoryPointCut" method="beforeIntercept"/>
+        </aop:aspect>
     </aop:config>
+
 </beans>

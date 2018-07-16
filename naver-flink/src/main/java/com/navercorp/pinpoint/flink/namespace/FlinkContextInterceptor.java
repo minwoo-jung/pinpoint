@@ -16,7 +16,6 @@
 package com.navercorp.pinpoint.flink.namespace;
 
 import com.navercorp.pinpoint.flink.namespace.vo.PaaSOrganizationInfo;
-import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

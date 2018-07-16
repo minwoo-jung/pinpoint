@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenType;
 import com.navercorp.pinpoint.io.header.Header;
+import com.navercorp.pinpoint.io.header.HeaderEntity;
 import com.navercorp.pinpoint.io.header.v2.HeaderV2;
 import com.navercorp.pinpoint.io.request.DefaultMessage;
 import com.navercorp.pinpoint.io.request.DefaultServerRequest;
@@ -78,12 +79,12 @@ public class AttachTokenDispatchHandlerTest {
     }
 
     private ServerRequest<TBase<?, ?>> newServerRequest(TResult tBase) {
-        Header header = new HeaderV2(Header.SIGNATURE, HeaderV2.VERSION, (short) 100, new HashMap<String, String>());
+        Header header = new HeaderV2(Header.SIGNATURE, HeaderV2.VERSION, (short) 100);
         return newServerRequest(header, tBase);
     }
 
     private ServerRequest<TBase<?, ?>> newServerRequest(Header header, TResult tBase) {
-        Message<TBase<?, ?>> message = new DefaultMessage<>(header, tBase);
+        Message<TBase<?, ?>> message = new DefaultMessage<>(header, HeaderEntity.EMPTY_HEADER_ENTITY, tBase);
         return new DefaultServerRequest<TBase<?, ?>>(message, "127.0.0.1", -1);
     }
 
