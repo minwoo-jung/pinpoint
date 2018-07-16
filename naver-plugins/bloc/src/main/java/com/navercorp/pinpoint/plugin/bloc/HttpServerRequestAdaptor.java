@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,34 +16,28 @@
 
 package com.navercorp.pinpoint.plugin.bloc;
 
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
 import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
-import com.navercorp.pinpoint.common.util.Assert;
 import external.org.apache.coyote.Request;
+import external.org.apache.tomcat.util.buf.MessageBytes;
 
 /**
- * @author jaehong.kim
+ * @author Woonduk Kang(emeroad)
  */
-public class HttpServerRequestWrapper implements ServerRequestWrapper {
-    private final Request request;
-
-    public HttpServerRequestWrapper(Request request) {
-        this.request = Assert.requireNonNull(request, "request must not be null");
-    }
-
+public class HttpServerRequestAdaptor implements RequestAdaptor<Request> {
     @Override
-    public String getHeader(String name) {
+    public String getHeader(Request request, String name) {
         return request.getHeader(name);
     }
 
     @Override
-    public String getRpcName() {
+    public String getRpcName(Request request) {
         final String requestURL = request.requestURI().toString();
         return requestURL;
     }
 
     @Override
-    public String getEndPoint() {
+    public String getEndPoint(Request request) {
         String host = request.serverName().toString();
         int port = request.getServerPort();
         if (host == null) {
@@ -54,15 +48,16 @@ public class HttpServerRequestWrapper implements ServerRequestWrapper {
     }
 
     @Override
-    public String getRemoteAddress() {
-        if (request.remoteAddr() != null) {
-            return request.remoteAddr().toString();
+    public String getRemoteAddress(Request request) {
+        MessageBytes messageBytes = request.remoteAddr();
+        if (messageBytes != null) {
+            return messageBytes.toString();
         }
         return null;
     }
 
     @Override
-    public String getAcceptorHost() {
+    public String getAcceptorHost(Request request) {
         return request.serverName().toString();
     }
 }

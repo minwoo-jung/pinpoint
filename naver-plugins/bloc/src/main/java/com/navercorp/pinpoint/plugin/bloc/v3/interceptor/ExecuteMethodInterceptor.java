@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
@@ -5,13 +21,17 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
+import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyHttpHeaderRecorder;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.HttpServerRequestWrapper;
+import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
+import com.navercorp.pinpoint.plugin.bloc.HttpServerRequestAdaptor;
 import external.org.apache.coyote.Request;
 
 import java.util.Enumeration;
@@ -22,8 +42,20 @@ import java.util.Enumeration;
  */
 public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
 
+    private final boolean traceRequestParam;
+    private final ProxyHttpHeaderRecorder<Request> proxyHttpHeaderRecorder;
+    private final ServerRequestRecorder<Request> serverRequestRecorder;
+    private final RequestTraceReader<Request> requestTraceReader;
+
     public ExecuteMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, ExecuteMethodInterceptor.class);
+
+        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
+        traceRequestParam = config.isBlocTraceRequestParam();
+        RequestAdaptor<Request> requestAdaptor = new HttpServerRequestAdaptor();
+        this.proxyHttpHeaderRecorder = new ProxyHttpHeaderRecorder<Request>(traceContext.getProfilerConfig().isProxyHttpHeaderEnable(), requestAdaptor);
+        this.serverRequestRecorder = new ServerRequestRecorder<Request>(requestAdaptor);
+        this.requestTraceReader = new RequestTraceReader<Request>(traceContext, requestAdaptor);
     }
 
     @Override
@@ -48,15 +80,14 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
     @Override
     protected Trace createTrace(Object target, Object[] args) {
         final Request request = (Request) args[0];
-        final ServerRequestWrapper serverRequestWrapper = new HttpServerRequestWrapper(request);
-        final Trace trace = requestTraceReader.read(serverRequestWrapper);
+        final Trace trace = requestTraceReader.read(request);
         if (trace.canSampled()) {
             SpanRecorder spanRecorder = trace.getSpanRecorder();
             spanRecorder.recordServiceType(BlocConstants.BLOC);
             spanRecorder.recordApi(blocMethodApiTag);
-            this.serverRequestRecorder.record(spanRecorder, serverRequestWrapper);
+            this.serverRequestRecorder.record(spanRecorder, request);
             // record proxy HTTP headers.
-            this.proxyHttpHeaderRecorder.record(spanRecorder, serverRequestWrapper);
+            this.proxyHttpHeaderRecorder.record(spanRecorder, request);
         }
         return trace;
     }
@@ -102,7 +133,7 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
             }
             String key = attrs.nextElement().toString();
             params.append(StringUtils.abbreviate(key, eachLimit));
-            params.append("=");
+            params.append('=');
             Object value = request.getParameters().getParameter(key);
             if (value != null) {
                 params.append(StringUtils.abbreviate(StringUtils.toString(value), eachLimit));

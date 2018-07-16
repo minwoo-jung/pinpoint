@@ -1,11 +1,12 @@
-/**
- * Copyright 2014 NAVER Corp.
+/*
+ * Copyright 2018 NAVER Corp.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +35,7 @@ public final class BlocConstants {
 
     // Common
     public static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
-    public static final String UNKOWN_ADDRESS = "Unknown Address";
+    public static final String UNKNOWN_ADDRESS = "Unknown Address";
 
     public static final AnnotationKey CALL_URL = AnnotationKeyFactory.of(15, "CALL_URL");
     public static final AnnotationKey CALL_PARAM = AnnotationKeyFactory.of(16, "CALL_PARAM", VIEW_IN_RECORD_SET);

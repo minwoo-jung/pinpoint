@@ -1,16 +1,17 @@
 /*
- *  Copyright 2015 NAVER Corp.
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Copyright 2018 NAVER Corp.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.navercorp.pinpoint.plugin.bloc;
@@ -21,9 +22,6 @@ import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
-import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyHttpHeaderRecorder;
-import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
-import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 
 /**
  * @author Taejin Koo
@@ -41,10 +39,6 @@ public abstract class AbstractBlocAroundInterceptor implements AroundInterceptor
     protected final MethodDescriptor methodDescriptor;
     protected final TraceContext traceContext;
 
-    protected final boolean traceRequestParam;
-    protected final ProxyHttpHeaderRecorder proxyHttpHeaderRecorder;
-    protected final ServerRequestRecorder serverRequestRecorder = new ServerRequestRecorder();
-    protected final RequestTraceReader requestTraceReader;
 
     protected AbstractBlocAroundInterceptor(TraceContext traceContext, MethodDescriptor methodDescriptor, Class<? extends AbstractBlocAroundInterceptor> childClazz) {
         this.traceContext = traceContext;
@@ -52,10 +46,7 @@ public abstract class AbstractBlocAroundInterceptor implements AroundInterceptor
         this.logger = PLoggerFactory.getLogger(childClazz);
         this.isDebug = logger.isDebugEnabled();
 
-        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
-        traceRequestParam = config.isBlocTraceRequestParam();
-        this.proxyHttpHeaderRecorder = new ProxyHttpHeaderRecorder(traceContext.getProfilerConfig().isProxyHttpHeaderEnable());
-        this.requestTraceReader = new RequestTraceReader(traceContext);
+
 
         traceContext.cacheApi(blocMethodApiTag);
     }

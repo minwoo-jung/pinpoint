@@ -1,16 +1,17 @@
 /*
- *  Copyright 2015 NAVER Corp.
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Copyright 2018 NAVER Corp.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.navercorp.pinpoint.plugin.bloc.v3.interceptor;
@@ -20,25 +21,39 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapperAdaptor;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.LucyNetServerRequestWrapper;
+import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
-import com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor;
+import com.navercorp.pinpoint.plugin.bloc.NimmRequest;
 import com.nhncorp.lucy.net.call.Call;
 import com.nhncorp.lucy.nimm.connector.address.NimmAddress;
 import com.nhncorp.lucy.npc.NpcMessage;
-
-import java.util.Map;
 
 /**
  * @author Taejin Koo
  */
 public class NimmHandlerInterceptor extends AbstractBlocAroundInterceptor {
 
+    private final boolean traceRequestParam;
+
+    private final ServerRequestRecorder<ServerRequestWrapper> serverRequestRecorder;
+    private final RequestTraceReader<ServerRequestWrapper> requestTraceReader;
+
+
     public NimmHandlerInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, NimmHandlerInterceptor.class);
+
+        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
+        traceRequestParam = config.isBlocTraceRequestParam();
+        RequestAdaptor<ServerRequestWrapper> requestAdaptor = new ServerRequestWrapperAdaptor();
+        this.serverRequestRecorder = new ServerRequestRecorder<ServerRequestWrapper>(requestAdaptor);
+        this.requestTraceReader = new RequestTraceReader<ServerRequestWrapper>(traceContext, requestAdaptor);
     }
 
     @Override
@@ -69,22 +84,15 @@ public class NimmHandlerInterceptor extends AbstractBlocAroundInterceptor {
     @Override
     protected Trace createTrace(Object target, Object[] args) {
         final NpcMessage npcMessage = (NpcMessage) args[0];
-        final Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
-        final String rpcName = LucyNetUtils.getRpcName(npcMessage);
-        final String remoteAddress = LucyNetUtils.nimmAddressToString((NimmAddress) args[1]);
-        String dstAddress = BlocConstants.UNKOWN_ADDRESS;
-        if (target instanceof NimmServerSocketAddressAccessor) {
-            dstAddress = ((NimmServerSocketAddressAccessor) target)._$PINPOINT$_getNimmAddress();
-        }
-        final String endPoint = dstAddress;
-
-        final ServerRequestWrapper serverRequestWrapper = new LucyNetServerRequestWrapper(pinpointOptions, rpcName, endPoint, remoteAddress, endPoint);
-        final Trace trace = this.requestTraceReader.read(serverRequestWrapper);
+        final NimmAddress nimmAddress = (NimmAddress) args[1];
+        final String remoteAddress = LucyNetUtils.nimmAddressToString(nimmAddress);
+        final NimmRequest nimmRequest = new NimmRequest(target, npcMessage, remoteAddress);
+        final Trace trace = this.requestTraceReader.read(nimmRequest);
         if (trace.canSampled()) {
             SpanRecorder spanRecorder = trace.getSpanRecorder();
             spanRecorder.recordServiceType(BlocConstants.BLOC);
             spanRecorder.recordApi(blocMethodApiTag);
-            this.serverRequestRecorder.record(spanRecorder, serverRequestWrapper);
+            this.serverRequestRecorder.record(spanRecorder, nimmRequest);
         }
         return trace;
     }

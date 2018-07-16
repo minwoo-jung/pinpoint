@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
@@ -5,28 +21,38 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
-import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapperAdaptor;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.LucyNetServerRequestWrapper;
+import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
+import com.navercorp.pinpoint.plugin.bloc.NpcRequest;
 import com.nhncorp.lucy.net.call.Call;
 import com.nhncorp.lucy.npc.NpcMessage;
 import external.org.apache.mina.common.IoSession;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.Map;
-
 
 public class MessageReceivedInterceptor extends AbstractBlocAroundInterceptor {
 
-    private static final String NAMESPACE_URA = "URA 1.0";
-    private static final String UNKNOWN_ADDRESS = "Unknown Address";
+
+    private final boolean traceRequestParam;
+
+    private final ServerRequestRecorder<ServerRequestWrapper> serverRequestRecorder;
+    private final RequestTraceReader<ServerRequestWrapper> requestTraceReader;
 
     public MessageReceivedInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, MessageReceivedInterceptor.class);
+
+
+        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
+        traceRequestParam = config.isBlocTraceRequestParam();
+        RequestAdaptor<ServerRequestWrapper> requestAdaptor = new ServerRequestWrapperAdaptor();
+        this.serverRequestRecorder = new ServerRequestRecorder<ServerRequestWrapper>(requestAdaptor);
+        this.requestTraceReader = new RequestTraceReader<ServerRequestWrapper>(traceContext, requestAdaptor);
     }
 
     @Override
@@ -58,12 +84,8 @@ public class MessageReceivedInterceptor extends AbstractBlocAroundInterceptor {
     protected Trace createTrace(Object target, Object[] args) {
         IoSession ioSession = (IoSession) args[1];
         NpcMessage npcMessage = (NpcMessage) args[2];
-        Map<String, String> pinpointOptions = LucyNetUtils.getPinpointOptions(npcMessage);
-        final String rpcName = LucyNetUtils.getRpcName(npcMessage);
-        final String endPoint = getLocalAddress(ioSession);
-        final String remoteAddress = getRemoteAddress(ioSession);
 
-        final ServerRequestWrapper serverRequestWrapper = new LucyNetServerRequestWrapper(pinpointOptions, rpcName, endPoint, remoteAddress, endPoint);
+        final ServerRequestWrapper serverRequestWrapper = new NpcRequest(ioSession, npcMessage);
         final Trace trace = this.requestTraceReader.read(serverRequestWrapper);
         if (trace.canSampled()) {
             SpanRecorder spanRecorder = trace.getSpanRecorder();
@@ -82,48 +104,7 @@ public class MessageReceivedInterceptor extends AbstractBlocAroundInterceptor {
         getParams(args, spanEventRecorder);
     }
 
-    private String getRemoteAddress(IoSession ioSession) {
-        if (ioSession == null) {
-            return UNKNOWN_ADDRESS;
-        }
 
-        return getIpPort(ioSession.getRemoteAddress());
-    }
-
-    private String getLocalAddress(IoSession ioSession) {
-        if (ioSession == null) {
-            return UNKNOWN_ADDRESS;
-        }
-
-        return getIpPort(ioSession.getLocalAddress());
-    }
-
-    private String getIpPort(SocketAddress socketAddress) {
-        if (socketAddress == null) {
-            return UNKNOWN_ADDRESS;
-        }
-
-        if (socketAddress instanceof InetSocketAddress) {
-            InetSocketAddress addr = (InetSocketAddress) socketAddress;
-            return HostAndPort.toHostAndPortString(addr.getAddress().getHostAddress(), addr.getPort());
-        }
-
-        String address = socketAddress.toString();
-        int addressLength = address.length();
-
-        if (addressLength > 0) {
-            if (address.startsWith("/")) {
-                return address.substring(1);
-            } else {
-                int delimiterIndex = address.indexOf('/');
-                if (delimiterIndex != -1 && delimiterIndex < addressLength) {
-                    return address.substring(address.indexOf('/') + 1);
-                }
-            }
-        }
-
-        return address;
-    }
 
     private void getParams(Object[] args, SpanEventRecorder spanEventRecorder) {
         if (traceRequestParam) {

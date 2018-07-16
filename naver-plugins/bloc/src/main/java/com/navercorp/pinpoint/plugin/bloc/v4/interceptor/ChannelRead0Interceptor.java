@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.pinpoint.plugin.bloc.v4.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
@@ -5,15 +21,20 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
+import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyHttpHeaderRecorder;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapperAdaptor;
 import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
 import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
-import com.navercorp.pinpoint.plugin.bloc.NettyServerRequestWrapper;
+import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
+import com.navercorp.pinpoint.plugin.bloc.NettyHttpRequest;
 import com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
@@ -29,8 +50,20 @@ import java.util.Map.Entry;
  */
 public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
 
+    private final boolean traceRequestParam;
+    private final ProxyHttpHeaderRecorder<ServerRequestWrapper> proxyHttpHeaderRecorder;
+    private final ServerRequestRecorder<ServerRequestWrapper> serverRequestRecorder;
+    private final RequestTraceReader<ServerRequestWrapper> requestTraceReader;
+
     public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor) {
         super(traceContext, descriptor, ChannelRead0Interceptor.class);
+
+        BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
+        traceRequestParam = config.isBlocTraceRequestParam();
+        RequestAdaptor<ServerRequestWrapper> requestAdaptor = new ServerRequestWrapperAdaptor();
+        this.proxyHttpHeaderRecorder = new ProxyHttpHeaderRecorder<ServerRequestWrapper>(traceContext.getProfilerConfig().isProxyHttpHeaderEnable(), requestAdaptor);
+        this.serverRequestRecorder = new ServerRequestRecorder<ServerRequestWrapper>(requestAdaptor);
+        this.requestTraceReader = new RequestTraceReader<ServerRequestWrapper>(traceContext, requestAdaptor);
     }
 
     @Override
@@ -64,18 +97,15 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
     protected Trace createTrace(Object target, Object[] args) {
         final io.netty.channel.ChannelHandlerContext ctx = (io.netty.channel.ChannelHandlerContext) args[0];
         final io.netty.handler.codec.http.FullHttpRequest request = (io.netty.handler.codec.http.FullHttpRequest) args[1];
-        final HttpHeaders headers = request.headers();
-        final String rpcName = request.getUri();
-        final String endPoint = getIpPort(ctx.channel().localAddress());
-        final String remoteAddress = getIp(ctx.channel().remoteAddress());
-        final ServerRequestWrapper serverRequestWrapper = new NettyServerRequestWrapper(headers, rpcName, endPoint, remoteAddress, endPoint);
-        final Trace trace = this.requestTraceReader.read(serverRequestWrapper);
+
+        ServerRequestWrapper nettyHttpRequest = new NettyHttpRequest(ctx, request);
+        final Trace trace = this.requestTraceReader.read(nettyHttpRequest);
         if (trace.canSampled()) {
             SpanRecorder spanRecorder = trace.getSpanRecorder();
             spanRecorder.recordServiceType(BlocConstants.BLOC);
             spanRecorder.recordApi(blocMethodApiTag);
-            this.serverRequestRecorder.record(spanRecorder, serverRequestWrapper);
-            this.proxyHttpHeaderRecorder.record(spanRecorder, serverRequestWrapper);
+            this.serverRequestRecorder.record(spanRecorder, nettyHttpRequest);
+            this.proxyHttpHeaderRecorder.record(spanRecorder, nettyHttpRequest);
         }
         return trace;
     }
@@ -87,33 +117,6 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
         spanEventRecorder.recordServiceType(BlocConstants.BLOC_INTERNAL_METHOD);
     }
 
-    private String getIpPort(SocketAddress socketAddress) {
-        String address = socketAddress.toString();
-
-        if (socketAddress instanceof InetSocketAddress) {
-            InetSocketAddress inetSocketAddress = (InetSocketAddress) socketAddress;
-            return HostAndPort.toHostAndPortString(inetSocketAddress.getAddress().getHostAddress(), inetSocketAddress.getPort());
-        }
-
-        if (address.startsWith("/")) {
-            return address.substring(1);
-        } else {
-            if (address.contains("/")) {
-                return address.substring(address.indexOf('/') + 1);
-            } else {
-                return address;
-            }
-        }
-    }
-
-    private String getIp(SocketAddress socketAddress) {
-        if (socketAddress instanceof InetSocketAddress) {
-            InetSocketAddress inetSocketAddress = (InetSocketAddress) socketAddress;
-            return inetSocketAddress.getAddress().getHostAddress();
-        } else {
-            return "NOT_SUPPORTED_ADDRESS";
-        }
-    }
 
     @Override
     protected void doInAfterTrace(Trace trace, Object target, Object[] args, Object result, Throwable throwable) {
@@ -160,7 +163,7 @@ public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
             String key = entry.getKey();
 
             params.append(StringUtils.abbreviate(key, eachLimit));
-            params.append("=");
+            params.append('=');
 
             Object value = entry.getValue().get(0);
 
