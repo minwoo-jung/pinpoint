@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
 import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapperAdaptor;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.line.LineConfig;
 import com.navercorp.pinpoint.plugin.line.LineServerRequestWrapper;
@@ -45,8 +47,8 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
     private final int paramDumpSize;
     private final int entityDumpSize;
     private final boolean param;
-    private final ServerRequestRecorder serverRequestRecorder = new ServerRequestRecorder();
-    private final RequestTraceReader requestTraceReader;
+    private final ServerRequestRecorder<ServerRequestWrapper> serverRequestRecorder;
+    private final RequestTraceReader<ServerRequestWrapper> requestTraceReader;
 
     public InvokeTaskRunInterceptor(TraceContext traceContext, MethodDescriptor descriptor, int paramDumpSize, int entityDumpSize) {
         super(traceContext, descriptor, InvokeTaskRunInterceptor.class);
@@ -56,7 +58,9 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
         this.entityDumpSize = entityDumpSize;
         this.param = config.isParam();
 
-        this.requestTraceReader = new RequestTraceReader(traceContext);
+        RequestAdaptor<ServerRequestWrapper> requestAdaptor = new ServerRequestWrapperAdaptor();
+        this.serverRequestRecorder = new ServerRequestRecorder<ServerRequestWrapper>(requestAdaptor);
+        this.requestTraceReader = new RequestTraceReader(traceContext, requestAdaptor);
     }
 
     @Override
