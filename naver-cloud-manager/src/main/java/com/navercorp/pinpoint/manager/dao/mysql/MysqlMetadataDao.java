@@ -75,8 +75,8 @@ public class MysqlMetadataDao implements MetadataDao {
     }
 
     @Override
-    public boolean existPaaSOrganizationKey(String organizationName) {
-        return sqlSessionTemplate.selectOne(NAMESPACE + "existOrganizationKey", organizationName);
+    public boolean existPaaSOrganizationKey(String organizationKey) {
+        return sqlSessionTemplate.selectOne(NAMESPACE + "existOrganizationKey", organizationKey);
     }
 
     @Override

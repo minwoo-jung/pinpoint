@@ -72,7 +72,7 @@ public class MetaDataServiceImpl implements MetadataService {
     private void insertPaaSOrganizationKey(String organizationName) {
         for (int i=0 ; i < 10; i++) {
             final String uuid = newUUID();
-            boolean existOrganizationKey = metadataDao.existPaaSOrganizationKey(organizationName);
+            boolean existOrganizationKey = metadataDao.existPaaSOrganizationKey(uuid);
 
             if (existOrganizationKey == false) {
                 if (!metadataDao.insertPaaSOrganizationKey(new PaaSOrganizationKey(uuid, organizationName))) {

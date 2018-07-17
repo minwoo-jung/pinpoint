@@ -36,7 +36,7 @@ public interface MetadataDao {
 
     boolean insertPaaSOrganizationKey(PaaSOrganizationKey paaSOrganizationKey);
 
-    boolean existPaaSOrganizationKey(String organizationName);
+    boolean existPaaSOrganizationKey(String organizationKey);
 
     void deletePaaSOrganizationKey(String organizationName);
 
