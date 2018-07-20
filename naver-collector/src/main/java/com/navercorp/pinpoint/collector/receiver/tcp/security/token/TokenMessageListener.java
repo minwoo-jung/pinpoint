@@ -37,6 +37,8 @@ import com.navercorp.pinpoint.thrift.dto.command.TTokenResponseCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -102,7 +104,9 @@ class TokenMessageListener extends ParallelMessageListener implements ServerMess
             final byte[] tokenPayload = request.getToken();
             final String tokenPayloadString = BytesUtils.toString(tokenPayload);
             final Token token = tokenService.getAndRemove(tokenPayloadString, TokenType.ALL);
-            if (token != null) {
+
+            String remoteAddress = getRemoteAddress(pinpointSocket);
+            if (token != null && token.getRemoteAddress().equals(remoteAddress)) {
                 handleSuccess(pinpointSocket, requestPacket, token);
             } else {
                 handleFail(pinpointSocket, requestPacket, TTokenResponseCode.UNAUTHORIZED);
@@ -117,6 +121,14 @@ class TokenMessageListener extends ParallelMessageListener implements ServerMess
     private TCmdAuthenticationToken getTokenRequest(RequestPacket requestPacket) {
         final byte[] payload = requestPacket.getPayload();
         return tokenSerDes.deserialize(payload, TCmdAuthenticationToken.class);
+    }
+
+    private String getRemoteAddress(PinpointSocket pinpointSocket) {
+        SocketAddress remoteSocketAddress = pinpointSocket.getRemoteAddress();
+        if (remoteSocketAddress instanceof InetSocketAddress) {
+            return  ((InetSocketAddress) remoteSocketAddress).getAddress().getHostAddress();
+        }
+        return null;
     }
 
     private void handleSuccess(PinpointSocket pinpointSocket, RequestPacket requestPacket, Token token) {

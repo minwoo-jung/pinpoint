@@ -21,20 +21,11 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
 import com.navercorp.pinpoint.collector.vo.TokenType;
-import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.rpc.util.TimerFactory;
-import org.jboss.netty.util.HashedWheelTimer;
-import org.jboss.netty.util.Timeout;
-import org.jboss.netty.util.Timer;
-import org.jboss.netty.util.TimerTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Taejin Koo
@@ -49,37 +40,11 @@ public class TokenServiceImpl implements TokenService {
     @Autowired
     private TokenDao tokenDao;
 
-    private Timer timer;
-
-    @PostConstruct
-    public void setup() {
-        this.timer = createTimer();
-    }
-
-    private Timer createTimer() {
-        String clazzName = this.getClass().getSimpleName();
-        HashedWheelTimer timer = TimerFactory.createHashedWheelTimer(clazzName + "-Timer", 100, TimeUnit.MILLISECONDS, 512);
-        timer.start();
-        return timer;
-    }
-
-    @PreDestroy
-    public void teardown() {
-        if (timer != null) {
-            timer.stop();
-        }
-    }
-
-
     @Override
     public Token create(TokenCreateRequest request) {
         for (int i = 0; i < tokenConfig.getMaxRetryCount(); i++) {
             Token token = createToken(request);
             if (tokenDao.create(token)) {
-
-                ExpiredTokenTask expiredTokenTask = new ExpiredTokenTask(token.getKey());
-                timer.newTimeout(expiredTokenTask, tokenConfig.getTtl(), TimeUnit.MILLISECONDS);
-
                 return token;
             }
         }
@@ -101,25 +66,5 @@ public class TokenServiceImpl implements TokenService {
     public Token getAndRemove(String tokenKey, TokenType tokenType) {
         return tokenDao.getAndRemove(tokenKey);
     }
-
-    private class ExpiredTokenTask implements TimerTask {
-
-        private final String tokenKey;
-
-        public ExpiredTokenTask(String tokenKey) {
-            this.tokenKey = Assert.requireNonNull(tokenKey, "tokenKey must not be null");
-        }
-
-        @Override
-        public void run(Timeout timeout) throws Exception {
-            if (timeout.isCancelled()) {
-                return;
-            }
-
-            tokenDao.getAndRemove(tokenKey);
-        }
-
-    }
-
 
 }

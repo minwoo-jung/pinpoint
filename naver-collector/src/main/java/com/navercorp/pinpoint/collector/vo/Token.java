@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.collector.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.navercorp.pinpoint.common.util.Assert;
 
 import java.util.Objects;
@@ -23,6 +25,8 @@ import java.util.Objects;
 /**
  * @author Taejin Koo
  */
+@JsonSerialize(using = TokenSerializer.class)
+@JsonDeserialize(using = TokenDeserializer.class)
 public class Token {
 
     private final String key;
@@ -78,7 +82,6 @@ public class Token {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(key, paaSOrganizationInfo, expiryTime, remoteAddress, tokenType);
     }
 

@@ -16,13 +16,9 @@
 
 package com.navercorp.pinpoint.collector.service;
 
-import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import java.util.Properties;
 
 /**
  * @author Taejin Koo
@@ -31,13 +27,17 @@ import java.util.Properties;
 @Profile("tokenAuthentication")
 public class TokenConfig {
 
-    private final int sessionTimeout = -1;
-
     @Value("#{pinpoint_collector_properties['collector.receiver.token.zookeeper.address'] ?: null}")
     private String address;
 
     @Value("#{pinpoint_collector_properties['collector.receiver.token.zookeeper.path'] ?: null}")
     private String path;
+
+    @Value("#{pinpoint_collector_properties['collector.receiver.token.zookeeper.sessiontimeout'] ?: 30000}")
+    private int sessionTimeout;
+
+    @Value("#{pinpoint_collector_properties['collector.receiver.token.operation.retry.interval'] ?: 5000}")
+    private long operationRetryInterval;
 
     @Value("#{pinpoint_collector_properties['collector.receiver.token.ttl'] ?: 300000}")
     private long ttl;
@@ -49,12 +49,16 @@ public class TokenConfig {
         return address;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public int getSessionTimeout() {
         return sessionTimeout;
     }
 
-    public String getPath() {
-        return path;
+    public long getOperationRetryInterval() {
+        return operationRetryInterval;
     }
 
     public long getTtl() {
@@ -68,9 +72,10 @@ public class TokenConfig {
     @Override
     public String toString() {
         return "TokenConfig{" +
-                "sessionTimeout=" + sessionTimeout +
-                ", address='" + address + '\'' +
+                "address='" + address + '\'' +
                 ", path='" + path + '\'' +
+                ", sessionTimeout=" + sessionTimeout +
+                ", operationRetryInterval=" + operationRetryInterval +
                 ", ttl=" + ttl +
                 ", maxRetryCount=" + maxRetryCount +
                 '}';

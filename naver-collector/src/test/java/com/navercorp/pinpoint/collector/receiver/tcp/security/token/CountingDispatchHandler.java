@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.io.request.ServerRequest;
 import com.navercorp.pinpoint.io.request.ServerResponse;
+import com.navercorp.pinpoint.thrift.dto.TResult;
 import org.apache.thrift.TBase;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,6 +36,15 @@ class CountingDispatchHandler implements DispatchHandler {
 
     private final AtomicInteger calledRequestServerRequestCount = new AtomicInteger();
 
+    private final boolean sendResponse;
+
+    public CountingDispatchHandler() {
+        this(false);
+    }
+
+    public CountingDispatchHandler(boolean sendResponse) {
+        this.sendResponse = sendResponse;
+    }
 
     @Override
     public void dispatchSendMessage(ServerRequest serverRequest) {
@@ -47,6 +57,9 @@ class CountingDispatchHandler implements DispatchHandler {
         calledRequestServerRequestCount.incrementAndGet();
         this.latestPuttedObject = serverRequest;
 
+        if (sendResponse) {
+            response.write(new TResult(true));
+        }
     }
 
     ServerRequest<?> getLatestServerRequest() {
