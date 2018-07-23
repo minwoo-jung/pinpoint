@@ -21,6 +21,7 @@
         <module>nbaset-jdbc</module>
         <module>nbaset-cp</module>
         <module>owfs</module>
+        <module>jeus</module>
     </modules>
 
     <dependencies>
@@ -62,6 +63,11 @@
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-owfs-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-jeus-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

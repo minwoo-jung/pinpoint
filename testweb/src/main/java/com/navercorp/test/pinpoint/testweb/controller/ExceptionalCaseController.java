@@ -23,8 +23,11 @@ import com.navercorp.test.pinpoint.testweb.util.Description;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 
@@ -49,5 +52,17 @@ public class ExceptionalCaseController {
         } catch (InterruptedException ignored) {
 
         }
+    }
+
+    @RequestMapping(value = "/exceptionalcase/exception")
+    public void exception() throws Exception {
+        throw new Exception("Throw exception");
+    }
+
+
+    @RequestMapping(value = "/exceptionalcase/500")
+    @ResponseBody
+    public ResponseEntity<?> return500() throws Exception {
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

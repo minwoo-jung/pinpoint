@@ -20,6 +20,8 @@ package com.navercorp.test.pinpoint.testweb.controller;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +37,7 @@ public class SpringController {
 
     @RequestMapping(value = "/spring/mvc/async/callable")
     @ResponseBody
-    public Callable<String> springMvcAsyncCallable() throws Exception {
+    public Callable<String> asyncCallable() throws Exception {
 
         Callable<String> callback = new Callable<String>() {
             @Override
@@ -51,7 +53,7 @@ public class SpringController {
 
     @RequestMapping(value = "/spring/mvc/async/deferred")
     @ResponseBody
-    public DeferredResult<String> springMvcDeferred() throws Exception {
+    public DeferredResult<String> asyncDeferred() throws Exception {
         final DeferredResult<String> result = new DeferredResult<String>();
 
         Runnable callback = new Runnable() {
@@ -69,15 +71,50 @@ public class SpringController {
         return result;
     }
 
+    @RequestMapping(value = "/spring/mvc/async/timeout")
+    @ResponseBody
+    public DeferredResult<String> asyncTimeout() throws Exception {
+        final DeferredResult<String> result = new DeferredResult<String>(1000L, "TIMEOUT");
+
+        Runnable callback = new Runnable() {
+            public void run() {
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException ignored) {
+                }
+                result.setResult("OK");
+            }
+        };
+
+        new Thread(callback).start();
+
+        return result;
+    }
+
+
     @RequestMapping(value = "/spring/mvc/async/error")
     @ResponseBody
-    public Callable<String> springMvcError() throws Exception {
+    public Callable<String> asyncError() throws Exception {
         Callable<String> callback = new Callable<String>() {
             @Override
             public String call() throws Exception {
 
-                TimeUnit.SECONDS.sleep(3);
+                TimeUnit.SECONDS.sleep(1);
                 throw new Exception("Failed to asynchronous operation");
+            }
+        };
+        return callback;
+    }
+
+    @RequestMapping(value = "/spring/mvc/async/500")
+    @ResponseBody
+    public Callable<ResponseEntity> asyncReturn500() throws Exception {
+        Callable<ResponseEntity> callback = new Callable<ResponseEntity>() {
+            @Override
+            public ResponseEntity call() throws Exception {
+
+                TimeUnit.SECONDS.sleep(1);
+                return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         };
         return callback;
