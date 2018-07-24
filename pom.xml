@@ -63,7 +63,7 @@
     <modules>
         <module>naver-agent</module>
         <module>naver-profiler</module>
-        <module>naver-ssl</module>
+        <module>naver-security</module>
         <module>naver-thrift</module>
         <module>naver-collector</module>
         <module>naver-web</module>
@@ -102,7 +102,7 @@
             </dependency>
             <dependency>
                 <groupId>com.navercorp.pinpoint</groupId>
-                <artifactId>pinpoint-naver-ssl</artifactId>
+                <artifactId>pinpoint-naver-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -7,8 +7,8 @@
         <version>1.8.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-ssl</artifactId>
-    <name>naver-pinpoint-ssl</name>
+    <artifactId>pinpoint-naver-security</artifactId>
+    <name>naver-pinpoint-security</name>
     <packaging>jar</packaging>
 
     <properties>
