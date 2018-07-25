@@ -31,6 +31,7 @@ import com.navercorp.pinpoint.rpc.packet.RequestPacket;
 import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
+import com.navercorp.pinpoint.security.util.AuthenticationStateContext;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdAuthenticationToken;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdAuthenticationTokenRes;
 import com.navercorp.pinpoint.thrift.dto.command.TTokenResponseCode;

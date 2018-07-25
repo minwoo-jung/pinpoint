@@ -25,8 +25,14 @@ import com.navercorp.pinpoint.collector.dao.TokenDao;
 import com.navercorp.pinpoint.collector.service.TokenConfig;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.common.util.CollectionUtils;
+import com.navercorp.pinpoint.rpc.Future;
+import com.navercorp.pinpoint.rpc.FutureListener;
+import com.navercorp.pinpoint.rpc.util.TimerFactory;
+import com.navercorp.pinpoint.security.util.ExpiredTaskManager;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +67,8 @@ public class ZookeeperTokenDao implements TokenDao {
 
     private ZookeeperClient client;
 
-    private TokenLifeCycleManager tokenLifeCycleManager;
+    private Timer timer;
+    private ExpiredTaskManager<String> tokenLifeCycleManager;
 
     @PostConstruct
     public void start() throws IOException {
@@ -77,15 +84,22 @@ public class ZookeeperTokenDao implements TokenDao {
             throw new IllegalArgumentException("failed to initialize zookeeper");
         }
 
-        tokenLifeCycleManager = new TokenLifeCycleManager(this, tokenConfig.getOperationRetryInterval());
+        this.timer = createTimer();
+        this.tokenLifeCycleManager = new ExpiredTaskManager<>(timer, tokenConfig.getTtl());
+    }
+
+    private Timer createTimer() {
+        HashedWheelTimer timer = TimerFactory.createHashedWheelTimer("Pinpoint-ExpiredTaskManager-Timer", 100, TimeUnit.MILLISECONDS, 512);
+        timer.start();
+        return timer;
     }
 
     @PreDestroy
     public void stop() {
         logger.info("stop() started.");
 
-        if (tokenLifeCycleManager != null) {
-            tokenLifeCycleManager.stop();
+        if (timer != null) {
+            timer.stop();
         }
 
         if (client != null) {
@@ -128,7 +142,22 @@ public class ZookeeperTokenDao implements TokenDao {
 
                 client.createNode(fullPath, payload, true);
 
-                tokenLifeCycleManager.reserveDeleteTask(tokenKey, expiredTime);
+                tokenLifeCycleManager.reserve(tokenKey, expiredTime, new FutureListener<Boolean>() {
+
+                    @Override
+                    public void onComplete(Future<Boolean> future) {
+                        if (future.isSuccess() && future.getResult()) {
+                            return;
+                        } else {
+                            boolean deleteResult = deleteNode(tokenKey);
+                            if (!deleteResult) {
+                                tokenLifeCycleManager.failed(tokenKey);
+                                tokenLifeCycleManager.reserve(tokenKey, tokenConfig.getOperationRetryInterval(), this);
+                            }
+                        }
+                    }
+
+                });
                 return true;
             } catch (Exception e) {
                 logger.warn("failed to create token path:{}", fullPath, e);
@@ -148,7 +177,11 @@ public class ZookeeperTokenDao implements TokenDao {
         } catch (Exception e) {
             logger.debug("failed to get token data:{}", tokenKey);
         }
-        tokenLifeCycleManager.delete(tokenKey);
+
+        boolean result = deleteNode(tokenKey);
+        if (result) {
+            tokenLifeCycleManager.succeed(tokenKey);
+        }
 
         if (payload == null) {
             return null;
@@ -249,7 +282,7 @@ public class ZookeeperTokenDao implements TokenDao {
                         newTokenList.add(tokenKey);
                     } else {
                         // expected already deleted
-                        tokenLifeCycleManager.cancelReserveDeleteTask(tokenKey);
+                        tokenLifeCycleManager.succeed(tokenKey);
                     }
                 }
 

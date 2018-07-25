@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.ssl;
+package com.navercorp.pinpoint.security.ssl;
 
 import org.jboss.netty.handler.ssl.SslHandler;
 

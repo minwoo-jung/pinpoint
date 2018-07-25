@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
+package com.navercorp.pinpoint.security.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,17 +27,17 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 /**
  * @author Taejin Koo
  */
-class AuthenticationStateContext {
+public class AuthenticationStateContext {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final AtomicIntegerFieldUpdater<AuthenticationStateContext> AUTHENTICATION_STATE_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(AuthenticationStateContext.class, "authenticationState");
 
-    static final int INIT = 0;
-    static final int IN_PROGRESS = 1;
-    static final int SUCCESS = 2;
-    static final int FAIL = 3;
+    public static final int INIT = 0;
+    public static final int IN_PROGRESS = 1;
+    public static final int SUCCESS = 2;
+    public static final int FAIL = 3;
 
     private static Map<Integer, String> STATE_DEBUG_MAP;
 
@@ -53,15 +53,15 @@ class AuthenticationStateContext {
 
     private volatile int authenticationState = INIT;
 
-    boolean changeStateProgress() {
+    public boolean changeStateProgress() {
         return change0(INIT, IN_PROGRESS);
     }
 
-    boolean changeStateSuccess() {
+    public boolean changeStateSuccess() {
         return change0(IN_PROGRESS, SUCCESS);
     }
 
-    boolean changeStateFail() {
+    public boolean changeStateFail() {
         return change0(IN_PROGRESS, FAIL);
     }
 
@@ -80,24 +80,24 @@ class AuthenticationStateContext {
         return set;
     }
 
-    int getState() {
+    public int getState() {
         return authenticationState;
     }
 
-    boolean isInProgress() {
+    public boolean isInProgress() {
         return authenticationState == IN_PROGRESS;
     }
 
-    boolean isSucceeded() {
+    public boolean isSucceeded() {
         return authenticationState == SUCCESS;
     }
 
-    boolean isFailed() {
+    public boolean isFailed() {
         return authenticationState == FAIL;
     }
 
     // complete state no longer changes state
-    boolean isCompleted() {
+    public boolean isCompleted() {
         final int state = authenticationState;
 
         if (state == SUCCESS || state == FAIL) {

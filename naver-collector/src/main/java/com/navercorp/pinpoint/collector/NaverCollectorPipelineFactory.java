@@ -19,8 +19,8 @@ package com.navercorp.pinpoint.collector;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.rpc.PipelineFactory;
 import com.navercorp.pinpoint.rpc.server.ServerCodecPipelineFactory;
-import com.navercorp.pinpoint.ssl.SslConfig;
-import com.navercorp.pinpoint.ssl.SslHandlerProvider;
+import com.navercorp.pinpoint.security.ssl.SslConfig;
+import com.navercorp.pinpoint.security.ssl.SslHandlerProvider;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.handler.ssl.SslHandler;
 

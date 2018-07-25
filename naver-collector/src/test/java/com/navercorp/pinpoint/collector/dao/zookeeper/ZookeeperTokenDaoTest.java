@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
  * @author Taejin Koo
  */
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 @ActiveProfiles("tokenAuthentication")
 public class ZookeeperTokenDaoTest {
 
@@ -70,6 +70,7 @@ public class ZookeeperTokenDaoTest {
         when(tokenConfig.getPath()).thenReturn("/test-path");
         when(tokenConfig.getSessionTimeout()).thenReturn(3000);
         when(tokenConfig.getOperationRetryInterval()).thenReturn(5000L);
+        when(tokenConfig.getTtl()).thenReturn(5000L);
 
         tokenDao1.start();
         tokenDao2.start();
