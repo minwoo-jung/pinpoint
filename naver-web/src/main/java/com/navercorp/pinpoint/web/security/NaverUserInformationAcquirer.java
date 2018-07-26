@@ -17,7 +17,8 @@ package com.navercorp.pinpoint.web.security;
 
 import com.navercorp.pinpoint.common.util.CollectionUtils;
 import com.navercorp.pinpoint.common.util.StringUtils;
-import org.apache.hadoop.mapred.join.ResetableIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.server.ServerHttpRequest;
 
@@ -30,6 +31,8 @@ import java.util.List;
 public class NaverUserInformationAcquirer implements UserInformationAcquirer {
 
     private static final String EMPTY_NAME = "";
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("#{pinpointWebProps['security.header.key.userId']}")
     private String userIdHeaderName;
@@ -58,12 +61,7 @@ public class NaverUserInformationAcquirer implements UserInformationAcquirer {
     @Override
     public String acquireOrganizationName(HttpServletRequest request) {
         final String userId = request.getHeader(userIdHeaderName);
-
-        if (StringUtils.getLength(userId) <= 2) {
-            return EMPTY_NAME;
-        }
-
-        return userId.substring(0,2);
+        return extractOrganizationName(userId);
     }
 
     @Override
@@ -74,11 +72,24 @@ public class NaverUserInformationAcquirer implements UserInformationAcquirer {
         }
 
         final String userId = headerList.get(0);
-        if (StringUtils.getLength(userId) <= 2) {
+        return extractOrganizationName(userId);
+    }
+
+    private String extractOrganizationName(String userId) {
+        if (StringUtils.isEmpty(userId)) {
             return EMPTY_NAME;
         }
-
-        return userId.substring(0,2);
+        if (userId.length() == 7) {
+            return userId.substring(0, 2);
+        }
+        if (userId.length() == 8) {
+            return userId.substring(0, 3);
+        }
+        logger.warn("Unexpected userId : {}", userId);
+        if (userId.length() <= 2) {
+            return EMPTY_NAME;
+        }
+        return userId.substring(0, 2);
     }
 
     @Override
@@ -92,5 +103,4 @@ public class NaverUserInformationAcquirer implements UserInformationAcquirer {
 
         return true;
     }
-
 }
