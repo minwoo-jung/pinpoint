@@ -17,15 +17,52 @@
 
 package com.navercorp.test.pinpoint.testweb.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * @author Woonduk Kang(emeroad)
  */
 @Service
 public class SpringService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void throwException() {
         throw new RuntimeException();
+    }
+
+    @Async
+    public void asyncWithVoid() {
+        logger.info("Asynchronous operation. thread={}" + Thread.currentThread().getName());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+    }
+
+    @Async
+    public Future<String> asyncWithFuture() {
+        logger.info("Asynchronous operation. thread={}" + Thread.currentThread().getName());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+
+        return new AsyncResult<String>("OK");
+    }
+
+    @Async("threadPoolTaskExecutor")
+    public void asyncWithConfiguredExecutor() {
+        logger.info("Asynchronous operation. thread={}" + Thread.currentThread().getName());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
     }
 }

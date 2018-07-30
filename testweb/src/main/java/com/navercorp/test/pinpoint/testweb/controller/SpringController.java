@@ -18,8 +18,11 @@
 package com.navercorp.test.pinpoint.testweb.controller;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.navercorp.test.pinpoint.testweb.service.SpringService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -29,11 +32,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.DeferredResult;
 
 /**
- * 
+ *
  */
 @EnableAsync
 @Controller
 public class SpringController {
+
+    @Autowired
+    private SpringService service;
 
     @RequestMapping(value = "/spring/mvc/async/callable")
     @ResponseBody
@@ -42,9 +48,9 @@ public class SpringController {
         Callable<String> callback = new Callable<String>() {
             @Override
             public String call() throws Exception {
-                
+
                 TimeUnit.SECONDS.sleep(3);
-                
+
                 return "OK";
             }
         };
@@ -119,4 +125,33 @@ public class SpringController {
         };
         return callback;
     }
+
+    @RequestMapping(value = "/spring/excute/async/void")
+    @ResponseBody
+    public String asyncWidthVoid() {
+        final long startedTimeMillis = System.currentTimeMillis();
+        this.service.asyncWithVoid();
+        final long elapsedTimeMillis = System.currentTimeMillis() - startedTimeMillis;
+        return "OK " + elapsedTimeMillis + "ms";
+    }
+
+    @RequestMapping(value = "/spring/excute/async/future")
+    @ResponseBody
+    public String asyncWidthFuture() throws Exception {
+        final long startedTimeMillis = System.currentTimeMillis();
+        Future<String> future = this.service.asyncWithFuture();
+        final String result = future.get();
+        final long elapsedTimeMillis = System.currentTimeMillis() - startedTimeMillis;
+        return "OK " + elapsedTimeMillis + "ms, Result=" + result;
+    }
+
+    @RequestMapping(value = "/spring/excute/async/configure")
+    @ResponseBody
+    public String asyncWidthConfiguredExecutor() {
+        final long startedTimeMillis = System.currentTimeMillis();
+        this.service.asyncWithConfiguredExecutor();
+        final long elapsedTimeMillis = System.currentTimeMillis() - startedTimeMillis;
+        return "OK " + elapsedTimeMillis + "ms";
+    }
+
 }
