@@ -1,11 +1,12 @@
-/**
- * Copyright 2014 NAVER Corp.
+/*
+ * Copyright 2018 NAVER Corp.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +27,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Properties;
 
+import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @RunWith(PinpointPluginTestSuite.class)
-@PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
+@PinpointAgent(NaverAgentPath.PATH)
 @Dependency({"net.sourceforge.jtds:jtds:[1.2.8]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
 public class JtdsIT {
     private static final String MSSQL = "MSSQL";

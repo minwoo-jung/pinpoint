@@ -1,11 +1,12 @@
-/**
- * Copyright 2014 NAVER Corp.
+/*
+ * Copyright 2018 NAVER Corp.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +18,7 @@ package com.navercorp.pinpoint.plugin.arcus;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.Version;
+import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 @RunWith(PinpointPluginTestSuite.class)
-@PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
+@PinpointAgent(NaverAgentPath.PATH)
 @Repository("http://repo.navercorp.com/maven2")
 @Dependency({"arcus:arcus-client:[1.5.4],[1.6.0],[1.6.4,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class ArcusIT {

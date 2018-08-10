@@ -1,11 +1,12 @@
-/**
- * Copyright 2014 NAVER Corp.
+/*
+ * Copyright 2018 NAVER Corp.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
+import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +33,6 @@ import org.junit.runner.RunWith;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * Cannot test cubrid-jdbc 9.0.0 because it is not compatible with test db version 8.4.3.1025
  */
 @RunWith(PinpointPluginTestSuite.class)
-@PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
+@PinpointAgent(NaverAgentPath.PATH)
 @Repository("http://maven.cubrid.org")
 @Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.1.0.0212],[9.2.19.0003],[9.3.2,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
 public class CubridIT {

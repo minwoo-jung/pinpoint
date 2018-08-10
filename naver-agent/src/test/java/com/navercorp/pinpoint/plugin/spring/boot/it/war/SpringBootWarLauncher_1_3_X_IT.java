@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 NAVER Corp.
+ * Copyright 2018 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.plugin.spring.boot.it.war;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
 import com.navercorp.pinpoint.common.Version;
+import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import com.navercorp.pinpoint.plugin.spring.boot.SpringBootPluginTestSuite;
 import com.navercorp.pinpoint.plugin.spring.boot.TestAppSpringBootVersion;
 import com.navercorp.pinpoint.plugin.spring.boot.TestAppVersion;
@@ -35,7 +36,7 @@ import java.util.List;
  * @author HyunGil Jeong
  */
 @RunWith(SpringBootPluginTestSuite.SpringBootPluginWarLauncherTestSuite.class)
-@PinpointAgent("naver-agent/target/pinpoint-naver-agent-" + Version.VERSION)
+@PinpointAgent(NaverAgentPath.PATH)
 @JvmVersion(7)
 @OnClassLoader(system = true, child = false)
 @Dependency({ "org.springframework.boot:spring-boot-loader:[1.3.0.RELEASE,1.3.max]" })
