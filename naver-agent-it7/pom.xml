@@ -23,8 +23,8 @@
         <version>1.8.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-it7</artifactId>
-    <name>naver-pinpoint-agent-it7</name>
+    <artifactId>pinpoint-naver-agent-it7</artifactId>
+    <name>naver-pinpoint-naver-agent-it7</name>
     <!-- this module contains integration tests. if we set packaging to pom, 
         tests are not run. so we set it to jar even though the project will not be 
         packaged as a jar. -->
