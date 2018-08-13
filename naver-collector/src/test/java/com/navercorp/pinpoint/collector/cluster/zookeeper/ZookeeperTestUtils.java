@@ -1,10 +1,6 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
-import com.navercorp.pinpoint.rpc.MessageListener;
-import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
-import com.navercorp.pinpoint.rpc.packet.RequestPacket;
-import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import org.apache.curator.test.TestingServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +13,6 @@ public final class ZookeeperTestUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperTestUtils.class);
 
     private ZookeeperTestUtils() {
-    }
-
-    static MessageListener getMessageListener()  {
-        return new SimpleMessageListener();
     }
 
     static Map<String, Object> getParams() {
@@ -47,22 +39,6 @@ public final class ZookeeperTestUtils {
         mockZookeeperServer.start();
 
         return mockZookeeperServer;
-    }
-
-    private static class SimpleMessageListener implements MessageListener {
-
-        public SimpleMessageListener() {
-        }
-
-        @Override
-        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
-            LOGGER.info("Received SendPacket{} {}", sendPacket, pinpointSocket);
-        }
-
-        @Override
-        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
-            LOGGER.info("Received RequestPacket{} {}", requestPacket, pinpointSocket);
-        }
     }
 
 }

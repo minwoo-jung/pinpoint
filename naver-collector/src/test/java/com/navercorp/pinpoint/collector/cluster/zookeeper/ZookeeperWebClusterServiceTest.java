@@ -1,13 +1,11 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.cluster.UnsupportedServerMessageListenerFactory;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.rpc.PinpointSocket;
-import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
+import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
+import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.WatchedEvent;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.SocketUtils;
-
-import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -30,9 +26,11 @@ public class ZookeeperWebClusterServiceTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final int DEFAULT_ZOOKEEPER_PORT = SocketUtils.findAvailableTcpPort(22213);
-    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22214);
 
     private static CollectorConfiguration collectorConfig = null;
+
+    private final TestServerMessageListenerFactory testServerMessageListenerFactory =
+            new TestServerMessageListenerFactory(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.NO_RESPONSE);
 
     @Autowired
     ClusterPointRouter clusterPointRouter;
@@ -49,15 +47,14 @@ public class ZookeeperWebClusterServiceTest {
     @Test
     public void simpleTest() throws Exception {
         TestingServer ts = null;
+        TestPinpointServerAcceptor testPinpointServerAcceptor = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
         try {
             ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
 
             ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
             service.setUp();
 
-            PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
-            serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
-            serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            int bindPort = testPinpointServerAcceptor.bind();
 
             ZookeeperClient client = new DefaultZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
 
@@ -73,23 +70,16 @@ public class ZookeeperWebClusterServiceTest {
 
             });
             client.connect();
-
             client.createPath(PINPOINT_WEB_CLUSTER_PATH, true);
-            client.createNode(PINPOINT_WEB_CLUSTER_PATH + "/" + "127.0.0.1:" + DEFAULT_ACCEPTOR_SOCKET_PORT, "127.0.0.1".getBytes());
-
-            Thread.sleep(5000);
-
-            List<PinpointSocket> writablePinpointServerList = serverAcceptor.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList.size());
+            client.createNode(PINPOINT_WEB_CLUSTER_PATH + "/" + "127.0.0.1:" + bindPort, "127.0.0.1".getBytes());
+            testPinpointServerAcceptor.assertAwaitClientConnected(1, 5000);
 
             client.close();
-
-            Thread.sleep(5000);
-            writablePinpointServerList = serverAcceptor.getWritableSocketList();
-            Assert.assertEquals(0, writablePinpointServerList.size());
+            testPinpointServerAcceptor.assertAwaitClientConnected(0, 5000);
 
             service.tearDown();
         } finally {
+            testPinpointServerAcceptor.close();
             closeZookeeperServer(ts);
         }
     }

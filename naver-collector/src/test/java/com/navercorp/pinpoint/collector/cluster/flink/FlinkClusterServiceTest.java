@@ -16,7 +16,6 @@
 
 package com.navercorp.pinpoint.collector.cluster.flink;
 
-import com.navercorp.pinpoint.collector.cluster.UnsupportedServerMessageListenerFactory;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.DefaultZookeeperClient;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClient;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperEventWatcher;
@@ -26,15 +25,16 @@ import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.sender.FlinkRequestFactory;
 import com.navercorp.pinpoint.collector.service.SendAgentStatService;
 import com.navercorp.pinpoint.io.header.v1.HeaderV1;
-import com.navercorp.pinpoint.rpc.PinpointSocket;
-import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
+import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
+import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
+import com.navercorp.pinpoint.test.utils.TestAwaitTaskUtils;
+import com.navercorp.pinpoint.test.utils.TestAwaitUtils;
 import com.navercorp.pinpoint.thrift.io.FlinkHeaderTBaseSerializerFactory;
 import com.navercorp.pinpoint.thrift.io.FlinkTBaseLocator;
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.WatchedEvent;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +56,9 @@ public class FlinkClusterServiceTest {
 
     private CollectorConfiguration config;
 
+    private final TestServerMessageListenerFactory testServerMessageListenerFactory =
+            new TestServerMessageListenerFactory(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.NO_RESPONSE);
+
     @Before
     public void setUp() {
         config = new CollectorConfiguration();
@@ -68,14 +71,13 @@ public class FlinkClusterServiceTest {
     public void addFlinkZnodeTest() throws Exception {
         FlinkClusterService flinkClusterService = null;
         TestingServer zookeeperServer = null;
-        PinpointServerAcceptor serverAcceptor = null;
+        TestPinpointServerAcceptor testPinpointServerAcceptor = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
         try {
             zookeeperServer = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
             ZookeeperClient client = createZookeeperClient();
 
-            int acceptorSocketPort = SocketUtils.findAvailableTcpPort(22214);
-            serverAcceptor = createPinpointServerAcceptor(acceptorSocketPort);
-            createZnode(client, acceptorSocketPort);
+            int bindPort = testPinpointServerAcceptor.bind();
+            createZnode(client, bindPort);
 
             SendAgentStatService sendAgentStatService = new SendAgentStatService(config);
             TcpDataSenderRepository tcpDataSenderRepository = new TcpDataSenderRepository(sendAgentStatService);
@@ -85,15 +87,18 @@ public class FlinkClusterServiceTest {
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory, flinkRequestFactory);
             flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
             flinkClusterService.setUp();
-            Thread.sleep(5000);
 
-            List<PinpointSocket> writablePinpointServerList = serverAcceptor.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList.size());
-            Assert.assertEquals(1, tcpDataSenderRepository.getAddressList().size());
+            testPinpointServerAcceptor.assertAwaitClientConnected(1, 5000);
+            Assert.assertTrue(TestAwaitUtils.await(new TestAwaitTaskUtils() {
+                @Override
+                public boolean checkCompleted() {
+                    return 1 == tcpDataSenderRepository.getAddressList().size();
+                }
+            }, 100, 5000));
         } finally {
             closeFlinkClusterService(flinkClusterService);
             closeZookeeperServer(zookeeperServer);
-            closeServerAcceptor(serverAcceptor);
+            testPinpointServerAcceptor.close();
         }
     }
 
@@ -101,16 +106,16 @@ public class FlinkClusterServiceTest {
     public void multiAddFlinkZnodeTest() throws Exception {
         FlinkClusterService flinkClusterService = null;
         TestingServer zookeeperServer = null;
-        List<PinpointServerAcceptor> serverAcceptorList = new ArrayList<>();
-
+        List<TestPinpointServerAcceptor> testPinpointServerAcceptorList = new ArrayList<>();
         try {
             zookeeperServer = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
             ZookeeperClient client = createZookeeperClient();
 
-            int acceptorSocketPort = SocketUtils.findAvailableTcpPort(22214);
-            PinpointServerAcceptor serverAcceptor = createPinpointServerAcceptor(acceptorSocketPort);
-            serverAcceptorList.add(serverAcceptor);
-            createZnode(client, acceptorSocketPort);
+            TestPinpointServerAcceptor testPinpointServerAcceptor1 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
+            int bindPort = testPinpointServerAcceptor1.bind();
+
+            testPinpointServerAcceptorList.add(testPinpointServerAcceptor1);
+            createZnode(client, bindPort);
 
             SendAgentStatService sendAgentStatService = new SendAgentStatService(config);
             TcpDataSenderRepository tcpDataSenderRepository = new TcpDataSenderRepository(sendAgentStatService);
@@ -121,25 +126,22 @@ public class FlinkClusterServiceTest {
             flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
             flinkClusterService.setUp();
 
-            Thread.sleep(5000);
-            List<PinpointSocket> writablePinpointServerList = serverAcceptor.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList.size());
+            testPinpointServerAcceptor1.assertAwaitClientConnected(1, 5000);
             Assert.assertEquals(1, tcpDataSenderRepository.getAddressList().size());
 
-            int acceptorSocketPort2 = SocketUtils.findAvailableTcpPort(22214);
-            PinpointServerAcceptor serverAcceptor2 = createPinpointServerAcceptor(acceptorSocketPort2);
-            serverAcceptorList.add(serverAcceptor2);
-            createZnode(client, acceptorSocketPort2);
+            TestPinpointServerAcceptor testPinpointServerAcceptor2 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
+            int bindPort2 = testPinpointServerAcceptor2.bind();
 
-            Thread.sleep(5000);
-            List<PinpointSocket> writablePinpointServerList2 = serverAcceptor2.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList2.size());
+            testPinpointServerAcceptorList.add(testPinpointServerAcceptor2);
+            createZnode(client, bindPort2);
+
+            testPinpointServerAcceptor2.assertAwaitClientConnected(1, 5000);
             Assert.assertEquals(2, tcpDataSenderRepository.getAddressList().size());
 
         } finally {
             closeFlinkClusterService(flinkClusterService);
             closeZookeeperServer(zookeeperServer);
-            closeServerAcceptorList(serverAcceptorList);
+            closeServerAcceptorList(testPinpointServerAcceptorList);
         }
     }
 
@@ -147,16 +149,15 @@ public class FlinkClusterServiceTest {
     public void multiAddAndRemoveFlinkZnodeTest() throws Exception {
         FlinkClusterService flinkClusterService = null;
         TestingServer zookeeperServer = null;
-        List<PinpointServerAcceptor> serverAcceptorList = new ArrayList<>();
-
+        List<TestPinpointServerAcceptor> testPinpointServerAcceptorList = new ArrayList<>();
         try {
             zookeeperServer = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
             ZookeeperClient client = createZookeeperClient();
 
-            int acceptorSocketPort = SocketUtils.findAvailableTcpPort(22214);
-            PinpointServerAcceptor serverAcceptor = createPinpointServerAcceptor(acceptorSocketPort);
-            serverAcceptorList.add(serverAcceptor);
-            createZnode(client, acceptorSocketPort);
+            TestPinpointServerAcceptor testPinpointServerAcceptor1 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
+            int bindPort1 = testPinpointServerAcceptor1.bind();
+            testPinpointServerAcceptorList.add(testPinpointServerAcceptor1);
+            createZnode(client, bindPort1);
 
             SendAgentStatService sendAgentStatService = new SendAgentStatService(config);
             TcpDataSenderRepository tcpDataSenderRepository = new TcpDataSenderRepository(sendAgentStatService);
@@ -167,57 +168,50 @@ public class FlinkClusterServiceTest {
             flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
             flinkClusterService.setUp();
 
-            Thread.sleep(5000);
-            List<PinpointSocket> writablePinpointServerList = serverAcceptor.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList.size());
+            testPinpointServerAcceptor1.assertAwaitClientConnected(1, 5000);
             Assert.assertEquals(1, tcpDataSenderRepository.getAddressList().size());
 
             //add znode test
-            int acceptorSocketPort2 = SocketUtils.findAvailableTcpPort(22214);
-            PinpointServerAcceptor serverAcceptor2 = createPinpointServerAcceptor(acceptorSocketPort2);
-            serverAcceptorList.add(serverAcceptor2);
-            createZnode(client, acceptorSocketPort2);
-            Thread.sleep(5000);
-            List<PinpointSocket> writablePinpointServerList2 = serverAcceptor2.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList2.size());
+            TestPinpointServerAcceptor testPinpointServerAcceptor2 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
+            int bindPort2 = testPinpointServerAcceptor2.bind();
+            testPinpointServerAcceptorList.add(testPinpointServerAcceptor2);
+            createZnode(client, bindPort2);
+
+            testPinpointServerAcceptor2.assertAwaitClientConnected(1, 5000);
             Assert.assertEquals(2, tcpDataSenderRepository.getAddressList().size());
 
             //add znode test
-            int acceptorSocketPort3 = SocketUtils.findAvailableTcpPort(22214);
-            PinpointServerAcceptor serverAcceptor3 = createPinpointServerAcceptor(acceptorSocketPort3);
-            serverAcceptorList.add(serverAcceptor3);
-            createZnode(client, acceptorSocketPort3);
-            Thread.sleep(5000);
-            List<PinpointSocket> writablePinpointServerList3 = serverAcceptor2.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList3.size());
+            TestPinpointServerAcceptor testPinpointServerAcceptor3 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
+            int bindPort3 = testPinpointServerAcceptor3.bind();
+            testPinpointServerAcceptorList.add(testPinpointServerAcceptor3);
+            createZnode(client, bindPort3);
+            testPinpointServerAcceptor3.assertAwaitClientConnected(1, 5000);
             Assert.assertEquals(3, tcpDataSenderRepository.getAddressList().size());
 
             //remove znode test
-            removeZnode(client, acceptorSocketPort3);
+            removeZnode(client, bindPort3);
 
             Thread.sleep(5000);
             Assert.assertEquals(2, tcpDataSenderRepository.getAddressList().size());
-
         } finally {
             closeFlinkClusterService(flinkClusterService);
             closeZookeeperServer(zookeeperServer);
-            closeServerAcceptorList(serverAcceptorList);
+            closeServerAcceptorList(testPinpointServerAcceptorList);
         }
     }
 
     @Test
     public void zookeeperShutdownTest() throws Exception {
         FlinkClusterService flinkClusterService = null;
-        List<PinpointServerAcceptor> serverAcceptorList = new ArrayList<>();
-
+        List<TestPinpointServerAcceptor> testPinpointServerAcceptorList = new ArrayList<>();
         try {
             TestingServer zookeeperServer = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
             ZookeeperClient client = createZookeeperClient();
 
-            int acceptorSocketPort = SocketUtils.findAvailableTcpPort(22214);
-            PinpointServerAcceptor serverAcceptor = createPinpointServerAcceptor(acceptorSocketPort);
-            serverAcceptorList.add(serverAcceptor);
-            createZnode(client, acceptorSocketPort);
+            TestPinpointServerAcceptor testPinpointServerAcceptor1 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
+            int bindPort1 = testPinpointServerAcceptor1.bind();
+            testPinpointServerAcceptorList.add(testPinpointServerAcceptor1);
+            createZnode(client, bindPort1);
 
             SendAgentStatService sendAgentStatService = new SendAgentStatService(config);
             TcpDataSenderRepository tcpDataSenderRepository = new TcpDataSenderRepository(sendAgentStatService);
@@ -228,19 +222,16 @@ public class FlinkClusterServiceTest {
             flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
             flinkClusterService.setUp();
 
-            Thread.sleep(5000);
-            List<PinpointSocket> writablePinpointServerList = serverAcceptor.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList.size());
+            testPinpointServerAcceptor1.assertAwaitClientConnected(1, 5000);
             Assert.assertEquals(1, tcpDataSenderRepository.getAddressList().size());
 
             //add znode test
-            int acceptorSocketPort2 = SocketUtils.findAvailableTcpPort(22214);
-            PinpointServerAcceptor serverAcceptor2 = createPinpointServerAcceptor(acceptorSocketPort2);
-            serverAcceptorList.add(serverAcceptor2);
-            createZnode(client, acceptorSocketPort2);
-            Thread.sleep(5000);
-            List<PinpointSocket> writablePinpointServerList2 = serverAcceptor2.getWritableSocketList();
-            Assert.assertEquals(1, writablePinpointServerList2.size());
+            TestPinpointServerAcceptor testPinpointServerAcceptor2 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
+            int bindPort2 = testPinpointServerAcceptor2.bind();
+            testPinpointServerAcceptorList.add(testPinpointServerAcceptor2);
+            createZnode(client, bindPort2);
+
+            testPinpointServerAcceptor2.assertAwaitClientConnected(1, 5000);
             Assert.assertEquals(2, tcpDataSenderRepository.getAddressList().size());
 
             //zookeeper shutdown test
@@ -250,7 +241,7 @@ public class FlinkClusterServiceTest {
             Assert.assertEquals(2, tcpDataSenderRepository.getAddressList().size());
         } finally {
             closeFlinkClusterService(flinkClusterService);
-            closeServerAcceptorList(serverAcceptorList);
+            closeServerAcceptorList(testPinpointServerAcceptorList);
         }
     }
 
@@ -273,23 +264,6 @@ public class FlinkClusterServiceTest {
         client.createNode(PINPOINT_FLINK_CLUSTER_PATH + "/" + "127.0.0.1:" + acceptorSocketPort, "127.0.0.1".getBytes());
     }
 
-    private PinpointServerAcceptor createPinpointServerAcceptor(int acceptorSocketPort) {
-        PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
-        serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
-        serverAcceptor.bind("127.0.0.1", acceptorSocketPort);
-        return serverAcceptor;
-    }
-
-    private void closeServerAcceptor(PinpointServerAcceptor serverAcceptor) {
-        try {
-            if (serverAcceptor != null) {
-                serverAcceptor.close();
-            }
-        } catch (Exception e) {
-            logger.error("exception has occurred while closeServerAcceptor ", e);
-        }
-    }
-
     private void closeZookeeperServer(TestingServer zookeeperServer) {
         try {
             if (zookeeperServer != null) {
@@ -300,9 +274,9 @@ public class FlinkClusterServiceTest {
         }
     }
 
-    private void closeServerAcceptorList(List<PinpointServerAcceptor> serverAcceptorList) {
-        for (PinpointServerAcceptor acceptor: serverAcceptorList) {
-            closeServerAcceptor(acceptor);
+    private void closeServerAcceptorList(List<TestPinpointServerAcceptor> testPinpointServerAcceptorList) {
+        for (TestPinpointServerAcceptor testPinpointServerAcceptor: testPinpointServerAcceptorList) {
+            testPinpointServerAcceptor.close();
         }
     }
 

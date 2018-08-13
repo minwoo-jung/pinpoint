@@ -18,22 +18,15 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.rpc.PinpointSocket;
 import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
 import com.navercorp.pinpoint.rpc.packet.ControlHandshakePacket;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseCode;
-import com.navercorp.pinpoint.rpc.packet.HandshakeResponseType;
-import com.navercorp.pinpoint.rpc.packet.PingPayloadPacket;
-import com.navercorp.pinpoint.rpc.packet.RequestPacket;
-import com.navercorp.pinpoint.rpc.packet.SendPacket;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
-import com.navercorp.pinpoint.rpc.server.ServerMessageListener;
 import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
 import com.navercorp.pinpoint.rpc.util.ControlMessageEncodingUtils;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
+import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import org.apache.curator.test.TestingServer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.util.Timer;
@@ -47,7 +40,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.SocketUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -345,37 +337,11 @@ public class ZookeeperProfilerClusterServiceTest {
         when(config.getStreamMessageListener()).thenReturn(DisabledServerStreamChannelMessageListener.INSTANCE);
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
-        when(config.getMessageListener()).thenReturn(new EchoServerListener());
+        TestServerMessageListenerFactory.TestServerMessageListener testServerMessageListener = TestServerMessageListenerFactory.create(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.ECHO);
+        when(config.getMessageListener()).thenReturn(testServerMessageListener);
         when(config.getClusterOption()).thenReturn(ClusterOption.DISABLE_CLUSTER_OPTION);
 
         return config;
-    }
-
-    public static class EchoServerListener implements ServerMessageListener {
-        private final List<SendPacket> sendPacketRepository = new ArrayList<>();
-        private final List<RequestPacket> requestPacketRepository = new ArrayList<>();
-
-        @Override
-        public void handleSend(SendPacket sendPacket, PinpointSocket pinpointSocket) {
-            sendPacketRepository.add(sendPacket);
-        }
-
-        @Override
-        public void handleRequest(RequestPacket requestPacket, PinpointSocket pinpointSocket) {
-            requestPacketRepository.add(requestPacket);
-
-            pinpointSocket.response(requestPacket.getRequestId(), requestPacket.getPayload());
-        }
-
-        @Override
-        public HandshakeResponseCode handleHandshake(Map properties) {
-            return HandshakeResponseType.Success.DUPLEX_COMMUNICATION;
-        }
-
-        @Override
-        public void handlePing(PingPayloadPacket pingPacket, PinpointServer pinpointServer) {
-        }
-
     }
 
 }

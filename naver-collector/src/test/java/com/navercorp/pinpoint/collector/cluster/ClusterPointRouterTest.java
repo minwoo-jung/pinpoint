@@ -4,17 +4,17 @@ import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConne
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionManager;
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnectionRepository;
 import com.navercorp.pinpoint.collector.cluster.connection.CollectorClusterConnector;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterServiceTest.EchoServerListener;
 import com.navercorp.pinpoint.collector.util.Address;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.collector.util.DefaultAddress;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
-import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
 import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
 import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
+import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
+import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.util.Timer;
 import org.junit.AfterClass;
@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.SocketUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,12 +42,9 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration("classpath:applicationContext-test.xml")
 public class ClusterPointRouterTest {
 
-    private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22215);
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final long currentTime = System.currentTimeMillis();
-
 
     @Autowired
     ClusterPointRouter clusterPointRouter;
@@ -75,14 +71,14 @@ public class ClusterPointRouterTest {
 
         CollectorClusterConnectionManager clusterManager = new CollectorClusterConnectionManager(serverIdentifier, clusterRepository, clusterConnector);
 
+        TestServerMessageListenerFactory testServerMessageListenerFactory = new TestServerMessageListenerFactory(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.NO_RESPONSE);
+        TestPinpointServerAcceptor testPinpointServerAcceptor = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
         try {
             clusterManager.start();
 
-            PinpointServerAcceptor serverAcceptor = new PinpointServerAcceptor();
-            serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
-            serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            int bindPort = testPinpointServerAcceptor.bind();
 
-            Address address = new DefaultAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
+            Address address = new DefaultAddress("127.0.0.1", bindPort);
 
             Assert.assertEquals(0, clusterManager.getConnectedAddressList().size());
             clusterManager.connectPointIfAbsent(address);
@@ -94,9 +90,8 @@ public class ClusterPointRouterTest {
             Assert.assertEquals(0, clusterManager.getConnectedAddressList().size());
             clusterManager.disconnectPoint(address);
             Assert.assertEquals(0, clusterManager.getConnectedAddressList().size());
-            
-            serverAcceptor.close();
         } finally {
+            testPinpointServerAcceptor.close();
             clusterManager.stop();
         }
     }
@@ -178,7 +173,7 @@ public class ClusterPointRouterTest {
     private DefaultPinpointServer createPinpointServer() {
         Channel channel = mock(Channel.class);
         PinpointServerConfig config = createPinpointServerConfig();
-        
+
         return new DefaultPinpointServer(channel, config);
     }
 
@@ -188,10 +183,9 @@ public class ClusterPointRouterTest {
         when(config.getStreamMessageListener()).thenReturn(DisabledServerStreamChannelMessageListener.INSTANCE);
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
-        when(config.getMessageListener()).thenReturn(new EchoServerListener());
-
+        TestServerMessageListenerFactory.TestServerMessageListener testServerMessageListener = TestServerMessageListenerFactory.create(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.ECHO);
+        when(config.getMessageListener()).thenReturn(testServerMessageListener);
         return config;
     }
 
-    
 }

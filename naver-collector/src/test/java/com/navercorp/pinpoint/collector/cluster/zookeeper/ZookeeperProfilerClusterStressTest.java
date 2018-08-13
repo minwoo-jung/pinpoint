@@ -1,14 +1,11 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.cluster.UnsupportedServerMessageListenerFactory;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
-import com.navercorp.pinpoint.rpc.PinpointSocketException;
 import com.navercorp.pinpoint.rpc.MessageListener;
-import com.navercorp.pinpoint.rpc.client.DefaultPinpointClientFactory;
-import com.navercorp.pinpoint.rpc.client.PinpointClient;
-import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
+import com.navercorp.pinpoint.test.client.TestPinpointClient;
+import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import org.apache.curator.test.TestingServer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -22,7 +19,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.SocketUtils;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,9 +34,12 @@ public class ZookeeperProfilerClusterStressTest {
     private static final int DEFAULT_ACCEPTOR_PORT = SocketUtils.findAvailableTcpPort(22313);
     private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22315);
 
-    private static final MessageListener messageListener = ZookeeperTestUtils.getMessageListener();
-
     private static CollectorConfiguration collectorConfig = null;
+
+    private final TestServerMessageListenerFactory testServerMessageListenerFactory =
+            new TestServerMessageListenerFactory(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.NO_RESPONSE);
+
+    private final MessageListener messageListener = testServerMessageListenerFactory.create();
 
     private final int doCount = 10;
 
@@ -54,7 +57,7 @@ public class ZookeeperProfilerClusterStressTest {
 
     @Test
     public void simpleTest1() throws Exception {
-        List<TestSocket> socketList = new ArrayList<>();
+        List<TestPinpointClient> testPinpointClientList = new ArrayList<>();
 
         PinpointServerAcceptor serverAcceptor = null;
 
@@ -69,22 +72,22 @@ public class ZookeeperProfilerClusterStressTest {
 
             serverAcceptor = new PinpointServerAcceptor();
             serverAcceptor.addStateChangeEventHandler(service.getChannelStateChangeEventHandler());
-            serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
+            serverAcceptor.setMessageListenerFactory(testServerMessageListenerFactory);
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
-            socketList = connectPoint(socketList, address, doCount);
+            testPinpointClientList = connectPoint(testPinpointClientList, address, doCount);
             Thread.sleep(1000);
-            Assert.assertEquals(socketList.size(), profiler.getClusterData().size());
+            Assert.assertEquals(testPinpointClientList.size(), profiler.getClusterData().size());
 
-            for (int i=0; i < doCount; i++) {
-                socketList = randomJob(socketList, address);
+            for (int i = 0; i < doCount; i++) {
+                testPinpointClientList = randomJob(testPinpointClientList, address);
                 Thread.sleep(1000);
-                Assert.assertEquals(socketList.size(), profiler.getClusterData().size());
+                Assert.assertEquals(testPinpointClientList.size(), profiler.getClusterData().size());
             }
 
-            disconnectPoint(socketList, socketList.size());
+            disconnectPoint(testPinpointClientList, testPinpointClientList.size());
             Thread.sleep(1000);
             Assert.assertEquals(0, profiler.getClusterData().size());
 
@@ -114,7 +117,7 @@ public class ZookeeperProfilerClusterStressTest {
 
             serverAcceptor = new PinpointServerAcceptor();
             serverAcceptor.addStateChangeEventHandler(service.getChannelStateChangeEventHandler());
-            serverAcceptor.setMessageListenerFactory(new UnsupportedServerMessageListenerFactory());
+            serverAcceptor.setMessageListenerFactory(testServerMessageListenerFactory);
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
@@ -122,12 +125,12 @@ public class ZookeeperProfilerClusterStressTest {
             CountDownLatch latch = new CountDownLatch(2);
 
 
-            List<TestSocket> socketList1 = connectPoint(new ArrayList<TestSocket>(), address, doCount);
-            List<TestSocket> socketList2 = connectPoint(new ArrayList<TestSocket>(), address, doCount);
+            List<TestPinpointClient> testPinpointClientList1 = connectPoint(new ArrayList<TestPinpointClient>(), address, doCount);
+            List<TestPinpointClient> testPinpointClientList2 = connectPoint(new ArrayList<TestPinpointClient>(), address, doCount);
 
 
-            WorkerJob job1 = new WorkerJob(latch, socketList1, address, 5);
-            WorkerJob job2 = new WorkerJob(latch, socketList2, address, 5);
+            WorkerJob job1 = new WorkerJob(latch, testPinpointClientList1, address, 5);
+            WorkerJob job2 = new WorkerJob(latch, testPinpointClientList2, address, 5);
 
             Thread worker1 = new Thread(job1);
             worker1.setDaemon(false);
@@ -140,16 +143,16 @@ public class ZookeeperProfilerClusterStressTest {
 
             latch.await();
 
-            List<TestSocket> socketList = new ArrayList<>();
-            socketList.addAll(job1.getSocketList());
-            socketList.addAll(job2.getSocketList());
+            List<TestPinpointClient> testPinpointClientList = new ArrayList<>();
+            testPinpointClientList.addAll(job1.getTestPinpointClientList());
+            testPinpointClientList.addAll(job2.getTestPinpointClientList());
 
 
             logger.info(profiler.getClusterData().toString());
-            Assert.assertEquals(socketList.size(), profiler.getClusterData().size());
+            Assert.assertEquals(testPinpointClientList.size(), profiler.getClusterData().size());
 
 
-            disconnectPoint(socketList, socketList.size());
+            disconnectPoint(testPinpointClientList, testPinpointClientList.size());
             Thread.sleep(1000);
 
             service.tearDown();
@@ -165,22 +168,22 @@ public class ZookeeperProfilerClusterStressTest {
 
         private final InetSocketAddress address;
 
-        private List<TestSocket> socketList;
+        private List<TestPinpointClient> testPinpointClientList;
         private int workCount;
 
-        public WorkerJob(CountDownLatch latch, List<TestSocket> socketList, InetSocketAddress address ,int workCount) {
+        public WorkerJob(CountDownLatch latch, List<TestPinpointClient> testPinpointClientList, InetSocketAddress address, int workCount) {
             this.latch = latch;
             this.address = address;
 
-            this.socketList = socketList;
+            this.testPinpointClientList = testPinpointClientList;
             this.workCount = workCount;
         }
 
         @Override
         public void run() {
             try {
-                for (int i=0; i < workCount; i++) {
-                    socketList = randomJob(socketList, address);
+                for (int i = 0; i < workCount; i++) {
+                    testPinpointClientList = randomJob(testPinpointClientList, address);
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ignored) {
@@ -191,8 +194,8 @@ public class ZookeeperProfilerClusterStressTest {
             }
         }
 
-        public List<TestSocket> getSocketList() {
-            return socketList;
+        public List<TestPinpointClient> getTestPinpointClientList() {
+            return testPinpointClientList;
         }
 
     }
@@ -205,78 +208,18 @@ public class ZookeeperProfilerClusterStressTest {
         }
     }
 
-    private class TestSocket {
-
-        private final PinpointClientFactory factory;
-        private final Map<String, Object> properties;
-
-        private PinpointClient socket;
-
-
-        public TestSocket() {
-            this.properties = ZookeeperTestUtils.getParams(Thread.currentThread().getName(), "agent", System.currentTimeMillis());
-
-            this.factory = new DefaultPinpointClientFactory();
-            this.factory.setProperties(properties);
-            this.factory.setMessageListener(messageListener);
-        }
-
-        private void connect(InetSocketAddress address) {
-            if (socket == null) {
-                socket = createPinpointClient(factory, address);
-            }
-        }
-
-        private void stop() {
-            if (socket != null) {
-                socket.close();
-                socket = null;
-            }
-
-            if (factory != null) {
-                factory.release();
-            }
-        }
-
-        @Override
-        public String toString() {
-            return this.getClass().getSimpleName() + "(" + properties + ")";
-        }
-
-    }
-
-    private PinpointClient createPinpointClient(PinpointClientFactory clientFactory, InetSocketAddress address) {
-        String host = address.getHostName();
-        int port = address.getPort();
-
-        PinpointClient socket = null;
-        for (int i = 0; i < 3; i++) {
-            try {
-                socket = clientFactory.connect(host, port);
-                logger.info("tcp connect success:{}/{}", host, port);
-                return socket;
-            } catch (PinpointSocketException e) {
-                logger.warn("tcp connect fail:{}/{} try reconnect, retryCount:{}", host, port, i);
-            }
-        }
-        logger.warn("change background tcp connect mode  {}/{} ", host, port);
-        socket = clientFactory.scheduledConnect(host, port);
-
-        return socket;
-    }
-
-    private List<TestSocket> randomJob(List<TestSocket> socketList, InetSocketAddress address) {
+    private List<TestPinpointClient> randomJob(List<TestPinpointClient> testPinpointClientList, InetSocketAddress address) {
         Random random = new Random(System.currentTimeMillis());
         int randomNumber = Math.abs(random.nextInt());
 
         if (randomNumber % 2 == 0) {
-            return connectPoint(socketList, address, 1);
+            return connectPoint(testPinpointClientList, address, 1);
         } else {
-            return disconnectPoint(socketList, 1);
+            return disconnectPoint(testPinpointClientList, 1);
         }
     }
 
-    private List<TestSocket> connectPoint(List<TestSocket> socketList, InetSocketAddress address, int count) {
+    private List<TestPinpointClient> connectPoint(List<TestPinpointClient> testPinpointClientList, InetSocketAddress address, int count) {
 //        logger.info("connect list=({}), address={}, count={}.", socketList, address, count);
 
         for (int i = 0; i < count; i++) {
@@ -287,27 +230,27 @@ public class ZookeeperProfilerClusterStressTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            TestSocket socket = new TestSocket();
-            logger.info("connect ({}), .", socket);
-            socket.connect(address);
 
-            socketList.add(socket);
+            TestPinpointClient testPinpointClient = new TestPinpointClient(messageListener, ZookeeperTestUtils.getParams(Thread.currentThread().getName(), "agent", System.currentTimeMillis()));
+            testPinpointClient.connect(address.getHostName(), address.getPort());
+
+            testPinpointClientList.add(testPinpointClient);
         }
 
-        return socketList;
+        return testPinpointClientList;
     }
 
-    private List<TestSocket> disconnectPoint(List<TestSocket> socketList, int count) {
+    private List<TestPinpointClient> disconnectPoint(List<TestPinpointClient> testPinpointClientList, int count) {
 //        logger.info("disconnect list=({}), count={}.", socketList, count);
 
         int index = 1;
 
-        Iterator<TestSocket> iterator = socketList.iterator();
+        Iterator<TestPinpointClient> iterator = testPinpointClientList.iterator();
         while (iterator.hasNext()) {
-            TestSocket socket = iterator.next();
+            TestPinpointClient testPinpointClient = iterator.next();
 
-            logger.info("disconnect ({}), .", socket);
-            socket.stop();
+            logger.info("disconnect ({}), .", testPinpointClient);
+            testPinpointClient.closeAll();
 
             iterator.remove();
 
@@ -316,7 +259,7 @@ public class ZookeeperProfilerClusterStressTest {
             }
         }
 
-        return socketList;
+        return testPinpointClientList;
     }
 
 }

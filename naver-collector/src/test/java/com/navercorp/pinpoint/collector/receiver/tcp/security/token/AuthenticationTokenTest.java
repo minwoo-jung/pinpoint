@@ -7,18 +7,17 @@ import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenType;
 import com.navercorp.pinpoint.rpc.Future;
 import com.navercorp.pinpoint.rpc.ResponseMessage;
-import com.navercorp.pinpoint.test.utils.TestAwaitTaskUtils;
-import com.navercorp.pinpoint.test.utils.TestAwaitUtils;
 import com.navercorp.pinpoint.rpc.client.ClientCodecPipelineFactory;
 import com.navercorp.pinpoint.rpc.client.DefaultConnectionFactoryProvider;
 import com.navercorp.pinpoint.rpc.client.DefaultPinpointClientFactory;
 import com.navercorp.pinpoint.rpc.client.PinpointClient;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
-import com.navercorp.pinpoint.rpc.server.ChannelFilter;
-import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListenerFactory;
 import com.navercorp.pinpoint.rpc.util.PinpointRPCTestUtils;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
+import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
+import com.navercorp.pinpoint.test.utils.TestAwaitTaskUtils;
+import com.navercorp.pinpoint.test.utils.TestAwaitUtils;
 import com.navercorp.pinpoint.thrift.dto.TApiMetaData;
 import com.navercorp.pinpoint.thrift.dto.TResult;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdAuthenticationToken;
@@ -31,7 +30,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.util.SocketUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,14 +74,13 @@ public class AuthenticationTokenTest {
     // 2. success send & receive
     @Test
     public void authenticationSuccessTest() throws Exception {
-        int bindPort = SocketUtils.findAvailableTcpPort();
-
-        PinpointServerAcceptor server = null;
+        TestPinpointServerAcceptor testPinpointServerAcceptor = createServer();
 
         PinpointClientFactory clientFactory = null;
         PinpointClient client = null;
         try {
-            server = createServer(bindPort);
+            int bindPort = testPinpointServerAcceptor.bind();
+
             clientFactory = createClientFactory();
             client = clientFactory.connect(LOCAL_HOST, bindPort);
 
@@ -94,7 +91,7 @@ public class AuthenticationTokenTest {
             TResult resultResponse = request(client, tApiMetaData, TResult.class);
             Assert.assertTrue(resultResponse.isSuccess());
         } finally {
-            PinpointRPCTestUtils.close(server);
+            testPinpointServerAcceptor.close();
             PinpointRPCTestUtils.close(client);
 
             if (clientFactory != null) {
@@ -107,14 +104,13 @@ public class AuthenticationTokenTest {
     // 2. channel disconnect
     @Test
     public void authenticationFailTest() throws Exception {
-        int bindPort = SocketUtils.findAvailableTcpPort();
-
-        PinpointServerAcceptor server = null;
+        TestPinpointServerAcceptor testPinpointServerAcceptor = createServer();
 
         PinpointClientFactory clientFactory = null;
         PinpointClient client = null;
         try {
-            server = createServer(bindPort);
+            int bindPort = testPinpointServerAcceptor.bind();
+
             clientFactory = createClientFactory();
             client = clientFactory.connect(LOCAL_HOST, bindPort);
 
@@ -131,7 +127,7 @@ public class AuthenticationTokenTest {
 
             Assert.assertTrue(await);
         } finally {
-            PinpointRPCTestUtils.close(server);
+            testPinpointServerAcceptor.close();
             PinpointRPCTestUtils.close(client);
 
             if (clientFactory != null) {
@@ -140,21 +136,13 @@ public class AuthenticationTokenTest {
         }
     }
 
-    private PinpointServerAcceptor createServer(int bindPort) {
-        return createServer(bindPort, 1);
-    }
-
-    private PinpointServerAcceptor createServer(int bindPort, long waitingTimeMillis) {
+    private TestPinpointServerAcceptor createServer() {
         TokenService tokenService = createMockTokenService();
         CountingDispatchHandler dispahtchHandler = new CountingDispatchHandler(true);
 
         ServerMessageListenerFactory messageListenerFactory = new TokenMessageListenerFactory(executors, tokenService, new DefaultTCPPacketHandlerFactory(), dispahtchHandler);
 
-        PinpointServerAcceptor server = new PinpointServerAcceptor(ChannelFilter.BYPASS);
-        server.setMessageListenerFactory(messageListenerFactory);
-        server.bind(LOCAL_HOST, bindPort);
-
-        return server;
+        return new TestPinpointServerAcceptor(messageListenerFactory);
     }
 
     private PinpointClientFactory createClientFactory() {
