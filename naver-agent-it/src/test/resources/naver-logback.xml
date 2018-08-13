@@ -1,0 +1,57 @@
+<!--
+  ~ Copyright 2018 NAVER Corp.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm} %-5level %logger{36} -[TransactionId :
+                %X{PtransactionId}] [projectName : %X{PspanId}] %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="nelo-logback" class="com.nhncorp.nelo2.logback.NeloLogbackAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <param name="projectName" value="PINPOINT" />
+        <param name="collectorUrl" value="nelo2-col.nhncorp.com" />
+        <param name="port" value="10006" />
+        <param name="timeout" value="1200" />
+        <param name="enable" value="true" />
+        <param name="errorCodeType" value="default" />
+        <param name="debug" value="true" />
+    </appender>
+    
+    <appender name="nelo-logback-async" class="com.nhncorp.nelo2.logback.LogbackAsyncAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <param name="BlockWhenFull" value="false" />
+        <param name="IncludeCallerData" value="true" />
+        <param name="QueueCapacity" value="2048" />
+        <appender-ref ref="nelo-logback" />
+    </appender>
+    
+    <logger name="com.navercorp.test" level="INFO" additivity="false">
+        <appender-ref ref="nelo-logback-async" />
+    </logger>
+   
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="nelo-logback-async" />
+    </root>
+</configuration>

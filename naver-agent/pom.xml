@@ -25,37 +25,12 @@
 
     <artifactId>pinpoint-naver-agent</artifactId>
     <name>naver-pinpoint-agent-distribution</name>
-    <!-- this module contains integration tests. if we set packaging to pom, 
-        tests are not run. so we set it to jar even though the project will not be 
-        packaged as a jar. -->
+
     <packaging>jar</packaging>
 
     <properties>
         <distribution.directory>${project.build.directory}/pinpoint-agent</distribution.directory>
-        <tomcat.version>7.0.34</tomcat.version>
-        <!-- OSS #1190 2.6.7 버전의 jackson-jr-parent 배포가 잘못되어 있음. 일단 우회-->
-        <fastxml.jackson.version>2.6.6</fastxml.jackson.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.navercorp.pinpoint</groupId>
-                <artifactId>pinpoint-plugin-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.navercorp.pinpoint</groupId>
-                <artifactId>pinpoint-naver-plugin-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -91,12 +66,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-commons-server</artifactId>
-            <scope>test</scope>
-        </dependency>
-
 
         <!-- plug-ins -->
         <dependency>
@@ -119,103 +88,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- for tests -->
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- nelo logging -->
-        <dependency>
-            <groupId>com.naver.nelo2</groupId>
-            <artifactId>nelo2-java-sdk-log4j</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpcore</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.nhncorp</groupId>
-            <artifactId>triples-redis-client</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cubrid</groupId>
-            <artifactId>cubrid-jdbc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.jtds</groupId>
-            <artifactId>jtds</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.nhncorp.lucy</groupId>
-            <artifactId>bloc-server</artifactId>
-            <version>4.0.3</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>arcus</groupId>
-            <artifactId>arcus-client</artifactId>
-            <version>1.6.4.1</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.hadoop</groupId>
-                    <artifactId>zookeeper</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>catalina</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>coyote</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.nhncorp.owfs</groupId>
-            <artifactId>owfs-api</artifactId>
-            <version>4.0.9</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -237,68 +109,9 @@
 
         <plugins>
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
-                <executions>
-                    <execution>
-                        <id>copy-tomcat-webapp</id>
-                        <!-- here the phase you need -->
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/test/tomcat/base/webapps/test/WEB-INF/classes/com/navercorp/pinpoint/plugin/tomcat/webapp</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.testOutputDirectory}/com/navercorp/pinpoint/plugin/tomcat/webapp</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.10</version>
-                <executions>
-                    <execution>
-                        <id>copy-tomcat-test-dependencies</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/test/tomcat/base/webapps/test/WEB-INF/lib</outputDirectory>
-                            <includeArtifactIds>junit,hamcrest-core,pinpoint-test</includeArtifactIds>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${plugin.failsafe.verison}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!-- AbstractPinpointPluginTestSuite needs this to resolve 
-                        path of required jars -->
-                    <useSystemClassLoader>false</useSystemClassLoader>
-                    <failIfNoTests>true</failIfNoTests>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>${plugin.assembly.version}</version>
                 <configuration>
                     <descriptors>
                         <descriptor>src/assembly/distribution.xml</descriptor>
@@ -315,21 +128,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.6.1</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}/test/tomcat/base/webapps/test/WEB-INF</directory>
-                            <includes>
-                                <include>classes/**</include>
-                                <include>lib/**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
             </plugin>
         </plugins>
     </build>

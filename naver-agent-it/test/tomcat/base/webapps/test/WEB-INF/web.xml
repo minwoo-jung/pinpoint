@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2018 NAVER Corp.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+    id="pinpoint-web" version="2.5">
+
+    <servlet>
+        <servlet-name>test</servlet-name>
+        <servlet-class>com.navercorp.pinpoint.plugin.tomcat.webapp.TestServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>test</servlet-name>
+        <url-pattern>/doTest</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getHeaderNames</servlet-name>
+        <servlet-class>com.navercorp.pinpoint.plugin.tomcat.webapp.GetHeaderNamesServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>getHeaderNames</servlet-name>
+        <url-pattern>/getHeaderNames</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>getHeader</servlet-name>
+        <servlet-class>com.navercorp.pinpoint.plugin.tomcat.webapp.GetHeaderServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>getHeader</servlet-name>
+        <url-pattern>/getHeader</url-pattern>
+    </servlet-mapping>
+    
+    <welcome-file-list>
+        <welcome-file>/index.html</welcome-file>
+    </welcome-file-list>
+</web-app>

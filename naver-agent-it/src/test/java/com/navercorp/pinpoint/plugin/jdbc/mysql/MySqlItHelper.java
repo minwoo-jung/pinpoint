@@ -1,0 +1,225 @@
+/*
+ * Copyright 2018 NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.navercorp.pinpoint.plugin.jdbc.mysql;
+
+import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
+import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Properties;
+
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.event;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.sql;
+
+/**
+ * @author Jongho Moon
+ * @author HyunGil Jeong
+ */
+public class MySqlItHelper {
+
+    private static final String MYSQL = "MYSQL";
+    private static final String MYSQL_EXECUTE_QUERY = "MYSQL_EXECUTE_QUERY";
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final String jdbcUrl;
+    private final String databaseId;
+    private final String databasePassword;
+    private final String databaseAddress;
+    private final String databaseName;
+
+    MySqlItHelper(Properties databaseProperties) {
+        if (databaseProperties == null) {
+            throw new NullPointerException("databaseProperties must not be null");
+        }
+        jdbcUrl = databaseProperties.getProperty("mysql.url");
+        String[] tokens = jdbcUrl.split(":");
+
+        String ip = tokens[2].substring(2);
+
+        int div = tokens[3].indexOf('/');
+        int question = tokens[3].indexOf('?');
+
+        String port = tokens[3].substring(0, div);
+
+        databaseAddress = ip + ":" + port;
+        databaseName = question == -1 ? tokens[3].substring(div + 1) : tokens[3].substring(div + 1, question);
+
+        databaseId = databaseProperties.getProperty("mysql.user");
+        databasePassword = databaseProperties.getProperty("mysql.password");
+    }
+
+    void testStatements(Class<?> driverClass, Class<?> connectionClass, Class<?> preparedStatementClass, Class<?> statementClass) throws Exception {
+        Connection conn = DriverManager.getConnection(jdbcUrl, databaseId, databasePassword);
+
+        conn.setAutoCommit(false);
+
+        String insertQuery = "INSERT INTO test (name, age) VALUES (?, ?)";
+        String selectQuery = "SELECT * FROM test";
+        String deleteQuery = "DELETE FROM test";
+
+        PreparedStatement insert = conn.prepareStatement(insertQuery);
+        insert.setString(1, "maru");
+        insert.setInt(2, 5);
+        insert.execute();
+
+        Statement select = conn.createStatement();
+        ResultSet rs = select.executeQuery(selectQuery);
+
+        while (rs.next()) {
+            logger.debug("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
+        }
+
+        Statement delete = conn.createStatement();
+        delete.executeUpdate(deleteQuery);
+
+        conn.commit();
+
+        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+
+        verifier.printCache();
+
+        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        verifier.verifyTrace(event(MYSQL, connect, null, databaseAddress, databaseName, cachedArgs(jdbcUrl)));
+
+        Method setAutoCommit = connectionClass.getDeclaredMethod("setAutoCommit", boolean.class);
+        verifier.verifyTrace(event(MYSQL, setAutoCommit, null, databaseAddress, databaseName, args(false)));
+
+        Method prepareStatement = connectionClass.getDeclaredMethod("prepareStatement", String.class);
+        verifier.verifyTrace(event(MYSQL, prepareStatement, null, databaseAddress, databaseName, sql(insertQuery, null)));
+
+        Method execute = preparedStatementClass.getDeclaredMethod("execute");
+        verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, execute, null, databaseAddress, databaseName, Expectations.sql(insertQuery, null, "maru, 5")));
+
+        Method executeQuery = statementClass.getDeclaredMethod("executeQuery", String.class);
+        verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, executeQuery, null, databaseAddress, databaseName, Expectations.sql(selectQuery, null)));
+
+        Method executeUpdate = statementClass.getDeclaredMethod("executeUpdate", String.class);
+        verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, executeUpdate, null, databaseAddress, databaseName, Expectations.sql(deleteQuery, null)));
+
+        Method commit = connectionClass.getDeclaredMethod("commit");
+        verifier.verifyTrace(event(MYSQL, commit, null, databaseAddress, databaseName));
+    }
+
+    /*  CREATE OR REPLACE PROCEDURE concatCharacters(IN  a CHAR(1), IN  b CHAR(1), OUT c CHAR(2))
+        BEGIN
+            SET c = CONCAT(a, b);
+        END                                             */
+    void testStoredProcedure_with_IN_OUT_parameters(Class<?> driverClass, Class<?> connectionClass, Class<?> callableStatementClass) throws Exception {
+        final String param1 = "a";
+        final String param2 = "b";
+        final String storedProcedureQuery = "{ call concatCharacters(?, ?, ?) }";
+
+        Connection conn = DriverManager.getConnection(jdbcUrl, databaseId, databasePassword);
+
+        CallableStatement cs = conn.prepareCall(storedProcedureQuery);
+        cs.setString(1, param1);
+        cs.setString(2, param2);
+        cs.registerOutParameter(3, Types.VARCHAR);
+        cs.execute();
+
+        Assert.assertEquals(param1.concat(param2), cs.getString(3));
+
+        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+
+        verifier.printCache();
+        verifier.verifyTraceCount(4);
+
+        // NonRegisteringDriver#connect(String, Properties)
+        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        verifier.verifyTrace(event(MYSQL, connect, null, databaseAddress, databaseName, cachedArgs(jdbcUrl)));
+
+        // Connection#prepareCall(String)
+        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        verifier.verifyTrace(event(MYSQL, prepareCall, null, databaseAddress, databaseName, sql(storedProcedureQuery, null)));
+
+        // CallableStatement#registerOutParameter(int, int)
+        Method registerOutParameter = callableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        verifier.verifyTrace(event(MYSQL, registerOutParameter, null, databaseAddress, databaseName, args(3, Types.VARCHAR)));
+
+        // CallableStatement#execute
+        Method execute = callableStatementClass.getDeclaredMethod("execute");
+        verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, execute, null, databaseAddress, databaseName, Expectations.sql(storedProcedureQuery, null, param1 + ", " + param2)));
+    }
+
+    /*
+        CREATE OR REPLACE PROCEDURE swapAndGetSum(INOUT a INT, INOUT b INT)
+        BEGIN
+            DECLARE temp INT;
+            SET temp = a;
+            SET a = b;
+            SET b = temp;
+            SELECT temp + a;
+        END
+     */
+    void testStoredProcedure_with_INOUT_parameters(Class<?> driverClass, Class<?> connectionClass, Class<?> callableStatementClass) throws Exception {
+        final int param1 = 1;
+        final int param2 = 2;
+        final String storedProcedureQuery = "{ call swapAndGetSum(?, ?) }";
+
+        Connection conn = DriverManager.getConnection(jdbcUrl, databaseId, databasePassword);
+
+        CallableStatement cs = conn.prepareCall(storedProcedureQuery);
+        cs.setInt(1, param1);
+        cs.setInt(2, param2);
+        cs.registerOutParameter(1, Types.INTEGER);
+        cs.registerOutParameter(2, Types.INTEGER);
+        ResultSet rs = cs.executeQuery();
+
+        Assert.assertTrue(rs.next());
+        Assert.assertEquals(param1 + param2, rs.getInt(1));
+        Assert.assertEquals(param2, cs.getInt(1));
+        Assert.assertEquals(param1, cs.getInt(2));
+
+        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+
+        verifier.printCache();
+        verifier.verifyTraceCount(5);
+
+        // NonRegisteringDriver#connect(String, Properties)
+        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        verifier.verifyTrace(event(MYSQL, connect, null, databaseAddress, databaseName, cachedArgs(jdbcUrl)));
+
+        // NonRegisteringDriver#connect(String, Properties)
+        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        verifier.verifyTrace(event(MYSQL, prepareCall, null, databaseAddress, databaseName, sql(storedProcedureQuery, null)));
+
+        // CallableStatement#registerOutParameter(int, int)
+        Method registerOutParameter = callableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        // param 1
+        verifier.verifyTrace(event(MYSQL, registerOutParameter, null, databaseAddress, databaseName, args(1, Types.INTEGER)));
+        // param 2
+        verifier.verifyTrace(event(MYSQL, registerOutParameter, null, databaseAddress, databaseName, args(2, Types.INTEGER)));
+
+        // CallableStatement#execute
+        Method execute = callableStatementClass.getDeclaredMethod("executeQuery");
+        verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, execute, null, databaseAddress, databaseName, Expectations.sql(storedProcedureQuery, null, param1 + ", " + param2)));
+    }
+}

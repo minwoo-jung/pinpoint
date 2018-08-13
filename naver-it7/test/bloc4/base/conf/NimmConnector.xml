@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<nimm-connector>
-    <dncp-server-list component-full-name="XXXXX"> 
-                <dncp-server ip="X.X.X.X" port="XXXX" />
-    </dncp-server-list>
-</nimm-connector> 
