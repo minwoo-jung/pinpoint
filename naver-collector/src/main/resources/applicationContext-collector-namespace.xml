@@ -3,9 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <bean id="tableNameProvider" class="com.navercorp.pinpoint.common.hbase.HbaseTableNameProvider">
-        <constructor-arg index="0" value="${hbase.namespace:default}"/>
-    </bean>
+    <bean id="tableNameProvider" class="com.navercorp.pinpoint.collector.namespace.hbase.ThreadLocalHbaseTableNameProvider"/>
 
     <bean id="dispatchHandlerFactoryBeanInterceptor" class="com.navercorp.pinpoint.collector.receiver.DispatchHandlerFactoryBeanInterceptor">
         <constructor-arg value="${namespaceInfo.use.defaultValue}"/>
@@ -21,6 +19,27 @@
             <aop:pointcut id="flinkHeaderTBaseSerializerFactoryPointCut" expression="execution(public com.navercorp.pinpoint.io.request.FlinkRequest com.navercorp.pinpoint.collector.sender.FlinkRequestFactory.createFlinkRequest(org.apache.thrift.TBase, java.util.Map))"/>
             <aop:before pointcut-ref="flinkHeaderTBaseSerializerFactoryPointCut" method="beforeIntercept"/>
         </aop:aspect>
+
+        <aop:aspect id="agentEventServiceInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
+            <aop:pointcut id="agentEventServicePointCut"
+                          expression="execution(public void com.navercorp.pinpoint.collector.service.AgentEventService.handleEvent(com.navercorp.pinpoint.rpc.server.PinpointServer,..)) and args(pinpointServer,..)"/>
+            <aop:around pointcut-ref="agentEventServicePointCut" method="aroundAdvice"/>
+        </aop:aspect>
+        <aop:aspect id="agentLifeCycleHandlerInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
+            <aop:pointcut id="agentLifeCycleHandlerPointCut"
+                          expression="execution(public void com.navercorp.pinpoint.collector.rpc.handler.AgentLifeCycleHandler.handleLifeCycleEvent(com.navercorp.pinpoint.rpc.server.PinpointServer,..)) and args(pinpointServer,..)"/>
+            <aop:around pointcut-ref="agentLifeCycleHandlerPointCut" method="aroundAdvice"/>
+        </aop:aspect>
     </aop:config>
+
+    <bean id="pinpointServerNameSpaceInfoPropagateInterceptor" class="com.navercorp.pinpoint.collector.namespace.PinpointServerNameSpaceInfoPropagateInterceptor">
+        <constructor-arg index="0" value="${namespaceInfo.use.defaultValue}"/>
+    </bean>
+    <beans profile="tokenAuthentication">
+        <bean id="pinpointServerNameSpaceInfoPropagateInterceptor" class="com.navercorp.pinpoint.collector.namespace.PinpointServerNameSpaceInfoPropagateInterceptor">
+            <constructor-arg index="0" ref="metadataService"/>
+            <constructor-arg index="1" value="${namespaceInfo.use.defaultValue}"/>
+        </bean>
+    </beans>
 
 </beans>

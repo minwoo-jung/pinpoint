@@ -67,7 +67,7 @@ public class NameSpaceDispatchHandlerWrapper implements DispatchHandler {
 
         if (nameSpaceInfo == null) {
             if (useDefaultNameSapceInfo) {
-                nameSpaceInfo = new NameSpaceInfo("navercorp", "pinpoint", "default");
+                nameSpaceInfo = NameSpaceInfo.DEFAULT;
             } else {
                 throw new IllegalStateException("can not find NamespaceInfo" + serverRequest);
             }

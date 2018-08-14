@@ -24,6 +24,8 @@ public class NameSpaceInfo {
 
     public final static String NAMESPACE_INFO = NameSpaceInfo.class.getName();
 
+    public final static NameSpaceInfo DEFAULT = new NameSpaceInfo("navercorp", "pinpoint", "default");
+
     private final String organization;
     private final String mysqlDatabaseName;
     private final String hbaseNamespace;
