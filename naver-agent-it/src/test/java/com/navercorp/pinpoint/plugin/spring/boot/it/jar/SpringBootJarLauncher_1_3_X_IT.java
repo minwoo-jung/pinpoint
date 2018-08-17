@@ -18,7 +18,6 @@ package com.navercorp.pinpoint.plugin.spring.boot.it.jar;
 
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.Version;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import com.navercorp.pinpoint.plugin.spring.boot.SpringBootPluginTestSuite;
 import com.navercorp.pinpoint.plugin.spring.boot.TestAppSpringBootVersion;
