@@ -31,13 +31,16 @@ public class PropertiesLauncherItBase extends SpringBootItBase {
     @Override
     protected List<String> getPackagedLibs() {
         List<String> packagedLibs = super.getPackagedLibs();
-        // 1.4+ adds BOOT-INF/classes and it's subdirectories
-        if (getTestAppSpringBootVersion() == TestAppSpringBootVersion.POST_1_4) {
+        TestAppSpringBootVersion springBootVersion = getTestAppSpringBootVersion();
+        // 1.4.0 to 1.5.0 adds BOOT-INF/classes and it's subdirectories
+        if (springBootVersion == TestAppSpringBootVersion.POST_1_4) {
             packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes"));
             packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com"));
             packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com/navercorp"));
             packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes/com/navercorp/pinpoint"));
-        } else if (getTestAppSpringBootVersion() == TestAppSpringBootVersion.POST_1_5_3) {
+        } else if (springBootVersion == TestAppSpringBootVersion.POST_1_5_3 ||
+                   springBootVersion == TestAppSpringBootVersion.POST_2_0_0) {
+            // 1.5.0+ adds BOOT-INF/classes
             // https://github.com/spring-projects/spring-boot/commit/14638e67bc57645aecd38f15262e0daf490dd2c1
             packagedLibs.add(formatNestedEntry(getExecutable(), BOOT_INF, "classes"));
         }
@@ -51,10 +54,11 @@ public class PropertiesLauncherItBase extends SpringBootItBase {
 
     @Override
     protected String getEntryPath() {
-        if (getTestAppSpringBootVersion() == TestAppSpringBootVersion.PRE_1_4) {
+        TestAppSpringBootVersion springBootVersion = getTestAppSpringBootVersion();
+        if (springBootVersion == TestAppSpringBootVersion.PRE_1_4) {
             return "lib";
         } else {
-            // 1.4+ creates a separate BOOT-INF directory to package libraries
+            // 1.4.0+ creates a separate BOOT-INF directory to package libraries
             return BOOT_INF + "/lib";
         }
     }

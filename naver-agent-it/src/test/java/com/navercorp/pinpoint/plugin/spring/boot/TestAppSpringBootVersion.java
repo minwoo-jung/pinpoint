@@ -92,6 +92,31 @@ public enum TestAppSpringBootVersion {
                     "spring-expression-4.3.2.RELEASE.jar"
             );
         }
+    },
+    POST_2_0_0("2.0.0.RELEASE") {
+        @Override
+        public List<String> getNestedLibs() {
+            return Arrays.asList(
+                    "javax.annotation-api-1.3.2.jar",
+                    "jul-to-slf4j-1.7.25.jar",
+                    "log4j-api-2.10.0.jar",
+                    "log4j-to-slf4j-2.10.0.jar",
+                    "logback-classic-1.2.3.jar",
+                    "logback-core-1.2.3.jar",
+                    "slf4j-api-1.7.25.jar",
+                    "snakeyaml-1.19.jar",
+                    "spring-aop-5.0.4.RELEASE.jar",
+                    "spring-beans-5.0.4.RELEASE.jar",
+                    "spring-boot-2.0.0.RELEASE.jar",
+                    "spring-boot-autoconfigure-2.0.0.RELEASE.jar",
+                    "spring-boot-starter-2.0.0.RELEASE.jar",
+                    "spring-boot-starter-logging-2.0.0.RELEASE.jar",
+                    "spring-context-5.0.4.RELEASE.jar",
+                    "spring-core-5.0.4.RELEASE.jar",
+                    "spring-expression-5.0.4.RELEASE.jar",
+                    "spring-jcl-5.0.4.RELEASE.jar"
+            );
+        }
     };
 
     private static final String ARTIFACT_ID = "spring-boot-test";
