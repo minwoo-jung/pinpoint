@@ -74,7 +74,7 @@
 
         <bean id="tcpReceiver" class="com.navercorp.pinpoint.collector.receiver.tcp.AgentBaseDataReceiver" >
             <constructor-arg ref="baseDataReceiverConfig"/>
-            <constructor-arg ref="tcpReceiverExecutor"/>
+            <constructor-arg ref="baseDataReceiverWorker"/>
             <constructor-arg ref="acceptor"/>
             <constructor-arg ref="authenticationTCPPacketHandlerFactory"/>
             <constructor-arg ref="tcpDispatchHandlerWrapper"/>
