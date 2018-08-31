@@ -55,10 +55,10 @@ public class CreateTokenHandler implements RequestResponseHandler {
 
     @Override
     public void handleRequest(ServerRequest serverRequest, ServerResponse serverResponse) {
+        logger.info("Receive a token issue request. remote:{}", serverRequest.getRemoteAddress());
         final Object data = serverRequest.getData();
         if (data instanceof TBase) {
             TBase<?, ?> response = handleRequest((TBase<?, ?>) data, serverRequest.getRemoteAddress());
-
             serverResponse.write(response);
             return;
         } else {
@@ -95,6 +95,7 @@ public class CreateTokenHandler implements RequestResponseHandler {
             try {
                 Token token = tokenService.create(tokenCreateRequest);
                 response = createResponse(token.getKey());
+                logger.info("token issue success. remote:{}", remoteAddress);
             } catch (Exception e) {
                 logger.warn(e.getMessage(), e);
                 response = createResponse(TTokenResponseCode.INTERNAL_SERVER_ERROR, e.getMessage());

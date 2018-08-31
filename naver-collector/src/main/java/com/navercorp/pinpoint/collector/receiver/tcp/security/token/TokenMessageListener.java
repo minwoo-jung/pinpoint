@@ -49,6 +49,7 @@ import java.util.concurrent.Executor;
 class TokenMessageListener extends ParallelMessageListener implements ServerMessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final boolean isDebug = logger.isDebugEnabled();
 
     private final AuthenticationStateContext state = new AuthenticationStateContext();
     private final TokenSerDes tokenSerDes = new TokenSerDes();
@@ -166,6 +167,10 @@ class TokenMessageListener extends ParallelMessageListener implements ServerMess
         if (payload == null) {
             logger.warn("TCmdAuthenticationTokenRes object serialization failed");
             return;
+        }
+
+        if (isDebug) {
+            logger.debug("authentication result code:{}. remote:{}", tokenResponseCode, pinpointSocket.getRemoteAddress());
         }
 
         pinpointSocket.response(requestPacket.getRequestId(), payload);

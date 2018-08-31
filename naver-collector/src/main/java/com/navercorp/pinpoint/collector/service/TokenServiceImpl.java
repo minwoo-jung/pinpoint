@@ -21,6 +21,8 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
 import com.navercorp.pinpoint.collector.vo.TokenType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,9 @@ import java.util.UUID;
 @Profile("tokenAuthentication")
 public class TokenServiceImpl implements TokenService {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final boolean isDebug = logger.isDebugEnabled();
+
     @Autowired
     private TokenConfig tokenConfig;
 
@@ -42,6 +47,10 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Token create(TokenCreateRequest request) {
+        if (isDebug) {
+            logger.debug("create() started");
+        }
+
         for (int i = 0; i < tokenConfig.getMaxRetryCount(); i++) {
             Token token = createToken(request);
             if (tokenDao.create(token)) {
@@ -64,6 +73,10 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Token getAndRemove(String tokenKey, TokenType tokenType) {
+        if (isDebug) {
+            logger.debug("getAndRemove() started");
+        }
+
         return tokenDao.getAndRemove(tokenKey);
     }
 
