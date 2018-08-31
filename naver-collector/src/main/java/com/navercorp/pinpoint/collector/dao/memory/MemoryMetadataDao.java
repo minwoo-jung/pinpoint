@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.collector.dao.memory;
 import com.navercorp.pinpoint.collector.dao.MetadataDao;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.common.annotations.VisibleForTesting;
 import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import org.slf4j.Logger;
@@ -78,7 +79,8 @@ public class MemoryMetadataDao implements MetadataDao {
         }
     }
 
-    private boolean createPaaSOrganizationInfo(String organizationName, PaaSOrganizationInfo paaSOrganizationInfo) {
+    @VisibleForTesting
+    public boolean createPaaSOrganizationInfo(String organizationName, PaaSOrganizationInfo paaSOrganizationInfo) {
         PaaSOrganizationInfo oldValue = paaSOrganizationInfoMap.putIfAbsent(organizationName, paaSOrganizationInfo);
         return oldValue == null;
     }
@@ -88,7 +90,8 @@ public class MemoryMetadataDao implements MetadataDao {
         return paaSOrganizationInfoMap.get(organizationName);
     }
 
-    private boolean createPaaSOrganizationkey(String licenseKey, PaaSOrganizationKey paaSOrganizationKey) {
+    @VisibleForTesting
+    public boolean createPaaSOrganizationkey(String licenseKey, PaaSOrganizationKey paaSOrganizationKey) {
         PaaSOrganizationKey oldValue = paaSOrganizationKeyMap.putIfAbsent(licenseKey, paaSOrganizationKey);
         return oldValue == null;
     }
