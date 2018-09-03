@@ -48,18 +48,19 @@ public class TcpTokenService implements TokenService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final EnhancedDataSender dataSender;
+    private final String licenseKey;
     private final DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory;
 
-    public TcpTokenService(EnhancedDataSender dataSender) {
+    public TcpTokenService(EnhancedDataSender dataSender, String licenseKey) {
         this.dataSender = Assert.requireNonNull(dataSender, "dataSender must not be null");
+        this.licenseKey = Assert.requireNonNull(licenseKey, "licenseKey must not be null");
 
         TypeLocator<TBase<?, ?>> typeLocator = AuthenticationTBaseLocator.getTypeLocator();
         this.deserializerFactory = new HeaderTBaseDeserializerFactory(typeLocator);
     }
 
     @Override
-    public byte[] getToken(String licenseKey, String tokenType) {
-        Assert.requireNonNull(licenseKey, "licenseKey must not be null");
+    public byte[] getToken(String tokenType) {
         Assert.requireNonNull(tokenType, "tokenType must not be null");
 
         TCmdGetAuthenticationToken tokenRequest = new TCmdGetAuthenticationToken();

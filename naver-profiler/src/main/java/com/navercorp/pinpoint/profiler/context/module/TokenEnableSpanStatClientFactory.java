@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.profiler.context.service;
+package com.navercorp.pinpoint.profiler.context.module;
+
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * @author Taejin Koo
  */
-public interface TokenService {
-
-    byte[] getToken(String tokenType);
-
+@BindingAnnotation
+@Target(PARAMETER)
+@Retention(RUNTIME)
+public @interface TokenEnableSpanStatClientFactory {
 }

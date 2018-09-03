@@ -18,8 +18,10 @@ package com.navercorp.pinpoint.profiler.context.provider;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.navercorp.pinpoint.profiler.context.service.TokenService;
+import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
+import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.profiler.context.service.TcpTokenService;
+import com.navercorp.pinpoint.profiler.context.service.TokenService;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 
 /**
@@ -27,17 +29,25 @@ import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
  */
 public class TokenServiceProvider implements Provider<TokenService> {
 
+    private final ProfilerConfig profilerConfig;
     private final Provider<EnhancedDataSender> enhancedDataSenderProvider;
 
+    private static final String KEY_LICENSE_KEY = "profiler.security.licensekey";
+
     @Inject
-    public TokenServiceProvider(Provider<EnhancedDataSender> enhancedDataSenderProvider) {
-        this.enhancedDataSenderProvider = enhancedDataSenderProvider;
+    public TokenServiceProvider(ProfilerConfig profilerConfig, Provider<EnhancedDataSender> enhancedDataSenderProvider) {
+        this.profilerConfig = Assert.requireNonNull(profilerConfig, "profilerConfig must not be null");
+        this.enhancedDataSenderProvider = Assert.requireNonNull(enhancedDataSenderProvider, "enhancedDataSenderProvider must not be null");
     }
 
     @Override
     public TokenService get() {
+        String licenseKey = profilerConfig.readString(KEY_LICENSE_KEY, null);
+        Assert.requireNonNull(licenseKey, "licenseKey must not be null");
+
         final EnhancedDataSender enhancedDataSender = this.enhancedDataSenderProvider.get();
-        TokenService tokenService = new TcpTokenService(enhancedDataSender);
+        TokenService tokenService = new TcpTokenService(enhancedDataSender, licenseKey);
+
         return tokenService;
     }
 

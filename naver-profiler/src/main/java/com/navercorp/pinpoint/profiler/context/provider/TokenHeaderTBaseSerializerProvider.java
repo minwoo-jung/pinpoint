@@ -24,9 +24,6 @@ import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializer;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializerFactory;
 import org.apache.thrift.TBase;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Taejin Koo
  */

@@ -29,6 +29,8 @@ import com.navercorp.pinpoint.profiler.context.provider.SpanDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.SpanStatClientFactoryProvider;
 import com.navercorp.pinpoint.profiler.context.provider.StatDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TcpDataSenderProvider;
+import com.navercorp.pinpoint.profiler.context.provider.TokenEnableConnectionFactoryProviderProvider;
+import com.navercorp.pinpoint.profiler.context.provider.TokenEnableSpanStatClientFactoryProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenHeaderTBaseSerializerProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenServiceProvider;
 import com.navercorp.pinpoint.profiler.context.service.TokenService;
@@ -66,24 +68,27 @@ public class NaverRpcModule extends PrivateModule {
         bind(pinpointClientFactory).toProvider(PinpointClientFactoryProvider.class).in(Scopes.SINGLETON);
         expose(pinpointClientFactory);
 
+        bind(EnhancedDataSender.class).toProvider(TcpDataSenderProvider.class).in(Scopes.SINGLETON);
+        expose(EnhancedDataSender.class);
+
         if (securityType == SECURITY_TYPE.TOKEN) {
             // for enable tokenService
             bind(HeaderTBaseSerializer.class).toProvider(TokenHeaderTBaseSerializerProvider.class).in(Scopes.SINGLETON);
             bind(TokenService.class).toProvider(TokenServiceProvider.class).in(Scopes.SINGLETON);
 
-            // Key<PinpointClientFactory> pinpointStatClientFactory = Key.get(PinpointClientFactory.class, SpanStatClientFactory.class);
-            // bind(pinpointStatClientFactory).toProvider(TokenEnableSpanStatClientFactoryProvider.class).in(Scopes.SINGLETON);
-            // expose(pinpointStatClientFactory);
+            bind(ConnectionFactoryProvider.class).annotatedWith(TokenEnableConnectionFactoryProvider.class).toProvider(TokenEnableConnectionFactoryProviderProvider.class);
+
+            Key<PinpointClientFactory> pinpointStatClientFactory = Key.get(PinpointClientFactory.class, SpanStatClientFactory.class);
+            bind(pinpointStatClientFactory).toProvider(TokenEnableSpanStatClientFactoryProvider.class).in(Scopes.SINGLETON);
+
+            expose(pinpointStatClientFactory);
         } else {
             bind(HeaderTBaseSerializer.class).toProvider(HeaderTBaseSerializerProvider.class).in(Scopes.SINGLETON);
+
+            Key<PinpointClientFactory> pinpointStatClientFactory = Key.get(PinpointClientFactory.class, SpanStatClientFactory.class);
+            bind(pinpointStatClientFactory).toProvider(SpanStatClientFactoryProvider.class).in(Scopes.SINGLETON);
+            expose(pinpointStatClientFactory);
         }
-
-        Key<PinpointClientFactory> pinpointStatClientFactory = Key.get(PinpointClientFactory.class, SpanStatClientFactory.class);
-        bind(pinpointStatClientFactory).toProvider(SpanStatClientFactoryProvider.class).in(Scopes.SINGLETON);
-        expose(pinpointStatClientFactory);
-
-        bind(EnhancedDataSender.class).toProvider(TcpDataSenderProvider.class).in(Scopes.SINGLETON);
-        expose(EnhancedDataSender.class);
 
         Key<DataSender> spanDataSender = Key.get(DataSender.class, SpanDataSender.class);
         bind(spanDataSender).toProvider(SpanDataSenderProvider.class).in(Scopes.SINGLETON);

@@ -20,9 +20,7 @@ import com.navercorp.pinpoint.collector.handler.CreateTokenHandler;
 import com.navercorp.pinpoint.collector.handler.RequestResponseHandler;
 import com.navercorp.pinpoint.io.header.Header;
 import com.navercorp.pinpoint.io.request.ServerRequest;
-import com.navercorp.pinpoint.thrift.dto.command.TCmdGetAuthenticationToken;
 import com.navercorp.pinpoint.thrift.io.AuthenticationTBaseLocator;
-import org.apache.thrift.TBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

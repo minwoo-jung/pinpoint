@@ -25,7 +25,6 @@ import com.navercorp.pinpoint.thrift.io.HeaderTBaseDeserializerFactory;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializer;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializerFactory;
 import com.navercorp.pinpoint.thrift.io.SerializerFactory;
-import com.navercorp.pinpoint.thrift.io.TBaseLocator;
 import com.navercorp.pinpoint.thrift.io.ThreadLocalHeaderTBaseDeserializerFactory;
 import com.navercorp.pinpoint.thrift.io.ThreadLocalHeaderTBaseSerializerFactory;
 import com.navercorp.pinpoint.thrift.util.SerializationUtils;
