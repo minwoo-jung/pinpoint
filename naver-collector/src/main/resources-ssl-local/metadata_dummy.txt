@@ -1,1 +1,2 @@
 test,navercorp,default,pinpoint
+ssl-test,navercorp2,default,pinpoint

@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.thrift.io;
 
 import com.navercorp.pinpoint.io.util.BodyFactory;
+import com.navercorp.pinpoint.io.util.HeaderFactoryV2;
 import com.navercorp.pinpoint.io.util.TypeLocator;
 import com.navercorp.pinpoint.io.util.TypeLocatorBuilder;
 import com.navercorp.pinpoint.thrift.dto.command.TCmdAuthenticationToken;
@@ -41,8 +42,7 @@ public class AuthenticationTBaseLocator {
     private static final TypeLocator<TBase<?, ?>> typeLocator = build();
 
     public static TypeLocator<TBase<?, ?>> build() {
-
-        TypeLocatorBuilder<TBase<?, ?>> builder = new TypeLocatorBuilder<TBase<?, ?>>();
+        TypeLocatorBuilder<TBase<?, ?>> builder = new TypeLocatorBuilder<TBase<?, ?>>(new HeaderFactoryV2());
         DefaultTBaseLocator.addBodyFactory(builder);
         addBodyFactory(builder);
         return builder.build();

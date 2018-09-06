@@ -67,7 +67,7 @@
             <constructor-arg type="com.navercorp.pinpoint.io.util.TypeLocator" ref="authenticationTypeLocator"/>
         </bean>
 
-        <bean id="authenticationTCPPacketHandlerFactory" class="com.navercorp.pinpoint.collector.receiver.tcp.DefaultTCPPacketHandlerFactory">
+        <bean id="authenticationTCPPacketHandlerFactory" class="com.navercorp.pinpoint.collector.receiver.tcp.security.token.TokenEnableTCPPacketHandlerFactory">
             <property name="serializerFactory" ref="authenticationTBaseSerializerFactory"/>
             <property name="deserializerFactory" ref="authenticationTBaseDeserializerFactory"/>
         </bean>

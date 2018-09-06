@@ -20,6 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.profiler.NaverProfilerConfigConstants;
 import com.navercorp.pinpoint.rpc.PipelineFactory;
 import com.navercorp.pinpoint.rpc.client.ClientCodecPipelineFactory;
 import com.navercorp.pinpoint.rpc.client.ConnectionFactoryProvider;
@@ -41,12 +42,6 @@ public class NaverConnectionFactoryProviderProvider implements Provider<Connecti
 
     private final ProfilerConfig profilerConfig;
 
-    private static final String KEY_SSL_ENABLE = "profiler.collector.tcp.ssl.enable";
-    private static final String DEFAULT_ENABLE = "false";
-
-    private static final String KEY_SSL_ALGORITHM = "profiler.collector.tcp.ssl.algorithm";
-    private static final String KEY_SSL_ALGORITHM_INSECURE = "profiler.collector.tcp.ssl.algorithm.insecure";
-
     @Inject
     public NaverConnectionFactoryProviderProvider(ProfilerConfig profilerConfig) {
         this.profilerConfig = Assert.requireNonNull(profilerConfig, "profilerConfig must not be null");
@@ -54,7 +49,7 @@ public class NaverConnectionFactoryProviderProvider implements Provider<Connecti
 
     @Override
     public ConnectionFactoryProvider get() {
-        String enable = profilerConfig.readString(KEY_SSL_ENABLE, DEFAULT_ENABLE);
+        String enable = profilerConfig.readString(NaverProfilerConfigConstants.KEY_SSL_ENABLE, NaverProfilerConfigConstants.DEFAULT_SSL_ENABLE);
 
         if (Boolean.valueOf(enable)) {
             Properties properties = createProperties(profilerConfig);
@@ -84,9 +79,9 @@ public class NaverConnectionFactoryProviderProvider implements Provider<Connecti
     }
 
     private Properties createProperties(ProfilerConfig profilerConfig) {
-        String enable = profilerConfig.readString(KEY_SSL_ENABLE, DEFAULT_ENABLE);
-        String algorithm = profilerConfig.readString(KEY_SSL_ALGORITHM, "");
-        String insecureMode = profilerConfig.readString(KEY_SSL_ALGORITHM_INSECURE, DEFAULT_ENABLE);
+        String enable = profilerConfig.readString(NaverProfilerConfigConstants.KEY_SSL_ENABLE, NaverProfilerConfigConstants.DEFAULT_SSL_ENABLE);
+        String algorithm = profilerConfig.readString(NaverProfilerConfigConstants.KEY_SSL_ALGORITHM, "");
+        String insecureMode = profilerConfig.readString(NaverProfilerConfigConstants.KEY_SSL_ALGORITHM_INSECURE_ENABLE, NaverProfilerConfigConstants.DEFAULT_SSL_ALGORITHM_INSECURE_ENABLE);
 
         Properties properties = new Properties();
         properties.put(SslConfig.KEY_SSL_ENABLE, enable);

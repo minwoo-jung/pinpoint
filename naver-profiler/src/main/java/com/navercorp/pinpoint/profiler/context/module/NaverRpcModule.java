@@ -21,9 +21,11 @@ import com.google.inject.PrivateModule;
 import com.google.inject.Scopes;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.profiler.NaverProfilerConfigConstants;
 import com.navercorp.pinpoint.profiler.context.provider.CommandDispatcherProvider;
 import com.navercorp.pinpoint.profiler.context.provider.HeaderTBaseSerializerProvider;
 import com.navercorp.pinpoint.profiler.context.provider.NaverConnectionFactoryProviderProvider;
+import com.navercorp.pinpoint.profiler.context.provider.NaverTcpDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.PinpointClientFactoryProvider;
 import com.navercorp.pinpoint.profiler.context.provider.SpanDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.SpanStatClientFactoryProvider;
@@ -46,9 +48,6 @@ import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializer;
  */
 public class NaverRpcModule extends PrivateModule {
 
-    private static final String KEY_SECURITY_TYPE = "profiler.collector.security.type";
-    private static final String DEFAULT_SECURITY_TYPE = "NONE";
-
     private final ProfilerConfig profilerConfig;
 
     public NaverRpcModule(ProfilerConfig profilerConfig) {
@@ -59,7 +58,7 @@ public class NaverRpcModule extends PrivateModule {
     protected void configure() {
         bind(CommandDispatcher.class).toProvider(CommandDispatcherProvider.class).in(Scopes.SINGLETON);
 
-        SECURITY_TYPE securityType = SECURITY_TYPE.getValue(profilerConfig.readString(KEY_SECURITY_TYPE, DEFAULT_SECURITY_TYPE));
+        SECURITY_TYPE securityType = SECURITY_TYPE.getValue(profilerConfig.readString(NaverProfilerConfigConstants.KEY_SECURITY_TYPE, NaverProfilerConfigConstants.DEFAULT_SECURITY_TYPE));
 
         // for enable ssl
         bind(ConnectionFactoryProvider.class).toProvider(NaverConnectionFactoryProviderProvider.class).in(Scopes.SINGLETON);
@@ -68,10 +67,11 @@ public class NaverRpcModule extends PrivateModule {
         bind(pinpointClientFactory).toProvider(PinpointClientFactoryProvider.class).in(Scopes.SINGLETON);
         expose(pinpointClientFactory);
 
-        bind(EnhancedDataSender.class).toProvider(TcpDataSenderProvider.class).in(Scopes.SINGLETON);
-        expose(EnhancedDataSender.class);
 
         if (securityType == SECURITY_TYPE.TOKEN) {
+            bind(EnhancedDataSender.class).toProvider(NaverTcpDataSenderProvider.class).in(Scopes.SINGLETON);
+            expose(EnhancedDataSender.class);
+
             // for enable tokenService
             bind(HeaderTBaseSerializer.class).toProvider(TokenHeaderTBaseSerializerProvider.class).in(Scopes.SINGLETON);
             bind(TokenService.class).toProvider(TokenServiceProvider.class).in(Scopes.SINGLETON);
@@ -83,6 +83,9 @@ public class NaverRpcModule extends PrivateModule {
 
             expose(pinpointStatClientFactory);
         } else {
+            bind(EnhancedDataSender.class).toProvider(TcpDataSenderProvider.class).in(Scopes.SINGLETON);
+            expose(EnhancedDataSender.class);
+
             bind(HeaderTBaseSerializer.class).toProvider(HeaderTBaseSerializerProvider.class).in(Scopes.SINGLETON);
 
             Key<PinpointClientFactory> pinpointStatClientFactory = Key.get(PinpointClientFactory.class, SpanStatClientFactory.class);
