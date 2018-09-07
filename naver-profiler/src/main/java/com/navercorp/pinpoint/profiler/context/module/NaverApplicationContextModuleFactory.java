@@ -33,8 +33,9 @@ public class NaverApplicationContextModuleFactory implements ModuleFactory {
         final Module applicationContextModule = new ApplicationContextModule();
         final Module rpcModule = new NaverRpcModule(agentOption.getProfilerConfig());
         final Module statsModule = new StatsModule();
+        final Module thriftStatsModule = new ThriftStatsModule();
 
-        return Modules.combine(config, pluginModule, applicationContextModule, rpcModule, statsModule);
+        return Modules.combine(config, pluginModule, applicationContextModule, rpcModule, statsModule, thriftStatsModule);
     }
 
 }
