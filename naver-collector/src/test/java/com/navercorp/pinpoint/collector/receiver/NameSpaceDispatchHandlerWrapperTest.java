@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.collector.receiver;
 
 import com.navercorp.pinpoint.collector.namespace.RequestContextHolder;
+import com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandler;
 import com.navercorp.pinpoint.io.request.*;
 import org.junit.Test;
 

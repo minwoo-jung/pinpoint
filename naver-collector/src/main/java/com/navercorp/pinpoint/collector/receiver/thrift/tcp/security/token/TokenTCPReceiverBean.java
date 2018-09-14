@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
+package com.navercorp.pinpoint.collector.receiver.thrift.tcp.security.token;
 
-import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
-import com.navercorp.pinpoint.collector.receiver.PinpointServerAcceptorProvider;
-import com.navercorp.pinpoint.collector.receiver.TCPReceiverBean;
-import com.navercorp.pinpoint.collector.receiver.tcp.DefaultTCPPacketHandlerFactory;
-import com.navercorp.pinpoint.collector.receiver.tcp.TCPPacketHandlerFactory;
-import com.navercorp.pinpoint.collector.receiver.tcp.TCPReceiver;
+import com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandler;
+import com.navercorp.pinpoint.collector.receiver.thrift.PinpointServerAcceptorProvider;
+import com.navercorp.pinpoint.collector.receiver.thrift.TCPReceiverBean;
+import com.navercorp.pinpoint.collector.receiver.thrift.tcp.DefaultTCPPacketHandlerFactory;
+import com.navercorp.pinpoint.collector.receiver.thrift.tcp.TCPPacketHandlerFactory;
+import com.navercorp.pinpoint.collector.receiver.thrift.tcp.TCPReceiver;
 import com.navercorp.pinpoint.collector.service.TokenService;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.rpc.server.ServerMessageListenerFactory;

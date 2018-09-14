@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.collector.receiver.tcp.security.token;
+package com.navercorp.pinpoint.collector.receiver.thrift.tcp.security.token;
 
 import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.io.util.TypeLocator;

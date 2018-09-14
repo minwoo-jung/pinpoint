@@ -1,5 +1,6 @@
 package com.navercorp.pinpoint.web.dao.hbase;
 
+import com.navercorp.pinpoint.common.server.bo.AgentInfoBo;
 import com.navercorp.pinpoint.web.vo.AgentInfo;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,13 +27,13 @@ public class HbaseAgentInfoDaoTest {
 
     @Test
     public void testSelectAgentInfoStartTime() throws Exception {
-        TAgentInfo agentInfo1 = createAgentInfo(10000);
+        AgentInfoBo agentInfo1 = createAgentInfo(10000);
         insertDao.insert(agentInfo1);
 
-        TAgentInfo agentInfo2 = createAgentInfo(20000);
+        AgentInfoBo agentInfo2 = createAgentInfo(20000);
         insertDao.insert(agentInfo2);
 
-        TAgentInfo agentInfo3 = createAgentInfo(30000);
+        AgentInfoBo agentInfo3 = createAgentInfo(30000);
         insertDao.insert(agentInfo3);
 
         AgentInfo testcaseAgent1 = selectDao.getAgentInfo("testcaseAgent", 20005);
@@ -46,15 +47,15 @@ public class HbaseAgentInfoDaoTest {
 
     }
 
-    private TAgentInfo createAgentInfo(long startTime) {
-        TAgentInfo agentInfo = new TAgentInfo();
-        agentInfo.setAgentId("testcaseAgent");
-        agentInfo.setApplicationName("testcaseApplication");
-        agentInfo.setHostname("testcaseHostName");
-        agentInfo.setPorts("9995");
-        agentInfo.setStartTimestamp(startTime);
-        agentInfo.setServiceType(ServiceType.TEST_STAND_ALONE.getCode());
+    private AgentInfoBo createAgentInfo(long startTime) {
+        final AgentInfoBo.Builder builder = new AgentInfoBo.Builder();
+        builder.setAgentId("testcaseAgent");
+        builder.setApplicationName("testcaseApplication");
+        builder.setHostName("testcaseHostName");
+        builder.setPorts("9995");
+        builder.setStartTime(startTime);
+        builder.setServiceTypeCode(ServiceType.TEST_STAND_ALONE.getCode());
 
-        return agentInfo;
+        return builder.build();
     }
 }

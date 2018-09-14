@@ -53,7 +53,7 @@
         <bean id="tokenEnableTcpDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.TokenEnableTcpDispatchHandler">
         </bean>
 
-        <bean id="tcpDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.DispatchHandlerFactoryBean">
+        <bean id="tcpDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandlerFactoryBean">
             <constructor-arg ref="tokenEnableTcpDispatchHandler"/>
             <constructor-arg ref="handlerManager"/>
         </bean>
@@ -67,12 +67,12 @@
             <constructor-arg type="com.navercorp.pinpoint.io.util.TypeLocator" ref="authenticationTypeLocator"/>
         </bean>
 
-        <bean id="authenticationTCPPacketHandlerFactory" class="com.navercorp.pinpoint.collector.receiver.tcp.security.token.TokenEnableTCPPacketHandlerFactory">
+        <bean id="authenticationTCPPacketHandlerFactory" class="com.navercorp.pinpoint.collector.receiver.thrift.tcp.security.token.TokenEnableTCPPacketHandlerFactory">
             <property name="serializerFactory" ref="authenticationTBaseSerializerFactory"/>
             <property name="deserializerFactory" ref="authenticationTBaseDeserializerFactory"/>
         </bean>
 
-        <bean id="tcpReceiver" class="com.navercorp.pinpoint.collector.receiver.tcp.AgentBaseDataReceiver" >
+        <bean id="tcpReceiver" class="com.navercorp.pinpoint.collector.receiver.thrift.tcp.AgentBaseDataReceiver" >
             <constructor-arg ref="baseDataReceiverConfig"/>
             <constructor-arg ref="baseDataReceiverWorker"/>
             <constructor-arg ref="acceptor"/>
@@ -88,7 +88,7 @@
 
         <bean id="tokenService" class="com.navercorp.pinpoint.collector.service.TokenServiceImpl"/>
 
-        <bean id="spanTcpReceiver" class="com.navercorp.pinpoint.collector.receiver.tcp.security.token.TokenTCPReceiverBean">
+        <bean id="spanTcpReceiver" class="com.navercorp.pinpoint.collector.receiver.thrift.tcp.security.token.TokenTCPReceiverBean">
             <property name="bindIp" value="#{spanReceiverConfig.tcpBindIp}"/>
             <property name="bindPort" value="#{spanReceiverConfig.tcpBindPort}"/>
             <property name="acceptorProvider" ref="spanAcceptorProvider"/>
@@ -99,7 +99,7 @@
             <property name="tokenService" ref="tokenService"/>
         </bean>
 
-        <bean id="statTcpReceiver" class="com.navercorp.pinpoint.collector.receiver.tcp.security.token.TokenTCPReceiverBean">
+        <bean id="statTcpReceiver" class="com.navercorp.pinpoint.collector.receiver.thrift.tcp.security.token.TokenTCPReceiverBean">
             <property name="bindIp" value="#{statReceiverConfig.tcpBindIp}"/>
             <property name="bindPort" value="#{statReceiverConfig.tcpBindPort}"/>
             <property name="acceptorProvider" ref="statAcceptorProvider"/>

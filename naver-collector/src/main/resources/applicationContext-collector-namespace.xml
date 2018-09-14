@@ -12,7 +12,7 @@
 
     <aop:config>
         <aop:aspect id="delegateDispatchHandlerInterceptorAop" ref="dispatchHandlerFactoryBeanInterceptor">
-            <aop:pointcut id="dispatchHandlerFactoryBeanPointCut" expression="execution(public com.navercorp.pinpoint.collector.receiver.DispatchHandler com.navercorp.pinpoint.collector.receiver.DispatchHandlerFactoryBean.getObject())"/>
+            <aop:pointcut id="dispatchHandlerFactoryBeanPointCut" expression="execution(public com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandler com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandlerFactoryBean.getObject())"/>
             <aop:around pointcut-ref="dispatchHandlerFactoryBeanPointCut" method="aroundIntercept"/>
         </aop:aspect>
         <aop:aspect id="flinkHeaderTBaseSerializerFactoryInterceptorAop" ref="flinkRequestFactoryInterceptor">
@@ -27,7 +27,7 @@
         </aop:aspect>
         <aop:aspect id="agentLifeCycleHandlerInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
             <aop:pointcut id="agentLifeCycleHandlerPointCut"
-                          expression="execution(public void com.navercorp.pinpoint.collector.rpc.handler.AgentLifeCycleHandler.handleLifeCycleEvent(com.navercorp.pinpoint.rpc.server.PinpointServer,..)) and args(pinpointServer,..)"/>
+                          expression="execution(public void com.navercorp.pinpoint.collector.receiver.thrift.tcp.AgentLifeCycleEventHandler.handleLifeCycleEvent(com.navercorp.pinpoint.rpc.server.PinpointServer,..)) and args(pinpointServer,..)"/>
             <aop:around pointcut-ref="agentLifeCycleHandlerPointCut" method="aroundAdvice"/>
         </aop:aspect>
     </aop:config>
