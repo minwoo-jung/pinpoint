@@ -197,7 +197,7 @@
     <profiles>
         <!-- Local server -->
         <profile>
-            <id>local</id>
+            <id>naver-local</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -208,7 +208,7 @@
 
         <!-- Test server -->
         <profile>
-            <id>test</id>
+            <id>naver-test</id>
             <properties>
                 <env>test</env>
             </properties>
@@ -216,7 +216,7 @@
 
         <!-- Development server -->
         <profile>
-            <id>dev</id>
+            <id>naver-dev</id>
             <properties>
                 <env>dev</env>
             </properties>
@@ -224,7 +224,7 @@
         
         <!-- Development server -->
         <profile>
-            <id>alpha</id>
+            <id>naver-alpha</id>
             <properties>
                 <env>alpha</env>
             </properties>
@@ -232,7 +232,7 @@
 
         <!-- real server -->
         <profile>
-            <id>release</id>
+            <id>naver-release</id>
             <properties>
                 <env>release</env>
             </properties>
@@ -240,7 +240,7 @@
 
         <!-- ssl local server -->
         <profile>
-            <id>ssl-local</id>
+            <id>naver-ssl-local</id>
             <properties>
                 <env>ssl-local</env>
             </properties>
