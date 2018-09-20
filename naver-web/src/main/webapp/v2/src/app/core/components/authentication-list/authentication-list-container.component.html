@@ -1,0 +1,60 @@
+<div class="l-wrapper">
+    <table class="table l-authentication-table">
+        <colgroup>
+            <col width="100%">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>
+                    <div class="l-table-title">
+                        Authentication
+                        <button class="btn btn-sm" [ngClass]="getAddButtonClass()" (click)="onAddAuthPopup()">+ Add</button>
+                    </div>
+                    <div class="l-authentication-th">                        
+                        <div>User Group</div>
+                        <div>Role</div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0;">
+                    <div class="l-authentication-tr-wrap">
+                        <pp-authentication-list
+                            [authenticationList]="authenticationList"
+                            (outRemove)="onRemoveAuth($event)"
+                            (outEdit)="onEditAuth($event)"
+                            (outInfo)="onShowAuthInfo($event)">
+                        </pp-authentication-list>
+                        <div class="l-not-selected" *ngIf="!isApplicationSelected()">Select Application</div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="l-message" [hidden]="!hasMessage()">
+        <button class="btn btn-black" (click)="onCloseMessage()"><i class="fas fa-times"></i></button>
+        <span>{{message}}</span>
+    </div>
+    <div class="l-authentication-info" *ngIf="showSelectedAuthInfo">
+        <span><i class="fas fa-check-square" [hidden]="!selectedAuth.configuration.serverMapData"></i><i class="far fa-square" [hidden]="selectedAuth.configuration.serverMapData"></i> {{ i18nLabel.SERVER_MAP }}</span>
+        <span><i class="fas fa-check-square" [hidden]="!selectedAuth.configuration.apiMetaData"></i><i class="far fa-square" [hidden]="selectedAuth.configuration.apiMetaData"></i> {{ i18nLabel.API_META }}</span>
+        <span><i class="fas fa-check-square" [hidden]="!selectedAuth.configuration.paramMetaData"></i><i class="far fa-square" [hidden]="selectedAuth.configuration.paramMetaData"></i> {{ i18nLabel.PARAM_META }}</span>
+        <span><i class="fas fa-check-square" [hidden]="!selectedAuth.configuration.sqlMetaData"></i><i class="far fa-square" [hidden]="selectedAuth.configuration.sqlMetaData"></i> {{ i18nLabel.SQL_META }}</span>
+        <button class="fas fa-times-circle fa-lg" (click)="hideSelectedAuthInfo()"></button>
+    </div>
+    <pp-authentication-create-and-update
+        [showCreate]="showCreate"
+        [userGroupList]="filteredUserGroupList"
+        [i18nLabel]="i18nLabel"
+        [i18nGuide]="i18nGuide"
+        [fixRole]="fixEditRole"
+        [editAuth]="editAuth"
+        (outUpdateAuth)="onUpdateAuth($event)"
+        (outCreateAuth)="onCreateAuth($event)"
+        (outClose)="onCloseCreateAuthPopup()">
+    </pp-authentication-create-and-update>
+    <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
+    <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
+</div>

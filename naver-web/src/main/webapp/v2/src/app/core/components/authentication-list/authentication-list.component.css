@@ -1,0 +1,46 @@
+.l-authentication-tr {
+    display: flex;
+    height: 30px;
+    align-items: center;
+    padding: 0 15px;
+    position: relative;
+}
+.l-authentication-tr div {
+    float: left;
+}
+.l-authentication-tr div:nth-child(1) {
+    width: 50%;
+}
+.l-authentication-tr div:nth-child(2) {
+    width: 16.66666667%;
+}
+.l-authentication-tr div:nth-child(3) {
+    width: 33.33333333%;
+}
+.l-authentication-btn-group {
+    display: flex;
+    color: #b3b6bf;
+    font-size: 13px;
+    align-items: center;
+    justify-content: flex-end;
+}
+.l-authentication-btn-group button {
+    margin-left: 11px;
+}
+.l-authentication-btn-group button:first-child {
+    margin-left: 0;
+}
+.l-threshold {
+    text-align: center;
+}
+.fa-trash-alt {
+    color: #b3b6bf;
+    font-size: 14px;
+}
+.fa-edit {
+    margin-left: 10px;
+}
+.fa-check {
+    color: #F00;
+    margin-left: 10px;
+}

@@ -1,0 +1,43 @@
+<div [hidden]="!showCreate" class="l-wrapper">
+        <button class="btn btn-black l-close" (click)="onClose(); formDir.resetForm();"><i class="fas fa-times"></i></button>
+        <h1>{{title}}</h1> 
+        <form [formGroup]="authForm" #formDir="ngForm" (ngSubmit)="onCreateOrUpdate()">
+            <div class="l-form-grid">
+                <div>
+                    <div>{{ i18nLabel.USER_GROUP }}</div>
+                    <select formControlName="userGroupId">
+                        <option value="">{{i18nGuide.USER_GROUP_REQUIRED}}</option>
+                        <option value="guest" [hidden]="fixRole !== 'guest'">Guest</option>
+                        <option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup}}</option>
+                    </select>
+                    <span class="fas fa-angle-down"></span>
+                </div>
+                <div>
+                    <div>{{ i18nLabel.ROLE }}</div>
+                    <select formControlName="role">
+                        <option value="">{{i18nGuide.ROLE_REQUIRED}}</option>
+                        <option value="guest" [hidden]="fixRole !== 'guest'">Guest</option>
+                        <option *ngFor="let role of roleList" [value]="role">{{role.toUpperCase()}}</option>
+                    </select>
+                    <span class="fas fa-angle-down"></span>
+                </div>
+                <div class="l-checkbox">
+                    <input type="checkbox" id="serverMap" formControlName="serverMap">
+                    <label for="serverMap">{{ i18nLabel.SERVER_MAP }}</label>
+                </div>
+                <div class="l-checkbox">
+                    <input type="checkbox" id="apiMeta" formControlName="apiMeta">
+                    <label for="apiMeta">{{ i18nLabel.API_META }}</label>
+                </div>
+                <div class="l-checkbox">
+                    <input type="checkbox" id="paramMeta" formControlName="paramMeta">
+                    <label for="paramMeta">{{ i18nLabel.PARAM_META }}</label>
+                </div>
+                <div class="l-checkbox">
+                    <input type="checkbox" id="sqlMeta" formControlName="sqlMeta">
+                    <label for="sqlMeta">{{ i18nLabel.SQL_META }}</label>
+                </div>                
+            </div>
+            <button type="submit" class="btn btn-blue l-create" [class.btn-gray]="authForm.invalid" [disabled]="authForm.invalid">OK</button>
+        </form>
+    </div>

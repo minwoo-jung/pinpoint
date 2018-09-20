@@ -1,0 +1,11 @@
+<div class="l-authentication-tr" *ngFor="let auth of authenticationList">
+    <div >{{auth.userGroupId}}</div>
+    <div >{{auth.role.toUpperCase()}}</div>
+    <div class="l-authentication-btn-group">
+        <button [hidden]="isRemoveTarget(auth.userGroupId, auth.applicationId)" class="fas fa-binoculars" (click)="onShowInfo(auth.userGroupId, auth.role)"></button>
+        <button [hidden]="isRemoveTarget(auth.userGroupId, auth.applicationId)" class="far fa-edit" (click)="onEdit(auth.userGroupId, auth.role)"></button>
+        <button [hidden]="isRemoveTarget(auth.userGroupId, auth.applicationId)" class="far fa-trash-alt" (click)="onRemove(auth.userGroupId, auth.applicationId)"></button>
+        <button [hidden]="!isRemoveTarget(auth.userGroupId, auth.applicationId)" class="fas fa-arrow-left" (click)="onCancelRemove()"></button>
+        <button [hidden]="!isRemoveTarget(auth.userGroupId, auth.applicationId)" class="fas fa-check" (click)="onConfirmRemove()"></button>
+    </div>
+</div>
