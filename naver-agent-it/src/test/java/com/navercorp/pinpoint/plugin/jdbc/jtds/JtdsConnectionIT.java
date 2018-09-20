@@ -25,6 +25,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
+import com.navercorp.pinpoint.profiler.context.SpanEvent;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
-import com.navercorp.pinpoint.common.server.bo.SpanEventBo;
 import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
 
@@ -88,7 +88,7 @@ public class JtdsConnectionIT extends BasePinpointTest {
 
         DatabaseInfo url = ((DatabaseInfoAccessor) connection)._$PINPOINT$_getDatabaseInfo();
         Assert.assertNotNull(url);
-        List<SpanEventBo> currentSpanEvents = getCurrentSpanEvents();
+        List<SpanEvent> currentSpanEvents = getCurrentSpanEvents();
         logger.debug("{}", currentSpanEvents);
 //        Assert.assertEquals(1, currentSpanEvents.size());
 

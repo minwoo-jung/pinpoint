@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 NAVER Corp.
+ * Copyright 2018 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,9 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
+import com.navercorp.pinpoint.profiler.context.SpanEvent;
 import org.junit.Test;
 
-import com.navercorp.pinpoint.common.server.bo.SpanEventBo;
 import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
 import com.nhncorp.redis.cluster.RedisCluster;
 import com.nhncorp.redis.cluster.RedisClusterClient;
@@ -46,10 +46,10 @@ public class NbaseArcPluginTest extends BasePinpointTest {
             redis.get("foo");
             redis.get("foo".getBytes());
 
-            final List<SpanEventBo> events = getCurrentSpanEvents();
+            final List<SpanEvent> events = getCurrentSpanEvents();
             assertEquals(2, events.size());
 
-            final SpanEventBo eventBo = events.get(0);
+            final SpanEvent eventBo = events.get(0);
             assertEquals(HostAndPort.toHostAndPortString(HOST, PORT), eventBo.getEndPoint());
             assertEquals("NBASE_ARC", eventBo.getDestinationId());
         } finally {

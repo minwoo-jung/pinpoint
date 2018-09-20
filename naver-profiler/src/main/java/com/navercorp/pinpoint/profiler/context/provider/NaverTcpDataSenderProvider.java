@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,14 +22,20 @@ import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.profiler.AgentInformation;
 import com.navercorp.pinpoint.profiler.NaverProfilerConfigConstants;
-import com.navercorp.pinpoint.profiler.context.NaverTcpDataSender;
 import com.navercorp.pinpoint.profiler.context.module.DefaultClientFactory;
+import com.navercorp.pinpoint.profiler.context.storage.BypassMessageConverter;
+import com.navercorp.pinpoint.profiler.context.storage.MessageConverter;
 import com.navercorp.pinpoint.profiler.receiver.CommandDispatcher;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
+import com.navercorp.pinpoint.profiler.sender.MessageSerializer;
+import com.navercorp.pinpoint.profiler.sender.TcpDataSender;
+import com.navercorp.pinpoint.profiler.sender.ThriftMessageSerializer;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.security.SecurityConstants;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializer;
+import com.navercorp.pinpoint.thrift.io.TBaseSerializer;
+import org.apache.thrift.TBase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,10 +72,15 @@ public class NaverTcpDataSenderProvider implements Provider<EnhancedDataSender> 
 
         String collectorTcpServerIp = profilerConfig.getCollectorTcpServerIp();
         int collectorTcpServerPort = profilerConfig.getCollectorTcpServerPort();
-        HeaderTBaseSerializer headerTBaseSerializer = tBaseSerializerProvider.get();
+        TBaseSerializer tBaseSerializer = tBaseSerializerProvider.get();
+
+        TBaseSerializer licenseSupportSerializer = new LicenseSupportTBaseSerializer(tBaseSerializer, licenseKey);
+
+        MessageConverter<TBase<?, ?>> messageConverter = new BypassMessageConverter<TBase<?, ?>>();
+        MessageSerializer<byte[]> messageSerializer = new ThriftMessageSerializer(messageConverter, licenseSupportSerializer);
 
 
-        return new NaverTcpDataSender("Naver-Default", collectorTcpServerIp, collectorTcpServerPort, clientFactory, headerTBaseSerializer, licenseKey);
+        return new TcpDataSender("Naver-Default", collectorTcpServerIp, collectorTcpServerPort, clientFactory, messageSerializer);
     }
 
     // com.navercorp.pinpoint.profiler.context.provider.PinpointClientFactoryProvider 의 Handshake 데이터를 포함하는 것과 같은 로직입니다.
