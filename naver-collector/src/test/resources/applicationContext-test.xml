@@ -33,9 +33,11 @@
     <context:component-scan
             base-package="com.navercorp.pinpoint.collector.dao.hbase,
                          com.navercorp.pinpoint.collector.handler,
+                         com.navercorp.pinpoint.collector.receiver.thrift.tcp,
                          com.navercorp.pinpoint.collector.mapper,
                          com.navercorp.pinpoint.collector.util,
                          com.navercorp.pinpoint.collector.config,
+                         com.navercorp.pinpoint.collector.service,
                          com.navercorp.pinpoint.common.server.bo,
                          com.navercorp.pinpoint.common.server.util" />
 
