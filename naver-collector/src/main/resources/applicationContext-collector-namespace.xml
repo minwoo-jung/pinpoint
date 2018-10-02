@@ -22,7 +22,7 @@
 
         <aop:aspect id="agentEventServiceInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
             <aop:pointcut id="agentEventServicePointCut"
-                          expression="execution(public void com.navercorp.pinpoint.collector.service.AgentEventService.handleEvent(com.navercorp.pinpoint.rpc.server.PinpointServer,..)) and args(pinpointServer,..)"/>
+                          expression="execution(public void com.navercorp.pinpoint.collector.receiver.thrift.tcp.AgentEventHandler.handleEvent(com.navercorp.pinpoint.rpc.server.PinpointServer,..)) and args(pinpointServer,..)"/>
             <aop:around pointcut-ref="agentEventServicePointCut" method="aroundAdvice"/>
         </aop:aspect>
         <aop:aspect id="agentLifeCycleHandlerInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
