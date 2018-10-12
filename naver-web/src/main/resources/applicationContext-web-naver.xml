@@ -44,6 +44,9 @@
     <bean id="userInfoDecoder" class="com.navercorp.pinpoint.web.util.NaverUserInfoDecoder">
         <constructor-arg index="0" value="#{pinpointWebProps['naver.userinfo.decode.key']}"/>
     </bean>
+    <bean id="rewriteFilter" class="com.navercorp.pinpoint.web.servlet.RewriteForV2Filter">
+        <constructor-arg index="0" value="true"/>
+    </bean>
 
     <task:scheduled-tasks>
         <task:scheduled ref="nssFilter" method="update"

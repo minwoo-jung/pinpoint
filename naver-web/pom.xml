@@ -15,7 +15,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.navercorp.pinpoint</groupId>
@@ -81,13 +81,13 @@
             <artifactId>pinpoint-bootstrap-core</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>cubrid</groupId>
             <artifactId>cubrid-jdbc</artifactId>
             <version>9.2.0.0155</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-naver-plugins</artifactId>
@@ -164,6 +164,23 @@
         </resources>
 
         <plugins>
+
+            <!--
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-war-plugin</artifactId>
+                            <configuration>
+                                <attachClasses>true</attachClasses>
+                                <webResources>
+                                    <resource>
+                                        <directory>target/main/webapp</directory>
+                                    </resource>
+                                </webResources>
+                            </configuration>
+                        </plugin>
+            -->
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -240,6 +257,127 @@
                     <type>pom</type>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <!-- for ci server -->
+            <id>v2</id>
+            <build>
+                <plugins>
+                    <!--<plugin>-->
+                    <!--<groupId>org.apache.maven.plugins</groupId>-->
+                    <!--<artifactId>maven-antrun-plugin</artifactId>-->
+                    <!--<version>1.8</version>-->
+                    <!--<executions>-->
+                    <!--<execution>-->
+                    <!--<id>prepare-grunt</id>-->
+                    <!--<phase>package</phase>-->
+                    <!--<goals>-->
+                    <!--<goal>run</goal>-->
+                    <!--</goals>-->
+                    <!--<configuration>-->
+                    <!--<target>-->
+                    <!--<copy todir="${basedir}/target/grunt" failonerror="true" verbose="true">-->
+                    <!--<fileset dir="${basedir}/src/grunt"/>-->
+                    <!--</copy>-->
+                    <!--<copy todir="${basedir}/target/main/webapp" failonerror="true" verbose="true">-->
+                    <!--<fileset dir="${basedir}/src/main/webapp"/>-->
+                    <!--</copy>-->
+                    <!--<copy file="${basedir}/src/Gruntfile.js" tofile="${basedir}/target/Gruntfile.js"-->
+                    <!--failonerror="true" verbose="true"/>-->
+                    <!--<copy file="${basedir}/src/package.json" tofile="${basedir}/target/package.json"-->
+                    <!--failonerror="true" verbose="true"/>-->
+                    <!--</target>-->
+                    <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--</executions>-->
+                    <!--</plugin>-->
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.5</version>
+                        <configuration>
+                            <installDirectory>target</installDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install node and npm v2</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>v10.6.0</nodeVersion>
+                                    <npmVersion>6.1.0</npmVersion>
+                                    <!--<workingDirectory>${basedir}/target/main/webapp/v2</workingDirectory>-->
+                                    <workingDirectory>${basedir}/deploy/webapp/v2</workingDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install v2</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                    <!--<workingDirectory>${basedir}/target/main/webapp/v2</workingDirectory>-->
+                                    <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>npm run build v2</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run build:naver</arguments>
+                                    <!--<workingDirectory>${basedir}/target/main/webapp/v2</workingDirectory>-->
+                                    <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <id>delete pre-build file</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <delete>
+                                            <fileset dir="${basedir}/target/deploy/v2" includes="*.js, *.map, *.html" />
+                                        </delete>
+                                    </target>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy deploy source</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy todir="${basedir}/target/deploy/v2" failonerror="true" verbose="true" overwrite="true">
+                                            <fileset dir="${basedir}/target/v2-build">
+                                                <exclude name="node_modules/**"/>
+                                            </fileset>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
