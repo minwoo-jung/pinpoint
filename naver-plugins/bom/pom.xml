@@ -29,7 +29,6 @@
     <name>pinpoint-naver-plugin-bom</name>
 
     <properties>
-        <httpcomponents.version>4.3</httpcomponents.version>
         <jedis.version>2.4.2</jedis.version>
         <cassandra.driver.version>2.1.7.1</cassandra.driver.version>
         <dubbo.version>2.5.3</dubbo.version>
