@@ -108,9 +108,9 @@
             </dependency>
             <dependency>
                 <groupId>com.navercorp.pinpoint</groupId>
-                <artifactId>pinpoint-naver-plugins</artifactId>
+                <artifactId>pinpoint-naver-plugins-assembly</artifactId>
                 <version>${project.version}</version>
-                <type>zip</type>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>com.navercorp.pinpoint</groupId>

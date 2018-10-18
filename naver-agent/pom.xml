@@ -75,13 +75,13 @@
         <!-- plug-ins -->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-plugins</artifactId>
+            <artifactId>pinpoint-plugins-assembly</artifactId>
             <type>pom</type>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-naver-plugins</artifactId>
+            <artifactId>pinpoint-naver-plugins-assembly</artifactId>
             <type>pom</type>
             <scope>runtime</scope>
         </dependency>
@@ -141,6 +141,7 @@
                     </descriptors>
                     <outputDirectory>${project.build.directory}</outputDirectory>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <attach>false</attach>
                 </configuration>
                 <executions>
                     <execution>

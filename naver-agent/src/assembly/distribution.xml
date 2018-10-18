@@ -59,10 +59,10 @@
                 <exclude>com.navercorp.pinpoint:pinpoint-bootstrap-java7</exclude>
                 <exclude>com.navercorp.pinpoint:pinpoint-bootstrap-java8</exclude>
                 <exclude>com.navercorp.pinpoint:pinpoint-bootstrap-java9</exclude>
-                <exclude>com.navercorp.pinpoint:pinpoint-plugins</exclude>
-                <exclude>com.navercorp.pinpoint:pinpoint-tools</exclude>
+                <exclude>com.navercorp.pinpoint:pinpoint-plugins-assembly</exclude>
+                <exclude>com.navercorp.pinpoint:pinpoint-naver-plugins-assembly</exclude>
                 <exclude>com.navercorp.pinpoint:pinpoint-grpc</exclude>
-                <exclude>com.navercorp.pinpoint:pinpoint-naver-plugins</exclude>
+                <exclude>com.navercorp.pinpoint:pinpoint-tools</exclude>
                 <exclude>*:pom</exclude>
             </excludes>
             <outputDirectory>lib</outputDirectory>
@@ -71,8 +71,8 @@
         </dependencySet>
         <dependencySet>
             <includes>
-                <include>com.navercorp.pinpoint:pinpoint-plugins</include>
-                <include>com.navercorp.pinpoint:pinpoint-naver-plugins</include>
+                <include>com.navercorp.pinpoint:pinpoint-plugins-assembly</include>
+                <include>com.navercorp.pinpoint:pinpoint-naver-plugins-assembly</include>
             </includes>
             <excludes>
                 <exclude>*:pom</exclude>

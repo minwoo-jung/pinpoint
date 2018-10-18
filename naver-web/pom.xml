@@ -101,7 +101,7 @@
 
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-naver-plugins</artifactId>
+            <artifactId>pinpoint-naver-plugins-assembly</artifactId>
             <type>pom</type>
         </dependency>
 
@@ -295,7 +295,7 @@
             <dependencies>
                 <dependency>
                     <groupId>com.navercorp.pinpoint</groupId>
-                    <artifactId>pinpoint-plugins</artifactId>
+                    <artifactId>pinpoint-plugins-assembly</artifactId>
                     <type>pom</type>
                 </dependency>
             </dependencies>
