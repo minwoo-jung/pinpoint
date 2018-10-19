@@ -68,7 +68,7 @@ public class MysqlUserDaoTest extends RequestContextInitializer {
         dao.insertUser(user);
         User selectedUser = dao.selectUserByUserId("testId");
         assertEquals(user.getUserId(), selectedUser.getUserId());
-        dao.deleteUser(user);
+        dao.deleteUser(user.getUserId());
     }
 
     @Test

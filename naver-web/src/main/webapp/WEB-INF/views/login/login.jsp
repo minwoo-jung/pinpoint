@@ -36,11 +36,11 @@
 </head>
 <body onload='document.loginForm.username.focus();'>
 
-	<h1>Spring Security Custom Login Form (XML)</h1>
+	<center><bold><h1>PINPOINT LOGIN PAGE</h1></bold></center>
 
 	<div id="login-box">
 
-		<h2>Login with Username and Password</h2>
+        <center><font size="10" color="aqua">PINOINT</font></center>
 
 		<c:if test="${not empty error}">
 			<div class="error">${error}</div>
@@ -61,9 +61,13 @@
 				<td>Password:</td>
 				<td><input type='password' name='password' /></td>
 			</tr>
+              <tr>
+                  <td>Organization:</td>
+                  <td><input type='text' name='organization' /></td>
+              </tr>
 			<tr>
 				<td colspan='2'><input name="submit" type="submit"
-					value="submit" /></td>
+					value="LOG IN" /></td>
 			</tr>
 		  </table>
 

@@ -65,8 +65,8 @@ public class MysqlUserGroupDaoTest extends RequestContextInitializer {
     
     @After
     public void after() {
-        userDao.deleteUser(user1);
-        userDao.deleteUser(user2);
+        userDao.deleteUser(user1.getUserId());
+        userDao.deleteUser(user2.getUserId());
         super.after();
     }
 
@@ -182,7 +182,7 @@ public class MysqlUserGroupDaoTest extends RequestContextInitializer {
         dao.updateUserGroupIdOfMember(group);
         Assert.assertEquals(1, dao.selectMember("test_group_update").size());
 
-        userDao.deleteUser(user);
+        userDao.deleteUser(user.getUserId());
         dao.deleteUserGroup(group);
     }
     

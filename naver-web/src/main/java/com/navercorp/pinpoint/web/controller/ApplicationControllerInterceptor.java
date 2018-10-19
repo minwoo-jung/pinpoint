@@ -36,7 +36,7 @@ public class ApplicationControllerInterceptor {
     private String organizationName;
 
     @Autowired
-    MetaDataService metaDataService;
+    private MetaDataService metaDataService;
 
     public void beforeIntercept(JoinPoint joinPoint) throws Throwable {
         boolean allocateSuccess = metaDataService.allocatePaaSOrganizationInfoRequestScope(userId, organizationName);

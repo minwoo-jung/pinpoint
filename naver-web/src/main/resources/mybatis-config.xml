@@ -51,6 +51,9 @@
 
         <typeAlias type="com.navercorp.pinpoint.web.vo.AppUserGroupAuth" alias="AppUserGroupAuth"/>
         <typeAlias type="com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo" alias="PaaSOrganizationInfo"/>
+        <typeAlias type="com.navercorp.pinpoint.web.vo.UserAccount"/>
+        <typeAlias type="com.navercorp.pinpoint.web.dao.mysql.MysqlRoleDao$RoleInfoConvertedJson"/>
+        <typeAlias type="com.navercorp.pinpoint.web.dao.mysql.MysqlRoleDao$UserRoleInfo"/>
     </typeAliases>
 
 </configuration>

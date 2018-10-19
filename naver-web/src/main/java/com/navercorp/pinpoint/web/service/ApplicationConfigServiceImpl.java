@@ -35,10 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApplicationConfigServiceImpl implements ApplicationConfigService {
 
     @Autowired
-    ApplicationConfigDao applicationConfigDao;
+    private ApplicationConfigDao applicationConfigDao;
     
     @Autowired
-    UserGroupService userGroupService;
+    private UserGroupService userGroupService;
     
     //추후 옵션으로 빼야함. paas 형태로 제공할때 false가 필요함
     boolean anyOneOccupyAtfirst = true;

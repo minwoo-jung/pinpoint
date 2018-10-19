@@ -32,13 +32,13 @@ import java.util.List;
 public class SecurityServiceImpl implements SecurityService {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    UserGroupService userGroupService;
+    private UserGroupService userGroupService;
 
     @Autowired
-    ApplicationConfigService configService;
+    private ApplicationConfigService configService;
 
     @Override
     @Transactional(readOnly = true, rollbackFor = {Exception.class})

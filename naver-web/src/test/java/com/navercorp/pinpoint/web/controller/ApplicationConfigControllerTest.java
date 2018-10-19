@@ -38,7 +38,7 @@ import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
 @WebAppConfiguration
 @ContextConfiguration(locations = {"classpath:servlet-context-naver.xml", "classpath:applicationContext-web-naver.xml"})
 public class ApplicationConfigControllerTest {
-    
+
     private static String TEST_APPLICATION_ID = "testApplication";
     private static String TEST_USER_GROUP_ID1 = "tesUserGroup01";
     private static String TEST_USER_GROUP_USER1 = "KR99999";

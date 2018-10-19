@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserConfigServiceImpl implements com.navercorp.pinpoint.web.service.UserConfigService {
 
     @Autowired
-    UserConfigDao userConfigDao;
+    private UserConfigDao userConfigDao;
 
     @Override
     public void insertUserConfiguration(UserConfiguration userConfiguration) {

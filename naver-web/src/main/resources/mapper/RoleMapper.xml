@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.web.dao.RoleDao">
+
+    <insert id="insertRoleInformation" parameterType="RoleInfoConvertedJson">
+        INSERT INTO role_definition (role_id, permission_collection)
+        VALUES (#{roleId}, #{permissionCollectionJson})
+    </insert>
+
+    <select id="selectRoleInformation" resultType="RoleInfoConvertedJson">
+        SELECT role_id, permission_collection AS permissionCollectionJson
+        FROM role_definition
+        WHERE role_id = #{roleId}
+    </select>
+
+    <delete id="deleteRoleInformation" parameterType="string">
+        DELETE
+        FROM role_definition
+        WHERE role_id = #{roleId}
+    </delete>
+
+    <update id="updateRoleInformation" parameterType="RoleInfoConvertedJson">
+        UPDATE role_definition
+        SET role_id = #{roleId}, permission_collection = #{permissionCollectionJson}
+        WHERE role_id = #{roleId}
+    </update>
+
+    <insert id="insertUserRole" parameterType="userRoleInfo">
+        INSERT INTO user_role (user_id, role_id)
+        VALUES (#{userId}, #{roleId})
+    </insert>
+
+    <delete id="deleteUserRole" parameterType="string">
+        DELETE
+        FROM user_role
+        WHERE user_id = #{userId}
+    </delete>
+
+    <select id="selectUserRole" parameterType="string" resultType="string">
+        SELECT role_id
+        FROM user_role
+        WHERE user_id = #{userId}
+    </select>
+</mapper>
