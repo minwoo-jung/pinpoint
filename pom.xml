@@ -28,7 +28,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <fastxml.jackson.version>2.6.6</fastxml.jackson.version>
+
     </properties>
 
     <distributionManagement>

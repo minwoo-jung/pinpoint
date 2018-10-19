@@ -30,8 +30,6 @@
 
     <properties>
         <tomcat.version>7.0.34</tomcat.version>
-        <!-- OSS #1190 2.6.7 버전의 jackson-jr-parent 배포가 잘못되어 있음. 일단 우회-->
-        <fastxml.jackson.version>2.6.6</fastxml.jackson.version>
     </properties>
 
     <dependencyManagement>
