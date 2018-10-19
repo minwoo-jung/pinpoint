@@ -31,11 +31,8 @@ import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import com.navercorp.pinpoint.plugin.bloc.LucyNetUtils;
 import com.navercorp.pinpoint.plugin.bloc.NimmRequest;
-import com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor;
 import com.nhncorp.lucy.net.call.Call;
 import com.nhncorp.lucy.npc.NpcMessage;
-
-import java.util.Map;
 
 /**
  * @author Taejin Koo
