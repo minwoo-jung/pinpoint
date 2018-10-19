@@ -15,9 +15,7 @@
  */
 package com.navercorp.pinpoint.web.dao.mysql;
 
-import com.navercorp.pinpoint.web.mapper.stat.sampling.sampler.TransactionSampler;
 import com.navercorp.pinpoint.web.namespace.RequestContextInitializer;
-import net.sf.ehcache.transaction.manager.TransactionManagerLookup;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +29,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.navercorp.pinpoint.web.alarm.CheckerCategory;
 import com.navercorp.pinpoint.web.alarm.vo.Rule;

@@ -343,11 +343,6 @@
             <version>2.9.0</version>
         </dependency>
 
-        <!-- Caching dependecies -->
-        <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-        </dependency>
         <!-- DBMS dependecies -->
         <dependency>
             <groupId>javax.transaction</groupId>
