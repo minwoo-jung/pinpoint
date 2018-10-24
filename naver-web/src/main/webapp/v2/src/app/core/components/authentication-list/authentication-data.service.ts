@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { retry, tap } from 'rxjs/operators';
 
 export enum ROLE {
     USER = 'user',
@@ -45,12 +45,7 @@ export class AuthenticationDataService {
     constructor(private http: HttpClient) {}
     retrieve(applicationId: string): Observable<IAuthentication> {
         return this.http.get<IAuthentication>(this.authenticationURL, this.makeRequestOptionsArgs(applicationId)).pipe(
-            tap((data: any) => {
-                if (data.errorCode) {
-                    throw data.errorMessage;
-                }
-            }),
-            catchError(this.handleError),
+            retry(3),
             tap((auth: IAuthentication) => {
                 this.outRole.emit({
                     applicationId: applicationId,
@@ -62,40 +57,25 @@ export class AuthenticationDataService {
         );
     }
     create(params: IApplicationAuthData): Observable<IAuthenticationCreated> {
-        return this.http.post<IApplicationAuthData>(this.authenticationURL, params).pipe(
-            tap(this.checkError),
-            catchError(this.handleError)
+        return this.http.post<IAuthenticationCreated>(this.authenticationURL, params).pipe(
+            retry(3)
         );
     }
     update(params: IApplicationAuthData): Observable<IAuthenticationCreated> {
-        return this.http.put<IApplicationAuthData>(this.authenticationURL, params).pipe(
-            tap(this.checkError),
-            catchError(this.handleError)
+        return this.http.put<IAuthenticationCreated>(this.authenticationURL, params).pipe(
+            retry(3)
         );
     }
     remove(userGroupId: string, applicationId: string): Observable<IAuthenticationResponse> {
-        return this.http.request('delete', this.authenticationURL, {
+        return this.http.request<IAuthenticationCreated>('delete', this.authenticationURL, {
             body: { applicationId, userGroupId }
         }).pipe(
-            tap(this.checkError),
-            catchError(this.handleError)
+            retry(3)
         );
-    }
-    private checkError(data: any) {
-        if (data.errorCode) {
-            throw data.errorMessage;
-        } else if (data.result !== 'SUCCESS') {
-            throw data;
-        }
-    }
-    private handleError(error: HttpErrorResponse) {
-        return throwError(error.statusText || error);
     }
     private makeRequestOptionsArgs(applicationId: string): object {
         return applicationId ? {
-            params: {
-                applicationId
-            }
+            params: new HttpParams().set('applicationId', applicationId)
         } : {};
     }
 }

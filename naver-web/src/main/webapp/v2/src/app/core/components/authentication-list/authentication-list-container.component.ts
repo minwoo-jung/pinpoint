@@ -67,6 +67,8 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 return userGroup.id;
             });
             this.changeDetectorRef.detectChanges();
+        }, (error: IServerErrorFormat) => {
+
         });
         this.applicationListInteractionForConfigurationService.onSelectApplication$.pipe(
             takeUntil(this.unsubscribe)
@@ -113,10 +115,19 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     }
     private getAuthenticationData(): void {
         this.showProcessing();
-        this.authenticationDataService.retrieve(this.currentApplication.getApplicationName()).subscribe((authenticationData: IAuthentication) => {
-            this.myRole = authenticationData.myRole;
-            this.authenticationList = authenticationData.userGroupAuthList;
+        this.authenticationDataService.retrieve(this.currentApplication.getApplicationName()).subscribe((authenticationData: IAuthentication | IServerErrorShortFormat) => {
+            if ((authenticationData as IServerErrorShortFormat).errorCode) {
+                this.message = (authenticationData as IServerErrorShortFormat).errorMessage;
+                this.hideProcessing();
+            } else {
+                this.myRole = (authenticationData as IAuthentication).myRole;
+                this.authenticationList = (authenticationData as IAuthentication).userGroupAuthList;
+                this.hideProcessing();
+                this.changeDetectorRef.detectChanges();
+            }
+        }, (error: IServerErrorFormat) => {
             this.hideProcessing();
+            this.message = error.exception.message;
             this.changeDetectorRef.detectChanges();
         });
     }
@@ -172,11 +183,16 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             },
             role: auth.role,
             userGroupId: auth.userGroupId
-        }).subscribe((response: IAuthenticationCreated) => {
-            this.getAuthenticationData();
-        }, (error: string) => {
+        }).subscribe((response: IAuthenticationCreated | IServerErrorShortFormat) => {
+            if ((response as IServerErrorShortFormat).errorCode) {
+                this.message = (response as IServerErrorShortFormat).errorMessage;
+                this.hideProcessing();
+            } else {
+                this.getAuthenticationData();
+            }
+        }, (error: IServerErrorFormat) => {
             this.hideProcessing();
-            this.message = error;
+            this.message = error.exception.message;
         });
     }
     onUpdateAuth(auth: Authentication): void {
@@ -191,11 +207,16 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             },
             role: auth.role,
             userGroupId: auth.userGroupId
-        }).subscribe((response: IAuthenticationCreated) => {
-            this.getAuthenticationData();
-        }, (error: string) => {
+        }).subscribe((response: IAuthenticationCreated | IServerErrorShortFormat) => {
+            if ((response as IServerErrorShortFormat).errorCode) {
+                this.message = (response as IServerErrorShortFormat).errorMessage;
+                this.hideProcessing();
+            } else {
+                this.getAuthenticationData();
+            }
+        }, (error: IServerErrorFormat) => {
             this.hideProcessing();
-            this.message = error;
+            this.message = error.exception.message;
         });
     }
     onAddAuthPopup(): void {
@@ -226,11 +247,17 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             return;
         }
         this.showProcessing();
-        this.authenticationDataService.remove(auth.userGroupId, auth.applicationId).subscribe((response: IAuthenticationResponse) => {
-            this.getAuthenticationData();
-        }, (error: string) => {
+        this.authenticationDataService.remove(auth.userGroupId, auth.applicationId)
+        .subscribe((response: IAuthenticationResponse | IServerErrorShortFormat) => {
+            if ((response as IServerErrorShortFormat).errorCode) {
+                this.message = (response as IServerErrorShortFormat).errorMessage;
+                this.hideProcessing();
+            } else {
+                this.getAuthenticationData();
+            }
+        }, (error: IServerErrorFormat) => {
             this.hideProcessing();
-            this.message = error;
+            this.message = error.exception.message;
         });
     }
     onEditAuth(auth: EventEmiiterParam): void {

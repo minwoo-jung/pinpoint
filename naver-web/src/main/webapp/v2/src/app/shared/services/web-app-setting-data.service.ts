@@ -9,21 +9,17 @@ import * as moment from 'moment-timezone';
 import { pluck } from 'rxjs/operators';
 
 import { AppState, Actions } from 'app/shared/store';
+// from 'app/shared/services';
+// 방식을 사용하지 말 것.
+// Circular dependency 발생함.
 import { ComponentDefaultSettingDataService } from 'app/shared/services/component-default-setting-data.service';
+import { DynamicPopupService } from 'app/shared/services/dynamic-popup.service';
 import { Application, Period } from 'app/core/models';
+import { ServerErrorPopupContainerComponent } from 'app/core/components/server-error-popup';
 
 interface IMinMax {
     min: number;
     max: number;
-}
-interface IFavoriteApplication {
-    applicationName: string;
-    code: number;
-    serviceType: string;
-}
-interface IUserConfiguration {
-    userId: string;
-    favoriteApplications: IFavoriteApplication[];
 }
 
 @Injectable()
@@ -51,7 +47,8 @@ export class WebAppSettingDataService {
         private store: Store<AppState>,
         private activatedRoute: ActivatedRoute,
         private localStorageService: LocalStorageService,
-        private componentDefaultSettingDataService: ComponentDefaultSettingDataService
+        private componentDefaultSettingDataService: ComponentDefaultSettingDataService,
+        private dynamicPopupService: DynamicPopupService
     ) {
         this.loadFavoriteList();
         this.store.dispatch(new Actions.ChangeTimezone(this.getTimezone()));
@@ -146,31 +143,50 @@ export class WebAppSettingDataService {
         this.http.get<any>(this.userConfigurationURL).subscribe((userConfigurationData: IUserConfiguration) => {
             this.favoriteApplicationList = userConfigurationData.favoriteApplications;
             this.store.dispatch(new Actions.AddFavoriteApplication(this.getFavoriteApplicationList()));
+        }, (error: IServerErrorFormat) => {
+
         });
     }
-    private saveFavoriteList(newFavoriateApplicationList: IFavoriteApplication[]): void {
+    private saveFavoriteList(newFavoriateApplicationList: IFavoriteApplication[], application: IFavoriteApplication): void {
         this.http.put<{ favoriteApplications: IFavoriteApplication[] }>(this.userConfigurationURL, {
             favoriteApplications: newFavoriateApplicationList
         }).subscribe((result: any) => {
             if (result.result === 'SUCCESS') {
+                if (this.favoriteApplicationList.length > newFavoriateApplicationList.length) {
+                    this.store.dispatch(new Actions.RemoveFavoriteApplication([application as IApplication]));
+                } else {
+                    this.store.dispatch(new Actions.AddFavoriteApplication([application as IApplication]));
+                }
                 this.favoriteApplicationList = newFavoriateApplicationList;
             }
+        }, (error: IServerErrorFormat) => {
+            this.dynamicPopupService.openPopup({
+                data: {
+                    title: 'Server Error',
+                    contents: error
+                },
+                component: ServerErrorPopupContainerComponent
+            });
         });
     }
     addFavoriteApplication(application: IApplication): void {
-        this.saveFavoriteList([...this.favoriteApplicationList, {
+        const newApplication = {
             applicationName: application.getApplicationName(),
             code: application.getCode(),
             serviceType: application.getServiceType()
-        }]);
-        this.store.dispatch(new Actions.AddFavoriteApplication([application]));
+        };
+        this.saveFavoriteList([...this.favoriteApplicationList, newApplication], newApplication);
     }
     removeFavoriteApplication(application: IApplication): void {
+        const removeApplication = {
+            applicationName: application.getApplicationName(),
+            code: application.getCode(),
+            serviceType: application.getServiceType()
+        }
         const removedList = this.favoriteApplicationList.filter((data: IFavoriteApplication) => {
             return !new Application(data.applicationName, data.serviceType, data.code).equals(application);
         });
-        this.saveFavoriteList(removedList);
-        this.store.dispatch(new Actions.RemoveFavoriteApplication([application]));
+        this.saveFavoriteList(removedList, removeApplication);
     }
     private getFavoriteApplicationList(): IApplication[] {
         return this.favoriteApplicationList.map(({applicationName, serviceType, code}) => {

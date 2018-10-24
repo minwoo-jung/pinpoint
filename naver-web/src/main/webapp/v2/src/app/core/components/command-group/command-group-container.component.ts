@@ -39,7 +39,8 @@ export class CommandGroupContainerComponent implements OnInit {
                     }
                 }
             }
-        }, (error: any) => {
+        }, (error: IServerErrorFormat) => {
+            this.hasNewNotice = false;
         });
     }
     onOpenConfigurationPopup(): void {

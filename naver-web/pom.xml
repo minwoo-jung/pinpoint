@@ -219,8 +219,12 @@
                             <includes>
                                 <include>**/*.html</include>
                             </includes>
+                            <excludes>
+                                <exclude>v2/node_modules/</exclude>
+                            </excludes>
                         </resource>
                     </webResources>
+                    <warSourceExcludes>v2/node_modules/</warSourceExcludes>
                 </configuration>
             </plugin>
         </plugins>
@@ -284,34 +288,6 @@
             <id>v2</id>
             <build>
                 <plugins>
-                    <!--<plugin>-->
-                    <!--<groupId>org.apache.maven.plugins</groupId>-->
-                    <!--<artifactId>maven-antrun-plugin</artifactId>-->
-                    <!--<version>1.8</version>-->
-                    <!--<executions>-->
-                    <!--<execution>-->
-                    <!--<id>prepare-grunt</id>-->
-                    <!--<phase>package</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>run</goal>-->
-                    <!--</goals>-->
-                    <!--<configuration>-->
-                    <!--<target>-->
-                    <!--<copy todir="${basedir}/target/grunt" failonerror="true" verbose="true">-->
-                    <!--<fileset dir="${basedir}/src/grunt"/>-->
-                    <!--</copy>-->
-                    <!--<copy todir="${basedir}/target/main/webapp" failonerror="true" verbose="true">-->
-                    <!--<fileset dir="${basedir}/src/main/webapp"/>-->
-                    <!--</copy>-->
-                    <!--<copy file="${basedir}/src/Gruntfile.js" tofile="${basedir}/target/Gruntfile.js"-->
-                    <!--failonerror="true" verbose="true"/>-->
-                    <!--<copy file="${basedir}/src/package.json" tofile="${basedir}/target/package.json"-->
-                    <!--failonerror="true" verbose="true"/>-->
-                    <!--</target>-->
-                    <!--</configuration>-->
-                    <!--</execution>-->
-                    <!--</executions>-->
-                    <!--</plugin>-->
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
@@ -329,7 +305,6 @@
                                 <configuration>
                                     <nodeVersion>v10.6.0</nodeVersion>
                                     <npmVersion>6.1.0</npmVersion>
-                                    <!--<workingDirectory>${basedir}/target/main/webapp/v2</workingDirectory>-->
                                     <workingDirectory>${basedir}/deploy/webapp/v2</workingDirectory>
                                 </configuration>
                             </execution>
@@ -341,7 +316,6 @@
                                 </goals>
                                 <configuration>
                                     <arguments>install</arguments>
-                                    <!--<workingDirectory>${basedir}/target/main/webapp/v2</workingDirectory>-->
                                     <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
                                 </configuration>
                             </execution>
@@ -354,7 +328,6 @@
                                 </goals>
                                 <configuration>
                                     <arguments>run build:naver</arguments>
-                                    <!--<workingDirectory>${basedir}/target/main/webapp/v2</workingDirectory>-->
                                     <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
                                 </configuration>
                             </execution>
@@ -395,6 +368,39 @@
                                     </target>
                                 </configuration>
                             </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-repackage</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>war</goal>
+                                </goals>
+                                <configuration>
+                                    <overlays>
+                                        <overlay>
+                                            <groupId>com.navercorp.pinpoint</groupId>
+                                            <artifactId>pinpoint-web</artifactId>
+                                            <skip>true</skip>
+                                        </overlay>
+                                    </overlays>
+                                    <webResources>
+                                        <resource>
+                                            <filtering>true</filtering>
+                                            <directory>target/deploy</directory>
+                                            <excludes>
+                                                <exclude>v2/node_modules/</exclude>
+                                            </excludes>
+                                        </resource>
+                                    </webResources>
+                                    <packagingExcludes>v2/node_modules/</packagingExcludes>
+                                </configuration>
+                            </execution>
+
                         </executions>
                     </plugin>
                 </plugins>
