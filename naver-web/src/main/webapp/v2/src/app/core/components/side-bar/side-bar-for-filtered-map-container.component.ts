@@ -59,6 +59,6 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
         return this.target && (this.target.isNode || this.target.isMerged);
     }
     hasAuthrization(): boolean {
-        return this.target.isAuthorized;
+        return this.target && this.target.isAuthorized;
     }
 }
