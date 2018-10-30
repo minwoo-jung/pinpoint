@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:batch="http://www.springframework.org/schema/batch"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task"
        xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+       xsi:schemaLocation="
        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
 
     <bean id="naverAlarmMessageSender" class="com.navercorp.pinpoint.web.alarm.NaverAlarmMessageSender">
-        <constructor-arg index="0" ref="naverBatchConfiguration"/>
+        <constructor-arg index="0" ref="mailSender"/>
+        <constructor-arg index="1" ref="smsSender"/>
+    </bean>
+    <bean id="mailSender" class="com.navercorp.pinpoint.web.alarm.SmtpMailSender">
+        <constructor-arg ref="naverBatchConfiguration"/>
+        <constructor-arg ref="userGroupServiceImpl"/>
+    </bean>
+    <bean id="smsSender" class="com.navercorp.pinpoint.web.alarm.SmsSender">
+        <constructor-arg ref="naverBatchConfiguration"/>
+        <constructor-arg ref="userGroupServiceImpl"/>
     </bean>
 
     <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration"/>
