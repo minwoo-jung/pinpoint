@@ -15,7 +15,7 @@
                 <div>
                     <div>{{ i18nLabel.ROLE }}</div>
                     <select formControlName="role">
-                        <option value="">{{i18nGuide.ROLE_REQUIRED}}</option>
+                        <option value=""> {{i18nGuide.ROLE_REQUIRED}}</option>
                         <option value="guest" [hidden]="fixRole !== 'guest'">Guest</option>
                         <option *ngFor="let role of roleList" [value]="role">{{role.toUpperCase()}}</option>
                     </select>
@@ -23,19 +23,19 @@
                 </div>
                 <div class="l-checkbox">
                     <input type="checkbox" id="serverMap" formControlName="serverMap">
-                    <label for="serverMap">{{ i18nLabel.SERVER_MAP }}</label>
+                    <label for="serverMap"> {{ i18nLabel.SERVER_MAP }}</label>
                 </div>
                 <div class="l-checkbox">
                     <input type="checkbox" id="apiMeta" formControlName="apiMeta">
-                    <label for="apiMeta">{{ i18nLabel.API_META }}</label>
+                    <label for="apiMeta"> {{ i18nLabel.API_META }}</label>
                 </div>
                 <div class="l-checkbox">
                     <input type="checkbox" id="paramMeta" formControlName="paramMeta">
-                    <label for="paramMeta">{{ i18nLabel.PARAM_META }}</label>
+                    <label for="paramMeta"> {{ i18nLabel.PARAM_META }}</label>
                 </div>
                 <div class="l-checkbox">
                     <input type="checkbox" id="sqlMeta" formControlName="sqlMeta">
-                    <label for="sqlMeta">{{ i18nLabel.SQL_META }}</label>
+                    <label for="sqlMeta"> {{ i18nLabel.SQL_META }}</label>
                 </div>                
             </div>
             <button type="submit" class="btn btn-blue l-create" [class.btn-gray]="authForm.invalid" [disabled]="authForm.invalid">OK</button>
