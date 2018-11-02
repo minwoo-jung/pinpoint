@@ -33,11 +33,20 @@ import static org.junit.Assert.assertEquals;
  */
 public class UpdateUserIdJobTest {
 
+    /**
+     * 준비 방법
+     * 1. BatchNameSpaceInfoHolder의 클래스의 생성자를 내용을 아래로 변경함.
+     *    public BatchNameSpaceInfoHolder(StepExecution stepExecution) {
+     *    batchNameSpaceInfo = new NameSpaceInfo("BATCH", "pinpoint", "default");
+     *    }
+     * 2. jtbc.properties 내의 db 주소를 dev, real로 변경하여 batch 실행
+     * 3. UpdateUserIdTasklet의 createUserInfoList 메소드에서 이관 대상 직원 정보 추가해서 테스트 alpha 환경부터
+     */
     public static void main(String[] args) throws Exception{
-        GenericXmlApplicationContext applicationContext = new GenericXmlApplicationContext("/applicationContext-test.xml",
-                                                                                            "/batch/applicationContext-batch.xml",
-                                                                                            "/batch/applicationContext-batch-test.xml",
-                                                                                            "/batch/updateUserIdJob.xml");
+        GenericXmlApplicationContext applicationContext = new GenericXmlApplicationContext(
+            "/applicationContext-test.xml",
+            "/batch/applicationContext-batch-test.xml",
+            "/batch/updateUserIdJob.xml");
         JobLauncherTestUtils testLauncher = applicationContext.getBean(JobLauncherTestUtils.class);
 
         JobExecution jobExecution = testLauncher.launchJob(getParameters());

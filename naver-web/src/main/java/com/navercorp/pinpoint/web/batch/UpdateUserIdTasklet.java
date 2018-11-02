@@ -65,7 +65,7 @@ public class UpdateUserIdTasklet implements Tasklet {
                     logger.info("{} : ========== find and insert/delete(before) : {}", number, userConfiguration);
                     logger.info("{} : ========== find and insert/delete(after ) : {}", number, newUserConfiguration);
                 } else {
-//                    logger.info(number + " : ========== " + "can't find in user_configuration table : " + userInfo );
+                    logger.info(number + " : ========== " + "can't find in user_configuration table : " + userInfo );
                 }
             } catch (Exception e) {
                 logger.error("Exception while update user configuration : {}", userInfo, e);
