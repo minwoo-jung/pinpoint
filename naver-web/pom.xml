@@ -93,11 +93,6 @@
             <type>pom</type>
         </dependency>
 
-        <!-- for email platform dependencies -->
-        <dependency>
-            <groupId>com.nhncorp.lucy</groupId>
-            <artifactId>lucy-npc</artifactId>
-        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
