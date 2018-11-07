@@ -28,7 +28,7 @@
             <level>INFO</level>
         </filter>
         <param name="projectName" value="PINPOINT" />
-        <param name="collectorUrl" value="nelo2-col.nhncorp.com" />
+        <param name="collectorUrl" value="nelo2-col.navercorp.com" />
         <param name="port" value="10006" />
         <param name="timeout" value="1200" />
         <param name="enable" value="true" />

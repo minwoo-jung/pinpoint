@@ -30,7 +30,7 @@
     <appender name="nelo" class="com.nhncorp.nelo2.log4j.NeloAppender">
         <param name="Threshold" value="DEBUG"/>
         <param name="projectName" value="PINPOINT"/>
-        <param name="collectorUrl" value="nelo2-col.nhncorp.com"/>
+        <param name="collectorUrl" value="nelo2-col.navercorp.com"/>
         <param name="port" value="10006"/>
         <param name="encoding" value="utf-8"/>
         <param name="timeout" value="1200"/>
