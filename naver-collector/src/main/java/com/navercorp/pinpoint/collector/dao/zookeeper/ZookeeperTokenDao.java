@@ -17,20 +17,20 @@
 package com.navercorp.pinpoint.collector.dao.zookeeper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.DefaultZookeeperClient;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClient;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperUtils;
 import com.navercorp.pinpoint.collector.dao.TokenDao;
 import com.navercorp.pinpoint.collector.service.TokenConfig;
 import com.navercorp.pinpoint.collector.vo.Token;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.CuratorZookeeperClient;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperClient;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperConstants;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperEventWatcher;
 import com.navercorp.pinpoint.common.util.CollectionUtils;
 import com.navercorp.pinpoint.rpc.Future;
 import com.navercorp.pinpoint.rpc.FutureListener;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
 import com.navercorp.pinpoint.security.util.ExpiredTaskManager;
+import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
 import org.jboss.netty.util.HashedWheelTimer;
 import org.jboss.netty.util.Timer;
 import org.slf4j.Logger;
@@ -45,9 +45,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Taejin Koo
@@ -65,6 +63,8 @@ public class ZookeeperTokenDao implements TokenDao {
     @Autowired
     private TokenConfig tokenConfig;
 
+    private String parentPath;
+
     private ZookeeperClient client;
 
     private Timer timer;
@@ -75,14 +75,16 @@ public class ZookeeperTokenDao implements TokenDao {
         logger.info("start() started. config:{}", tokenConfig);
 
         ZookeeperWatcher watcher = new ZookeeperWatcher();
-        this.client = new DefaultZookeeperClient(tokenConfig.getAddress(), tokenConfig.getSessionTimeout(), watcher);
-        this.client.connect();
 
-        boolean initialize = watcher.awaitInitialize(3000);
-        if (!initialize) {
-            client.close();
-            throw new IllegalArgumentException("failed to initialize zookeeper");
+        String parentPath = tokenConfig.getPath();
+        if (parentPath.endsWith(ZookeeperConstants.PATH_SEPARATOR)) {
+            this.parentPath = parentPath;
+        } else {
+            this.parentPath = parentPath + ZookeeperConstants.PATH_SEPARATOR;
         }
+
+        this.client = new CuratorZookeeperClient(tokenConfig.getAddress(), tokenConfig.getSessionTimeout(), watcher);
+        this.client.connect();
 
         this.timer = createTimer();
         this.tokenLifeCycleManager = new ExpiredTaskManager<>(timer, tokenConfig.getTtl());
@@ -109,7 +111,7 @@ public class ZookeeperTokenDao implements TokenDao {
 
     @Override
     public boolean create(Token token) {
-        if (!createTokenRootPath(tokenConfig.getPath())) {
+        if (!createTokenRootPath(parentPath)) {
             return false;
         }
         return createTokenNode(token);
@@ -117,9 +119,7 @@ public class ZookeeperTokenDao implements TokenDao {
 
     private boolean createTokenRootPath(String path) {
         try {
-            if (!client.exists(path)) {
-                client.createPath(path, true);
-            }
+            client.createPath(path);
             return true;
         } catch (Exception e) {
             logger.warn("failed to create token root path");
@@ -130,7 +130,7 @@ public class ZookeeperTokenDao implements TokenDao {
 
     private boolean createTokenNode(Token token) {
         String tokenKey = token.getKey();
-        String fullPath = ZookeeperUtils.bindingPathAndNode(tokenConfig.getPath(), tokenKey);
+        String fullPath = ZKPaths.makePath(parentPath, tokenKey);
 
         long expiredTime = token.getExpiryTime() - System.currentTimeMillis();
 
@@ -140,7 +140,7 @@ public class ZookeeperTokenDao implements TokenDao {
             try {
                 byte[] payload = OBJECT_MAPPER.writeValueAsBytes(token);
 
-                client.createNode(fullPath, payload, true);
+                client.createNode(fullPath, payload);
 
                 tokenLifeCycleManager.reserve(tokenKey, expiredTime, new FutureListener<Boolean>() {
 
@@ -169,7 +169,7 @@ public class ZookeeperTokenDao implements TokenDao {
 
     @Override
     public Token getAndRemove(String tokenKey) {
-        String fullPath = ZookeeperUtils.bindingPathAndNode(tokenConfig.getPath(), tokenKey);
+        String fullPath = ZKPaths.makePath(parentPath, tokenKey);
 
         byte[] payload = null;
         try {
@@ -196,7 +196,7 @@ public class ZookeeperTokenDao implements TokenDao {
     }
 
     boolean deleteNode(String tokenKey) {
-        String fullPath = ZookeeperUtils.bindingPathAndNode(tokenConfig.getPath(), tokenKey);
+        String fullPath = ZKPaths.makePath(parentPath, tokenKey);
 
         synchronized (lock) {
             try {
@@ -211,49 +211,36 @@ public class ZookeeperTokenDao implements TokenDao {
 
     private class ZookeeperWatcher implements ZookeeperEventWatcher {
 
-        private final CountDownLatch firstEventLatch = new CountDownLatch(1);
-        private final AtomicBoolean connected = new AtomicBoolean(false);
-
         private List<String> registeredTokenList = new ArrayList<>();
 
         @Override
         public void process(WatchedEvent event) {
-            if (firstEventLatch.getCount() > 0) {
-                firstEventLatch.countDown();
-            }
-
             logger.debug("Process Zookeeper Event({})", event);
 
-            Watcher.Event.KeeperState state = event.getState();
-            Watcher.Event.EventType eventType = event.getType();
-
-            // ephemeral node is removed on disconnect event (leave node management exclusively to zookeeper)
-            if (ZookeeperUtils.isDisconnectedEvent(state, eventType)) {
-                connected.compareAndSet(true, false);
-                if (state == Watcher.Event.KeeperState.Expired) {
-                    if (client != null) {
-                        client.reconnectWhenSessionExpired();
-                    }
+            Event.EventType eventType = event.getType();
+            if (client.isConnected()) {
+                if (eventType == Event.EventType.NodeChildrenChanged) {
+                    handleChildrenChanged();
                 }
-                return;
-            }
-
-            // duplicate event possible - but the logic does not change
-            if (ZookeeperUtils.isConnectedEvent(state, eventType)) {
-                handleConnected();
-            } else if (eventType == Watcher.Event.EventType.NodeChildrenChanged) {
-                handleChildrenChanged();
             }
         }
 
-        private void handleConnected() {
-            // could already be connected (failure to compareAndSet doesn't really matter)
-            boolean changed = connected.compareAndSet(false, true);
-
-            if (changed) {
+        @Override
+        public boolean handleConnected() {
+            try {
                 getTokenData();
+                return true;
+            } catch (Exception e) {
+                logger.info("failed while to execute handleConnected(). message:{}", e.getMessage(), e);
             }
+            return false;
         }
+
+        @Override
+        public boolean handleDisconnected() {
+            return true;
+        }
+
 
         private void handleChildrenChanged() {
             getTokenData();
@@ -271,7 +258,7 @@ public class ZookeeperTokenDao implements TokenDao {
             try {
                 logger.info("getTokenData0() started");
 
-                List<String> zookeeperTokenList = new ArrayList<>(client.getChildrenNode(path, true));
+                List<String> zookeeperTokenList = new ArrayList<>(client.getChildNodeList(path, true));
                 if (CollectionUtils.isEmpty(zookeeperTokenList)) {
                     return Collections.emptyList();
                 }
@@ -296,20 +283,6 @@ public class ZookeeperTokenDao implements TokenDao {
             }
 
             return localTokenList;
-        }
-
-        @Override
-        public boolean isConnected() {
-            return connected.get();
-        }
-
-        public boolean awaitInitialize(long timeout) {
-            try {
-                return firstEventLatch.await(timeout, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                // skip
-            }
-            return false;
         }
 
     }

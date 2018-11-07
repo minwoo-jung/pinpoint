@@ -2,6 +2,9 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.CuratorZookeeperClient;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperClient;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperConstants;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperEventWatcher;
 import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
@@ -57,7 +60,7 @@ public class ZookeeperWebClusterServiceTest {
 
             int bindPort = testPinpointServerAcceptor.bind();
 
-            ZookeeperClient client = new DefaultZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
+            ZookeeperClient client = new CuratorZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
 
                 @Override
                 public void process(WatchedEvent event) {
@@ -65,14 +68,19 @@ public class ZookeeperWebClusterServiceTest {
                 }
 
                 @Override
-                public boolean isConnected() {
+                public boolean handleConnected() {
                     return true;
                 }
 
+                @Override
+                public boolean handleDisconnected() {
+                    return true;
+                }
             });
+
             client.connect();
-            client.createPath(PINPOINT_WEB_CLUSTER_PATH, true);
-            client.createNode(PINPOINT_WEB_CLUSTER_PATH + "/" + "127.0.0.1:" + bindPort, "127.0.0.1".getBytes());
+            client.createPath(PINPOINT_WEB_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR);
+            client.createNode(PINPOINT_WEB_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR + "127.0.0.1:" + bindPort, "127.0.0.1".getBytes());
             testPinpointServerAcceptor.assertAwaitClientConnected(1, 5000);
 
             client.close();

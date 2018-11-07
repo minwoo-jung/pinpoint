@@ -16,12 +16,13 @@
 
 package com.navercorp.pinpoint.collector.cluster.flink;
 
-import com.navercorp.pinpoint.collector.cluster.zookeeper.DefaultZookeeperClient;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClient;
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperTestUtils;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.sender.FlinkRequestFactory;
 import com.navercorp.pinpoint.collector.service.SendAgentStatService;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.CuratorZookeeperClient;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperClient;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperConstants;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperEventWatcher;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.exception.PinpointZookeeperException;
 import com.navercorp.pinpoint.io.header.v1.HeaderV1;
@@ -260,8 +261,8 @@ public class FlinkClusterServiceTest {
     }
 
     private void createZnode(ZookeeperClient client, int acceptorSocketPort) throws Exception {
-        client.createPath(PINPOINT_FLINK_CLUSTER_PATH, true);
-        client.createNode(PINPOINT_FLINK_CLUSTER_PATH + "/" + "127.0.0.1:" + acceptorSocketPort, "127.0.0.1".getBytes());
+        client.createPath(PINPOINT_FLINK_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR);
+        client.createNode(PINPOINT_FLINK_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR + "127.0.0.1:" + acceptorSocketPort, "127.0.0.1".getBytes());
     }
 
     private void closeZookeeperServer(TestingServer zookeeperServer) {
@@ -281,7 +282,7 @@ public class FlinkClusterServiceTest {
     }
 
     private ZookeeperClient createZookeeperClient() throws IOException {
-        ZookeeperClient client = new DefaultZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
+        ZookeeperClient client = new CuratorZookeeperClient("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 3000, new ZookeeperEventWatcher() {
 
             @Override
             public void process(WatchedEvent event) {
@@ -289,7 +290,12 @@ public class FlinkClusterServiceTest {
             }
 
             @Override
-            public boolean isConnected() {
+            public boolean handleConnected() {
+                return true;
+            }
+
+            @Override
+            public boolean handleDisconnected() {
                 return true;
             }
 
