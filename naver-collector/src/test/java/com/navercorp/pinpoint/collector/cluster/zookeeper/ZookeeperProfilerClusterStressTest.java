@@ -1,14 +1,13 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import com.navercorp.pinpoint.rpc.MessageListener;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
 import com.navercorp.pinpoint.test.client.TestPinpointClient;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import org.apache.curator.test.TestingServer;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -34,8 +33,6 @@ public class ZookeeperProfilerClusterStressTest {
     private static final int DEFAULT_ACCEPTOR_PORT = SocketUtils.findAvailableTcpPort(22313);
     private static final int DEFAULT_ACCEPTOR_SOCKET_PORT = SocketUtils.findAvailableTcpPort(22315);
 
-    private static CollectorConfiguration collectorConfig = null;
-
     private final TestServerMessageListenerFactory testServerMessageListenerFactory =
             new TestServerMessageListenerFactory(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.NO_RESPONSE);
 
@@ -46,15 +43,6 @@ public class ZookeeperProfilerClusterStressTest {
     @Autowired
     ClusterPointRouter clusterPointRouter;
 
-    @BeforeClass
-    public static void setUp() {
-        collectorConfig = new CollectorConfiguration();
-
-        collectorConfig.setClusterEnable(true);
-        collectorConfig.setClusterAddress("127.0.0.1:" + DEFAULT_ACCEPTOR_PORT);
-        collectorConfig.setClusterSessionTimeout(3000);
-    }
-
     @Test
     public void simpleTest1() throws Exception {
         List<TestPinpointClient> testPinpointClientList = new ArrayList<>();
@@ -62,11 +50,11 @@ public class ZookeeperProfilerClusterStressTest {
         PinpointServerAcceptor serverAcceptor = null;
 
         TestingServer ts = null;
+        ZookeeperClusterService service = null;
         try {
-            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
+            ts = ClusterTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
 
-            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-            service.setUp();
+            service = ClusterTestUtils.createZookeeperClusterService(ts.getConnectString(), clusterPointRouter);
 
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
@@ -78,21 +66,19 @@ public class ZookeeperProfilerClusterStressTest {
             InetSocketAddress address = new InetSocketAddress("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
             testPinpointClientList = connectPoint(testPinpointClientList, address, doCount);
-            Thread.sleep(1000);
-            Assert.assertEquals(testPinpointClientList.size(), profiler.getClusterData().size());
+            ClusterTestUtils.assertConnectedClusterSize(profiler, testPinpointClientList.size(), 1000);
 
             for (int i = 0; i < doCount; i++) {
                 testPinpointClientList = randomJob(testPinpointClientList, address);
-                Thread.sleep(1000);
-                Assert.assertEquals(testPinpointClientList.size(), profiler.getClusterData().size());
+                ClusterTestUtils.assertConnectedClusterSize(profiler, testPinpointClientList.size(), 1000);
             }
 
             disconnectPoint(testPinpointClientList, testPinpointClientList.size());
-            Thread.sleep(1000);
-            Assert.assertEquals(0, profiler.getClusterData().size());
-
-            service.tearDown();
+            ClusterTestUtils.assertConnectedClusterSize(profiler, 0, 1000);
         } finally {
+            if (service != null) {
+                service.tearDown();
+            }
             closeZookeeperServer(ts);
 
             if (serverAcceptor != null) {
@@ -107,11 +93,11 @@ public class ZookeeperProfilerClusterStressTest {
         PinpointServerAcceptor serverAcceptor = null;
 
         TestingServer ts = null;
+        ZookeeperClusterService service = null;
         try {
-            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
+            ts = ClusterTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
 
-            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-            service.setUp();
+            service = ClusterTestUtils.createZookeeperClusterService(ts.getConnectString(), clusterPointRouter);
 
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
@@ -154,9 +140,10 @@ public class ZookeeperProfilerClusterStressTest {
 
             disconnectPoint(testPinpointClientList, testPinpointClientList.size());
             Thread.sleep(1000);
-
-            service.tearDown();
         } finally {
+            if (service != null) {
+                service.tearDown();
+            }
             closeZookeeperServer(ts);
             serverAcceptor.close();
         }
@@ -231,7 +218,7 @@ public class ZookeeperProfilerClusterStressTest {
                 e.printStackTrace();
             }
 
-            TestPinpointClient testPinpointClient = new TestPinpointClient(messageListener, ZookeeperTestUtils.getParams(Thread.currentThread().getName(), "agent", System.currentTimeMillis()));
+            TestPinpointClient testPinpointClient = new TestPinpointClient(messageListener, ClusterTestUtils.getParams(Thread.currentThread().getName(), "agent", System.currentTimeMillis()));
             testPinpointClient.connect(address.getHostName(), address.getPort());
 
             testPinpointClientList.add(testPinpointClient);

@@ -1,7 +1,7 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
-import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.CuratorZookeeperClient;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperClient;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperConstants;
@@ -10,11 +10,8 @@ import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.WatchedEvent;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,12 +23,8 @@ public class ZookeeperWebClusterServiceTest {
 
     private static final String PINPOINT_CLUSTER_PATH = "/pinpoint-cluster";
     private static final String PINPOINT_WEB_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/web";
-    private static final String PINPOINT_PROFILER_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/profiler";
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final int DEFAULT_ZOOKEEPER_PORT = SocketUtils.findAvailableTcpPort(22213);
-
-    private static CollectorConfiguration collectorConfig = null;
 
     private final TestServerMessageListenerFactory testServerMessageListenerFactory =
             new TestServerMessageListenerFactory(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.NO_RESPONSE);
@@ -39,24 +32,15 @@ public class ZookeeperWebClusterServiceTest {
     @Autowired
     ClusterPointRouter clusterPointRouter;
 
-    @BeforeClass
-    public static void setUp() {
-        collectorConfig = new CollectorConfiguration();
-
-        collectorConfig.setClusterEnable(true);
-        collectorConfig.setClusterAddress("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT);
-        collectorConfig.setClusterSessionTimeout(3000);
-    }
-
     @Test
     public void simpleTest() throws Exception {
         TestingServer ts = null;
         TestPinpointServerAcceptor testPinpointServerAcceptor = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
+        ZookeeperClusterService service = null;
         try {
-            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
+            ts = ClusterTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
 
-            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-            service.setUp();
+            service = ClusterTestUtils.createZookeeperClusterService(ts.getConnectString(), clusterPointRouter);
 
             int bindPort = testPinpointServerAcceptor.bind();
 
@@ -85,9 +69,10 @@ public class ZookeeperWebClusterServiceTest {
 
             client.close();
             testPinpointServerAcceptor.assertAwaitClientConnected(0, 5000);
-
-            service.tearDown();
         } finally {
+            if (service != null) {
+                service.tearDown();
+            }
             testPinpointServerAcceptor.close();
             closeZookeeperServer(ts);
         }

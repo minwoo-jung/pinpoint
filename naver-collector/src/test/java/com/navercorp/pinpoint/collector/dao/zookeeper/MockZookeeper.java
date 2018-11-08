@@ -1,6 +1,6 @@
 package com.navercorp.pinpoint.collector.dao.zookeeper;
 
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperTestUtils;
+import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import org.apache.curator.test.TestingServer;
 
 import javax.annotation.PostConstruct;
@@ -20,7 +20,7 @@ public class MockZookeeper {
 
     @PostConstruct
     public void setUp() throws Exception {
-        mockZookeeperServer = ZookeeperTestUtils.createZookeeperServer(bindPort);
+        mockZookeeperServer = ClusterTestUtils.createZookeeperServer(bindPort);
     }
 
     @PreDestroy

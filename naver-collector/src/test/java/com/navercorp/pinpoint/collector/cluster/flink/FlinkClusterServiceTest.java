@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.collector.cluster.flink;
 
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperTestUtils;
+import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.sender.FlinkRequestFactory;
 import com.navercorp.pinpoint.collector.service.SendAgentStatService;
@@ -74,7 +74,7 @@ public class FlinkClusterServiceTest {
         TestingServer zookeeperServer = null;
         TestPinpointServerAcceptor testPinpointServerAcceptor = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
         try {
-            zookeeperServer = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
+            zookeeperServer = ClusterTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
             ZookeeperClient client = createZookeeperClient();
 
             int bindPort = testPinpointServerAcceptor.bind();
@@ -109,7 +109,7 @@ public class FlinkClusterServiceTest {
         TestingServer zookeeperServer = null;
         List<TestPinpointServerAcceptor> testPinpointServerAcceptorList = new ArrayList<>();
         try {
-            zookeeperServer = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
+            zookeeperServer = ClusterTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
             ZookeeperClient client = createZookeeperClient();
 
             TestPinpointServerAcceptor testPinpointServerAcceptor1 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
@@ -152,7 +152,7 @@ public class FlinkClusterServiceTest {
         TestingServer zookeeperServer = null;
         List<TestPinpointServerAcceptor> testPinpointServerAcceptorList = new ArrayList<>();
         try {
-            zookeeperServer = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
+            zookeeperServer = ClusterTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
             ZookeeperClient client = createZookeeperClient();
 
             TestPinpointServerAcceptor testPinpointServerAcceptor1 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);
@@ -206,7 +206,7 @@ public class FlinkClusterServiceTest {
         FlinkClusterService flinkClusterService = null;
         List<TestPinpointServerAcceptor> testPinpointServerAcceptorList = new ArrayList<>();
         try {
-            TestingServer zookeeperServer = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
+            TestingServer zookeeperServer = ClusterTestUtils.createZookeeperServer(DEFAULT_ZOOKEEPER_PORT);
             ZookeeperClient client = createZookeeperClient();
 
             TestPinpointServerAcceptor testPinpointServerAcceptor1 = new TestPinpointServerAcceptor(testServerMessageListenerFactory);

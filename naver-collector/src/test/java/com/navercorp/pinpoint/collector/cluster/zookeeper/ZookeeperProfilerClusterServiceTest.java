@@ -17,18 +17,20 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
+import com.navercorp.pinpoint.rpc.control.ProtocolException;
 import com.navercorp.pinpoint.rpc.packet.ControlHandshakePacket;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
 import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
 import com.navercorp.pinpoint.rpc.util.ControlMessageEncodingUtils;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import org.apache.curator.test.TestingServer;
-import org.jboss.netty.channel.Channel;
 import org.jboss.netty.util.Timer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -55,8 +57,6 @@ public class ZookeeperProfilerClusterServiceTest {
 
     private static final int DEFAULT_ACCEPTOR_PORT = SocketUtils.findAvailableTcpPort(22213);
 
-    private static CollectorConfiguration collectorConfig = null;
-
     private static Timer testTimer;
 
     @Autowired
@@ -64,12 +64,6 @@ public class ZookeeperProfilerClusterServiceTest {
 
     @BeforeClass
     public static void setUp() {
-        collectorConfig = new CollectorConfiguration();
-
-        collectorConfig.setClusterEnable(true);
-        collectorConfig.setClusterAddress("127.0.0.1:" + DEFAULT_ACCEPTOR_PORT);
-        collectorConfig.setClusterSessionTimeout(3000);
-
         testTimer = TimerFactory.createHashedWheelTimer(ZookeeperProfilerClusterServiceTest.class.getSimpleName(), 50, TimeUnit.MILLISECONDS, 512);
     }
 
@@ -81,83 +75,62 @@ public class ZookeeperProfilerClusterServiceTest {
     @Test
     public void simpleTest1() throws Exception {
         TestingServer ts = null;
+        ZookeeperClusterService service = null;
         try {
-            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
+            ts = ClusterTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
 
-            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-            service.setUp();
+            service = ClusterTestUtils.createZookeeperClusterService(ts.getConnectString(), clusterPointRouter);
 
-            DefaultPinpointServer pinpointServer = createPinpointServer(service);
-            
+            DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
+            Thread.sleep(1000);
+
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            pinpointServer.start();
-            Thread.sleep(1000);
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
-            List<String> result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
-
-            byte[] payload = ControlMessageEncodingUtils.encode(getParams());
-
-            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
-            pinpointServer.messageReceived(handshakePacket);
-
-            Thread.sleep(1000);
-
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(1, result.size());
+            stateToDuplex(pinpointServer);
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 1, 1000);
 
             pinpointServer.stop();
-            Thread.sleep(1000);
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
-            service.tearDown();
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0, 1000);
         } finally {
+            if (service != null) {
+                service.tearDown();
+            }
             closeZookeeperServer(ts);
         }
     }
 
     // 심플 쥬키퍼 테스트
     // 쥬키퍼와 연결이 끊어져 있는경우 이벤트가 발생했을때 쥬키퍼와 연결이 될 경우 해당 이벤트가 처리되어 있는지
-//    @Test
+    @Test
     public void simpleTest2() throws Exception {
         TestingServer ts = null;
+        ZookeeperClusterService service = null;
         try {
-            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-            service.setUp();
+            service = ClusterTestUtils.createZookeeperClusterService("127.0.0.1:" + DEFAULT_ACCEPTOR_PORT, clusterPointRouter);
 
-            DefaultPinpointServer pinpointServer = createPinpointServer(service);
+            DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
+            Thread.sleep(1000);
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            pinpointServer.start();
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
+
+            stateToDuplex(pinpointServer);
             Thread.sleep(1000);
 
-            List<String> result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
-            byte[] payload = ControlMessageEncodingUtils.encode(getParams());
-            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
-            pinpointServer.messageReceived(handshakePacket);
-            Thread.sleep(1000);
-
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
-
-            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
-
-            Thread.sleep(10000);
-
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(1, result.size());
+            ts = ClusterTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 1, 10000);
 
             pinpointServer.stop();
-            Thread.sleep(1000);
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
-
-            service.tearDown();
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0, 1000);
         } finally {
+            if (service != null) {
+                service.tearDown();
+            }
             closeZookeeperServer(ts);
         }
     }
@@ -168,87 +141,69 @@ public class ZookeeperProfilerClusterServiceTest {
     @Test
     public void simpleTest3() throws Exception {
         TestingServer ts = null;
+        ZookeeperClusterService service = null;
         try {
-            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
+            ts = ClusterTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
 
-            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-            service.setUp();
+            service = ClusterTestUtils.createZookeeperClusterService(ts.getConnectString(), clusterPointRouter);
 
-            DefaultPinpointServer pinpointServer = createPinpointServer(service);
+            DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
+            Thread.sleep(1000);
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            pinpointServer.start();
-            Thread.sleep(1000);
-            List<String> result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
-            byte[] payload = ControlMessageEncodingUtils.encode(getParams());
-
-            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
-            pinpointServer.messageReceived(handshakePacket);
-            Thread.sleep(1000);
-           
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(1, result.size());
+            stateToDuplex(pinpointServer);
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 1, 1000);
 
             ts.stop();
-            Thread.sleep(1000);
-            ts.restart();
-            Thread.sleep(1000);
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0, 1000);
 
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(1, result.size());
+            ts.restart();
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 1, 2000);
 
             pinpointServer.stop();
-            Thread.sleep(1000);
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
-
-            service.tearDown();
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0, 1000);
         } finally {
+            if (service != null) {
+                service.tearDown();
+            }
             closeZookeeperServer(ts);
         }
     }
 
     // 심플 쥬키퍼 테스트
     // 쥬키퍼와 연결이 끊어져 있는경우 이벤트가 발생했을때 쥬키퍼와 연결이 될 경우 해당 이벤트가 처리되어 있는지
-//    @Test
+    @Test
     public void simpleTest4() throws Exception {
         TestingServer ts = null;
+        ZookeeperClusterService service = null;
         try {
-            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-            service.setUp();
+            service = ClusterTestUtils.createZookeeperClusterService("127.0.0.1:" + DEFAULT_ACCEPTOR_PORT, clusterPointRouter);
 
-            DefaultPinpointServer pinpointServer = createPinpointServer(service);
+            DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
+            Thread.sleep(1000);
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            pinpointServer.start();
-            Thread.sleep(1000);
-            List<String> result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
-            byte[] payload = ControlMessageEncodingUtils.encode(getParams());
-            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
-            pinpointServer.messageReceived(handshakePacket);
+            stateToDuplex(pinpointServer);
             Thread.sleep(1000);
-
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
             pinpointServer.stop();
             Thread.sleep(1000);
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
-            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
+            ts = ClusterTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
             Thread.sleep(1000);
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
-
-            service.tearDown();
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
         } finally {
+            if (service != null) {
+                service.tearDown();
+            }
             closeZookeeperServer(ts);
         }
     }
@@ -260,33 +215,25 @@ public class ZookeeperProfilerClusterServiceTest {
     @Test
     public void simpleTest5() throws Exception {
         TestingServer ts = null;
+        ZookeeperClusterService service = null;
         try {
-            ts = ZookeeperTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
+            ts = ClusterTestUtils.createZookeeperServer(DEFAULT_ACCEPTOR_PORT);
 
-            ZookeeperClusterService service = new ZookeeperClusterService(collectorConfig, clusterPointRouter);
-            service.setUp();
+            service = ClusterTestUtils.createZookeeperClusterService(ts.getConnectString(), clusterPointRouter);
 
-            DefaultPinpointServer pinpointServer = createPinpointServer(service);
+            DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
+            Thread.sleep(1000);
 
             ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
-            pinpointServer.start();
-            Thread.sleep(1000);
             List<String> result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
 
-            byte[] payload = ControlMessageEncodingUtils.encode(getParams());
-            ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
-            pinpointServer.messageReceived(handshakePacket);
-            Thread.sleep(1000);
-
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(1, result.size());
+            stateToDuplex(pinpointServer);
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 1, 1000);
 
             pinpointServer.stop();
-            Thread.sleep(1000);
-            result = profilerClusterManager.getClusterData();
-            Assert.assertEquals(0, result.size());
+            ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0, 1000);
 
             ts.stop();
             Thread.sleep(1000);
@@ -295,9 +242,10 @@ public class ZookeeperProfilerClusterServiceTest {
 
             result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
-
-            service.tearDown();
         } finally {
+            if (service != null) {
+                service.tearDown();
+            }
             closeZookeeperServer(ts);
         }
     }
@@ -308,6 +256,12 @@ public class ZookeeperProfilerClusterServiceTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void stateToDuplex(PinpointServer pinpointServer) throws ProtocolException {
+        byte[] payload = ControlMessageEncodingUtils.encode(getParams());
+        ControlHandshakePacket handshakePacket = new ControlHandshakePacket(0, payload);
+        pinpointServer.messageReceived(handshakePacket);
     }
 
     private Map<String, Object> getParams() {
@@ -323,13 +277,6 @@ public class ZookeeperProfilerClusterServiceTest {
         properties.put(HandshakePropertyType.VERSION.getName(), "1.0");
 
         return properties;
-    }
-    
-    private DefaultPinpointServer createPinpointServer(ZookeeperClusterService service) {
-        Channel channel = mock(Channel.class);
-        PinpointServerConfig config = createPinpointServerConfig(service);
-        
-        return new DefaultPinpointServer(channel, config);
     }
 
     private PinpointServerConfig createPinpointServerConfig(ZookeeperClusterService service) {
