@@ -581,7 +581,7 @@
 			heap: {
 				mainStyle: "",
 				title: "Heap",
-				desc: "JVM's heap information and full garbage collection times(if any)",
+				desc: "JVM's heap information and major garbage collection times(if any)",
 				category: [{
 					title: "[Legend]",
 					items: [{
@@ -591,15 +591,15 @@
 						name: "Used",
 						desc: "Heap currently in use"
 					},{
-						name: "FGC",
-						desc: "Full garbage collection duration (number of FGCs in parenthesis if it occurred more than once)"
+						name: "Major GC",
+						desc: "Major garbage collection duration (number of Major GCs in parenthesis if it occurred more than once)"
 					}]
 				}]
 			},
 			permGen: {
 				mainStyle: "",
 				title: "Non-Heap",
-				desc: "JVM's non-heap information and full garbage collection times(if any)",
+				desc: "JVM's non-heap information and major garbage collection times(if any)",
 				category: [{
 					title: "[Legend]",
 					items: [{
@@ -609,8 +609,8 @@
 						name: "Used",
 						desc: "Non-heap currently in use"
 					},{
-						name: "FGC",
-						desc: "Full garbage collection duration (number of FGCs in parenthesis if it occurred more than once)"
+						name: "Major GC",
+						desc: "Major garbage collection duration (number of Major GCs in parenthesis if it occurred more than once)"
 					}]
 				}]
 			},
