@@ -1,7 +1,7 @@
 <configuration>
     <property>
         <name>hbase.zookeeper.quorum</name>
-        <value>zk.pinpoint.nhncorp.com</value>
+        <value>zk.pinpoint.navercorp.com</value>
     </property>
     <property>
         <name>hbase.zookeeper.property.clientPort</name>
