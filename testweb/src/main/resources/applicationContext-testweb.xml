@@ -50,6 +50,14 @@
         <constructor-arg value="10.105.72.10:11216,10.105.72.9:11216,10.105.72.11:11216"/>
     </bean>
 
+
+    <bean id="gprcHelloWorldServer"
+          class="com.navercorp.test.pinpoint.testweb.connector.grpc.HelloWorldServer"/>
+
+    <bean id="gprcStreamHelloWorldServer"
+          class="com.navercorp.test.pinpoint.testweb.connector.grpc.HelloWorldStreamServer"/>
+
+
     <!-- pinpoint bug regression test                                         -->
     <!--<bean id="arcusClientFactory" class="com.navercorp.test.pinpoint.testweb.component.ArcusClientFactory">-->
     <!--<constructor-arg value="dev.arcuscloud.nhncorp.com:17288"/>-->
