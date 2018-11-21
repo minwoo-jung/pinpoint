@@ -94,10 +94,10 @@ public class NaverUserInformationAcquirer implements UserInformationAcquirer {
 
     @Override
     public boolean validCheckHeader(String userId, String organizationName) {
-        if (org.springframework.util.StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(userId)) {
             return false;
         }
-        if (org.springframework.util.StringUtils.isEmpty(organizationName)) {
+        if (StringUtils.isEmpty(organizationName)) {
             return false;
         }
 
