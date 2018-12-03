@@ -116,9 +116,8 @@ export class ServerMapDiagramWithGojs extends ServerMapDiagram {
                 node = this.checkAuthorizedNode();
             }
             if (node) {
-                const part = this.diagram.findPartForKey(this.baseApplicationKey);
-                this.diagram.select(part);
-                this.onClickNodeManually(part);
+                this.diagram.select(node);
+                this.onClickNodeManually(node);
             }
         }
     }
