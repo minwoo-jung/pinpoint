@@ -140,11 +140,14 @@ export class WebAppSettingDataService {
         return this.componentDefaultSettingDataService.getColorByRequest();
     }
     private loadFavoriteList(): void {
-        this.http.get<any>(this.userConfigurationURL).subscribe((userConfigurationData: IUserConfiguration) => {
-            this.favoriteApplicationList = userConfigurationData.favoriteApplications;
+        this.http.get<any>(this.userConfigurationURL).subscribe((userConfigurationData: IUserConfiguration | IServerErrorShortFormat) => {
+            if ((userConfigurationData as IServerErrorShortFormat).errorCode) {
+                this.favoriteApplicationList = [];
+            } else {
+                this.favoriteApplicationList = (userConfigurationData as IUserConfiguration).favoriteApplications;
+            }
             this.store.dispatch(new Actions.AddFavoriteApplication(this.getFavoriteApplicationList()));
         }, (error: IServerErrorFormat) => {
-
         });
     }
     private saveFavoriteList(newFavoriateApplicationList: IFavoriteApplication[], application: IFavoriteApplication): void {
@@ -153,9 +156,13 @@ export class WebAppSettingDataService {
         }).subscribe((result: any) => {
             if (result.result === 'SUCCESS') {
                 if (this.favoriteApplicationList.length > newFavoriateApplicationList.length) {
-                    this.store.dispatch(new Actions.RemoveFavoriteApplication([application as IApplication]));
+                    this.store.dispatch(new Actions.RemoveFavoriteApplication([
+                        new Application(application.applicationName, application.serviceType, application.code)
+                    ]));
                 } else {
-                    this.store.dispatch(new Actions.AddFavoriteApplication([application as IApplication]));
+                    this.store.dispatch(new Actions.AddFavoriteApplication([
+                        new Application(application.applicationName, application.serviceType, application.code)
+                    ]));
                 }
                 this.favoriteApplicationList = newFavoriateApplicationList;
             }
