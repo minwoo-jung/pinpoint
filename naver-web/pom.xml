@@ -332,7 +332,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>run build:naver</arguments>
+                                    <arguments>run build:naver:real</arguments>
                                     <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
                                 </configuration>
                             </execution>

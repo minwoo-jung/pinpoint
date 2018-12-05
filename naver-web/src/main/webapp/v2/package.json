@@ -9,7 +9,7 @@
         "build": "ng build pinpoint --base-href /v2/",
         "build:real": "ng build pinpoint --prod --base-href /v2/",
         "build:watch": "ng build pinpoint --base-href /v2/ --watch",
-        "build:naver": "ng build pinpoint-naver --base-href /v2/",
+        "build:naver:real": "ng build pinpoint-naver --base-href /v2/ --prod",
         "build:naver:watch": "ng build pinpoint-naver --base-href /v2/ --watch",
         "test": "ng test pinpoint",
         "lint": "ng lint pinpoint --type-check",
