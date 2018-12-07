@@ -56,7 +56,9 @@ public class NaverRpcModule extends PrivateModule {
 
     @Override
     protected void configure() {
-        bind(CommandDispatcher.class).toProvider(CommandDispatcherProvider.class).in(Scopes.SINGLETON);
+        Key<CommandDispatcher> commandDispatcher = Key.get(CommandDispatcher.class);
+        bind(commandDispatcher).toProvider(CommandDispatcherProvider.class).in(Scopes.SINGLETON);
+        expose(commandDispatcher);
 
         SECURITY_TYPE securityType = SECURITY_TYPE.getValue(profilerConfig.readString(NaverProfilerConfigConstants.KEY_SECURITY_TYPE, NaverProfilerConfigConstants.DEFAULT_SECURITY_TYPE));
 
