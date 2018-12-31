@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public class SmsSender {
+public class NaverSmsSender implements SmsSender {
 
     private static final String QUOTATATION = "\"";
     private static final String SENDER_NUMBER = "0317844499";
@@ -49,9 +49,9 @@ public class SmsSender {
     private String smsServiceID;
     private UserGroupService userGroupService;
 
-    public SmsSender(NaverBatchConfiguration batchConfiguration, UserGroupService userGroupService) {
-        Assert.notNull(batchConfiguration, "batchConfiguration must not be null");
-        Assert.notNull(userGroupService, "userGroupService must not be null");
+    public NaverSmsSender(NaverBatchConfiguration batchConfiguration, UserGroupService userGroupService) {
+        Assert.notNull(batchConfiguration, "batchConfiguration must not be null.");
+        Assert.notNull(userGroupService, "userGroupService must not be null.");
 
         this.smsServerUrl = batchConfiguration.getMexServerUrl();
         this.smsServiceID = batchConfiguration.getServiceID();

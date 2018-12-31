@@ -75,7 +75,7 @@ public class NaverUserInfoDecoder implements UserInfoDecoder {
             try {
                 phoneNumberList.add(decrypt(encodedPhoneNumber));
             } catch (Exception e) {
-                logger.error("could not decode phoneNumber (encode value : {})", encodedPhoneNumber);
+                logger.error("could not decode phoneNumber (encode value : {})", encodedPhoneNumber, e);
             }
         }
 

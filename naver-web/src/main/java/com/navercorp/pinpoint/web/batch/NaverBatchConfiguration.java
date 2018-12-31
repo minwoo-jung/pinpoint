@@ -31,9 +31,6 @@ import java.util.Properties;
 public class NaverBatchConfiguration implements InitializingBean {
     private static final Logger logger = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    @Value("#{naverBatchProps['batch.server.env']}")
-    private String batchEnv;
-
     @Value("#{naverBatchProps['alarm.sms.url']}")
     private String mexServerUrl;
 
@@ -42,13 +39,6 @@ public class NaverBatchConfiguration implements InitializingBean {
 
     @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['alarm.sms.cellphone.number'] ?: ''), ',')}")
     private List<String> cellPhoneNumberList;
-
-    @Value("#{naverBatchProps['alarm.mail.url']}")
-    private String emailServerUrl;
-
-    @Value("#{naverBatchProps['pinpoint.url']}")
-    private String pinpointUrl;
-
 
     public NaverBatchConfiguration() {
     }
@@ -67,10 +57,6 @@ public class NaverBatchConfiguration implements InitializingBean {
         return result ;
     }
 
-    public String getBatchEnv() {
-        return batchEnv;
-    }
-
     public String getMexServerUrl() {
         return mexServerUrl;
     }
@@ -83,23 +69,12 @@ public class NaverBatchConfiguration implements InitializingBean {
         return cellPhoneNumberList;
     }
 
-    public String getPinpointUrl() {
-        return pinpointUrl;
-    }
-
-    public String getEmailServerUrl() {
-        return emailServerUrl;
-    }
-
     @Override
     public String toString() {
         return "NaverBatchConfiguration{" +
-                "batchEnv='" + batchEnv + '\'' +
-                ", mexServerUrl='" + mexServerUrl + '\'' +
+                " mexServerUrl='" + mexServerUrl + '\'' +
                 ", serviceID='" + serviceID + '\'' +
                 ", cellPhoneNumberList=" + cellPhoneNumberList +
-                ", emailServerUrl='" + emailServerUrl + '\'' +
-                ", pinpointUrl='" + pinpointUrl + '\'' +
                 '}';
     }
 }

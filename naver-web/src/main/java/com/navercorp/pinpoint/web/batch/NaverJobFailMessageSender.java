@@ -25,10 +25,10 @@ public class NaverJobFailMessageSender implements JobFailMessageSender {
     private final String serviceID;
     private final String batchEnv;
 
-    public NaverJobFailMessageSender(NaverBatchConfiguration batchConfiguration) {
-        this.mexServerUrl = batchConfiguration.getMexServerUrl();
-        this.serviceID = batchConfiguration.getServiceID();
-        this.cellPhoneNumbers = batchConfiguration.getCellPhoneNumberList();
+    public NaverJobFailMessageSender(NaverBatchConfiguration naverBatchConfiguration, BatchConfiguration batchConfiguration) {
+        this.mexServerUrl = naverBatchConfiguration.getMexServerUrl();
+        this.serviceID = naverBatchConfiguration.getServiceID();
+        this.cellPhoneNumbers = naverBatchConfiguration.getCellPhoneNumberList();
         this.batchEnv = batchConfiguration.getBatchEnv();
     }
 
