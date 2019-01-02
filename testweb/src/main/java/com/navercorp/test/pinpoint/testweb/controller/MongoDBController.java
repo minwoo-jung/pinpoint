@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NAVER Corp.
+ * Copyright 2019 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,19 @@
 
 package com.navercorp.test.pinpoint.testweb.controller;
 
-import com.mongodb.MongoClientSettings;
+import com.mongodb.Block;
 import com.mongodb.ReadPreference;
-import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.IndexModel;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.PushOptions;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.navercorp.test.pinpoint.testweb.service.MongoService;
-import com.navercorp.test.pinpoint.testweb.service.MongoServiceImpl;
 import com.navercorp.test.pinpoint.testweb.util.Description;
 import org.bson.BsonArray;
 import org.bson.BsonBinary;
@@ -52,12 +55,21 @@ import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.*;
+import static java.util.Arrays.asList;
 
 /**
  *
@@ -65,111 +77,82 @@ import java.util.Date;
 
 @Controller
 public class MongoDBController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final String IP = "10.106.157.82";
+    @Autowired
+    private MongoService<Document> mongoService;
 
-    private MongoClient mongoClient;
-    private com.mongodb.MongoClient mongoClient_36;
-    private MongoDatabase database;
-    private MongoDatabase database2;
-    private MongoService mongoService;
-    private MongoService mongoService2;
 
-    public MongoDBController() {
-
-    }
-
-    @Description("connect to myMongoDb, myMongoDb2")
-    @RequestMapping(value = "/mongodb/connect")
+    @Description("withDBReadPreference test")
+    @RequestMapping(value = "/mongodb/connectWithReadPreference")
     @ResponseBody
-    public String connect() {
+    public String readPreference() {
 
-        mongoClient = MongoClients.create(
-                MongoClientSettings.builder().readPreference(ReadPreference.secondary())
-                        .applyToClusterSettings(builder ->
-                                builder.hosts(Arrays.asList(new ServerAddress(IP, 27017)))).build());
+        MongoCursor<Document> cursor2 = mongoService.listWithDBReadPreference(ReadPreference.primaryPreferred());
 
-        database = mongoClient.getDatabase("myMongoDb");
-        database2 = mongoClient.getDatabase("myMongoDb2");
-
-        mongoService = new MongoServiceImpl(database, "customers");
-        mongoService2 = new MongoServiceImpl(database2, "customers");
+        MongoCursor<Document> cursor = mongoService.listWithCollectionReadPreference(ReadPreference.secondaryPreferred());
+        try {
+            while (cursor.hasNext()) {
+                logger.info(cursor.next().toJson());
+            }
+        } finally {
+            cursor.close();
+        }
 
         return "OK";
     }
 
-    @Description("Mongo_JavaDriver3.6 이하 방식으로 connect")
-    @RequestMapping(value = "/mongodb/connectWith_v3.6")
+    @Description("writeConcern test")
+    @RequestMapping(value = "/mongodb/connectWithWriteConcern")
     @ResponseBody
-    public String connect36() {
-
-        mongoClient_36 = new com.mongodb.MongoClient(IP, 27017);
-
-        database = mongoClient_36.getDatabase("myMongoDb36");
-        mongoService = new MongoServiceImpl(database, "customers");
-
-        return "OK";
-    }
-
-    @Description("connect to myMongoDb, myMongoDb2 withDBReadPreference")
-    @RequestMapping(value = "/mongodb/connectWithDBReadPreference")
-    @ResponseBody
-    public String connect2() {
-
-        mongoClient = MongoClients.create(
-                MongoClientSettings.builder()
-                        .applyToClusterSettings(builder ->
-                                builder.hosts(Arrays.asList(new ServerAddress(IP, 27017)))).build());
-
-        database = mongoClient.getDatabase("myMongoDb").withReadPreference(ReadPreference.primary());
-        database2 = mongoClient.getDatabase("myMongoDb2").withReadPreference(ReadPreference.secondaryPreferred());
-
-        mongoService = new MongoServiceImpl(database, "customers");
-        mongoService2 = new MongoServiceImpl(database2, "customers");
-
-        return "OK";
-    }
-
-    @Description("set collection in myMongoDb with primaryPreferred ")
-    @RequestMapping(value = "/mongodb/connectWithCollectionReadPreference")
-    @ResponseBody
-    public String connect3() {
-
-        database = mongoClient.getDatabase("myMongoDb");
-        mongoService = new MongoServiceImpl(database, ReadPreference.primaryPreferred(), "customers");
-
-        return "OK";
-    }
-
-    @Description("check multiple collections with writeConcern")
-    @RequestMapping(value = "/mongodb/connectWithCollectionChange")
-    @ResponseBody
-    public String connect4() {
-
-
-        MongoService mongoService = new MongoServiceImpl(database, "collection1");
+    public String writeConcern() {
 
         Document doc = new Document("name", "pinpoint").append("company", "Naver");
-        mongoService.add(doc);
-
-        MongoService mongoService2 = new MongoServiceImpl(database, WriteConcern.UNACKNOWLEDGED, "collection2");
+        mongoService.addWithDBWriteConcern(doc, WriteConcern.UNACKNOWLEDGED);
 
         Document doc2 = new Document("name", "pinpoint2").append("company", "Naver2");
-        mongoService2.add(doc2);
+        mongoService.addWithCollectionWriteConcern(doc2, WriteConcern.JOURNALED);
 
-        MongoService mongoService3 = new MongoServiceImpl(database2, "collection3");
         Document doc3 = new Document("name", "pinpoint3").append("company", "Naver3");
-        mongoService3.add(doc3);
+        mongoService.addWithDBWriteConcern(doc3, WriteConcern.MAJORITY);
+
 
         return "OK";
     }
 
-    @RequestMapping(value = "/mongodb/insert1")
+    @RequestMapping(value = "/mongodb/insert")
     @ResponseBody
-    public String insert1() {
-
+    public String insert() {
         Document doc = new Document("name", "pinpoint").append("company", "Naver");
         mongoService.add(doc);
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/insertMany")
+    @ResponseBody
+    public String insertMany() {
+        List<Document> documentList = new ArrayList<>();
+        Document doc = new Document("name", "manymanay").append("company", "ManyCompany");
+        Document doc2 = new Document("name", "manymanay2").append("company", "ManyCompany2");
+        documentList.add(doc);
+        documentList.add(doc2);
+
+        for (int i = 3; i < 100; i++)
+            documentList.add(new Document("name", "manymanay" + i).append("company", "ManyCompany"));
+
+        mongoService.addMany(documentList);
+
+        return "OK";
+    }
+
+    @Description("java driver 3.0 client 로 insert")
+    @RequestMapping(value = "/mongodb/insertWithClient30")
+    @ResponseBody
+    public String insertWithClient30() {
+
+        Document doc = new Document("name", "pinpoint2").append("company", "Naver");
+        mongoService.addWithClient30(doc);
 
         return "OK";
     }
@@ -217,17 +200,17 @@ public class MongoDBController {
     @Description("2번째 DB 인 myMongoDb2")
     @RequestMapping(value = "/mongodb/insertTo2ndserver")
     @ResponseBody
-    public String insert1to2ndserver() {
+    public String insertTo2ndserver() {
 
         Document doc = new Document("name", "pinpoint").append("company", "Naver");
-        mongoService2.add(doc);
+        mongoService.addToSecondDB(doc);
 
         return "OK";
     }
 
     @RequestMapping(value = "/mongodb/insertNested")
     @ResponseBody
-    public String insert2() {
+    public String insertNested() {
 
         Document doc2 = new Document("name", "pinpoint2").append("company", new Document("nestedDoc", "1"));
         mongoService.add(doc2);
@@ -236,8 +219,9 @@ public class MongoDBController {
     }
 
     @RequestMapping(value = "/mongodb/insertArray")
+
     @ResponseBody
-    public String insert3() {
+    public String insertArray() {
 
         BsonValue a = new BsonDouble(111);
         BsonValue b = new BsonDouble(222);
@@ -245,18 +229,18 @@ public class MongoDBController {
         bsonArray.add(a);
         bsonArray.add(b);
 
-        Document doc2 = new Document("array", bsonArray);
-        mongoService.add(doc2);
+        Document doc = new Document("array", bsonArray);
+        mongoService.add(doc);
 
         return "OK";
     }
 
     @RequestMapping(value = "/mongodb/insertCollection")
     @ResponseBody
-    public String insert4() {
+    public String insertCollection() {
 
-        Document doc2 = new Document("Java_Collection", Arrays.asList("naver", "apple"));
-        mongoService.add(doc2);
+        Document doc = new Document("Java_Collection", Arrays.asList("naver", "apple"));
+        mongoService.add(doc);
 
         return "OK";
     }
@@ -264,31 +248,270 @@ public class MongoDBController {
     @RequestMapping(value = "/mongodb/find")
     @ResponseBody
     public String find() {
+        Document document = new Document().append("name", new BsonString("roy2"))
+                .append("company", new BsonString("Naver2"));
 
-        mongoService.find();
+        MongoCursor<Document> cursor = mongoService.find(document).iterator();
+
+        try {
+            while (cursor.hasNext()) {
+                logger.info(cursor.next().toJson());
+            }
+        } finally {
+            cursor.close();
+        }
         return "OK";
     }
 
-
-    @RequestMapping(value = "/mongodb/list")
+    @RequestMapping(value = "/mongodb/index")
     @ResponseBody
-    public String list() {
-        mongoService.list();
+    public String index() {
+
+        mongoService.createIndex(Indexes.ascending("name", "company"));
+
+        List<IndexModel> indexes = new ArrayList<>();
+        indexes.add(new IndexModel(Indexes.ascending("name2", "company")));
+        indexes.add(new IndexModel(Indexes.ascending("name3", "company")));
+
+        mongoService.createIndexes(indexes);
+
         return "OK";
     }
-
 
     @RequestMapping(value = "/mongodb/update")
     @ResponseBody
-    public String update2to3() {
+    public String update() {
 
         Document doc1 = new Document("name", "pinpoint").append("company", "Naver");
-        Document doc2 = new Document("name", "pinpoint2").append("company", "Naver2");
+        Document doc2 = new Document("$set", new Document("name", "pinpoint2").append("company", "Naver2"));
 
         mongoService.update(doc1, doc2);
+        //mongoService.updateWithClient( doc1, doc2); works with higher version of MongoDB
 
         return "OK";
     }
+
+    @RequestMapping(value = "/mongodb/updateSimple")
+    @ResponseBody
+    public String updateWithSet() {
+
+        Document doc1 = new Document("name", "pinpoint").append("company", "Naver");
+
+        mongoService.update(doc1, and(set("name", "pinpointWithSet"), set("company", "NaverWithSet")));
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/updateWithEach")
+    @ResponseBody
+    public String updateWithEach() {
+
+        Document doc1 = new Document("name", "pinpoint").append("company", "Naver");
+
+        mongoService.update(doc1, addEachToSet("arrayField", asList("pinpoint", "pinpoint2")), new UpdateOptions().upsert(true));
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/updatePush")
+    @ResponseBody
+    public String updatePush() {
+
+        Document doc1 = new Document("name", "pinpoint").append("company", "Naver");
+
+        mongoService.update(doc1, pushEach("arrayField", asList("pinpoint", "pinpoint2"), new PushOptions().position(1)));
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/updatePullAll")
+    @ResponseBody
+    public String updatePullAll() {
+
+        Document doc1 = new Document("name", "pinpoint").append("company", "Naver");
+
+        mongoService.update(doc1, pullAll("arrayField", asList("pinpoint", "pinpoint2")));
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/updateComposite")
+    @ResponseBody
+    public String updateComposite() {
+
+        Document doc1 = new Document("name", "pinpoint").append("company", "Naver");
+
+        mongoService.update(doc1, combine(asList(pushEach("arrayField", asList("pinpoint", "pinpoint2")), pushEach("arrayField", asList("pinpoint", "pinpoint2")))));
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/sortCompound")
+    @ResponseBody
+    public String sortCompound() {
+
+        FindIterable<Document> iterable = mongoService.find(not(eq("name", "pinpoint"))).sort(Sorts.ascending("name", "name2"));
+
+        Block<Document> printBlock = new Block<Document>() {
+            @Override
+            public void apply(final Document document) {
+                logger.info(document.toJson());
+            }
+        };
+
+        iterable.forEach(printBlock);
+        return "OK";
+    }
+
+
+    @RequestMapping(value = "/mongodb/filterEQ")
+    @ResponseBody
+    public String filterEQ() {
+
+        Document doc1 = new Document("name", "pinpoint").append("company", "Naver");
+        Document doc2 = new Document("$set", new Document("name", "pinpoint2").append("company", "Naver2"));
+
+        mongoService.update(eq("name", "pinpoint"), doc2);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/filterAND")
+    @ResponseBody
+    public String filterAND() {
+
+        Document doc1 = new Document("name", "pinpoint").append("company", "Naver");
+        Document doc2 = new Document("$set", new Document("name", "pinpoint2").append("company", "Naver2"));
+
+        mongoService.update(and(eq("name", "pinpoint"), eq("company", "Naver")), doc2);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/filterNE")
+    @ResponseBody
+    public String filterNE() {
+
+        Document doc2 = new Document("$set", new Document("name", "pinpoint2").append("company", "Naver2"));
+
+        mongoService.update(and(ne("name", "pinpoint"), ne("company", "Naver")), doc2);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/filterREGREX")
+    @ResponseBody
+    public String filterREGREX() {
+
+        FindIterable<Document> iterable = mongoService.find(regex("name", "%inpoint", "i"));
+
+        Block<Document> printBlock = new Block<Document>() {
+            @Override
+            public void apply(final Document document) {
+                logger.info(document.toJson());
+            }
+        };
+
+        iterable.forEach(printBlock);
+
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/filterNOT")
+    @ResponseBody
+    public String filterNOT() {
+
+        FindIterable<Document> iterable = mongoService.find(not(eq("name", "pinpoint")));
+
+        Block<Document> printBlock = new Block<Document>() {
+            @Override
+            public void apply(final Document document) {
+                logger.info(document.toJson());
+            }
+        };
+
+        iterable.forEach(printBlock);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/filterIN")
+    @ResponseBody
+    public String filterIN() {
+
+        FindIterable<Document> iterable = mongoService.find(in("name", "pinpoint", "pinpoint2"));
+
+        Block<Document> printBlock = new Block<Document>() {
+            @Override
+            public void apply(final Document document) {
+                logger.info(document.toJson());
+            }
+        };
+
+        iterable.forEach(printBlock);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/filterGEO")
+    @ResponseBody
+    public String filterGEO() {
+
+        String coords = "28.56402,79.93652a27.27569,26.16394a42.69404,20.02808a48.61541,51.37207a";
+        String[] coors = coords.split("a");
+        final List<List<Double>> polygons = new ArrayList<>();
+
+        for (int i = 0; i < coors.length; i++) {
+            String[] coo = coors[i].split(",");
+            polygons.add(Arrays.asList(Double.parseDouble(coo[0]), Double.parseDouble(coo[1])));
+        }
+
+        FindIterable<Document> iterable = mongoService.find(Filters.geoWithinPolygon("loc", polygons));
+
+        Block<Document> printBlock = new Block<Document>() {
+            @Override
+            public void apply(final Document document) {
+                logger.info(document.toJson());
+            }
+        };
+
+        iterable.forEach(printBlock);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/filterTEXT")
+    @ResponseBody
+    public String filterTEXT() {
+
+        FindIterable<Document> iterable = mongoService.find(Filters.text("bakery coffee"));
+
+        Block<Document> printBlock = new Block<Document>() {
+            @Override
+            public void apply(final Document document) {
+                logger.info(document.toJson());
+            }
+        };
+
+        iterable.forEach(printBlock);
+        return "OK";
+    }
+
+    @RequestMapping(value = "/mongodb/filterORNOR")
+    @ResponseBody
+    public String filterORNOR() {
+        FindIterable<Document> iterable = mongoService.find(
+                and(
+                        or(eq("name", "pinpoint"), eq("company", "Naver")),
+                        nor(eq("name", "pinpoint"), eq("company", "Naver"))
+                )
+        );
+
+        Block<Document> printBlock = new Block<Document>() {
+            @Override
+            public void apply(final Document document) {
+                logger.info(document.toJson());
+            }
+        };
+
+        iterable.forEach(printBlock);
+        return "OK";
+    }
+
 
     @RequestMapping(value = "/mongodb/delete")
     @ResponseBody
@@ -297,6 +520,7 @@ public class MongoDBController {
         Document doc = new Document("name", "pinpoint").append("company", "Naver");
         DeleteResult deleteResult = mongoService.delete(doc);
 
+        logger.info("Deleted : " + deleteResult.getDeletedCount());
         return "OK";
     }
 
@@ -304,7 +528,7 @@ public class MongoDBController {
     @ResponseBody
     public String close() {
 
-        mongoClient.close();
+        mongoService.close();
 
         return "OK";
     }

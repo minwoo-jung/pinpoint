@@ -50,6 +50,14 @@
         <constructor-arg value="10.105.72.10:11216,10.105.72.9:11216,10.105.72.11:11216"/>
     </bean>
 
+    <bean id="mongoClientFactory" class="com.navercorp.test.pinpoint.testweb.component.MongoClientFactory">
+        <constructor-arg value="${mongodb.host}"/>
+        <constructor-arg value="${mongodb.port}"/>
+    </bean>
+    <bean id="mongoClientFactory37" class="com.navercorp.test.pinpoint.testweb.component.MongoClientFactory37">
+        <constructor-arg value="${mongodb.host}"/>
+        <constructor-arg value="${mongodb.port}"/>
+    </bean>
 
     <bean id="gprcHelloWorldServer"
           class="com.navercorp.test.pinpoint.testweb.connector.grpc.HelloWorldServer"/>
@@ -147,7 +155,6 @@
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="postgreSqlDataSource"/>
     </bean>
-
 
     <task:executor id="threadPoolTaskExecutor" pool-size="5"/>
     <task:annotation-driven executor="threadPoolTaskExecutor" />

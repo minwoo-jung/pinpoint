@@ -17,20 +17,49 @@
 
 package com.navercorp.test.pinpoint.testweb.service;
 
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.IndexModel;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.util.List;
 
-public interface MongoService {
+public interface MongoService<T> {
 
-    void add(Document doc);
+    void add(T doc);
 
-    void update(Document doc, Document todoc);
+    void addMany(List<T> doc);
 
-    List<Document> list();
+    void update(Bson doc, Bson todoc);
 
-    DeleteResult delete(Document doc);
+    void update(Bson doc, Bson todoc, final UpdateOptions updateOptions);
 
-    void find();
+    void updateWithClient(Bson doc, Bson todoc);
+
+    DeleteResult delete(Bson doc);
+
+    FindIterable<T> find(Bson doc);
+
+    void addWithClient30(Document doc);
+
+    void addWithDBWriteConcern(Document doc, WriteConcern unacknowledged);
+
+    void addWithCollectionWriteConcern(Document doc, WriteConcern journaled);
+
+    MongoCursor<Document> listWithDBReadPreference(ReadPreference readPreference);
+
+    MongoCursor<Document> listWithCollectionReadPreference(ReadPreference readPreference);
+
+    void addToSecondDB(Document doc);
+
+    void close();
+
+    void createIndex(Bson ascending);
+
+    void createIndexes(List<IndexModel> indexes);
 }
