@@ -71,6 +71,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- agent plugins -->
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-agent-plugins</artifactId>
+            <type>pom</type>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- plug-ins -->
         <dependency>
@@ -85,6 +92,8 @@
             <type>pom</type>
             <scope>runtime</scope>
         </dependency>
+
+
 
         <!-- tools -->
         <dependency>

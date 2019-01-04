@@ -26,6 +26,7 @@ import com.navercorp.pinpoint.web.calltree.span.Align;
 import com.navercorp.pinpoint.web.calltree.span.CallTreeNode;
 import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
 import com.navercorp.pinpoint.web.service.AnnotationKeyMatcherService;
+import com.navercorp.pinpoint.web.service.ProxyRequestTypeRegistryService;
 import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
@@ -407,7 +408,8 @@ public class MetaDataFilterImplTest {
         AnnotationKeyMatcherService annotationKeyMatcherService = mock(AnnotationKeyMatcherService.class);
         ServiceTypeRegistryService registry = mock(ServiceTypeRegistryService.class);
         AnnotationKeyRegistryService annotationKeyRegistryService = mock(AnnotationKeyRegistryService.class);
-        RecordFactory factory = new RecordFactory(annotationKeyMatcherService, registry, annotationKeyRegistryService);
+        ProxyRequestTypeRegistryService proxyRequestTypeRegistryService = mock(ProxyRequestTypeRegistryService.class);
+        RecordFactory factory = new RecordFactory(annotationKeyMatcherService, registry, annotationKeyRegistryService, proxyRequestTypeRegistryService);
 
         MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
         Record record = metaDataFilter.createRecord(node, factory);

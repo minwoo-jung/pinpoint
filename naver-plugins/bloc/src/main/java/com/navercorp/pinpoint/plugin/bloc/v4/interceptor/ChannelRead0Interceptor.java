@@ -21,13 +21,13 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.plugin.RequestRecorderFactory;
+import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyRequestRecorder;
 import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
-import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyHttpHeaderRecorder;
 import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapperAdaptor;
-import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.plugin.bloc.AbstractBlocAroundInterceptor;
@@ -38,8 +38,6 @@ import com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -51,17 +49,17 @@ import java.util.Map.Entry;
 public class ChannelRead0Interceptor extends AbstractBlocAroundInterceptor {
 
     private final boolean traceRequestParam;
-    private final ProxyHttpHeaderRecorder<ServerRequestWrapper> proxyHttpHeaderRecorder;
+    private final ProxyRequestRecorder<ServerRequestWrapper> proxyHttpHeaderRecorder;
     private final ServerRequestRecorder<ServerRequestWrapper> serverRequestRecorder;
     private final RequestTraceReader<ServerRequestWrapper> requestTraceReader;
 
-    public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor) {
+    public ChannelRead0Interceptor(TraceContext traceContext, MethodDescriptor descriptor, RequestRecorderFactory<ServerRequestWrapper> requestRecorderFactory) {
         super(traceContext, descriptor, ChannelRead0Interceptor.class);
 
         BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
         traceRequestParam = config.isBlocTraceRequestParam();
         RequestAdaptor<ServerRequestWrapper> requestAdaptor = new ServerRequestWrapperAdaptor();
-        this.proxyHttpHeaderRecorder = new ProxyHttpHeaderRecorder<ServerRequestWrapper>(traceContext.getProfilerConfig().isProxyHttpHeaderEnable(), requestAdaptor);
+        this.proxyHttpHeaderRecorder = requestRecorderFactory.getProxyRequestRecorder(traceContext.getProfilerConfig().isProxyHttpHeaderEnable(), requestAdaptor);
         this.serverRequestRecorder = new ServerRequestRecorder<ServerRequestWrapper>(requestAdaptor);
         this.requestTraceReader = new RequestTraceReader<ServerRequestWrapper>(traceContext, requestAdaptor);
     }

@@ -476,7 +476,6 @@
             <artifactId>owfs-api</artifactId>
             <version>4.0.9</version>
         </dependency>
-
     </dependencies>
 
     <build>

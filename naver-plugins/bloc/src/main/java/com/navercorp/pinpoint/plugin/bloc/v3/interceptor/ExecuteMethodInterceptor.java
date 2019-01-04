@@ -21,8 +21,9 @@ import com.navercorp.pinpoint.bootstrap.context.SpanEventRecorder;
 import com.navercorp.pinpoint.bootstrap.context.SpanRecorder;
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
+import com.navercorp.pinpoint.bootstrap.plugin.RequestRecorderFactory;
+import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyRequestRecorder;
 import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
-import com.navercorp.pinpoint.bootstrap.plugin.proxy.ProxyHttpHeaderRecorder;
 import com.navercorp.pinpoint.bootstrap.plugin.request.RequestTraceReader;
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestRecorder;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
@@ -43,17 +44,17 @@ import java.util.Enumeration;
 public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
 
     private final boolean traceRequestParam;
-    private final ProxyHttpHeaderRecorder<Request> proxyHttpHeaderRecorder;
+    private final ProxyRequestRecorder<Request> proxyRequestRecorder;
     private final ServerRequestRecorder<Request> serverRequestRecorder;
     private final RequestTraceReader<Request> requestTraceReader;
 
-    public ExecuteMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor) {
+    public ExecuteMethodInterceptor(TraceContext traceContext, MethodDescriptor descriptor, RequestRecorderFactory<Request> requestRecorderFactory) {
         super(traceContext, descriptor, ExecuteMethodInterceptor.class);
 
         BlocPluginConfig config = new BlocPluginConfig(traceContext.getProfilerConfig());
         traceRequestParam = config.isBlocTraceRequestParam();
         RequestAdaptor<Request> requestAdaptor = new HttpServerRequestAdaptor();
-        this.proxyHttpHeaderRecorder = new ProxyHttpHeaderRecorder<Request>(traceContext.getProfilerConfig().isProxyHttpHeaderEnable(), requestAdaptor);
+        this.proxyRequestRecorder = requestRecorderFactory.getProxyRequestRecorder(traceContext.getProfilerConfig().isProxyHttpHeaderEnable(), requestAdaptor);
         this.serverRequestRecorder = new ServerRequestRecorder<Request>(requestAdaptor);
         this.requestTraceReader = new RequestTraceReader<Request>(traceContext, requestAdaptor);
     }
@@ -87,7 +88,7 @@ public class ExecuteMethodInterceptor extends AbstractBlocAroundInterceptor {
             spanRecorder.recordApi(blocMethodApiTag);
             this.serverRequestRecorder.record(spanRecorder, request);
             // record proxy HTTP headers.
-            this.proxyHttpHeaderRecorder.record(spanRecorder, request);
+            this.proxyRequestRecorder.record(spanRecorder, request);
         }
         return trace;
     }
