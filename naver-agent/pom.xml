@@ -57,7 +57,7 @@
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-bootstrap-java7</artifactId>
+            <artifactId>pinpoint-bootstrap-core-optional</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
