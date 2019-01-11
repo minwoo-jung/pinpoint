@@ -367,4 +367,28 @@ interface IFavoriteApplication {
 interface IUserConfiguration {
     userId: string;
     favoriteApplications: IFavoriteApplication[];
+    permissions?: IPermissions;
+}
+interface IPermissions {
+    roleId: string;
+    permissionCollection: {
+        permsGroupAministration: {
+            viewAdminMenu: boolean;
+            editUser: boolean;
+            editRole: boolean;
+        };
+        permsGroupAppAuthorization: {
+            preoccupancy: boolean;
+            editAuthorForEverything: boolean;
+            editAuthorOnlyManager: boolean;
+        };
+        permsGroupAlarm: {
+            editAlarmForEverything: boolean;
+            editAuthorForEverything: boolean;
+        };
+        permsGroupUserGroup: {
+            editGroupForEverything: boolean;
+            editGroupOnlyGroupMember: boolean;
+        };
+    }
 }

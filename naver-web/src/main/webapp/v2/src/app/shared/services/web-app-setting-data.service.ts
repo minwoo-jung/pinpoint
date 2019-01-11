@@ -1,21 +1,20 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { LocalStorageService } from 'angular-2-local-storage';
 import 'moment-timezone';
 import * as moment from 'moment-timezone';
-import { pluck } from 'rxjs/operators';
 
-import { AppState, Actions } from 'app/shared/store';
 // from 'app/shared/services';
 // 방식을 사용하지 말 것.
 // Circular dependency 발생함.
+import { AppState, Actions } from 'app/shared/store';
 import { ComponentDefaultSettingDataService } from 'app/shared/services/component-default-setting-data.service';
-import { DynamicPopupService } from 'app/shared/services/dynamic-popup.service';
 import { Application, Period } from 'app/core/models';
+import { DynamicPopupService } from 'app/shared/services/dynamic-popup.service';
 import { ServerErrorPopupContainerComponent } from 'app/core/components/server-error-popup';
+import { NewUrlStateNotificationService } from 'app/shared/services/new-url-state-notification.service';
+import { UserConfigurationDataService } from 'app/shared/services/user-configuration-data.service';
 
 interface IMinMax {
     min: number;
@@ -35,7 +34,6 @@ export class WebAppSettingDataService {
         USER_DEFAULT_PERIOD: 'userDefaultPeriod',
         TRANSACTION_LIST_GUTTER_POSITION: 'transactionListGutterPosition'
     };
-    private userConfigurationURL = 'userConfiguration.pinpoint';
     private favoriteApplicationList: IFavoriteApplication[] = [];
     private IMAGE_PATH = './assets/img/';
     private IMAGE_EXT = '.png';
@@ -43,59 +41,39 @@ export class WebAppSettingDataService {
     private ICON_PATH = 'icons/';
     private LOGO_IMG_NAME = 'logo.png';
     constructor(
-        private http: HttpClient,
         private store: Store<AppState>,
-        private activatedRoute: ActivatedRoute,
         private localStorageService: LocalStorageService,
         private componentDefaultSettingDataService: ComponentDefaultSettingDataService,
-        private dynamicPopupService: DynamicPopupService
+        private dynamicPopupService: DynamicPopupService,
+        private newUrlStateNotificationService: NewUrlStateNotificationService,
+        private userConfigurationDataService: UserConfigurationDataService
     ) {
-        this.loadFavoriteList();
         this.store.dispatch(new Actions.ChangeTimezone(this.getTimezone()));
         this.store.dispatch(new Actions.ChangeDateFormat(this.getDateFormat()));
     }
-    private getConfigurationData(): Observable<any> {
-        return this.activatedRoute.children[0].children[0].data;
-    }
     getSecurityGuideUrl(): Observable<string> {
-        return this.getConfigurationData().pipe(
-            pluck('configuration', 'securityGuideUrl')
-        );
+        return this.newUrlStateNotificationService.getConfiguration('securityGuideUrl');
     }
     useActiveThreadChart(): Observable<boolean> {
-        return this.getConfigurationData().pipe(
-            pluck('configuration', 'showActiveThread')
-        );
+        return this.newUrlStateNotificationService.getConfiguration('showActiveThread');
     }
     getUserId(): Observable<string | undefined> {
-        return this.getConfigurationData().pipe(
-            pluck('configuration', 'userId')
-        );
+        return this.newUrlStateNotificationService.getConfiguration('userId');
     }
     getUserDepartment(): Observable<string | undefined> {
-        return this.getConfigurationData().pipe(
-            pluck('configuration', 'userDepartment')
-        );
+        return this.newUrlStateNotificationService.getConfiguration('userDepartment');
     }
     useUserEdit(): Observable<boolean> {
-        return this.getConfigurationData().pipe(
-            pluck('configuration', 'editUserInfo')
-        );
+        return this.newUrlStateNotificationService.getConfiguration('editUserInfo');
     }
     isDataUsageAllowed(): Observable<boolean> {
-        return this.getConfigurationData().pipe(
-            pluck('configuration', 'sendUsage')
-        );
+        return this.newUrlStateNotificationService.getConfiguration('sendUsage');
     }
     getVersion(): Observable<string> {
-        return this.getConfigurationData().pipe(
-            pluck('configuration', 'version')
-        );
+        return this.newUrlStateNotificationService.getConfiguration('version');
     }
     isApplicationInspectorActivated(): Observable<boolean> {
-        return this.getConfigurationData().pipe(
-            pluck('configuration', 'showApplicationStat')
-        );
+        return this.newUrlStateNotificationService.getConfiguration('showApplicationStat');
     }
     getImagePath(): string {
         return this.IMAGE_PATH;
@@ -112,10 +90,10 @@ export class WebAppSettingDataService {
     getLogoPath(): string {
         return this.getImagePath() + this.LOGO_IMG_NAME;
     }
-    getSystemDefaultInbound(): string {
+    getSystemDefaultInbound(): number {
         return this.componentDefaultSettingDataService.getSystemDefaultInbound();
     }
-    getSystemDefaultOutbound(): string {
+    getSystemDefaultOutbound(): number {
         return this.componentDefaultSettingDataService.getSystemDefaultOutbound();
     }
     getSystemDefaultPeriod(): Period {
@@ -124,10 +102,10 @@ export class WebAppSettingDataService {
     getSystemDefaultTransactionViewPeriod(): Period {
         return this.componentDefaultSettingDataService.getSystemDefaultTransactionViewPeriod();
     }
-    getInboundList(): string[] {
+    getInboundList(): number[] {
         return this.componentDefaultSettingDataService.getInboundList();
     }
-    getOutboundList(): string[] {
+    getOutboundList(): number[] {
         return this.componentDefaultSettingDataService.getOutboundList();
     }
     getPeriodList(path: string): Period[] {
@@ -139,21 +117,8 @@ export class WebAppSettingDataService {
     getColorByRequest(): string[] {
         return this.componentDefaultSettingDataService.getColorByRequest();
     }
-    private loadFavoriteList(): void {
-        this.http.get<any>(this.userConfigurationURL).subscribe((userConfigurationData: IUserConfiguration | IServerErrorShortFormat) => {
-            if ((userConfigurationData as IServerErrorShortFormat).errorCode) {
-                this.favoriteApplicationList = [];
-            } else {
-                this.favoriteApplicationList = (userConfigurationData as IUserConfiguration).favoriteApplications;
-            }
-            this.store.dispatch(new Actions.AddFavoriteApplication(this.getFavoriteApplicationList()));
-        }, (error: IServerErrorFormat) => {
-        });
-    }
     private saveFavoriteList(newFavoriateApplicationList: IFavoriteApplication[], application: IFavoriteApplication): void {
-        this.http.put<{ favoriteApplications: IFavoriteApplication[] }>(this.userConfigurationURL, {
-            favoriteApplications: newFavoriateApplicationList
-        }).subscribe((result: any) => {
+        this.userConfigurationDataService.saveFavoriteList(newFavoriateApplicationList).subscribe((result: any) => {
             if (result.result === 'SUCCESS') {
                 if (this.favoriteApplicationList.length > newFavoriateApplicationList.length) {
                     this.store.dispatch(new Actions.RemoveFavoriteApplication([
@@ -189,16 +154,11 @@ export class WebAppSettingDataService {
             applicationName: application.getApplicationName(),
             code: application.getCode(),
             serviceType: application.getServiceType()
-        }
+        };
         const removedList = this.favoriteApplicationList.filter((data: IFavoriteApplication) => {
             return !new Application(data.applicationName, data.serviceType, data.code).equals(application);
         });
         this.saveFavoriteList(removedList, removeApplication);
-    }
-    private getFavoriteApplicationList(): IApplication[] {
-        return this.favoriteApplicationList.map(({applicationName, serviceType, code}) => {
-            return new Application(applicationName, serviceType, code);
-        });
     }
     getScatterY(key: string): IMinMax {
         return this.localStorageService.get<IMinMax>(key) || { min: 0, max: 10000 };
@@ -239,17 +199,17 @@ export class WebAppSettingDataService {
     getLayerHeight(): number {
         return Number.parseInt(this.localStorageService.get(WebAppSettingDataService.KEYS.LAYER_HEIGHT), 10);
     }
-    setUserDefaultInbound(value: string): void {
+    setUserDefaultInbound(value: number): void {
         this.localStorageService.set(WebAppSettingDataService.KEYS.USER_DEFAULT_INBOUND, value);
     }
-    getUserDefaultInbound(): string {
-        return this.localStorageService.get<string>(WebAppSettingDataService.KEYS.USER_DEFAULT_INBOUND) || this.getSystemDefaultInbound();
+    getUserDefaultInbound(): number {
+        return this.localStorageService.get<number>(WebAppSettingDataService.KEYS.USER_DEFAULT_INBOUND) || this.getSystemDefaultInbound();
     }
-    setUserDefaultOutbound(value: string): void {
+    setUserDefaultOutbound(value: number): void {
         this.localStorageService.set(WebAppSettingDataService.KEYS.USER_DEFAULT_OUTBOUND, value);
     }
-    getUserDefaultOutbound(): string {
-        return this.localStorageService.get<string>(WebAppSettingDataService.KEYS.USER_DEFAULT_OUTBOUND) || this.getSystemDefaultOutbound();
+    getUserDefaultOutbound(): number {
+        return this.localStorageService.get<number>(WebAppSettingDataService.KEYS.USER_DEFAULT_OUTBOUND) || this.getSystemDefaultOutbound();
     }
     setUserDefaultPeriod(value: Period): void {
         this.localStorageService.set(WebAppSettingDataService.KEYS.USER_DEFAULT_PERIOD, value.getValue());

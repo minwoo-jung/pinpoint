@@ -1,21 +1,15 @@
 (function( $ ) {
 	'use strict';
-	/**
-	 * (en)yobiDirective
-	 * @ko yobiDirective
-	 * @group Directive
-	 * @name yobiDirective
-	 * @class
-	 */
 	pinpointApp.directive( "yobiDirective", [ "$rootScope", "$http", "$window", "webStorage", "AnalyticsService",
 		function ( $rootScope, $http, $window, webStorage, analyticsService ) {
 			return {
 				template: [
 					'<div style="display:inline-block">',
-					'<a href="https://yobi.navercorp.com/Labs-public_pinpoint-issues/posts" target="_blank" style="color:#FFF;" ng-click="openNotice()">',
-					'<i class="xi-yobi" style="cursor:pointer;font-size:22px;"></i>',
-					'<span class="glyphicon glyphicon-exclamation-sign" style="font-size:14px;top:-12px;left:-10px;color:#71FF1F" ng-show="hasNotice"></span>',
-					'</a>',
+						'<a href="https://yobi.navercorp.com/Labs-public_pinpoint-issues/posts" target="_blank" style="color:#FFF;" ng-click="openNotice()">',
+							'<i class="xi-yobi" style="cursor:pointer;font-size:22px;"></i>',
+							'<span class="glyphicon glyphicon-exclamation-sign" style="font-size:14px;top:-12px;left:-10px;color:#71FF1F" ng-show="hasNotice"></span>',
+						'</a>',
+						'<button style="margin-top: -12px; line-height: 1.2" type="button" class="btn btn-xs btn-success" ng-click="openNew()">새로운 Pinpoint<br/>사용하기</button>',
 					'</div>'
 				].join(""),
 				scope: {},
@@ -49,6 +43,9 @@
 						analyticsService.send( analyticsService.CONST.MAIN, "ClickOpenYobi" );
 						scope.hasNotice = false;
 					};
+					scope.openNew = function() {
+						$window.location.href = $window.location.origin + '/v2' + $window.location.hash.substring(1);
+					}
 				}
 			};
 		}

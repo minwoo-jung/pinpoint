@@ -41,6 +41,8 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { JSONTextParserPipe } from './pipes/json-text-parser.pipe';
 import { DynamicPopupService } from 'app/shared/services/dynamic-popup.service';
 import { UserConfigurationDataService } from './services/user-configuration-data.service';
+import { UserConfigurationResolverService } from './services/user-configuration-resolver.service';
+import { UserPermissionCheckService } from './services/user-permission-check.service';
 
 @NgModule({
     declarations: [
@@ -103,7 +105,9 @@ import { UserConfigurationDataService } from './services/user-configuration-data
         StoreHelperService,
         UrlValidateGuard,
         DynamicPopupService,
-        UserConfigurationDataService
+        UserConfigurationDataService,
+        UserConfigurationResolverService,
+        UserPermissionCheckService
     ]
 })
 export class SharedModule { }
