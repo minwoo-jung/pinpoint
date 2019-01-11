@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.plugin.spring.boot;
 
+import com.navercorp.pinpoint.test.plugin.DelegateSupportedPinpointPluginTestInstance;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestContext;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestInstance;
 
@@ -225,7 +226,11 @@ public class SpringBootPluginTestCase implements PinpointPluginTestInstance {
 
     @Override
     public Scanner startTest() throws Throwable {
-        return this.delegate.startTest();
+        if (delegate instanceof DelegateSupportedPinpointPluginTestInstance) {
+            return ((DelegateSupportedPinpointPluginTestInstance) delegate).startTest(this);
+        } else {
+            return this.delegate.startTest();
+        }
     }
 
     @Override
