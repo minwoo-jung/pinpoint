@@ -18,14 +18,12 @@ package com.navercorp.pinpoint.plugin.jdbc.mysql;
 
 import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
-import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -46,16 +44,9 @@ import java.util.Properties;
 @PinpointAgent(NaverAgentPath.PATH)
 @JvmVersion(8)
 @Dependency({"mysql:mysql-connector-java:[6.min,6.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
-public class MySqlConnection_6_X_IT {
+public class MySqlConnection_6_X_IT extends MySql_IT_Base {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private static Properties db;
-
-    @BeforeClass
-    public static void beforeClass() throws Exception {
-        db = PropertyUtils.loadPropertyFromClassPath("database.properties");
-    }
 
     @Test
     public void testModify() throws Exception {

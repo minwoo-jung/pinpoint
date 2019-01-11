@@ -15,17 +15,13 @@
  */
 package com.navercorp.pinpoint.plugin.jdbc.mysql;
 
-import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.Properties;
 
 /**
  * @author Jongho Moon
@@ -36,19 +32,8 @@ import java.util.Properties;
 @PinpointAgent(NaverAgentPath.PATH)
 @JvmVersion(8)
 @Dependency({"mysql:mysql-connector-java:[8.0.11,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
-public class MySql_8_X_IT {
+public class MySql_8_X_IT extends MySql_IT_Base {
 
-    private static MySqlItHelper HELPER;
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        Properties db = PropertyUtils.loadPropertyFromClassPath("database.properties");
-
-        HELPER = new MySqlItHelper(db);
-    }
-    
     @Test
     public void testStatements() throws Exception {
         Class<?> driverClass = Class.forName("com.mysql.cj.jdbc.NonRegisteringDriver");

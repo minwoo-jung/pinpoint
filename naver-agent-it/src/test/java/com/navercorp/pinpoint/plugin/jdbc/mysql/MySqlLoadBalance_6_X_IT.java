@@ -49,15 +49,9 @@ import java.util.Properties;
 @PinpointAgent(NaverAgentPath.PATH)
 @JvmVersion(8)
 @Dependency({"mysql:mysql-connector-java:[6.min,6.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
-public class MySqlLoadBalance_6_X_IT {
+public class MySqlLoadBalance_6_X_IT extends MySql_IT_Base {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static Properties db;
-
-    @BeforeClass
-    public static void beforeClass() throws Exception {
-        db = PropertyUtils.loadPropertyFromClassPath("database.properties");
-    }
 
     private Connection connectDB(String url) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         String user = db.getProperty("mysql.user");
