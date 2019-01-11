@@ -224,12 +224,13 @@ public class SpringBootPluginTestCase implements PinpointPluginTestInstance {
     }
 
     @Override
-    public Scanner startTest(Process process) throws Throwable {
-        return this.delegate.startTest(process);
+    public Scanner startTest() throws Throwable {
+        return this.delegate.startTest();
     }
 
     @Override
-    public void endTest(Process process) throws Throwable {
-
+    public void endTest() throws Throwable {
+        this.delegate.endTest();
     }
+
 }

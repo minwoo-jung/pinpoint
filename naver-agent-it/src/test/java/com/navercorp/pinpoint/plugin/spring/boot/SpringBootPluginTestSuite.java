@@ -34,12 +34,17 @@ public abstract class SpringBootPluginTestSuite extends PinpointPluginTestSuite 
     protected final TestAppVersion version;
 
     public SpringBootPluginTestSuite(Class<?> testClass) throws InitializationError, ArtifactResolutionException, DependencyResolutionException {
-        super(testClass);
+        super(testClass, false);
         TestAppVersion version = testClass.getAnnotation(TestAppVersion.class);
         if (version == null) {
             throw new IllegalArgumentException("@TestAppVersion must be specified");
         }
         this.version = version;
+    }
+
+    @Override
+    protected boolean usingSharedProcess() {
+        return false;
     }
 
     @Override

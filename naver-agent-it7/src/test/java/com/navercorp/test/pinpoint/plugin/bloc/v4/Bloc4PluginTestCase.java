@@ -29,8 +29,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import com.navercorp.pinpoint.test.plugin.DefaultProcessManager;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestContext;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestInstance;
+import com.navercorp.pinpoint.test.plugin.ProcessManager;
 import com.navercorp.pinpoint.test.plugin.StreamRedirector;
 
 /**
@@ -39,17 +41,19 @@ import com.navercorp.pinpoint.test.plugin.StreamRedirector;
  */
 public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
     private static final String ENCODING = "UTF-8";
-    
+
     private final PinpointPluginTestContext context;
     private final File blocDir;
     private final String testId;
-    
+    private final ProcessManager processManager;
+
     private final File blocBase = new File("test/bloc4/base");
 
     public Bloc4PluginTestCase(PinpointPluginTestContext context, File blocDir) {
         this.context = context;
         this.blocDir = blocDir;
         this.testId = blocDir.getName() + ":" + context.getJvmVersion();
+        this.processManager = new DefaultProcessManager(context);
     }
 
     @Override
@@ -60,18 +64,18 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
     @Override
     public List<String> getClassPath() {
         List<String> classpath = new ArrayList<>();
-        
+
         File lib = new File(blocDir, "libs");
-        
+
         for (File child : lib.listFiles()) {
             if (child.getName().endsWith(".jar")) {
                 classpath.add(child.getAbsolutePath());
             }
         }
-        
+
         File conf = new File(blocBase, "conf");
         classpath.add(conf.getAbsolutePath());
-        
+
         return classpath;
     }
 
@@ -91,17 +95,18 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
     public List<String> getAppArgs() {
         File conf = new File(blocBase, "conf");
         File ini = new File(conf, "bloc.ini");
-        
+
         return Arrays.asList(ini.getAbsolutePath());
     }
-    
-     @Override
+
+    @Override
     public File getWorkingDirectory() {
         return blocBase;
     }
 
     @Override
-    public Scanner startTest(Process process) throws Throwable {
+    public Scanner startTest() throws Throwable {
+        Process process = processManager.create(this);
         new Thread(new StreamRedirector(process.getInputStream(), System.out)).start();
 
         String testClass = context.getTestClass().getName();
@@ -110,11 +115,11 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
         final String encodeTestClassLocation = URLEncoder.encode(testClassLocation, "utf-8");
         String urlString = "http://localhost:5098/test/test/doTest?testId=" + testId + "&testClass=" + testClass + "&testClassPath=" + encodeTestClassLocation;
         System.out.println("Try to call: " + urlString);
-        
+
         URL url = new URL(urlString);
 
         for (int i = 0; i < 10; i++) {
-            
+
             HttpURLConnection connection;
             try {
                 connection = (HttpURLConnection)url.openConnection();
@@ -122,18 +127,18 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
 
                 int response = connection.getResponseCode();
                 System.out.println("response: " + response);
-                
+
 //                if (response != HttpURLConnection.HTTP_OK) {
 //                    throw new RuntimeException("Failed to invoke " + url + " [" + response + "]");
 //                }
             } catch (IOException e) {
                 // connection failed. retry.
                 Thread.sleep(1000);
-                
+
                 System.out.println("Retry " + (i + 1) + "th time to call test servlet");
                 continue;
             }
-            
+
             InputStream is = connection.getInputStream();
             String encoding = connection.getContentEncoding();
             Scanner scanner = new Scanner(is, encoding == null ? ENCODING : encoding);
@@ -143,35 +148,39 @@ public class Bloc4PluginTestCase implements PinpointPluginTestInstance {
             System.out.println("Response " + response);
 
             String modified = response.substring(1, response.length() - 1).replace("\\n", "\n");
-            
+
             return new Scanner(modified);
         }
-        
+
         throw new RuntimeException("Failed to connect BLOC");
     }
 
     @Override
-    public void endTest(Process process) throws Throwable {
-        final Socket socket = new Socket();
-        PrintWriter writer = null;
+    public void endTest() throws Throwable {
         try {
-            socket.connect(new InetSocketAddress("127.0.0.1", 9984));
-            writer = new PrintWriter(socket.getOutputStream());
-            writer.write("STOP!");
-        } catch (IOException e) {
-            System.err.println("Fail to send shutdown message " +  e.getMessage());
-        } finally {
-            if (writer != null) {
+            final Socket socket = new Socket();
+            PrintWriter writer = null;
+            try {
+                socket.connect(new InetSocketAddress("127.0.0.1", 9984));
+                writer = new PrintWriter(socket.getOutputStream());
+                writer.write("STOP!");
+            } catch (IOException e) {
+                System.err.println("Fail to send shutdown message " +  e.getMessage());
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (Exception ignore) {
+                    }
+                }
                 try {
-                    writer.close();
-                } catch (Exception ignore) {
+                    socket.close();
+                } catch (IOException e) {
+                    System.err.println("Fail to close socket " +  e.getMessage());
                 }
             }
-            try {
-                socket.close();
-            } catch (IOException e) {
-                System.err.println("Fail to close socket " +  e.getMessage());
-            }
+        } finally {
+            processManager.stop();
         }
     }
 }
