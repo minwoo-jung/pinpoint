@@ -22,6 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 /**
  * @author minwoo.jung
  */
@@ -74,4 +78,48 @@ public class RoleServiceImpl implements RoleService {
     public UserRole selectUserRole(String userId) {
         return roleDao.selectUserRole(userId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RoleInformation getUserPermission(String userId) {
+        UserRole userRole = roleDao.selectUserRole(userId);
+
+        List<String> roleList = userRole.getRoleList();
+        if (roleList.isEmpty()) {
+            return RoleInformation.UNASSIGNED_ROLE;
+        }
+
+        List<RoleInformation> roleInformationList = new ArrayList<>(roleList.size());
+        for (String roleId : roleList) {
+            RoleInformation roleInformation = roleDao.selectRoleInformation(roleId);
+
+            if (Objects.nonNull(roleInformation)) {
+                roleInformationList.add(roleInformation);
+            }
+        }
+
+        if (roleInformationList.isEmpty()) {
+            return RoleInformation.UNASSIGNED_ROLE;
+        }
+
+        return mergeRoleInformation(roleInformationList);
+    }
+
+    private RoleInformation mergeRoleInformation(List<RoleInformation> roleInformationList) {
+        final int listSize = roleInformationList.size();
+
+        if (listSize == 1) {
+            return roleInformationList.get(0);
+        }
+
+        RoleInformation mergedRoleInformation = roleInformationList.get(0);
+
+        for (int index = 1; index < listSize; index++) {
+            mergedRoleInformation = RoleInformation.merge(mergedRoleInformation, roleInformationList.get(index));
+        }
+
+        return mergedRoleInformation;
+    }
+
+
 }

@@ -18,6 +18,8 @@ package com.navercorp.pinpoint.web.vo.role;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.web.exception.AuthorityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.Objects;
@@ -26,6 +28,9 @@ import java.util.Objects;
  * @author minwoo.jung
  */
 public class RoleInformation {
+
+    public final static RoleInformation UNASSIGNED_ROLE = new RoleInformation("Unassined_role", PermissionCollection.DEFAULT);
+
     private String roleId;
     private PermissionCollection permissionCollection;
 
@@ -52,6 +57,12 @@ public class RoleInformation {
 
     public void setRoleId(String roleId) {
         this.roleId = roleId;
+    }
+
+    public static RoleInformation merge(RoleInformation roleInformation1, RoleInformation roleInformation2) {
+        final String mergedUserId = roleInformation1.getRoleId() + "_" + roleInformation2.getRoleId();
+        final PermissionCollection permissionCollection = PermissionCollection.merge(roleInformation1.getPermissionCollection(), roleInformation2.getPermissionCollection());
+        return new RoleInformation(mergedUserId, permissionCollection);
     }
 
     @Override

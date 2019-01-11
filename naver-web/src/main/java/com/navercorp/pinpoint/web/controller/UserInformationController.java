@@ -16,14 +16,9 @@
 package com.navercorp.pinpoint.web.controller;
 
 import com.navercorp.pinpoint.common.util.StringUtils;
-import com.navercorp.pinpoint.web.service.RoleService;
-import com.navercorp.pinpoint.web.service.UserAccountService;
-import com.navercorp.pinpoint.web.service.UserInformationService;
-import com.navercorp.pinpoint.web.service.UserService;
-import com.navercorp.pinpoint.web.vo.User;
-import com.navercorp.pinpoint.web.vo.UserAccount;
-import com.navercorp.pinpoint.web.vo.UserInformation;
-import com.navercorp.pinpoint.web.vo.UserRole;
+import com.navercorp.pinpoint.web.service.*;
+import com.navercorp.pinpoint.web.vo.*;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +45,8 @@ public class UserInformationController {
     private final String ERROR_NAME_NULL = "You must enter a name.";
     private final String ERROR_PASSWORD_INCORRECT = "The current password is incorrect.";
 
+    private static final String SSO_USER = "SSO_USER";
+
     @Autowired
     private UserInformationService userInformationService;
 
@@ -61,6 +58,9 @@ public class UserInformationController {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private UserConfigService userConfigService;
 
     //TODO : (minwoo) 파라미터 validation 체크 필요함.
     @RequestMapping(method = RequestMethod.GET)
@@ -191,6 +191,18 @@ public class UserInformationController {
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");
+        return result;
+    }
+
+    @RequestMapping(value="user/permissionAndConfiguration", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> selectPermissionAndConfiguration(@RequestHeader(SSO_USER) String userId) {
+        RoleInformation roleInformation = roleService.getUserPermission(userId);
+        UserConfiguration userConfiguration = userConfigService.selectUserConfiguration(userId);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("configuration", userConfiguration);
+        result.put("permission", roleInformation);
         return result;
     }
 

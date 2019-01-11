@@ -20,6 +20,8 @@ package com.navercorp.pinpoint.web.vo.role;
  */
 public class PermsGroupAppAuthorization {
 
+    public final static PermsGroupAppAuthorization DEFAULT = new PermsGroupAppAuthorization(false, false, false);
+
     private boolean preoccupancy; //First of all, you can assign userGroup to manager for application.
 
     private boolean editAuthorForEverything; // can edit authorization configue.
@@ -56,6 +58,13 @@ public class PermsGroupAppAuthorization {
 
     public void setEditAuthorOnlyManager(boolean editAuthorOnlyManager) {
         this.editAuthorOnlyManager = editAuthorOnlyManager;
+    }
+
+    public static PermsGroupAppAuthorization merge(PermsGroupAppAuthorization permsGroupAppAuthorization1, PermsGroupAppAuthorization permsGroupAppAuthorization2) {
+        final boolean mergedPreoccupancy = permsGroupAppAuthorization1.getPreoccupancy() || permsGroupAppAuthorization2.getPreoccupancy();
+        final boolean mergedEditAuthorForEverything = permsGroupAppAuthorization1.getEditAuthorForEverything() || permsGroupAppAuthorization2.getEditAuthorForEverything();
+        final boolean mergedEditAuthorOnlyManager = permsGroupAppAuthorization1.getEditAuthorOnlyManager() || permsGroupAppAuthorization2.getEditAuthorOnlyManager();
+        return new PermsGroupAppAuthorization(mergedPreoccupancy, mergedEditAuthorForEverything, mergedEditAuthorOnlyManager);
     }
 
     @Override

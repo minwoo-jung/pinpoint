@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.web.controller;
 
+import com.navercorp.pinpoint.web.dao.RoleDao;
 import com.navercorp.pinpoint.web.service.RoleService;
 import com.navercorp.pinpoint.web.service.UserAccountService;
 import com.navercorp.pinpoint.web.service.UserInformationService;
@@ -24,6 +25,7 @@ import com.navercorp.pinpoint.web.vo.User;
 import com.navercorp.pinpoint.web.vo.UserAccount;
 import com.navercorp.pinpoint.web.vo.UserInformation;
 import com.navercorp.pinpoint.web.vo.UserRole;
+import com.navercorp.pinpoint.web.vo.role.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -72,6 +74,12 @@ public class UserInformationControllerTest {
     private final static String PASSWORD = "password";
     private final static String PASSWORD_UPDATED = "passwordUpdate";
 
+    private final String ROLE_ID_1 = "roleId1";
+    private final String ROLE_ID_2 = "roleId2";
+    private final String ROLE_ID_3 = "roleId3";
+    private final String ROLE_ID_4 = "roleId4";
+    private final String ROLE_ID_5 = "roleId5";
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -99,6 +107,12 @@ public class UserInformationControllerTest {
     @After
     public void after() {
         userInformationService.deleteUserInformation(USER_ID);
+        roleService.deleteUserRole(USER_ID);
+        roleService.deleteRoleInformation(ROLE_ID_1);
+        roleService.deleteRoleInformation(ROLE_ID_2);
+        roleService.deleteRoleInformation(ROLE_ID_3);
+        roleService.deleteRoleInformation(ROLE_ID_4);
+        roleService.deleteRoleInformation(ROLE_ID_5);
     }
 
     @Test
@@ -308,4 +322,80 @@ public class UserInformationControllerTest {
             userInformationService.deleteUserInformation(USER_ID);
         }
     }
+
+    @Test
+    public void selectPermissionAndConfiguration() throws Exception {
+        try {
+            insertRoleInfo();
+
+            MvcResult mvcResult = this.mockMvc.perform(get("/users/user/permissionAndConfiguration.pinpoint").header("SSO_USER", USER_ID).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.configuration ").isMap())
+                .andExpect(jsonPath("$.permission").isMap())
+                .andReturn();
+
+            logger.info("result : " + mvcResult.getResponse().getContentAsString());
+
+        } finally {
+            roleService.deleteUserRole(USER_ID);
+            roleService.deleteRoleInformation(ROLE_ID_1);
+            roleService.deleteRoleInformation(ROLE_ID_2);
+            roleService.deleteRoleInformation(ROLE_ID_3);
+            roleService.deleteRoleInformation(ROLE_ID_4);
+            roleService.deleteRoleInformation(ROLE_ID_5);
+        }
+    }
+
+    private void insertRoleInfo() {
+        PermsGroupAdministration permsGroupAdministration1 = new PermsGroupAdministration(false, false, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization1 = new PermsGroupAppAuthorization(false, false, false);
+        PermsGroupAlarm permsGroupAlarm1 = new PermsGroupAlarm(false, false);
+        PermsGroupUserGroup permsGroupUserGroup1 = new PermsGroupUserGroup(false, false);
+        PermissionCollection permissionCollection1 = new PermissionCollection(permsGroupAdministration1, permsGroupAppAuthorization1, permsGroupAlarm1, permsGroupUserGroup1);
+        RoleInformation roleInformation1 = new RoleInformation(ROLE_ID_1, permissionCollection1);
+        roleService.insertRoleInformation(roleInformation1);
+
+        PermsGroupAdministration permsGroupAdministration2 = new PermsGroupAdministration(true, false, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization2 = new PermsGroupAppAuthorization(true, false, false);
+        PermsGroupAlarm permsGroupAlarm2 = new PermsGroupAlarm(true, false);
+        PermsGroupUserGroup permsGroupUserGroup2 = new PermsGroupUserGroup(true, false);
+        PermissionCollection permissionCollection2 = new PermissionCollection(permsGroupAdministration2, permsGroupAppAuthorization2, permsGroupAlarm2, permsGroupUserGroup2);
+        RoleInformation roleInformation2 = new RoleInformation(ROLE_ID_2, permissionCollection2);
+        roleService.insertRoleInformation(roleInformation2);
+
+        PermsGroupAdministration permsGroupAdministration3 = new PermsGroupAdministration(false, true, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization3 = new PermsGroupAppAuthorization(false, true, false);
+        PermsGroupAlarm permsGroupAlarm3 = new PermsGroupAlarm(false, true);
+        PermsGroupUserGroup permsGroupUserGroup3 = new PermsGroupUserGroup(false, true);
+        PermissionCollection permissionCollection3 = new PermissionCollection(permsGroupAdministration3, permsGroupAppAuthorization3, permsGroupAlarm3, permsGroupUserGroup3);
+        RoleInformation roleInformation3 = new RoleInformation(ROLE_ID_3, permissionCollection3);
+        roleService.insertRoleInformation(roleInformation3);
+
+        PermsGroupAdministration permsGroupAdministration4 = new PermsGroupAdministration(false, true, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization4 = new PermsGroupAppAuthorization(false, true, false);
+        PermsGroupAlarm permsGroupAlarm4 = new PermsGroupAlarm(false, true);
+        PermsGroupUserGroup permsGroupUserGroup4 = new PermsGroupUserGroup(false, true);
+        PermissionCollection permissionCollection4 = new PermissionCollection(permsGroupAdministration4, permsGroupAppAuthorization4, permsGroupAlarm4, permsGroupUserGroup4);
+        RoleInformation roleInformation4 = new RoleInformation(ROLE_ID_4, permissionCollection4);
+        roleService.insertRoleInformation(roleInformation4);
+
+        PermsGroupAdministration permsGroupAdministration5 = new PermsGroupAdministration(false, false, true);
+        PermsGroupAppAuthorization permsGroupAppAuthorization5 = new PermsGroupAppAuthorization(false, false, false);
+        PermsGroupAlarm permsGroupAlarm5 = new PermsGroupAlarm(false, false);
+        PermsGroupUserGroup permsGroupUserGroup5 = new PermsGroupUserGroup(false, false);
+        PermissionCollection permissionCollection5 = new PermissionCollection(permsGroupAdministration5, permsGroupAppAuthorization5, permsGroupAlarm5, permsGroupUserGroup5);
+        RoleInformation roleInformation5 = new RoleInformation(ROLE_ID_5, permissionCollection5);
+        roleService.insertRoleInformation(roleInformation5);
+
+        List<String> roleList = new ArrayList<String>(5);
+        roleList.add(ROLE_ID_1);
+        roleList.add(ROLE_ID_2);
+        roleList.add(ROLE_ID_3);
+        roleList.add(ROLE_ID_4);
+        roleList.add(ROLE_ID_5);
+        UserRole userRole = new UserRole(USER_ID, roleList);
+        roleService.insertUserRole(userRole);
+    }
+
 }

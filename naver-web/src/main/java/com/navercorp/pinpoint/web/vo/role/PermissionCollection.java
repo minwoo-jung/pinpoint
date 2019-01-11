@@ -22,7 +22,9 @@ import java.util.Objects;
  */
 public class PermissionCollection {
 
-    private PermsGroupAministration permsGroupAministration;
+    public final static PermissionCollection DEFAULT = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
+
+    private PermsGroupAdministration permsGroupAdministration;
     private PermsGroupAppAuthorization permsGroupAppAuthorization;
     private PermsGroupAlarm permsGroupAlarm;
     private PermsGroupUserGroup permsGroupUserGroup;
@@ -30,15 +32,23 @@ public class PermissionCollection {
     public PermissionCollection() {
     }
 
-    public PermissionCollection(PermsGroupAministration permsGroupAministration, PermsGroupAppAuthorization permsGroupAppAuthorization, PermsGroupAlarm permsGroupAlarm, PermsGroupUserGroup permsGroupUserGroup) {
-        this.permsGroupAministration = Objects.requireNonNull(permsGroupAministration, "permsGroupAministration must not be null");;
+    public PermissionCollection(PermsGroupAdministration permsGroupAdministration, PermsGroupAppAuthorization permsGroupAppAuthorization, PermsGroupAlarm permsGroupAlarm, PermsGroupUserGroup permsGroupUserGroup) {
+        this.permsGroupAdministration = Objects.requireNonNull(permsGroupAdministration, "permsGroupAdministration must not be null");;
         this.permsGroupAppAuthorization = Objects.requireNonNull(permsGroupAppAuthorization, "permsGroupAppAuthorization must not be null");;
         this.permsGroupAlarm = Objects.requireNonNull(permsGroupAlarm, "permsGroupAlarm must not be null");;
         this.permsGroupUserGroup = Objects.requireNonNull(permsGroupUserGroup, "permsGroupUserGroup must not be null");;
     }
 
-    public PermsGroupAministration getPermsGroupAministration() {
-        return permsGroupAministration;
+    public static PermissionCollection merge(PermissionCollection permissionCollection1, PermissionCollection permissionCollection2) {
+        final PermsGroupAdministration mergedPermsGroupAdministration = PermsGroupAdministration.merge(permissionCollection1.getPermsGroupAdministration(), permissionCollection2.getPermsGroupAdministration());
+        final PermsGroupAppAuthorization mergedPermsGroupAppAuthorization = PermsGroupAppAuthorization.merge(permissionCollection1.getPermsGroupAppAuthorization(), permissionCollection2.getPermsGroupAppAuthorization());
+        final PermsGroupAlarm mergedPermsGroupAlarm = PermsGroupAlarm.merge(permissionCollection1.getPermsGroupAlarm(), permissionCollection2.getPermsGroupAlarm());
+        final PermsGroupUserGroup mergedPermsGroupUserGroup = PermsGroupUserGroup.merge(permissionCollection1.getPermsGroupUserGroup(), permissionCollection2.getPermsGroupUserGroup());
+        return new PermissionCollection(mergedPermsGroupAdministration, mergedPermsGroupAppAuthorization, mergedPermsGroupAlarm, mergedPermsGroupUserGroup);
+    }
+
+    public PermsGroupAdministration getPermsGroupAdministration() {
+        return permsGroupAdministration;
     }
 
     public PermsGroupAppAuthorization getPermsGroupAppAuthorization() {
@@ -61,8 +71,8 @@ public class PermissionCollection {
         this.permsGroupUserGroup = permsGroupUserGroup;
     }
 
-    public void setPermsGroupAministration(PermsGroupAministration permsGroupAministration) {
-        this.permsGroupAministration = permsGroupAministration;
+    public void setPermsGroupAdministration(PermsGroupAdministration permsGroupAdministration) {
+        this.permsGroupAdministration = permsGroupAdministration;
     }
 
     public void setPermsGroupAppAuthorization(PermsGroupAppAuthorization permsGroupAppAuthorization) {
@@ -72,7 +82,7 @@ public class PermissionCollection {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("PermissionCollection{");
-        sb.append("permsGroupAministration=").append(permsGroupAministration);
+        sb.append("permsGroupAdministration=").append(permsGroupAdministration);
         sb.append(", permsGroupAppAuthorization=").append(permsGroupAppAuthorization);
         sb.append(", permsGroupAlarm=").append(permsGroupAlarm);
         sb.append(", permsGroupUserGroup=").append(permsGroupUserGroup);

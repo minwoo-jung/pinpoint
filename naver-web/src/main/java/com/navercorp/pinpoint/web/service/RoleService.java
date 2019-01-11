@@ -37,4 +37,6 @@ public interface RoleService {
     void updateUserRole(UserRole userRole);
 
     UserRole selectUserRole(String userId);
+
+    RoleInformation getUserPermission(String userId);
 }

@@ -20,6 +20,8 @@ package com.navercorp.pinpoint.web.vo.role;
  */
 public class PermsGroupAlarm {
 
+    public final static PermsGroupAlarm DEFAULT = new PermsGroupAlarm(false, false);
+
     private boolean editAlarmForEverything;
     private boolean editAlarmOnlyGroupMember;
 
@@ -45,6 +47,12 @@ public class PermsGroupAlarm {
 
     public void setEditAlarmOnlyGroupMember(boolean editAlarmOnlyGroupMember) {
         this.editAlarmOnlyGroupMember = editAlarmOnlyGroupMember;
+    }
+
+    public static PermsGroupAlarm merge(PermsGroupAlarm permsGroupAlarm1, PermsGroupAlarm permsGroupAlarm2) {
+        final boolean mergedEditAlarmForEverything = permsGroupAlarm1.getEditAlarmForEverything() || permsGroupAlarm2.getEditAlarmForEverything();
+        final boolean mergedEditAlarmOnlyGroupMember = permsGroupAlarm1.getEditAlarmOnlyGroupMember() || permsGroupAlarm2.getEditAlarmOnlyGroupMember();
+        return new PermsGroupAlarm(mergedEditAlarmForEverything, mergedEditAlarmOnlyGroupMember);
     }
 
     @Override

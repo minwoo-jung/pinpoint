@@ -20,6 +20,8 @@ package com.navercorp.pinpoint.web.vo.role;
  */
 public class PermsGroupUserGroup {
 
+    public final static PermsGroupUserGroup DEFAULT = new PermsGroupUserGroup(false, false);
+
     private boolean editGroupForEverything;
     private boolean editGroupOnlyGroupMember;
 
@@ -29,6 +31,12 @@ public class PermsGroupUserGroup {
     }
 
     public PermsGroupUserGroup() {
+    }
+
+    public static PermsGroupUserGroup merge(PermsGroupUserGroup permsGroupUserGroup1, PermsGroupUserGroup permsGroupUserGroup2) {
+        final boolean mergedEditGroupForEverything = permsGroupUserGroup1.getEditGroupForEverything() || permsGroupUserGroup2.getEditGroupForEverything();
+        final boolean mergedEditGroupOnlyGroupMember = permsGroupUserGroup1.getEditGroupOnlyGroupMember() || permsGroupUserGroup2.getEditGroupOnlyGroupMember();
+        return new PermsGroupUserGroup(mergedEditGroupForEverything, mergedEditGroupOnlyGroupMember);
     }
 
     public boolean getEditGroupForEverything() {

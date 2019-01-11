@@ -36,7 +36,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -115,11 +114,11 @@ public class RoleControllerTest {
     }
 
     private void insertRoleInformation() {
-        PermsGroupAministration permsGroupAministration = new PermsGroupAministration(true, true, true);
+        PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration(true, true, true);
         PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(true, true, true);
         PermsGroupAlarm permsGroupAlarm = new PermsGroupAlarm(true, true);
         PermsGroupUserGroup permsGroupUserGroup = new PermsGroupUserGroup(true, true);
-        PermissionCollection permissionCollection = new PermissionCollection(permsGroupAministration, permsGroupAppAuthorization, permsGroupAlarm, permsGroupUserGroup);
+        PermissionCollection permissionCollection = new PermissionCollection(permsGroupAdministration, permsGroupAppAuthorization, permsGroupAlarm, permsGroupUserGroup);
         RoleInformation roleInformation = new RoleInformation(ROLE_ID, permissionCollection);
         roleService.insertRoleInformation(roleInformation);
     }
@@ -203,7 +202,7 @@ public class RoleControllerTest {
                 .andExpect(jsonPath("$", hasKey("result")))
                 .andReturn();
 
-            assertFalse(roleService.selectRoleInformation(ROLE_ID).getPermissionCollection().getPermsGroupAministration().getEditUser());
+            assertFalse(roleService.selectRoleInformation(ROLE_ID).getPermissionCollection().getPermsGroupAdministration().getEditUser());
         } finally {
             roleService.deleteRoleInformation(ROLE_ID);
         }

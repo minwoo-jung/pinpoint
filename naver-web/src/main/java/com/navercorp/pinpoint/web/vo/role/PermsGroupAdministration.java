@@ -18,7 +18,9 @@ package com.navercorp.pinpoint.web.vo.role;
 /**
  * @author minwoo.jung
  */
-public class PermsGroupAministration {
+public class PermsGroupAdministration {
+
+    public final static PermsGroupAdministration DEFAULT = new PermsGroupAdministration(false, false, false);
 
     private boolean viewAdminMenu;
 
@@ -26,13 +28,13 @@ public class PermsGroupAministration {
 
     private boolean editRole;
 
-    public PermsGroupAministration(boolean viewAdminMenu, boolean editUser, boolean editRole) {
+    public PermsGroupAdministration(boolean viewAdminMenu, boolean editUser, boolean editRole) {
         this.viewAdminMenu = viewAdminMenu;
         this.editUser = editUser;
         this.editRole = editRole;
     }
 
-    public PermsGroupAministration() {
+    public PermsGroupAdministration() {
     }
 
     public boolean getEditRole() {
@@ -59,9 +61,16 @@ public class PermsGroupAministration {
         this.editUser = editUser;
     }
 
+    public static PermsGroupAdministration merge(PermsGroupAdministration permsGroupAdministration1, PermsGroupAdministration permsGroupAdministration2) {
+        final boolean viewAdminMenu = permsGroupAdministration1.getViewAdminMenu() || permsGroupAdministration2.getViewAdminMenu();
+        final boolean editUser = permsGroupAdministration1.getEditUser() || permsGroupAdministration2.getEditUser();
+        final boolean editRole = permsGroupAdministration1.getEditRole() || permsGroupAdministration2.getEditRole();
+        return new PermsGroupAdministration(viewAdminMenu, editUser, editRole);
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("PermsGroupAministration{");
+        final StringBuilder sb = new StringBuilder("PermsGroupAdministration{");
         sb.append("viewAdminMenu=").append(viewAdminMenu);
         sb.append(", editUser=").append(editUser);
         sb.append(", editRole=").append(editRole);
