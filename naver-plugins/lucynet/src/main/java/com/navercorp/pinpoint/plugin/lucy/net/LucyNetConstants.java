@@ -15,12 +15,26 @@
 
 package com.navercorp.pinpoint.plugin.lucy.net;
 
+import com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
 import com.navercorp.pinpoint.common.Charsets;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.trace.AnnotationKeyFactory;
 import static com.navercorp.pinpoint.common.trace.AnnotationKeyProperty.VIEW_IN_RECORD_SET;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
+import com.navercorp.pinpoint.plugin.lucy.net.interceptor.DefaultInvocationFutureMethodInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor;
+import com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.EncodeMessageInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.InvokeMethodInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.NimmInvokerConstructorInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.ConnectorConstructorInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.CreateConnectorInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InitializeConnectorInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InvokeInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.MakeMessageInterceptor;
+import com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.OldVersionConnectorConstructorInterceptor;
 
 import static com.navercorp.pinpoint.common.trace.ServiceTypeProperty.RECORD_STATISTICS;
 
@@ -38,9 +52,6 @@ public final class LucyNetConstants {
     public static final Charset UTF_8_CHARSET = Charsets.UTF_8;
     public static final String UNKOWN_ADDRESS = "Unknown Address";
 
-    // NPC
-    public static final String METADATA_NPC_SERVER_ADDRESS = "com.navercorp.pinpoint.plugin.lucy.net.npc.NpcServerAddressAccessor";
-    public static final String NIMM_ADDRESS_ACCESSOR = "com.navercorp.pinpoint.plugin.lucy.net.nimm.NimmAddressAccessor";
 
     public static final ServiceType NPC_CLIENT = ServiceTypeFactory.of(9060, "NPC_CLIENT", RECORD_STATISTICS);
     public static final ServiceType NPC_CLIENT_INTERNAL = ServiceTypeFactory.of(9061, "NPC_CLIENT_INTERNAL", "NPC_CLIENT");
@@ -59,23 +70,6 @@ public final class LucyNetConstants {
 
     public static final String NIMM_INVOKER_METHOD_SCOPE = "NimmInvokerMethodScope";
 
-    // NPC Interceptor
-    public static final String NPC_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.ConnectorConstructorInterceptor";
-    public static final String NPC_OLD_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.OldVersionConnectorConstructorInterceptor";
-    public static final String NPC_INVOKE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InvokeInterceptor";
-    public static final String NPC_CREATE_CONNECTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.CreateConnectorInterceptor";
-    public static final String NPC_INIT_CONNECTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.InitializeConnectorInterceptor";
 
-    // NIMM Interceptor
-    public static final String NIMM_CONSTRUCTOR_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.NimmInvokerConstructorInterceptor";
-    public static final String NIMM_INVOKE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.InvokeMethodInterceptor";
-    public static final String NIMM_ENCODE_MESSAGE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.nimm.interceptor.EncodeMessageInterceptor";
-
-
-    // NET Common Interceptor
-    public static final String NET_INVOCATION_FUTURE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.interceptor.DefaultInvocationFutureMethodInterceptor";
-    public static final String NET_MAKE_MESSAGE_INTERCEPTOR = "com.navercorp.pinpoint.plugin.lucy.net.npc.interceptor.MakeMessageInterceptor";
-
-    public static final String BASIC_INTERCEPTOR = "com.navercorp.pinpoint.bootstrap.interceptor.BasicMethodInterceptor";
 
 }

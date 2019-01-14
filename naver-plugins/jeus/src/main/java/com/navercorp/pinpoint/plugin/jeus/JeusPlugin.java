@@ -27,6 +27,8 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
+import com.navercorp.pinpoint.plugin.jeus.interceptor.HttpServletRequestImplStartAsyncInterceptor;
+import com.navercorp.pinpoint.plugin.jeus.interceptor.ServletWrapperExecuteInterceptor;
 
 /**
  * @author jaehong.kim
@@ -40,52 +42,57 @@ public class JeusPlugin implements ProfilerPlugin, TransformTemplateAware {
     public void setup(ProfilerPluginSetupContext context) {
         final JeusConfig config = new JeusConfig(context.getConfig());
         if (!config.isEnable()) {
-            logger.info("WebspherePlugin disabled");
+            logger.info("{} disabled", this.getClass().getSimpleName());
             return;
         }
-        logger.info("WebspherePlugin config:{}", config);
+        logger.info("{} config:{}", this.getClass().getSimpleName(), config);
 
         context.addApplicationTypeDetector(new JeusDetector(config.getBootstrapMains()));
 
         // Hide pinpoint header & Add async listener. Servlet 3.0
-        addHttpServletRequestImpl(config);
+        addHttpServletRequestImpl();
         // Entry Point
         addServletWrapper();
     }
 
-    private void addHttpServletRequestImpl(final JeusConfig config) {
-        transformTemplate.transform("jeus.servlet.engine.HttpServletRequestImpl", new TransformCallback() {
-            @Override
-            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
-                if (config.isHidePinpointHeader()) {
-                    // Hide pinpoint headers
-                    target.weave("com.navercorp.pinpoint.plugin.jeus.aspect.HttpServletRequestImplAspect");
-                }
+    private void addHttpServletRequestImpl() {
+        transformTemplate.transform("jeus.servlet.engine.HttpServletRequestImpl", HttpServletRequestImpl.class);
+    }
 
-                // Add async listener. Servlet 3.0
-                final InstrumentMethod startAsyncMethodEditor = target.getDeclaredMethod("startAsync", "javax.servlet.ServletRequest", "javax.servlet.ServletResponse");
-                if (startAsyncMethodEditor != null) {
-                    startAsyncMethodEditor.addInterceptor("com.navercorp.pinpoint.plugin.jeus.interceptor.HttpServletRequestImplStartAsyncInterceptor");
-                }
-                return target.toBytecode();
+    public static class HttpServletRequestImpl implements TransformCallback {
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+            final JeusConfig config = new JeusConfig(instrumentor.getProfilerConfig());
+            if (config.isHidePinpointHeader()) {
+                // Hide pinpoint headers
+                target.weave("com.navercorp.pinpoint.plugin.jeus.aspect.HttpServletRequestImplAspect");
             }
-        });
+
+            // Add async listener. Servlet 3.0
+            final InstrumentMethod startAsyncMethodEditor = target.getDeclaredMethod("startAsync", "javax.servlet.ServletRequest", "javax.servlet.ServletResponse");
+            if (startAsyncMethodEditor != null) {
+                startAsyncMethodEditor.addInterceptor(HttpServletRequestImplStartAsyncInterceptor.class);
+            }
+            return target.toBytecode();
+        }
     }
 
     private void addServletWrapper() {
-        transformTemplate.transform("jeus.servlet.engine.ServletWrapper", new TransformCallback() {
-            @Override
-            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
-                // Entry Point
-                final InstrumentMethod handleMethodEditorBuilder = target.getDeclaredMethod("execute", "javax.servlet.ServletRequest", "javax.servlet.ServletResponse");
-                if (handleMethodEditorBuilder != null) {
-                    handleMethodEditorBuilder.addInterceptor("com.navercorp.pinpoint.plugin.jeus.interceptor.ServletWrapperExecuteInterceptor");
-                }
-                return target.toBytecode();
+        transformTemplate.transform("jeus.servlet.engine.ServletWrapper", ServletWrapperTransform.class);
+    }
+
+    public static class ServletWrapperTransform implements TransformCallback {
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            final InstrumentClass target = instrumentor.getInstrumentClass(classLoader, className, classfileBuffer);
+            // Entry Point
+            final InstrumentMethod handleMethodEditorBuilder = target.getDeclaredMethod("execute", "javax.servlet.ServletRequest", "javax.servlet.ServletResponse");
+            if (handleMethodEditorBuilder != null) {
+                handleMethodEditorBuilder.addInterceptor(ServletWrapperExecuteInterceptor.class);
             }
-        });
+            return target.toBytecode();
+        }
     }
 
     @Override

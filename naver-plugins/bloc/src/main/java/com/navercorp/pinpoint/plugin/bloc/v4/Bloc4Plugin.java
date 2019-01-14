@@ -12,8 +12,8 @@ import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.util.InstrumentUtils;
-import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
+import com.navercorp.pinpoint.plugin.bloc.InterceptorConstants;
 
 import java.security.ProtectionDomain;
 
@@ -28,12 +28,13 @@ public class Bloc4Plugin implements ProfilerPlugin, TransformTemplateAware {
         final BlocPluginConfig config = new BlocPluginConfig(context.getConfig());
 
         if (!config.isBlocEnable()) {
-            logger.info("BlocPlugin disabled");
+            logger.info("{} disabled", this.getClass().getSimpleName());
             return;
         }
+        logger.info("{} config:{}", this.getClass().getSimpleName(), config);
         Bloc4Detector bloc4Detector = new Bloc4Detector(config.getBlocBootstrapMains());
         context.addApplicationTypeDetector(bloc4Detector);
-        
+
         addNettyInboundHandlerModifier();
         addNpcHandlerModifier();
         addNimmHandlerModifider();
@@ -42,90 +43,101 @@ public class Bloc4Plugin implements ProfilerPlugin, TransformTemplateAware {
     }
 
     private void addNettyInboundHandlerModifier() {
-        transformTemplate.transform("com.nhncorp.lucy.bloc.http.NettyInboundHandler", new TransformCallback() {
+        transformTemplate.transform("com.nhncorp.lucy.bloc.http.NettyInboundHandler", NettyInboundHandlerTransform.class);
+    }
 
-            @Override
-            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+    public static class NettyInboundHandlerTransform implements TransformCallback {
 
-                target.addGetter("com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter", "uriEncoding");
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
 
-                final InstrumentMethod channelRead0Method = InstrumentUtils.findMethod(target, "channelRead0", "io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest");
-                channelRead0Method.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ChannelRead0Interceptor");
+            target.addGetter(com.navercorp.pinpoint.plugin.bloc.v4.UriEncodingGetter.class, "uriEncoding");
 
-                return target.toBytecode();
-            }
-        });
-    }    
-    
+            final InstrumentMethod channelRead0Method = InstrumentUtils.findMethod(target, "channelRead0", "io.netty.channel.ChannelHandlerContext", "io.netty.handler.codec.http.FullHttpRequest");
+            channelRead0Method.addInterceptor(com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ChannelRead0Interceptor.class);
+
+            return target.toBytecode();
+        }
+    }
+
     private void addNpcHandlerModifier() {
-        transformTemplate.transform("com.nhncorp.lucy.bloc.npc.handler.NpcHandler", new TransformCallback() {
+        transformTemplate.transform("com.nhncorp.lucy.bloc.npc.handler.NpcHandler", NpcHandlerTransform.class);
+    }
 
-            @Override
-            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+    public static class NpcHandlerTransform implements TransformCallback {
 
-                final InstrumentMethod messageReceivedMethod = InstrumentUtils.findMethod(target, "messageReceived", "external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object");
-                messageReceivedMethod.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.MessageReceivedInterceptor");
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
 
-                return target.toBytecode();
-            }
-        });
+            final InstrumentMethod messageReceivedMethod = InstrumentUtils.findMethod(target, "messageReceived", "external.org.apache.mina.common.IoFilter$NextFilter", "external.org.apache.mina.common.IoSession", "java.lang.Object");
+            messageReceivedMethod.addInterceptor(com.navercorp.pinpoint.plugin.bloc.v4.interceptor.MessageReceivedInterceptor.class);
+
+            return target.toBytecode();
+        }
     }
 
     private void addNimmHandlerModifider() {
-        transformTemplate.transform("com.nhncorp.lucy.bloc.nimm.handler.NimmHandler$ContextWorker", new TransformCallback() {
+        transformTemplate.transform("com.nhncorp.lucy.bloc.nimm.handler.NimmHandler$ContextWorker", NimmHandlerContextWorkerTransform.class);
+    }
 
-            @Override
-            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
-                target.addField(BlocConstants.NIMM_SERVER_SOCKET_ADDRESS_ACCESSOR);
+    public static class NimmHandlerContextWorkerTransform implements TransformCallback {
 
-                InstrumentMethod setPrefableNetEndPoint = target.addDelegatorMethod("setPrefableNetEndPoint", "com.nhncorp.lucy.nimm.connector.NimmNetEndPoint");
-                if (setPrefableNetEndPoint != null) {
-                    setPrefableNetEndPoint.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.NimmAbstractWorkerInterceptor");
-                }
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+            target.addField(InterceptorConstants.NIMM_SERVER_SOCKET_ADDRESS_ACCESSOR);
 
-                final InstrumentMethod handleResponseMessageMethod = target.getDeclaredMethod("handleResponseMessage", "com.nhncorp.lucy.npc.NpcMessage", "java.lang.String");
-                if(handleResponseMessageMethod != null) {
-                    handleResponseMessageMethod.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.NimmHandlerInterceptor");
-                } else {
-                    logger.info("Bloc 4.x does not support profiling for NIMM requests in versions of NIMM 2.2.11 and earlier.");
-                }
-
-                return target.toBytecode();
+            InstrumentMethod setPrefableNetEndPoint = target.addDelegatorMethod("setPrefableNetEndPoint", "com.nhncorp.lucy.nimm.connector.NimmNetEndPoint");
+            if (setPrefableNetEndPoint != null) {
+                setPrefableNetEndPoint.addInterceptor(com.navercorp.pinpoint.plugin.bloc.v4.interceptor.NimmAbstractWorkerInterceptor.class);
             }
-        });
+
+            final InstrumentMethod handleResponseMessageMethod = target.getDeclaredMethod("handleResponseMessage", "com.nhncorp.lucy.npc.NpcMessage", "java.lang.String");
+            if (handleResponseMessageMethod != null) {
+                handleResponseMessageMethod.addInterceptor(com.navercorp.pinpoint.plugin.bloc.v4.interceptor.NimmHandlerInterceptor.class);
+            } else {
+                PLogger logger = PLoggerFactory.getLogger(this.getClass());
+                logger.info("Bloc 4.x does not support profiling for NIMM requests in versions of NIMM 2.2.11 and earlier.");
+            }
+
+            return target.toBytecode();
+        }
     }
 
     private void addRequestProcessorModifier() {
-        transformTemplate.transform("com.nhncorp.lucy.bloc.core.processor.RequestProcessor", new TransformCallback() {
-
-            @Override
-            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
-
-                final InstrumentMethod processMethod = InstrumentUtils.findMethod(target, "process", "com.nhncorp.lucy.bloc.core.processor.BlocRequest");
-                processMethod.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ProcessInterceptor");
-
-                return target.toBytecode();
-            }
-        });
+        transformTemplate.transform("com.nhncorp.lucy.bloc.core.processor.RequestProcessor", RequestProcessorTransform.class);
     }
-    
+
+    public static class RequestProcessorTransform implements TransformCallback {
+
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+
+            final InstrumentMethod processMethod = InstrumentUtils.findMethod(target, "process", "com.nhncorp.lucy.bloc.core.processor.BlocRequest");
+            processMethod.addInterceptor(com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ProcessInterceptor.class);
+
+            return target.toBytecode();
+        }
+    }
+
     private void addModuleClassLoaderFactoryInterceptor() {
-        transformTemplate.transform("com.nhncorp.lucy.bloc.core.clazz.ModuleClassLoaderFactory", new TransformCallback() {
+        transformTemplate.transform("com.nhncorp.lucy.bloc.core.clazz.ModuleClassLoaderFactory", ModuleClassLoaderFactoryTransform.class);
+    }
 
-            @Override
-            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+    public static class ModuleClassLoaderFactoryTransform implements TransformCallback {
 
-                final InstrumentMethod constructorMethod = InstrumentUtils.findConstructor(target);
-                constructorMethod.addInterceptor("com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ModuleClassLoaderFactoryInterceptor");
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
 
-                return target.toBytecode();
-            }
-        });
+            final InstrumentMethod constructorMethod = InstrumentUtils.findConstructor(target);
+            constructorMethod.addInterceptor(com.navercorp.pinpoint.plugin.bloc.v4.interceptor.ModuleClassLoaderFactoryInterceptor.class);
+
+            return target.toBytecode();
+        }
     }
 
     @Override

@@ -27,8 +27,14 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
-import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.util.InstrumentUtils;
+import com.navercorp.pinpoint.plugin.cp.nbasetcp.filed.getter.MaxConnPoolSizeGetter;
+import com.navercorp.pinpoint.plugin.cp.nbasetcp.filed.getter.NumUsedSocketsGetter;
+import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.CloseConnectionInterceptor;
+import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.CloseInterceptor;
+import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.ConstructorInterceptor;
+import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.GetConnectionInterceptor;
+import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.ReturnConnectionInterceptor;
 
 import java.security.ProtectionDomain;
 
@@ -38,92 +44,95 @@ import java.security.ProtectionDomain;
 public class NbasetCpPlugin implements ProfilerPlugin, TransformTemplateAware {
 
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
-    private final JdbcUrlParserV2 parser = new NbasetCpUrlParser();
 
-    private NbasetCpConfig config;
     private TransformTemplate transformTemplate;
 
     @Override
     public void setup(ProfilerPluginSetupContext context) {
-        config = new NbasetCpConfig(context.getConfig());
+        NbasetCpConfig config = new NbasetCpConfig(context.getConfig());
+
         if (!config.isPluginEnable()) {
-            logger.info("Disable nbasetcp option. 'profiler.jdbc.nbaset.cp=false'");
+            logger.info("{} disabled", this.getClass().getSimpleName());
             return;
         }
+        logger.info("{} config:{}", this.getClass().getSimpleName(), config);
 
-        context.addJdbcUrlParser(parser);
+        context.addJdbcUrlParser(new NbasetCpUrlParser());
         addConnectionPoolTransformer();
     }
 
     private void addConnectionPoolTransformer() {
-        transformTemplate.transform("com.nhncorp.nbase_t.krpc.core.ConnectionPool", new TransformCallback() {
+        transformTemplate.transform("com.nhncorp.nbase_t.krpc.core.ConnectionPool", ConnectionPoolTransform.class);
+    }
 
-            @Override
-            public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
-                InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
-                if (!isAvailableDataSourceMonitor(target)) {
-                    return target.toBytecode();
-                }
+    public static class ConnectionPoolTransform implements TransformCallback {
+        private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
 
-                InstrumentMethod constructor = target.getConstructor();
-                if (constructor == null) {
-                    logger.info("can't find ConnectionPool() constructor.");
-                    return target.toBytecode();
-                }
-
-                target.addField(NbasetCpConstants.ACCESSOR_CP_MONITOR);
-                // constructor
-                constructor.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_CONSTRUCTOR, NbasetCpConstants.SCOPE);
-
-                target.addGetter(NbasetCpConstants.GETTER_NUM_USED_SOCKET, NbasetCpConstants.FIELD_NUM_USED_SOCKET);
-                target.addGetter(NbasetCpConstants.GETTER_MAX_POOL_SIZE, NbasetCpConstants.FIELD_MAX_POOL_SIZE);
-
-                // getConnection method
-                InstrumentMethod getConnectionMethod = InstrumentUtils.findMethod(target, "getConnection", "com.nhncorp.nbase_t.krpc.core.KrpcTarget");
-                if (getConnectionMethod == null) {
-                    logger.info("can't find getConnection(com.nhncorp.nbase_t.krpc.core.KrpcTarget) method.");
-                } else {
-                    getConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_GET_CONNECTION, NbasetCpConstants.SCOPE);
-                }
-
-                // closeConnection
-                InstrumentMethod closeConnectionMethod = InstrumentUtils.findMethod(target, "closeConnection", "java.net.Socket");
-                if (closeConnectionMethod == null) {
-                    logger.info("can't find closeConnection(java.net.Socket) method.");
-                } else {
-                    closeConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_CLOSE_CONNECTION, NbasetCpConstants.SCOPE);
-                }
-
-                // returnConnection
-                InstrumentMethod returnConnectionMethod = InstrumentUtils.findMethod(target, "returnConnection", "com.nhncorp.nbase_t.krpc.core.KrpcTarget", "java.net.Socket");
-                if (returnConnectionMethod == null) {
-                    logger.info("can't find returnConnection(com.nhncorp.nbase_t.krpc.core.KrpcTarget, java.net.Socket) method.");
-                } else {
-                    returnConnectionMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_RETURN_CONNECTION, NbasetCpConstants.SCOPE);
-                }
-
-                // closeMethod
-                InstrumentMethod closeMethod = InstrumentUtils.findMethod(target, "close");
-                if (closeMethod == null) {
-                    logger.info("can't find close() method.");
-                } else {
-                    closeMethod.addScopedInterceptor(NbasetCpConstants.INTERCEPTOR_CLOSE, NbasetCpConstants.SCOPE);
-                }
-
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+            if (!isAvailableDataSourceMonitor(target)) {
                 return target.toBytecode();
             }
 
-        });
-    }
+            InstrumentMethod constructor = target.getConstructor();
+            if (constructor == null) {
+                logger.info("can't find ConnectionPool() constructor.");
+                return target.toBytecode();
+            }
 
-    private boolean isAvailableDataSourceMonitor(InstrumentClass target) {
-        if (!target.hasField(NbasetCpConstants.FIELD_NUM_USED_SOCKET, "java.util.concurrent.atomic.AtomicInteger")) {
-            return false;
+            target.addField(NbasetCpMonitorAccessor.class);
+            // constructor
+            constructor.addScopedInterceptor(ConstructorInterceptor.class, NbasetCpConstants.SCOPE);
+
+            target.addGetter(NumUsedSocketsGetter.class, NbasetCpConstants.FIELD_NUM_USED_SOCKET);
+            target.addGetter(MaxConnPoolSizeGetter.class, NbasetCpConstants.FIELD_MAX_POOL_SIZE);
+
+            // getConnection method
+            InstrumentMethod getConnectionMethod = InstrumentUtils.findMethod(target, "getConnection", "com.nhncorp.nbase_t.krpc.core.KrpcTarget");
+            if (getConnectionMethod == null) {
+                logger.info("can't find getConnection(com.nhncorp.nbase_t.krpc.core.KrpcTarget) method.");
+            } else {
+                getConnectionMethod.addScopedInterceptor(GetConnectionInterceptor.class, NbasetCpConstants.SCOPE);
+            }
+
+            // closeConnection
+            InstrumentMethod closeConnectionMethod = InstrumentUtils.findMethod(target, "closeConnection", "java.net.Socket");
+            if (closeConnectionMethod == null) {
+                logger.info("can't find closeConnection(java.net.Socket) method.");
+            } else {
+                closeConnectionMethod.addScopedInterceptor(CloseConnectionInterceptor.class, NbasetCpConstants.SCOPE);
+            }
+
+            // returnConnection
+            InstrumentMethod returnConnectionMethod = InstrumentUtils.findMethod(target, "returnConnection", "com.nhncorp.nbase_t.krpc.core.KrpcTarget", "java.net.Socket");
+            if (returnConnectionMethod == null) {
+                logger.info("can't find returnConnection(com.nhncorp.nbase_t.krpc.core.KrpcTarget, java.net.Socket) method.");
+            } else {
+                returnConnectionMethod.addScopedInterceptor(ReturnConnectionInterceptor.class, NbasetCpConstants.SCOPE);
+            }
+
+            // closeMethod
+            InstrumentMethod closeMethod = InstrumentUtils.findMethod(target, "close");
+            if (closeMethod == null) {
+                logger.info("can't find close() method.");
+            } else {
+                closeMethod.addScopedInterceptor(CloseInterceptor.class, NbasetCpConstants.SCOPE);
+            }
+
+            return target.toBytecode();
         }
-        if (!target.hasField(NbasetCpConstants.FIELD_MAX_POOL_SIZE, "java.util.concurrent.atomic.AtomicInteger")) {
-            return false;
+
+        private boolean isAvailableDataSourceMonitor(InstrumentClass target) {
+            if (!target.hasField(NbasetCpConstants.FIELD_NUM_USED_SOCKET, "java.util.concurrent.atomic.AtomicInteger")) {
+                return false;
+            }
+            if (!target.hasField(NbasetCpConstants.FIELD_MAX_POOL_SIZE, "java.util.concurrent.atomic.AtomicInteger")) {
+                return false;
+            }
+            return true;
         }
-        return true;
+
     }
 
     @Override

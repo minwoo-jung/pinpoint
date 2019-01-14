@@ -44,6 +44,4 @@ public final class BlocConstants {
     public static final ServiceType BLOC = ServiceTypeFactory.of(1020, "BLOC", RECORD_STATISTICS);
     public static final ServiceType BLOC_INTERNAL_METHOD = ServiceTypeFactory.of(1021, "BLOC_INTERNAL_METHOD", "INTERNAL_METHOD");
 
-    public static final String NIMM_SERVER_SOCKET_ADDRESS_ACCESSOR = "com.navercorp.pinpoint.plugin.bloc.v4.NimmServerSocketAddressAccessor";
-
 }

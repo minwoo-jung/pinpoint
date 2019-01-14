@@ -17,6 +17,12 @@
 package com.navercorp.pinpoint.plugin.lucy.net;
 
 import com.navercorp.pinpoint.bootstrap.context.TraceId;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
+import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
+import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
+import com.navercorp.pinpoint.bootstrap.interceptor.scope.ExecutionPolicy;
+import com.navercorp.pinpoint.bootstrap.logging.PLogger;
+import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.sampler.SamplingFlagUtils;
 
 import com.navercorp.pinpoint.common.util.StringUtils;
@@ -32,6 +38,7 @@ import java.util.Set;
  * @author Taejin Koo
  */
 public final class LucyNetUtils {
+    private static final PLogger LOGGER = PLoggerFactory.getLogger(LucyNetUtils.class);
 
     private static final String PINPOINT_TRACE_ID = LucyNetHeader.PINPOINT_TRACE_ID.toString();
     private static final String PINPOINT_SPAN_ID = LucyNetHeader.PINPOINT_SPAN_ID.toString();
@@ -204,6 +211,27 @@ public final class LucyNetUtils {
         }
 
         return paramsAsString.toString();
+    }
+
+
+    public static void addInterceptor(InstrumentMethod method, Class<? extends Interceptor> interceptorClazz, Object... args) {
+        if (method != null) {
+            try {
+                method.addInterceptor(interceptorClazz, args);
+            } catch (InstrumentException e) {
+                LOGGER.warn("Unsupported method {}", method, e);
+            }
+        }
+    }
+
+    public static void addScopedInterceptor(InstrumentMethod method, Class<? extends Interceptor> interceptorClazz, String scopeName, ExecutionPolicy executionPolicy) {
+        if (method != null) {
+            try {
+                method.addScopedInterceptor(interceptorClazz, scopeName, executionPolicy);
+            } catch (InstrumentException e) {
+                LOGGER.warn("Unsupported method {}", method, e);
+            }
+        }
     }
 
 }
