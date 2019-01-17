@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.plugin.jdbc.mysql;
 
 import com.navercorp.pinpoint.common.util.PropertyUtils;
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -43,11 +44,7 @@ public class MySql_IT_Base {
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        Enumeration<Driver> drivers = DriverManager.getDrivers();
-        while (drivers.hasMoreElements()) {
-            Driver driver = drivers.nextElement();
-            DriverManager.deregisterDriver(driver);
-        }
+        DriverManagerUtils.deregisterDriver();
     }
 
 }

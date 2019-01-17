@@ -22,6 +22,12 @@ import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+
 /**
  * @author Jongho Moon
  * @author HyunGil Jeong
@@ -34,19 +40,19 @@ public class MySql_5_X_IT extends MySql_IT_Base {
 
     @Test
     public void testStatements() throws Exception {
-        Class<?> driverClass = Class.forName("com.mysql.jdbc.NonRegisteringDriver");
-        Class<?> connectionClass = null;
+        Class<Driver> driverClass = (Class<Driver>) Class.forName("com.mysql.jdbc.NonRegisteringDriver");
+        Class<Connection> connectionClass = null;
         try {
-            connectionClass = Class.forName("com.mysql.jdbc.ConnectionImpl");
+            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.ConnectionImpl");
         } catch (ClassNotFoundException e) {
-            connectionClass = Class.forName("com.mysql.jdbc.Connection");
+            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.Connection");
         }
-        Class<?> preparedStatementClass = Class.forName("com.mysql.jdbc.PreparedStatement");
-        Class<?> statementClass = null;
+        Class<PreparedStatement> preparedStatementClass = (Class<PreparedStatement>) Class.forName("com.mysql.jdbc.PreparedStatement");
+        Class<Statement> statementClass = null;
         try {
-            statementClass = Class.forName("com.mysql.jdbc.StatementImpl");
+            statementClass = (Class<Statement>) Class.forName("com.mysql.jdbc.StatementImpl");
         } catch (ClassNotFoundException e) {
-            statementClass = Class.forName("com.mysql.jdbc.Statement");
+            statementClass = (Class<Statement>) Class.forName("com.mysql.jdbc.Statement");
         }
 
         HELPER.testStatements(driverClass, connectionClass, preparedStatementClass, statementClass);
@@ -54,28 +60,28 @@ public class MySql_5_X_IT extends MySql_IT_Base {
 
     @Test
     public void testStoredProcedure_with_IN_OUT_parameters() throws Exception {
-        Class<?> driverClass = Class.forName("com.mysql.jdbc.NonRegisteringDriver");
-        Class<?> connectionClass = null;
+        Class<Driver> driverClass = (Class<Driver>) Class.forName("com.mysql.jdbc.NonRegisteringDriver");
+        Class<Connection> connectionClass = null;
         try {
-            connectionClass = Class.forName("com.mysql.jdbc.ConnectionImpl");
+            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.ConnectionImpl");
         } catch (ClassNotFoundException e) {
-            connectionClass = Class.forName("com.mysql.jdbc.Connection");
+            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.Connection");
         }
-        Class<?> callableStatementClass = Class.forName("com.mysql.jdbc.CallableStatement");
+        Class<CallableStatement> callableStatementClass = (Class<CallableStatement>) Class.forName("com.mysql.jdbc.CallableStatement");
 
         HELPER.testStoredProcedure_with_IN_OUT_parameters(driverClass, connectionClass, callableStatementClass);
     }
 
     @Test
     public void testStoredProcedure_with_INOUT_parameters() throws Exception {
-        Class<?> driverClass = Class.forName("com.mysql.jdbc.NonRegisteringDriver");
-        Class<?> connectionClass = null;
+        Class<Driver> driverClass = (Class<Driver>) Class.forName("com.mysql.jdbc.NonRegisteringDriver");
+        Class<Connection> connectionClass = null;
         try {
-            connectionClass = Class.forName("com.mysql.jdbc.ConnectionImpl");
+            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.ConnectionImpl");
         } catch (ClassNotFoundException e) {
-            connectionClass = Class.forName("com.mysql.jdbc.Connection");
+            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.Connection");
         }
-        Class<?> callableStatementClass = Class.forName("com.mysql.jdbc.CallableStatement");
+        Class<CallableStatement> callableStatementClass = (Class<CallableStatement>) Class.forName("com.mysql.jdbc.CallableStatement");
 
         HELPER.testStoredProcedure_with_INOUT_parameters(driverClass, connectionClass, callableStatementClass);
     }

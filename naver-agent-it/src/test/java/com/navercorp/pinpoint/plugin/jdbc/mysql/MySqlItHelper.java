@@ -26,9 +26,11 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Properties;
@@ -76,8 +78,8 @@ public class MySqlItHelper {
         databasePassword = databaseProperties.getProperty("mysql.password");
     }
 
-    void testStatements(Class<?> driverClass, Class<?> connectionClass, Class<?> preparedStatementClass, Class<?> statementClass) throws Exception {
-        Connection conn = DriverManager.getConnection(jdbcUrl, databaseId, databasePassword);
+    void testStatements(Class<Driver> driverClass, Class<Connection> connectionClass, Class<PreparedStatement> preparedStatementClass, Class<Statement> statementClass) throws Exception {
+        final Connection conn = connect(driverClass);
 
         conn.setAutoCommit(false);
 
@@ -101,6 +103,7 @@ public class MySqlItHelper {
         delete.executeUpdate(deleteQuery);
 
         conn.commit();
+        conn.close();
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
 
@@ -128,16 +131,20 @@ public class MySqlItHelper {
         verifier.verifyTrace(event(MYSQL, commit, null, databaseAddress, databaseName));
     }
 
+    private Connection connect(Class<Driver> driverClass) throws Exception {
+        return DriverManager.getConnection(jdbcUrl, databaseId, databasePassword);
+    }
+
     /*  CREATE OR REPLACE PROCEDURE concatCharacters(IN  a CHAR(1), IN  b CHAR(1), OUT c CHAR(2))
         BEGIN
             SET c = CONCAT(a, b);
         END                                             */
-    void testStoredProcedure_with_IN_OUT_parameters(Class<?> driverClass, Class<?> connectionClass, Class<?> callableStatementClass) throws Exception {
+    void testStoredProcedure_with_IN_OUT_parameters(Class<Driver> driverClass, Class<Connection> connectionClass, Class<CallableStatement> callableStatementClass) throws Exception {
         final String param1 = "a";
         final String param2 = "b";
         final String storedProcedureQuery = "{ call concatCharacters(?, ?, ?) }";
 
-        Connection conn = DriverManager.getConnection(jdbcUrl, databaseId, databasePassword);
+        final Connection conn = connect(driverClass);
 
         CallableStatement cs = conn.prepareCall(storedProcedureQuery);
         cs.setString(1, param1);
@@ -147,6 +154,7 @@ public class MySqlItHelper {
 
         Assert.assertEquals(param1.concat(param2), cs.getString(3));
 
+        conn.close();
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
 
         verifier.printCache();
@@ -179,12 +187,12 @@ public class MySqlItHelper {
             SELECT temp + a;
         END
      */
-    void testStoredProcedure_with_INOUT_parameters(Class<?> driverClass, Class<?> connectionClass, Class<?> callableStatementClass) throws Exception {
+    void testStoredProcedure_with_INOUT_parameters(Class<Driver> driverClass, Class<Connection> connectionClass, Class<CallableStatement> callableStatementClass) throws Exception {
         final int param1 = 1;
         final int param2 = 2;
         final String storedProcedureQuery = "{ call swapAndGetSum(?, ?) }";
 
-        Connection conn = DriverManager.getConnection(jdbcUrl, databaseId, databasePassword);
+        final Connection conn = connect(driverClass);
 
         CallableStatement cs = conn.prepareCall(storedProcedureQuery);
         cs.setInt(1, param1);
@@ -198,6 +206,7 @@ public class MySqlItHelper {
         Assert.assertEquals(param2, cs.getInt(1));
         Assert.assertEquals(param1, cs.getInt(2));
 
+        conn.close();
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
 
         verifier.printCache();

@@ -72,7 +72,7 @@ public class MySqlConnection_5_X_IT extends MySql_IT_Base {
 
     }
 
-    private Connection connectDB(String url) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+    private Connection connectDB(String url) throws SQLException {
         String user = db.getProperty("mysql.user");
         String password = db.getProperty("mysql.password");
 

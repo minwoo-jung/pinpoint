@@ -24,6 +24,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -46,6 +48,11 @@ public class CubridConnectionIT extends BasePinpointTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         db = PropertyUtils.loadPropertyFromClassPath("database.properties");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DriverManagerUtils.deregisterDriver();
     }
 
     @Test

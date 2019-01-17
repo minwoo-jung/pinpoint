@@ -25,7 +25,9 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.profiler.context.SpanEvent;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,6 +51,11 @@ public class JtdsConnectionIT extends BasePinpointTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         db = PropertyUtils.loadPropertyFromClassPath("database.properties");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DriverManagerUtils.deregisterDriver();
     }
 
     @Test
