@@ -1,0 +1,18 @@
+<div class="l-role-list-wrapper">
+    <div class="l-role-list-title">
+        <span>Role List</span>
+    </div>
+    <div class="l-role-list-list">
+        <pp-role-list
+            [roleList]="roleList"
+            (outSelected)="onSelected($event)"
+        ></pp-role-list>
+    </div>
+    <div class="l-message" [hidden]="!hasMessage()">
+        <button class="btn btn-black" (click)="onCloseMessage()"><i class="fas fa-times"></i></button>
+        <span>{{message}}</span>
+    </div>
+    <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
+    <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
+</div>
+    

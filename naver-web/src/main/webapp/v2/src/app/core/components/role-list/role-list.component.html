@@ -1,0 +1,8 @@
+<ul>
+    <li *ngFor="let role of roleList" [class.selected]="isSelected(role)" (click)="onSelect(role)">
+        <div class="l-item-wrapper">
+            <span>{{role | uppercase }}</span>
+        </div>
+    </li>
+</ul>
+    

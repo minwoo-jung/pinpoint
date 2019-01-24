@@ -13,7 +13,7 @@ export class UserPermissionCheckService {
     isAllowedAdminMenuView(): Observable<boolean> {
         return this.getUserPermission().pipe(
             map((userPermission: IPermissions) => {
-                return userPermission.permissionCollection.permsGroupAministration.viewAdminMenu || false;
+                return userPermission.permissionCollection.permsGroupAdministration.viewAdminMenu || false;
             })
         );
     }

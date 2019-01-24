@@ -1,0 +1,19 @@
+<div class="l-role-info-wrapper">
+    <div class="l-role-info-title">
+        <span>Permission</span>
+    </div>
+    <div class="l-role-info-list">
+        <pp-role-info></pp-role-info>
+        <!-- <pp-role-info *ngIf="roleInfo; else elseBlock"></pp-role-info>
+        <ng-template #elseBlock>
+            <div class="l-role-do-not-selected">Select Role</div>
+        </ng-template> -->
+    </div>
+    <div class="l-message" [hidden]="!hasMessage()">
+        <button class="btn btn-black" (click)="onCloseMessage()"><i class="fas fa-times"></i></button>
+        <span>{{message}}</span>
+    </div>    
+    <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
+    <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
+</div>
+    

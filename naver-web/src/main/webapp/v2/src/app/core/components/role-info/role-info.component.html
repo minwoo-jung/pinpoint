@@ -1,0 +1,51 @@
+<div class="l-grid">
+    <div>Administrator</div>
+    <div>
+        <dl>
+            <dt>Admin menu</dt>
+            <dd><mat-checkbox class="example-margin" value="viewAdminMenu">Checked</mat-checkbox> Admin menu 보기</dd>
+        </dl>
+        <dl>
+            <dt>User 수정</dt>
+            <dd><mat-checkbox class="example-margin" value="editUser">Checked</mat-checkbox> User 추가 삭제, Role 할당</dd>
+        </dl>
+        <dl>
+            <dt>Role 수정</dt>
+            <dd><mat-checkbox class="example-margin" value="editRole">Checked</mat-checkbox> Role 추가 삭제, Permissin 수정</dd>
+        </dl>            
+    </div>
+    <div>Authentication</div>
+    <div>
+        <dl>
+            <dt>최초 할당</dt>
+            <dd><mat-checkbox class="example-margin" value="preoccupancy">Checked</mat-checkbox> User Group 최초 할당 기능</dd>
+        </dl>
+        <mat-radio-group>
+            <dl>
+                <dt>Authentication 수정</dt>
+                <dd><mat-radio-button class="example-margin" value="editAuthorForEverything"> 항상 authentication 수정 가능</mat-radio-button></dd>
+                <dd><mat-radio-button class="example-margin" value="editAuthorOnlyManager"> Manager의 User Group에 소속된 경우에만 authentication 수정 가능</mat-radio-button></dd>
+            </dl>
+        </mat-radio-group>
+    </div>
+    <div>Alarm</div>
+    <div>
+        <mat-radio-group>
+            <dl>
+                <dt>Alarm 수정</dt>
+                <dd><mat-radio-button class="example-margin" value="editAlarmForEverything"> 항상 Alarm 수정 가능</mat-radio-button></dd>
+                <dd><mat-radio-button class="example-margin" value="editAuthorForEverything"> User Group 소속 Member만 Alarm 수정 가능</mat-radio-button></dd>
+            </dl>
+        </mat-radio-group>
+    </div>
+    <div>User Group</div>
+    <div>
+        <mat-radio-group>
+            <dl>
+                <dt>User Group 수정</dt>
+                <dd><mat-radio-button class="example-margin" value="editGroupForEverything"> 항상 UserGroup 수정 가능</mat-radio-button></dd>
+                <dd><mat-radio-button class="example-margin" value="editGroupOnlyGroupMember"> UserGroup 소속 Member만 수정 가능</mat-radio-button></dd>
+            </dl>
+        </mat-radio-group>
+    </div>
+</div>

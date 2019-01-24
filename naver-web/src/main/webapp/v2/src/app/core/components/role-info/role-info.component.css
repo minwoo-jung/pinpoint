@@ -1,0 +1,32 @@
+.l-grid {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: 25% 75%;
+    align-items: center;
+}
+.l-grid > div:nth-child(odd) {
+    font-size: 16px;
+    text-align: center;
+}
+.l-grid > div:nth-child(even) {
+    padding: 14px 2px;
+}
+.l-grid > div:nth-child(4n - 1) {
+    height: 100%;
+    padding-top: 40%;
+}
+.l-grid > div:nth-child(4n), .l-grid > div:nth-child(4n - 1) {
+    background-color: #EAF2FF;
+}
+.l-grid dt {
+    font-size: 14px;
+    font-weight: bold;
+}
+.l-grid dd {
+    padding: 6px 0px 3px 10px;
+    font-weight: normal;
+}
+.l-grid dd:last-child {
+    padding-bottom: 10px;
+}
+

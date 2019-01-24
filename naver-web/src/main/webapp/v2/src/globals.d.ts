@@ -365,14 +365,16 @@ interface IFavoriteApplication {
     serviceType: string;
 }
 interface IUserConfiguration {
-    userId: string;
-    favoriteApplications: IFavoriteApplication[];
-    permissions?: IPermissions;
+    configuration: {
+        userId: string;
+        favoriteApplications: IFavoriteApplication[];
+    };
+    permission?: IPermissions;
 }
 interface IPermissions {
     roleId: string;
     permissionCollection: {
-        permsGroupAministration: {
+        permsGroupAdministration: {
             viewAdminMenu: boolean;
             editUser: boolean;
             editRole: boolean;

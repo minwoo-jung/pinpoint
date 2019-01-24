@@ -23,7 +23,7 @@ export class ErrorPageComponent implements OnInit {
             message: ''
         },
         userConfiguration: {
-            url: 'userConfiguration.pinpoint',
+            url: '/users/user/permissionAndConfiguration.pinpoint',
             loading: true,
             success: false,
             message: ''

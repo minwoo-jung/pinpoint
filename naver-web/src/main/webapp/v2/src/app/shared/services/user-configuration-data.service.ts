@@ -8,31 +8,27 @@ import { AppState, Actions } from 'app/shared/store';
 import { Application } from 'app/core/models';
 @Injectable()
 export class UserConfigurationDataService {
-    private url = 'userConfiguration.pinpoint';
-    private defaultUserConfiguration: IUserConfiguration = {
-        favoriteApplications: [],
-        userId: '',
-        permissions: {
-            roleId: '',
-            permissionCollection: {
-                permsGroupAministration: {
-                    viewAdminMenu: false,
-                    editUser: false,
-                    editRole: false
-                },
-                permsGroupAppAuthorization: {
-                    preoccupancy: false,
-                    editAuthorForEverything: false,
-                    editAuthorOnlyManager: false
-                },
-                permsGroupAlarm: {
-                    editAlarmForEverything: false,
-                    editAuthorForEverything: false
-                },
-                permsGroupUserGroup: {
-                    editGroupForEverything: false,
-                    editGroupOnlyGroupMember: false
-                }
+    private url = 'users/user/permissionAndConfiguration.pinpoint';
+    private overrideAdminPermissionConfiguration: IPermissions = {
+        roleId: '',
+        permissionCollection: {
+            permsGroupAdministration: {
+                viewAdminMenu: true,
+                editUser: true,
+                editRole: true
+            },
+            permsGroupAppAuthorization: {
+                preoccupancy: true,
+                editAuthorForEverything: true,
+                editAuthorOnlyManager: true
+            },
+            permsGroupAlarm: {
+                editAlarmForEverything: true,
+                editAuthorForEverything: true
+            },
+            permsGroupUserGroup: {
+                editGroupForEverything: true,
+                editGroupOnlyGroupMember: true
             }
         }
     };
@@ -44,13 +40,14 @@ export class UserConfigurationDataService {
         return this.http.get<IUserConfiguration>(this.url).pipe(
             retry(3),
             map((res: IUserConfiguration) => {
-                const config = res || this.defaultUserConfiguration;
+                // const config = Object.assign(res, { permission: this.overrideAdminPermissionConfiguration });
+                const config = res;
                 this.store.dispatch(new Actions.AddFavoriteApplication(
-                    config.favoriteApplications.map(({applicationName, serviceType, code}) => {
+                    config.configuration.favoriteApplications.map(({applicationName, serviceType, code}) => {
                         return new Application(applicationName, serviceType, code);
                     }))
                 );
-                this.store.dispatch(new Actions.UpdatePermissions(config.permissions || this.defaultUserConfiguration.permissions));
+                this.store.dispatch(new Actions.UpdatePermissions(config.permission));
                 return config;
             })
         );
