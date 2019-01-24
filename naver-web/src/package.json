@@ -1,7 +1,7 @@
 {
   "name": "pinpoint",
   "version": "1.6.0",
-  "description": "",
+  "description": "pinpoint apm naver",
   "main": "Gruntfile.js",
   "dependencies": {},
   "devDependencies": {

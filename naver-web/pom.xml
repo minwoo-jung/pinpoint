@@ -33,6 +33,10 @@
         <buildTime>${maven.build.timestamp}</buildTime>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <sniffer.artifactid>java18</sniffer.artifactid>
+
+        <plugin.frontend.verison>1.6</plugin.frontend.verison>
+        <plugin.frontend.node.verison>v10.15.0</plugin.frontend.node.verison>
+        <plugin.frontend.npm.verison>6.1.0</plugin.frontend.npm.verison>
     </properties>
 
     <dependencies>
@@ -301,7 +305,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>${plugin.frontend.verison}</version>
                         <configuration>
                             <installDirectory>target</installDirectory>
                         </configuration>
@@ -313,8 +317,8 @@
                                     <goal>install-node-and-npm</goal>
                                 </goals>
                                 <configuration>
-                                    <nodeVersion>v10.6.0</nodeVersion>
-                                    <npmVersion>6.1.0</npmVersion>
+                                    <nodeVersion>${plugin.frontend.node.verison}</nodeVersion>
+                                    <npmVersion>${plugin.frontend.npm.verison}</npmVersion>
                                     <workingDirectory>${basedir}/deploy/webapp/v2</workingDirectory>
                                 </configuration>
                             </execution>
@@ -346,7 +350,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.8</version>
                         <executions>
                             <execution>
                                 <id>delete pre-build file</id>
