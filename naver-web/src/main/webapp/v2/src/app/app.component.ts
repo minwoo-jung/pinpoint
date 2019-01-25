@@ -34,6 +34,25 @@ export class AppComponent implements OnInit {
                     SQL_META: 'SQL 데이터 비노출'
                 };
                 translate.INSPECTOR.APPLICAITION_NAME_ISSUE.ISSUE_SOLUTIONS = ['문제 발생시 핀포인트 개발팀에 문의 해 주세요. 해결 해 드립니다.'];
+
+                translate.CONFIGURATION.PERMISSION = {};
+                translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin 메뉴';
+                translate.CONFIGURATION.PERMISSION.VIEW_ADMIN_MENU = 'Admin menu 보기';
+                translate.CONFIGURATION.PERMISSION.EDIT_USER_TITLE = 'User 수정';
+                translate.CONFIGURATION.PERMISSION.EDIT_USER = 'User 추가 삭제, Role 할당';
+                translate.CONFIGURATION.PERMISSION.EDIT_ROLE_TITLE = 'Role 수정';
+                translate.CONFIGURATION.PERMISSION.EDIT_ROLE = 'Role 추가 삭제, Permission 수정';
+                translate.CONFIGURATION.PERMISSION.PREOCCUPANCY_TITLE = '최초 할당';
+                translate.CONFIGURATION.PERMISSION.PREOCCUPANCY = 'User Group 최초 할당 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_TITLE = 'Authentication 수정';
+                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_FOR_EVERYTHING = '항상 Authentication 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_ONLY_MANAGER = 'Manager의 User Group에 소속된 경우에만 Authentication 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_TITLE = 'Alarm 수정';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_FOR_EVERYTHING = '항상 Alarm 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_GROUP_MEMBER = 'User Group 소속 Member만 Alarm 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_TITLE = 'User Group 수정';
+                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_FOR_EVERYTHING = '항상 User Group 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'User Group 소속 Member 만 수정 가능';
             } else {
                 translate.CONFIGURATION.COMMON.ROLE = 'Role';
                 translate.CONFIGURATION.AUTH = {
@@ -43,6 +62,25 @@ export class AppComponent implements OnInit {
                     SQL_META: 'Hide SQL data'
                 };
                 translate.INSPECTOR.APPLICAITION_NAME_ISSUE.ISSUE_SOLUTIONS = ['Please contact the pinpoint development team in case of problems. We will solve it.'];
+
+                translate.CONFIGURATION.PERMISSION = {};
+                translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin Menu';
+                translate.CONFIGURATION.PERMISSION.VIEW_ADMIN_MENU = 'View admin menu';
+                translate.CONFIGURATION.PERMISSION.EDIT_USER_TITLE = 'User Modification';
+                translate.CONFIGURATION.PERMISSION.EDIT_USER = 'Edit User Info';
+                translate.CONFIGURATION.PERMISSION.EDIT_ROLE_TITLE = 'Role Modification';
+                translate.CONFIGURATION.PERMISSION.EDIT_ROLE = 'Edit Role Info';
+                translate.CONFIGURATION.PERMISSION.PREOCCUPANCY_TITLE = 'Preoccupancy';
+                translate.CONFIGURATION.PERMISSION.PREOCCUPANCY = 'Can have the authority first';
+                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_TITLE = 'Authentication Modification';
+                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_FOR_EVERYTHING = 'Edit author for everything';
+                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_ONLY_MANAGER = 'Edit Author only manager';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_TITLE = 'Alarm Modification';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_FOR_EVERYTHING = 'Edit alarm for everything';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_GROUP_MEMBER = 'Edit alarm only group member';
+                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_TITLE = 'User Group Modification';
+                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_FOR_EVERYTHING = 'Edit group for everything';
+                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'Edit Group only group member';
             }
         });
     }

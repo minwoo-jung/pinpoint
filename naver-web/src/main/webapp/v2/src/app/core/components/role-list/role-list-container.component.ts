@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Actions } from 'app/shared/store';
+import { StoreHelperService } from 'app/shared/services';
 import { RoleListDataService } from './role-list-data.service';
 
 @Component({
@@ -17,14 +19,13 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
     showLoading = true;
 
     constructor(
-        private changeDetectorRef: ChangeDetectorRef,
+        private storeHelperService: StoreHelperService,
         private roleListDataService: RoleListDataService
     ) {}
     ngOnInit() {
         this.roleListDataService.getRoleList().pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((roleList: any) => {
-            console.log( roleList );
             this.roleList = roleList;
             this.hideProcessing();
         }, (error: IServerErrorFormat) => {
@@ -37,7 +38,7 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
         this.unsubscribe.complete();
     }
     onSelected(selectedRole: string): void {
-        console.log( selectedRole);
+        this.storeHelperService.dispatch(new Actions.ChangeRoleSelection(selectedRole));
     }
     hasMessage(): boolean {
         return false;

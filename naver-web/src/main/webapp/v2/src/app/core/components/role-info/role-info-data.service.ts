@@ -22,15 +22,15 @@ export class RoleInfoDataService {
                 permsGroupAppAuthorization: {
                     preoccupancy: true,
                     editAuthorForEverything: true,
-                    editAuthorOnlyManager: true
+                    editAuthorOnlyManager: false
                 },
                 permsGroupAlarm: {
                     editAlarmForEverything: true,
-                    editAuthorForEverything: true
+                    editAuthorForEverything: false
                 },
                 permsGroupUserGroup: {
                     editGroupForEverything: true,
-                    editGroupOnlyGroupMember: true
+                    editGroupOnlyGroupMember: false
                 }
             }
         });

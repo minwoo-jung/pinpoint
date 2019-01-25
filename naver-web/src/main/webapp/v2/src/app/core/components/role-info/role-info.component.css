@@ -9,11 +9,13 @@
     text-align: center;
 }
 .l-grid > div:nth-child(even) {
-    padding: 14px 2px;
+    padding: 14px 2px 4px 2px;
 }
 .l-grid > div:nth-child(4n - 1) {
     height: 100%;
-    padding-top: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .l-grid > div:nth-child(4n), .l-grid > div:nth-child(4n - 1) {
     background-color: #EAF2FF;
