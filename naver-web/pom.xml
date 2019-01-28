@@ -34,6 +34,8 @@
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <sniffer.artifactid>java18</sniffer.artifactid>
 
+        <plugin.antrun.verison>1.8</plugin.antrun.verison>
+
         <plugin.frontend.verison>1.6</plugin.frontend.verison>
         <plugin.frontend.node.verison>v10.15.0</plugin.frontend.node.verison>
         <plugin.frontend.npm.verison>6.1.0</plugin.frontend.npm.verison>
@@ -350,6 +352,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${plugin.antrun.verison}</version>
                         <executions>
                             <execution>
                                 <id>delete pre-build file</id>
