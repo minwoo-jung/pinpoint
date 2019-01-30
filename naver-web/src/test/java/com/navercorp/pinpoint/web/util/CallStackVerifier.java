@@ -18,7 +18,7 @@ package com.navercorp.pinpoint.web.util;
 
 import com.navercorp.pinpoint.thrift.dto.TSpan;
 import com.navercorp.pinpoint.thrift.dto.TSpanEvent;
-import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
+import com.navercorp.pinpoint.web.calltree.span.Align;
 import org.junit.Assert;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class CallStackVerifier {
             this.isSpan = isSpan;
         }
 
-        public abstract void verifySpanAlign(SpanAlign spanAlign);
+        public abstract void verifySpanAlign(Align align);
 
         protected abstract List<CallStackElement> flatten();
     }
@@ -111,11 +111,11 @@ public class CallStackVerifier {
         }
 
         @Override
-        public void verifySpanAlign(SpanAlign spanAlign) {
-            Assert.assertEquals(isSpan, spanAlign.isSpan());
-            Assert.assertEquals(depth, spanAlign.getDepth());
-            Assert.assertEquals(spanId, spanAlign.getSpanId());
-            long parentSpanId = spanAlign.getSpanBo().getParentSpanId();
+        public void verifySpanAlign(Align align) {
+            Assert.assertEquals(isSpan, align.isSpan());
+            Assert.assertEquals(depth, align.getDepth());
+            Assert.assertEquals(spanId, align.getSpanId());
+            long parentSpanId = align.getSpanBo().getParentSpanId();
             if (parentSpanId == -1) {
                 Assert.assertNull(parentSpan);
             } else {
@@ -153,10 +153,10 @@ public class CallStackVerifier {
         }
 
         @Override
-        public void verifySpanAlign(SpanAlign spanAlign) {
-            Assert.assertEquals(isSpan, spanAlign.isSpan());
-            Assert.assertEquals(depth, spanAlign.getDepth());
-            long nextSpanId = spanAlign.getSpanEventBo().getNextSpanId();
+        public void verifySpanAlign(Align align) {
+            Assert.assertEquals(isSpan, align.isSpan());
+            Assert.assertEquals(depth, align.getDepth());
+            long nextSpanId = align.getSpanEventBo().getNextSpanId();
             if (nextSpanId == -1) {
                 Assert.assertNull(nextSpan);
             } else {

@@ -22,6 +22,7 @@ import com.navercorp.pinpoint.common.service.AnnotationKeyRegistryService;
 import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
 import com.navercorp.pinpoint.common.util.TransactionId;
+import com.navercorp.pinpoint.web.calltree.span.Align;
 import com.navercorp.pinpoint.web.calltree.span.CallTreeNode;
 import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
 import com.navercorp.pinpoint.web.service.AnnotationKeyMatcherService;
@@ -31,7 +32,6 @@ import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.callstacks.Record;
 import com.navercorp.pinpoint.web.vo.callstacks.RecordFactory;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.jayway.jsonpath.spi.http.HttpProviderFactory.factory;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -52,9 +51,9 @@ public class MetaDataFilterImplTest {
     @Test
     public void filterNotExistAuthenticationTest() {
         MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
-        SpanAlign spanAlign = new SpanAlign(new SpanBo());
+        Align align = new SpanAlign(new SpanBo());
         MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.API;
-        boolean result = metaDataFilter.filter(spanAlign, metaData);
+        boolean result = metaDataFilter.filter(align, metaData);
         assertTrue(result);
     }
 
@@ -67,9 +66,9 @@ public class MetaDataFilterImplTest {
 
         try {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
-            SpanAlign spanAlign = new SpanAlign(new SpanBo());
+            Align align = new SpanAlign(new SpanBo());
             MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.API;
-            boolean result = metaDataFilter.filter(spanAlign, metaData);
+            boolean result = metaDataFilter.filter(align, metaData);
             assertFalse(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -91,9 +90,9 @@ public class MetaDataFilterImplTest {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
             SpanBo spanBo = new SpanBo();
             spanBo.setApplicationId(applicationId);
-            SpanAlign spanAlign = new SpanAlign(spanBo);
+            Align align = new SpanAlign(spanBo);
             MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.API;
-            boolean result = metaDataFilter.filter(spanAlign, metaData);
+            boolean result = metaDataFilter.filter(align, metaData);
             assertFalse(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -122,9 +121,9 @@ public class MetaDataFilterImplTest {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
             SpanBo spanBo = new SpanBo();
             spanBo.setApplicationId(applicationId);
-            SpanAlign spanAlign = new SpanAlign(spanBo);
+            Align align = new SpanAlign(spanBo);
             MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.SQL;
-            boolean result = metaDataFilter.filter(spanAlign, metaData);
+            boolean result = metaDataFilter.filter(align, metaData);
             assertFalse(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -155,9 +154,9 @@ public class MetaDataFilterImplTest {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
             SpanBo spanBo = new SpanBo();
             spanBo.setApplicationId(applicationId);
-            SpanAlign spanAlign = new SpanAlign(spanBo);
+            Align align = new SpanAlign(spanBo);
             MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.SQL;
-            boolean result = metaDataFilter.filter(spanAlign, metaData);
+            boolean result = metaDataFilter.filter(align, metaData);
             assertTrue(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -186,9 +185,9 @@ public class MetaDataFilterImplTest {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
             SpanBo spanBo = new SpanBo();
             spanBo.setApplicationId(applicationId);
-            SpanAlign spanAlign = new SpanAlign(spanBo);
+            Align align = new SpanAlign(spanBo);
             MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.API;
-            boolean result = metaDataFilter.filter(spanAlign, metaData);
+            boolean result = metaDataFilter.filter(align, metaData);
             assertFalse(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -219,9 +218,9 @@ public class MetaDataFilterImplTest {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
             SpanBo spanBo = new SpanBo();
             spanBo.setApplicationId(applicationId);
-            SpanAlign spanAlign = new SpanAlign(spanBo);
+            Align align = new SpanAlign(spanBo);
             MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.API;
-            boolean result = metaDataFilter.filter(spanAlign, metaData);
+            boolean result = metaDataFilter.filter(align, metaData);
             assertTrue(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -250,9 +249,9 @@ public class MetaDataFilterImplTest {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
             SpanBo spanBo = new SpanBo();
             spanBo.setApplicationId(applicationId);
-            SpanAlign spanAlign = new SpanAlign(spanBo);
+            Align align = new SpanAlign(spanBo);
             MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.PARAM;
-            boolean result = metaDataFilter.filter(spanAlign, metaData);
+            boolean result = metaDataFilter.filter(align, metaData);
             assertFalse(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -283,9 +282,9 @@ public class MetaDataFilterImplTest {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
             SpanBo spanBo = new SpanBo();
             spanBo.setApplicationId(applicationId);
-            SpanAlign spanAlign = new SpanAlign(spanBo);
+            Align align = new SpanAlign(spanBo);
             MetaDataFilter.MetaData metaData = MetaDataFilter.MetaData.PARAM;
-            boolean result = metaDataFilter.filter(spanAlign, metaData);
+            boolean result = metaDataFilter.filter(align, metaData);
             assertTrue(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -316,8 +315,8 @@ public class MetaDataFilterImplTest {
             MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
             SpanBo spanBo = new SpanBo();
             spanBo.setApplicationId(applicationId);
-            SpanAlign spanAlign = new SpanAlign(spanBo);
-            boolean result = metaDataFilter.filter(spanAlign, null);
+            Align align = new SpanAlign(spanBo);
+            boolean result = metaDataFilter.filter(align, null);
             assertTrue(result);
         } finally {
             SecurityContextHolder.clearContext();
@@ -333,8 +332,8 @@ public class MetaDataFilterImplTest {
 
         MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
         SpanBo spanBo = new SpanBo();
-        SpanAlign spanAlign = new SpanAlign(spanBo);
-        AnnotationBo annotationBo = metaDataFilter.createAnnotationBo(spanAlign, MetaDataFilter.MetaData.PARAM);
+        Align align = new SpanAlign(spanBo);
+        AnnotationBo annotationBo = metaDataFilter.createAnnotationBo(align, MetaDataFilter.MetaData.PARAM);
         assertNull(annotationBo);
     }
 
@@ -347,17 +346,17 @@ public class MetaDataFilterImplTest {
 
         MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
         SpanBo spanBo = new SpanBo();
-        SpanAlign spanAlign = new SpanAlign(spanBo);
-        AnnotationBo annotationBo = metaDataFilter.createAnnotationBo(spanAlign, MetaDataFilter.MetaData.SQL);
+        Align align = new SpanAlign(spanBo);
+        AnnotationBo annotationBo = metaDataFilter.createAnnotationBo(align, MetaDataFilter.MetaData.SQL);
         assertFalse(annotationBo.isAuthorized());
     }
 
     @Test
     public void replaceAnnotationBoTest() {
         SpanBo spanBo = new SpanBo();
-        SpanAlign spanAlign = new SpanAlign(spanBo);
+        Align align = new SpanAlign(spanBo);
         MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
-        metaDataFilter.replaceAnnotationBo(spanAlign, MetaDataFilter.MetaData.SQL);
+        metaDataFilter.replaceAnnotationBo(align, MetaDataFilter.MetaData.SQL);
     }
 
     @Test
@@ -383,10 +382,10 @@ public class MetaDataFilterImplTest {
 
         SpanBo spanBo = new SpanBo();
         spanBo.setAnnotationBoList(annotationBoList);
-        SpanAlign spanAlign = new SpanAlign(spanBo);
+        Align align = new SpanAlign(spanBo);
 
         MetaDataFilterImpl metaDataFilter = new MetaDataFilterImpl();
-        metaDataFilter.replaceAnnotationBo(spanAlign, MetaDataFilter.MetaData.PARAM);
+        metaDataFilter.replaceAnnotationBo(align, MetaDataFilter.MetaData.PARAM);
 
         assertFalse(annotationBo1.isAuthorized());
         assertEquals(annotationBo1.getValue(), "http://navercorp.com");
@@ -402,8 +401,8 @@ public class MetaDataFilterImplTest {
     public void createRecordTest() {
         SpanBo spanBo = new SpanBo();
         spanBo.setTransactionId(new TransactionId("agentId", 1000L, 1000L));
-        SpanAlign spanAlign = new SpanAlign(spanBo);
-        CallTreeNode node = new CallTreeNode(null, spanAlign);
+        Align align = new SpanAlign(spanBo);
+        CallTreeNode node = new CallTreeNode(null, align);
         AnnotationKeyMatcherService annotationKeyMatcherService = mock(AnnotationKeyMatcherService.class);
         ServiceTypeRegistryService registry = mock(ServiceTypeRegistryService.class);
         AnnotationKeyRegistryService annotationKeyRegistryService = mock(AnnotationKeyRegistryService.class);

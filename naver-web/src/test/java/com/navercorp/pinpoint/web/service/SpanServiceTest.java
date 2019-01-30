@@ -13,7 +13,7 @@ import com.navercorp.pinpoint.thrift.dto.TAnnotation;
 import com.navercorp.pinpoint.thrift.dto.TAnnotationValue;
 import com.navercorp.pinpoint.thrift.dto.TSpan;
 import com.navercorp.pinpoint.thrift.dto.TSpanEvent;
-import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
+import com.navercorp.pinpoint.web.calltree.span.Align;
 import com.navercorp.pinpoint.web.util.CallStackVerifier;
 import org.apache.thrift.TException;
 import org.junit.Assert;
@@ -143,28 +143,28 @@ public class SpanServiceTest {
     }
 
     private void assertSpanResult(CallStackVerifier callStackVerifier, SpanResult spanResult) {
-        List<SpanAlign> spanAligns = spanResult.getCallTree().values();
+        List<Align> aligns = spanResult.getCallTree().values();
         List<CallStackVerifier.CallStackElement> verifierElements = callStackVerifier.values();
-        Assert.assertEquals(verifierElements.size(), spanAligns.size());
-        for (int i = 0; i < spanAligns.size(); i++) {
-            SpanAlign spanAlign = spanAligns.get(i);
-            logSpanAlign(spanAlign);
+        Assert.assertEquals(verifierElements.size(), aligns.size());
+        for (int i = 0; i < aligns.size(); i++) {
+            Align align = aligns.get(i);
+            logSpanAlign(align);
             CallStackVerifier.CallStackElement verifierElement = verifierElements.get(i);
-            verifierElement.verifySpanAlign(spanAlign);
+            verifierElement.verifySpanAlign(align);
         }
     }
 
-    private void logSpanAlign(SpanAlign spanAlign) {
+    private void logSpanAlign(Align align) {
         String indent = "  ";
         StringBuilder whitespaceBuilder = new StringBuilder(indent);
-        int depth = spanAlign.getDepth();
+        int depth = align.getDepth();
         for (int i = 0; i < depth; i++) {
             whitespaceBuilder.append(indent);
         }
         logger.info("{}{}, spanId:{}, depth:{}, spanAlign:{}",
                 whitespaceBuilder.toString(),
-                spanAlign.isSpan() ? "Span" : "SpanEvent",
-                spanAlign.getSpanId(), spanAlign.getDepth(), spanAlign.toString());
+                align.isSpan() ? "Span" : "SpanEvent",
+                align.getSpanId(), align.getDepth(), align.toString());
     }
 
     private TSpan createRootSpan(long spanId) {

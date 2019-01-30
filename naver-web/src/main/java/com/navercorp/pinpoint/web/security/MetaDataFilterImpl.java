@@ -23,8 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.navercorp.pinpoint.common.server.bo.AnnotationBo;
 import com.navercorp.pinpoint.common.trace.AnnotationKey;
+import com.navercorp.pinpoint.web.calltree.span.Align;
 import com.navercorp.pinpoint.web.calltree.span.CallTreeNode;
-import com.navercorp.pinpoint.web.calltree.span.SpanAlign;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.callstacks.Record;
 import com.navercorp.pinpoint.web.vo.callstacks.RecordFactory;
@@ -37,11 +37,11 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     @Override
-    public boolean filter(SpanAlign spanAlign, MetaData metaData) {
-        return isAuthorized(spanAlign, metaData) ? false : true;
+    public boolean filter(Align align, MetaData metaData) {
+        return isAuthorized(align, metaData) ? false : true;
     }
 
-    private boolean isAuthorized(SpanAlign spanAlign, MetaData metaData) {
+    private boolean isAuthorized(Align align, MetaData metaData) {
         PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
         
         if (authentication == null) {
@@ -52,7 +52,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
             return true;
         }
         
-        String applicationId = spanAlign.getApplicationId();
+        String applicationId = align.getApplicationId();
         if(isEmptyUserGroup(authentication, applicationId)) {
             return true;
         }
@@ -92,12 +92,12 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
     }
 
     @Override
-    public AnnotationBo createAnnotationBo(SpanAlign spanAlign, MetaData metaData) {
+    public AnnotationBo createAnnotationBo(Align align, MetaData metaData) {
         AnnotationBo annotationBo = new AnnotationBo();
         
         if (MetaData.SQL.equals(metaData)) {
             annotationBo.setKey(AnnotationKey.SQL.getCode());
-            annotationBo.setValue("you don't have authorization for " + spanAlign.getApplicationId() + ".");
+            annotationBo.setValue("you don't have authorization for " + align.getApplicationId() + ".");
             annotationBo.setAuthorized(false);
             return annotationBo;
         }
@@ -106,8 +106,8 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
     }
 
     @Override
-    public void replaceAnnotationBo(SpanAlign spanAlign, MetaData metaData) {
-        final List<AnnotationBo> annotationBoList = spanAlign.getAnnotationBoList();
+    public void replaceAnnotationBo(Align align, MetaData metaData) {
+        final List<AnnotationBo> annotationBoList = align.getAnnotationBoList();
         
         if (MetaData.PARAM.equals(metaData)) {
             for(AnnotationBo annotationBo : annotationBoList) {
@@ -115,7 +115,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
                     String url = getHttpUrl(String.valueOf(annotationBo.getValue()), false);
                     annotationBo.setValue(url);
                 } else if(AnnotationKey.HTTP_PARAM.getCode() == annotationBo.getKey()) {
-                    annotationBo.setValue("you don't have authorization for " + spanAlign.getApplicationId() + ".");
+                    annotationBo.setValue("you don't have authorization for " + align.getApplicationId() + ".");
                 }
                 annotationBo.setAuthorized(false);
             }
@@ -126,7 +126,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
 
     @Override
     public Record createRecord(CallTreeNode node, RecordFactory factory) {
-        return factory.getFilteredRecord(node, "you don't have authorization for " + node.getValue().getApplicationId() + ".");
+        return factory.getFilteredRecord(node, "you don't have authorization for " + node.getAlign().getApplicationId() + ".");
     }
 
 
