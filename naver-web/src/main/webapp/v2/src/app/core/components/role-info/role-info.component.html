@@ -20,32 +20,26 @@
             <dt>{{i18nText.preoccupancyTitle}}</dt>
             <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAppAuthorization.preoccupancy"> {{i18nText.preoccupancy}}</mat-checkbox></dd>
         </dl>
-        <mat-radio-group [disabled]="disableFormControl" [(ngModel)]="permsGroupAppAuthorization">
-            <dl>
-                <dt>{{i18nText.editAuthorTitle}}</dt>
-                <dd><mat-radio-button class="example-margin" value="false"> {{i18nText.editAuthorForEverything}}</mat-radio-button></dd>
-                <dd><mat-radio-button class="example-margin" value="true"> {{i18nText.editAuthorOnlyManager}}</mat-radio-button></dd>
-            </dl>
-        </mat-radio-group>
+        <dl>
+            <dt>{{i18nText.editAuthorTitle}}</dt>
+            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything"> {{i18nText.editAuthorForEverything}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager"> {{i18nText.editAuthorOnlyManager}}</mat-checkbox></dd>
+        </dl>
     </div>
     <div>Alarm</div>
     <div>
-        <mat-radio-group [disabled]="disableFormControl" [(ngModel)]="permsGroupAlarm">
-            <dl>
-                <dt>{{i18nText.editAlarmTitle}}</dt>
-                <dd><mat-radio-button class="example-margin" value="false"> {{i18nText.editAlarmForEverything}}</mat-radio-button></dd>
-                <dd><mat-radio-button class="example-margin" value="true"> {{i18nText.editAlarmOnlyGroupMember}}</mat-radio-button></dd>
-            </dl>
-        </mat-radio-group>
+        <dl>
+            <dt>{{i18nText.editAlarmTitle}}</dt>
+            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAlarm.editAlarmForEverything"> {{i18nText.editAlarmForEverything}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember"> {{i18nText.editAlarmOnlyGroupMember}}</mat-checkbox></dd>
+        </dl>
     </div>
     <div>User Group</div>
     <div>
-        <mat-radio-group [disabled]="disableFormControl" [(ngModel)]="permsGroupUserGroup">
-            <dl>
-                <dt>{{i18nText.editGroupTitle}}</dt>
-                <dd><mat-radio-button class="example-margin" value="false"> {{i18nText.editGroupForEverything}}</mat-radio-button></dd>
-                <dd><mat-radio-button class="example-margin" value="true"> {{i18nText.editGroupOnlyGroupMember}}</mat-radio-button></dd>
-            </dl>
-        </mat-radio-group>
+        <dl>
+            <dt>{{i18nText.editGroupTitle}}</dt>
+            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupUserGroup.editGroupForEverything"> {{i18nText.editGroupForEverything}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember"> {{i18nText.editGroupOnlyGroupMember}}</mat-checkbox></dd>    
+        </dl>
     </div>
 </div>
