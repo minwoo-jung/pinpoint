@@ -3,6 +3,10 @@
 }
 .l-wrapper {
     position: relative;
+    height: 100%;
+}
+.l-authentication-table {
+    height: 100%;
 }
 .l-authentication-table th {
     color:#333;

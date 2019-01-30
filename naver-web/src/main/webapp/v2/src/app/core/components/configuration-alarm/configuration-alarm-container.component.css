@@ -1,5 +1,7 @@
 :host {
+    height: 100%;
     display: flex;
+    padding-bottom: 20px;
 }
 
 .l-content-item {
@@ -9,6 +11,8 @@
 
 .l-content-item2 {
     flex:2;
+    display: grid;
+    grid-template-rows: 48% 4% 48%;
 }
 
 .l-divider {
