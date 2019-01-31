@@ -386,7 +386,7 @@ interface IPermissions {
         };
         permsGroupAlarm: {
             editAlarmForEverything: boolean;
-            editAuthorForEverything: boolean;
+            editAlarmOnlyGroupMember: boolean;
         };
         permsGroupUserGroup: {
             editGroupForEverything: boolean;

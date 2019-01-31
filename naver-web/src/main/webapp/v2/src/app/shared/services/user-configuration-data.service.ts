@@ -29,7 +29,7 @@ export class UserConfigurationDataService {
             },
             permsGroupAlarm: {
                 editAlarmForEverything: true,
-                editAuthorForEverything: true
+                editAlarmOnlyGroupMember: true
             },
             permsGroupUserGroup: {
                 editGroupForEverything: true,

@@ -75,7 +75,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
                             },
                             permsGroupAlarm: {
                                 editAlarmForEverything: true,
-                                editAuthorForEverything: false
+                                editAlarmOnlyGroupMember: false
                             },
                             permsGroupUserGroup: {
                                 editGroupForEverything: true,
@@ -100,7 +100,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
                             },
                             permsGroupAlarm: {
                                 editAlarmForEverything: false,
-                                editAuthorForEverything: true
+                                editAlarmOnlyGroupMember: true
                             },
                             permsGroupUserGroup: {
                                 editGroupForEverything: false,
@@ -125,7 +125,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
                             },
                             permsGroupAlarm: {
                                 editAlarmForEverything: false,
-                                editAuthorForEverything: true
+                                editAlarmOnlyGroupMember: true
                             },
                             permsGroupUserGroup: {
                                 editGroupForEverything: false,

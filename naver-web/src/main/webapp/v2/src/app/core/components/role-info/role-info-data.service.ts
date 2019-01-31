@@ -26,7 +26,7 @@ export class RoleInfoDataService {
                 },
                 permsGroupAlarm: {
                     editAlarmForEverything: true,
-                    editAuthorForEverything: false
+                    editAlarmOnlyGroupMember: false
                 },
                 permsGroupUserGroup: {
                     editGroupForEverything: true,
