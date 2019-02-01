@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.collector.receiver.thrift.tcp.security.token;
 
-import com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandler;
+import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.collector.receiver.thrift.tcp.TCPPacketHandlerFactory;
 import com.navercorp.pinpoint.collector.service.TokenService;
 import com.navercorp.pinpoint.common.util.Assert;

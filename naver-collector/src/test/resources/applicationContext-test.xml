@@ -94,7 +94,7 @@
 
     <bean id="agentEventMessageSerializerV1" class="com.navercorp.pinpoint.common.server.util.AgentEventMessageSerializerV1"/>
 
-    <bean id="agentLifeCycleChangeEventHandler" class="com.navercorp.pinpoint.collector.receiver.thrift.tcp.AgentLifeCycleChangeEventHandler"/>
+    <bean id="agentLifeCycleChangeEventHandler" class="com.navercorp.pinpoint.collector.receiver.AgentLifeCycleChangeEventHandler"/>
 
     <!-- Route Filters -->
     <bean id="loggingRouteFilter" class="com.navercorp.pinpoint.collector.cluster.route.filter.LoggingFilter"/>

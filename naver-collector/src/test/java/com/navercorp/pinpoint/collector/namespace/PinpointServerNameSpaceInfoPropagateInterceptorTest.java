@@ -56,7 +56,7 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
         PinpointServer pinpointServer = mockPinpointServerWithLicenseKey(licenseKey);
         ProceedingJoinPoint proceedingJoinPoint = mockJoinPointForNameSpaceInfo(nameSpaceInfo);
 
-        interceptor.aroundAdvice(proceedingJoinPoint, pinpointServer);
+        interceptor.aroundAdvice(proceedingJoinPoint, pinpointServer.getChannelProperties());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
         public void run() {
             Assert.assertNull(RequestContextHolder.getAttributes());
             try {
-                interceptor.aroundAdvice(proceedingJoinPoint, pinpointServer);
+                interceptor.aroundAdvice(proceedingJoinPoint, pinpointServer.getChannelProperties());
             } catch (AssertionError e) {
                 throw e;
             } catch (Throwable t) {

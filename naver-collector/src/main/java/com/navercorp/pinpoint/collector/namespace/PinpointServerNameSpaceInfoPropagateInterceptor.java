@@ -63,14 +63,13 @@ public class PinpointServerNameSpaceInfoPropagateInterceptor {
         this.useDefaultNameSpaceInfo = useDefaultNameSpaceInfo;
     }
 
-    public void aroundAdvice(ProceedingJoinPoint joinPoint, PinpointServer pinpointServer) throws Throwable {
-        Map<Object, Object> channelProperties = pinpointServer.getChannelProperties();
+    public void aroundAdvice(ProceedingJoinPoint joinPoint, Map<Object, Object> channelProperties) throws Throwable {
         NameSpaceInfo nameSpaceInfo = getNameSpaceInfo(channelProperties);
         if (nameSpaceInfo == null) {
             if (useDefaultNameSpaceInfo) {
                 nameSpaceInfo = NameSpaceInfo.DEFAULT;
             } else {
-                logger.error("Unable to retrieve NameSpaceInfo from : {}, channelProperties : {}", pinpointServer, channelProperties);
+                logger.error("Unable to retrieve NameSpaceInfo channelProperties : {}", channelProperties);
                 throw new IllegalStateException("Cannot find NameSpaceInfo");
             }
         }

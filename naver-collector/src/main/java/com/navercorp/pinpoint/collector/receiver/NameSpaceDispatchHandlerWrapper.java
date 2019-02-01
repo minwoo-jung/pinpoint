@@ -18,7 +18,6 @@ package com.navercorp.pinpoint.collector.receiver;
 import com.navercorp.pinpoint.collector.namespace.NameSpaceInfo;
 import com.navercorp.pinpoint.collector.namespace.RequestAttributes;
 import com.navercorp.pinpoint.collector.namespace.RequestContextHolder;
-import com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandler;
 import com.navercorp.pinpoint.io.request.ServerRequest;
 import com.navercorp.pinpoint.io.request.ServerResponse;
 import org.slf4j.Logger;

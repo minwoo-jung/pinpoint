@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.collector.receiver.thrift.tcp.security.token;
 
 import com.navercorp.pinpoint.collector.namespace.NameSpaceInfo;
-import com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandler;
+import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.common.util.Assert;

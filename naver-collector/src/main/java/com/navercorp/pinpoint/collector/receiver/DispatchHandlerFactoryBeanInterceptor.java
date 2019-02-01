@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.collector.receiver;
 
-import com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandler;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
