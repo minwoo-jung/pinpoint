@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject, combineLatest } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateReplaceService } from 'app/shared/services';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
@@ -83,7 +83,10 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             this.changeDetectorRef.detectChanges();
         });
         this.applicationListInteractionForConfigurationService.onSelectApplication$.pipe(
-            takeUntil(this.unsubscribe)
+            takeUntil(this.unsubscribe),
+            filter((selectedApplication: IApplication) => {
+                return selectedApplication !== null;
+            })
         ).subscribe((selectedApplication: IApplication) => {
             this.currentApplication = selectedApplication;
             this.message = '';

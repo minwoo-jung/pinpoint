@@ -1,0 +1,17 @@
+:host {
+    height: 100%;
+    padding: 20px 0px;
+}
+
+.l-title {
+    padding: 6px 6px 14px 6px;
+    border: 1px solid #e5e8f0;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 10px;
+    background-color: #f6f8fb;
+}
+.l-title button {
+    float: right;
+}

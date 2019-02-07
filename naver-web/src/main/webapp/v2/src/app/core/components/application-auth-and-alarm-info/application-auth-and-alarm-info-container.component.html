@@ -1,0 +1,8 @@
+<div class="l-title">
+    Application Configuration 
+    <button [class]="getBtnClass()" (click)="onAdd()"><i class="fas fa-external-link-alt"></i> Add</button>
+</div>    
+<pp-application-auth-and-alarm-info
+    style="height: calc(100%);"
+    [rowData]="rowData"
+    (outCelClicked)="onCellClicked($event)"></pp-application-auth-and-alarm-info>

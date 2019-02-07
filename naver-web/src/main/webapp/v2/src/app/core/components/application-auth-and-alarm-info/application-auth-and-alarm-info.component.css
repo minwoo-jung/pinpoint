@@ -1,0 +1,114 @@
+:host {
+    width: 100%;
+    position: relative;
+}
+
+#applicationConfiguration .ag-root {
+    border: 1px solid #e6e8ec;
+    font-size: 12px;    
+    font-family: 'Open Sans', sans-serif;
+}
+#applicationConfiguration .ag-cell {
+    padding: 4px;
+    font-family: 'Open Sans', sans-serif;
+    border-right: 1px solid #e6e8ec;
+    border-bottom: 1px solid #e6e8ec;
+}
+
+#applicationConfiguration .ag-column-moving .ag-cell {
+    transition: left 0.2s;
+}
+#applicationConfiguration .ag-header-cell-moving .ag-header-cell-label {
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+#applicationConfiguration .ag-header-cell-moving {
+    background-color: #bebebe;
+}
+#applicationConfiguration .ag-header-cell-moving-clone {
+    border-right: 1px solid #808080;
+    border-left: 1px solid #808080;
+    background-color: rgba(220,220,220,0.8);
+}
+#applicationConfiguration .ag-header {
+    background: #f6f8fb;
+    border-bottom: 1px solid #e6e8ec;
+    line-height: 2;
+}
+#applicationConfiguration .ag-header-cell {
+    font-size: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+    border-top: 1px solid #e6e8ec;
+    border-right: 1px solid #e6e8ec;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+#applicationConfiguration .ag-header-group-cell {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+    border-right: 1px solid #e6e8ec;
+    padding-left: 6px;
+}
+#applicationConfiguration .ag-header-group-cell-label {
+    align-items: center;
+    justify-content: center;
+}
+
+#applicationConfiguration .ag-header-cell-resize:after {
+    border-right: none;
+}
+#applicationConfiguration .ag-header-cell-label {
+    padding: 4px;
+}
+#applicationConfiguration .ag-group-expanded span {
+    margin-right: 4px;
+}
+#applicationConfiguration .ag-row {
+    line-height: 2;
+}
+#applicationConfiguration .ag-row-exception {
+    background-color: #fff1f1;
+}
+#applicationConfiguration .ag-row-focused {
+    background-color: #e4f5e3;
+}
+#applicationConfiguration .ag-body {
+    background-color: #ffffff;
+}
+#applicationConfiguration .ag-body-viewport {
+    background-color: #ffffff;
+}
+#applicationConfiguration .ag-menu {
+    background-color: #ffffff;
+    border: 1px solid grey;
+}
+#applicationConfiguration .fa {
+    font-size: 14px;
+}
+#applicationConfiguration .ag-row-focused {
+    background-color: #e4f5e3;
+}
+#applicationConfiguration .ag-row-selected {
+    color: #4a8fd2;
+    background-color: #e7f5f9;
+}
+#applicationConfiguration .div-percent-bar {
+    display: inline-block;
+    height: 30%;
+    position: absolute;
+}
+#applicationConfiguration .div-percent-value {
+    position: absolute;
+    padding-left: 4px;
+    font-weight: bold;
+    font-size: 13px;
+}
+#applicationConfiguration .div-outer-div {
+    display: inline-block;
+    margin-right: 20px;
+    height: 30%;
+    width: 92%;
+}

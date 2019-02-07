@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject, combineLatest } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateReplaceService } from 'app/shared/services';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
@@ -71,7 +71,10 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
 
         });
         this.applicationListInteractionForConfigurationService.onSelectApplication$.pipe(
-            takeUntil(this.unsubscribe)
+            takeUntil(this.unsubscribe),
+            filter((selectedApplication: Application) => {
+                return selectedApplication !== null;
+            })
         ).subscribe((selectedApplication: Application) => {
             this.currentApplication = selectedApplication;
             this.initStatus();
