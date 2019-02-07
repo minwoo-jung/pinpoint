@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { ConfigPageComponent } from './config-page.component';
-import { UrlPathId } from 'app/shared/models';
+import { UrlPath, UrlPathId } from 'app/shared/models';
 import { UserConfigurationResolverService, ApplicationListResolverService, SystemConfigurationResolverService } from 'app/shared/services';
 import { ConfigurationGeneralContainerComponent } from 'app/core/components/configuration-general/configuration-general-container.component';
 import { ConfigurationUserGroupContainerComponent } from 'app/core/components/configuration-user-group/configuration-user-group-container.component';
@@ -49,6 +49,11 @@ const routes: Routes = [
             {
                 path: UrlPathId.HELP,
                 component: ConfigurationHelpContainerComponent
+            },
+            {
+                path: '',
+                redirectTo: '/' + UrlPath.CONFIG + '/' + UrlPathId.GENERAL,
+                pathMatch: 'full'
             }
         ]
     }
