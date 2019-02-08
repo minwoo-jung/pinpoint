@@ -124,4 +124,9 @@
         <constructor-arg ref="hikariConfig"/>
     </bean>
 
+    <bean id="mongoClient" class="com.mongodb.MongoClient">
+        <constructor-arg value="${mongodb.host}"/>
+        <constructor-arg value="${mongodb.port}"/>
+    </bean>
+
 </beans>
