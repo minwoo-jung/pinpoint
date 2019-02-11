@@ -25,6 +25,13 @@
         FROM app_auth_user_group
         WHERE application_id = #{applicationId}
     </select>
+
+    <select id="selectAppUserGroupAuthListByUserGroupId" resultType="AppUserGroupAuth">
+        SELECT application_id, user_group_id, role, configuration AS configurationString
+        FROM app_auth_user_group
+        WHERE user_group_id = #{userGroupId}
+    </select>
+
     
     <select id="isManager" resultType="java.lang.Boolean">
         SELECT EXISTS (

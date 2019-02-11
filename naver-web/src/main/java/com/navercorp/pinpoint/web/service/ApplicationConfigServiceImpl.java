@@ -67,6 +67,12 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<AppUserGroupAuth> selectApplicationConfigurationByUserGroupId(String userGroupId) {
+        return applicationConfigDao.selectAppUserGroupAuthListByUserGroupId(userGroupId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Role searchMyRole(String applicationId, String userId) {
         ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
         Map<String, AppUserGroupAuth> appUserGroupAuthes = appConfig.getAppUserGroupAuthes();
