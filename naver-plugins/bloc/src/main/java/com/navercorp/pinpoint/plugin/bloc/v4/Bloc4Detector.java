@@ -14,13 +14,11 @@
  */
 package com.navercorp.pinpoint.plugin.bloc.v4;
 
-import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
-import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
-import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.bootstrap.resolver.condition.ClassResourceCondition;
+import com.navercorp.pinpoint.bootstrap.resolver.condition.MainClassCondition;
 import com.navercorp.pinpoint.common.util.CollectionUtils;
-import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,31 +26,33 @@ import java.util.List;
  * @author HyunGil Jeong
  *
  */
-public class Bloc4Detector implements ApplicationTypeDetector {
+public class Bloc4Detector {
     
-    private static final String DEFAULT_BOOTSTRAP_MAIN = "com.nhncorp.lucy.bloc.server.BlocServer";
+    private static final String DEFAULT_EXPECTED_MAIN_CLASS = "com.nhncorp.lucy.bloc.server.BlocServer";
     
     private static final String REQUIRED_CLASS =  "com.nhncorp.lucy.bloc.server.Bootstrap";
 
-    private final List<String> bootstrapMains;
+    private final List<String> expectedMainClasses;
 
-    public Bloc4Detector(List<String> bootstrapMains) {
-        if (CollectionUtils.isEmpty(bootstrapMains)) {
-            this.bootstrapMains = Arrays.asList(DEFAULT_BOOTSTRAP_MAIN);
+    public Bloc4Detector(List<String> expectedMainClasses) {
+        if (CollectionUtils.isEmpty(expectedMainClasses)) {
+            this.expectedMainClasses = Collections.singletonList(DEFAULT_EXPECTED_MAIN_CLASS);
         } else {
-            this.bootstrapMains = bootstrapMains;
+            this.expectedMainClasses = expectedMainClasses;
         }
     }
-    
-    @Override
-    public ServiceType getApplicationType() {
-        return BlocConstants.BLOC;
-    }
 
-    @Override
-    public boolean detect(ConditionProvider provider) {
-        return provider.checkMainClass(bootstrapMains) &&
-               provider.checkForClass(REQUIRED_CLASS);
+    public boolean detect() {
+        String bootstrapMainClass = MainClassCondition.INSTANCE.getValue();
+        boolean isExpectedMainClass = expectedMainClasses.contains(bootstrapMainClass);
+        if (!isExpectedMainClass) {
+            return false;
+        }
+        boolean hasRequiredClass = ClassResourceCondition.INSTANCE.check(REQUIRED_CLASS);
+        if (!hasRequiredClass) {
+            return false;
+        }
+        return true;
     }
     
 }

@@ -27,6 +27,7 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
+import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.plugin.jeus.interceptor.HttpServletRequestImplStartAsyncInterceptor;
 import com.navercorp.pinpoint.plugin.jeus.interceptor.ServletWrapperExecuteInterceptor;
 
@@ -47,8 +48,17 @@ public class JeusPlugin implements ProfilerPlugin, TransformTemplateAware {
         }
         logger.info("{} config:{}", this.getClass().getSimpleName(), config);
 
-        context.addApplicationTypeDetector(new JeusDetector(config.getBootstrapMains()));
+        if (ServiceType.UNDEFINED.equals(context.getConfiguredApplicationType())) {
+            final JeusDetector jeusDetector = new JeusDetector(config.getBootstrapMains());
+            if (jeusDetector.detect()) {
+                logger.info("Detected application type : {}", JeusConstants.JEUS);
+                if (!context.registerApplicationType(JeusConstants.JEUS)) {
+                    logger.info("Application type [{}] already set, skipping [{}] registration.", context.getApplicationType(), JeusConstants.JEUS);
+                }
+            }
+        }
 
+        logger.info("Adding Jeus transformers");
         // Hide pinpoint header & Add async listener. Servlet 3.0
         addHttpServletRequestImpl();
         // Entry Point

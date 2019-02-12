@@ -12,6 +12,8 @@ import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.bootstrap.plugin.util.InstrumentUtils;
+import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 import com.navercorp.pinpoint.plugin.bloc.BlocPluginConfig;
 import com.navercorp.pinpoint.plugin.bloc.InterceptorConstants;
 
@@ -32,9 +34,17 @@ public class Bloc4Plugin implements ProfilerPlugin, TransformTemplateAware {
             return;
         }
         logger.info("{} config:{}", this.getClass().getSimpleName(), config);
-        Bloc4Detector bloc4Detector = new Bloc4Detector(config.getBlocBootstrapMains());
-        context.addApplicationTypeDetector(bloc4Detector);
+        if (ServiceType.UNDEFINED.equals(context.getConfiguredApplicationType())) {
+            final Bloc4Detector bloc4Detector = new Bloc4Detector(config.getBlocBootstrapMains());
+            if (bloc4Detector.detect()) {
+                logger.info("Detected application type : {}", BlocConstants.BLOC);
+                if (!context.registerApplicationType(BlocConstants.BLOC)) {
+                    logger.info("Application type [{}] already set, skipping [{}] registration.", context.getApplicationType(), BlocConstants.BLOC);
+                }
+            }
+        }
 
+        logger.info("Adding Bloc4 transformers");
         addNettyInboundHandlerModifier();
         addNpcHandlerModifier();
         addNimmHandlerModifider();

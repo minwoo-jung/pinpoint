@@ -16,24 +16,23 @@ package com.navercorp.pinpoint.plugin.bloc.v3;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import com.navercorp.pinpoint.bootstrap.plugin.ApplicationTypeDetector;
-import com.navercorp.pinpoint.bootstrap.resolver.ConditionProvider;
-import com.navercorp.pinpoint.common.trace.ServiceType;
+import com.navercorp.pinpoint.bootstrap.resolver.condition.ClassResourceCondition;
+import com.navercorp.pinpoint.bootstrap.resolver.condition.MainClassCondition;
+import com.navercorp.pinpoint.bootstrap.resolver.condition.SystemPropertyCondition;
 import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.common.util.CollectionUtils;
-import com.navercorp.pinpoint.plugin.bloc.BlocConstants;
 
 /**
  * @author Jongho Moon
  * @author HyunGil Jeong
  *
  */
-public class Bloc3Detector implements ApplicationTypeDetector {
+public class Bloc3Detector {
 
-    private static final String DEFAULT_BOOTSTRAP_MAIN = "org.apache.catalina.startup.Bootstrap";
+    private static final String DEFAULT_EXPECTED_MAIN_CLASS = "org.apache.catalina.startup.Bootstrap";
 
     private static final String REQUIRED_SYSTEM_PROPERTY = "catalina.home";
 
@@ -41,29 +40,32 @@ public class Bloc3Detector implements ApplicationTypeDetector {
 
     private static final String BLOC3_BOOTSTRAP_JAR_PREFIX = "lucy-bloc-bootstrap";
 
-    private final List<String> bootstrapMains;
+    private final List<String> expectedMainClasses;
 
-    public Bloc3Detector(List<String> bootstrapMains) {
-        if (CollectionUtils.isEmpty(bootstrapMains)) {
-            this.bootstrapMains = Arrays.asList(DEFAULT_BOOTSTRAP_MAIN);
+    public Bloc3Detector(List<String> expectedMainClasses) {
+        if (CollectionUtils.isEmpty(expectedMainClasses)) {
+            this.expectedMainClasses = Collections.singletonList(DEFAULT_EXPECTED_MAIN_CLASS);
         } else {
-            this.bootstrapMains = bootstrapMains;
+            this.expectedMainClasses = expectedMainClasses;
         }
     }
 
-    @Override
-    public ServiceType getApplicationType() {
-        return BlocConstants.BLOC;
-    }
-
-    @Override
-    public boolean detect(ConditionProvider provider) {
-        if (provider.checkMainClass(bootstrapMains) &&
-            provider.checkForClass(REQUIRED_CLASS)) {
-            String catalinaHomePath = provider.getSystemPropertyValue(REQUIRED_SYSTEM_PROPERTY);
-            return testForBlocEnvironment(catalinaHomePath);
+    public boolean detect() {
+        String bootstrapMainClass = MainClassCondition.INSTANCE.getValue();
+        boolean isExpectedMainClass = expectedMainClasses.contains(bootstrapMainClass);
+        if (!isExpectedMainClass) {
+            return false;
         }
-        return false;
+        boolean hasRequiredClass = ClassResourceCondition.INSTANCE.check(REQUIRED_CLASS);
+        if (!hasRequiredClass) {
+            return false;
+        }
+        boolean catalinaHomeSet = SystemPropertyCondition.INSTANCE.check(REQUIRED_SYSTEM_PROPERTY);
+        if (!catalinaHomeSet) {
+            return false;
+        }
+        String catalinaHomePath = SystemPropertyCondition.INSTANCE.getValue().getProperty(REQUIRED_SYSTEM_PROPERTY);
+        return testForBlocEnvironment(catalinaHomePath);
     }
 
     private boolean testForBlocEnvironment(String catalinaHome) {
