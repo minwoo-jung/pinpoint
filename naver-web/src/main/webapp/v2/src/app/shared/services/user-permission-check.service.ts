@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { UrlPath, UrlPathId } from 'app/shared/models';
 import { AppState, STORE_KEY } from 'app/shared/store';
@@ -12,23 +12,36 @@ export class UserPermissionCheckService {
         '/' + UrlPath.CONFIG + '/' + UrlPathId.ROLE
     ];
     private unsubscribe: Subject<null> = new Subject();
-    constructor(private store: Store<AppState>) {}
-
-    isAllowedAdminMenuView(): Observable<boolean> {
-        return this.getUserPermission().pipe(
-            map((userPermission: IPermissions) => {
-                return false;
-                // return userPermission.permissionCollection.permsGroupAdministration.viewAdminMenu || false;
-            })
-        );
-    }
-    private getUserPermission(): Observable<IPermissions> {
-        return this.store.pipe(
+    private userPermissions: IPermissions;
+    constructor(private store: Store<AppState>) {
+        this.store.pipe(
             select(STORE_KEY.USER_PERMISSIONS),
             takeUntil(this.unsubscribe)
-        );
+        ).subscribe((userPermissions: IPermissions) => {
+            this.userPermissions = userPermissions;
+        });
     }
 
+    canViewAdminMenu(): boolean {
+        return false;
+        // return this.userPermissions.permissionCollection.permsGroupAdministration.viewAdminMenu || false;
+    }
+    canEditUser(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupAdministration.editUser;
+    }
+    canEditRole(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupAdministration.editRole;
+    }
+    canAddUserGroup(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupForEverything ||
+            this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember;
+    }
+    canRemoveAllGroupMember(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupForEverything;
+    }
+    canRemoveAllGroupMemberExceptMe(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember;
+    }
     static isRestrictedURL(url: string): boolean {
         return UserPermissionCheckService.RESTRICTED_URL.reduce((prev: boolean, retrictedUrl: string) => {
             return prev || url.startsWith(retrictedUrl);

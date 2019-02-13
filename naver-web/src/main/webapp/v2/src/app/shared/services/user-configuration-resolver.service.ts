@@ -14,13 +14,13 @@ export class UserConfigurationResolverService implements Resolve<IUserConfigurat
     ) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<IUserConfiguration> {
         return this.userConfigurationDataService.getUserConfiguration().pipe(
-            // tap((userConfiguration: IUserConfiguration) => {
-            //     if (userConfiguration.permission.permissionCollection.permsGroupAdministration.viewAdminMenu === false) {
-            //         if (UserPermissionCheckService.isRestrictedURL(state.url)) {
-            //             this.router.navigate(['/' + UrlPath.MAIN]);
-            //         }
-            //     }
-            // }),
+            tap((userConfiguration: IUserConfiguration) => {
+                if (userConfiguration.permission.permissionCollection.permsGroupAdministration.viewAdminMenu === false) {
+                    if (UserPermissionCheckService.isRestrictedURL(state.url)) {
+                        this.router.navigate(['/' + UrlPath.MAIN]);
+                    }
+                }
+            }),
             catchError((error: any) => {
                 this.router.navigate(['/' + UrlPath.ERROR]);
                 return EMPTY;
