@@ -18,10 +18,11 @@ package com.navercorp.pinpoint.web.controller;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.web.service.*;
 import com.navercorp.pinpoint.web.vo.*;
-import com.navercorp.pinpoint.web.vo.role.RoleInformation;
+import com.navercorp.pinpoint.web.vo.role.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,18 @@ public class UserInformationController {
     private final String ERROR_PASSWORD_INCORRECT = "The current password is incorrect.";
 
     private static final String SSO_USER = "SSO_USER";
+
+    private static final RoleInformation FIXED_ROLE;
+    static {
+        PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration();
+        PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(true, false, true);
+        PermsGroupAlarm permsGroupAlarm = new PermsGroupAlarm(false, true);
+        PermsGroupUserGroup permsGroupUserGroup = new PermsGroupUserGroup(false, true);
+        PermissionCollection permissionCollection = new PermissionCollection(permsGroupAdministration, permsGroupAppAuthorization, permsGroupAlarm, permsGroupUserGroup);
+        FIXED_ROLE = new RoleInformation("fixedRole", permissionCollection);
+    }
+    @Value("#{pinpointWebProps['user.permission.use.fixed.value'] ?: true}")
+    private boolean isAlwaysDefaultPermission;
 
     @Autowired
     private UserInformationService userInformationService;
@@ -197,8 +210,12 @@ public class UserInformationController {
     @RequestMapping(value="user/permissionAndConfiguration", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> selectPermissionAndConfiguration(@RequestHeader(SSO_USER) String userId) {
-        RoleInformation roleInformation = roleService.getUserPermission(userId);
         UserConfiguration userConfiguration = userConfigService.selectUserConfiguration(userId);
+
+        RoleInformation roleInformation = FIXED_ROLE;
+        if (isAlwaysDefaultPermission == false) {
+            roleInformation = roleService.getUserPermission(userId);
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("configuration", userConfiguration);
