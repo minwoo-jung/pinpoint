@@ -394,3 +394,14 @@ interface IPermissions {
         };
     }
 }
+interface IApplicationAuthInfo {
+    applicationId: string;
+    role: string;
+    userGroupId: string;
+    configuration: {
+        apiMetaData: boolean;
+        paramMetaData: boolean;
+        serverMapData: boolean;
+        sqlMetaData: boolean;
+    }
+}

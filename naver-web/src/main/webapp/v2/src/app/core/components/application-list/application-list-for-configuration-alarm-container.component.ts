@@ -51,9 +51,9 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
         this.newUrlStateNotificationService.onUrlStateChange$.pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((urlService: NewUrlStateNotificationService) => {
-            const applicationName = urlService.getQueryValue(UrlQuery.APPLICATION_NAME);
-            if (applicationName) {
-                this.applicationQuery = new Application(applicationName.split('@')[0], applicationName.split('@')[1], 0);
+            const applicationId = urlService.getQueryValue(UrlQuery.APPLICATION_ID);
+            if (applicationId) {
+                this.applicationQuery = new Application(applicationId, '', 0);
             }
         });
         this.storeHelperService.getApplicationList(this.unsubscribe).subscribe((applicationList: IApplication[]) => {

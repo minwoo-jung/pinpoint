@@ -1,0 +1,8 @@
+<ul class="l-one-depth-list" (clickOutside)="onClickOutside()">
+    <li>
+        <div>{{data.applicationId}}</div>
+        <ul class="l-two-depth-list">
+            <li class="l-selectable-command" *ngFor="let conf of data.configuration | keyvalue"><span class="{{conf.value === true ? 'fas fa-check-square' : 'far fa-square'}}"></span> {{conf.key}}</li>
+        </ul>
+    </li>
+</ul>

@@ -45,14 +45,14 @@ export class AppComponent implements OnInit {
                 translate.CONFIGURATION.PERMISSION.PREOCCUPANCY_TITLE = '최초 할당';
                 translate.CONFIGURATION.PERMISSION.PREOCCUPANCY = 'User Group 최초 할당 가능';
                 translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_TITLE = 'Authentication 수정';
-                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_FOR_EVERYTHING = '항상 Authentication 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_ONLY_MANAGER = 'Manager의 User Group에 소속된 경우에만 Authentication 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_FOR_EVERYTHING = '모든 Authentication 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_ONLY_MANAGER = 'Position이 Manager인 User Group에 소속된 경우에만 Authentication 수정 가능';
                 translate.CONFIGURATION.PERMISSION.EDIT_ALARM_TITLE = 'Alarm 수정';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_FOR_EVERYTHING = '항상 Alarm 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_GROUP_MEMBER = 'User Group 소속 Member만 Alarm 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_FOR_EVERYTHING = '모든 Alarm 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_GROUP_MEMBER = 'Position이 Manager인 User Group에 소속된 Member만 Alarm 수정 가능';
                 translate.CONFIGURATION.PERMISSION.EDIT_GROUP_TITLE = 'User Group 수정';
-                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_FOR_EVERYTHING = '항상 User Group 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'User Group 소속 Member 만 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_FOR_EVERYTHING = 'User Group 생성 및 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'User Group의 Member 만 생성 및 수정 가능';
             } else {
                 translate.CONFIGURATION.COMMON.ROLE = 'Role';
                 translate.CONFIGURATION.AUTH = {

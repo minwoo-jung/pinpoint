@@ -1,14 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, EventEmitter, Input, Output } from '@angular/core';
 import { GridOptions } from 'ag-grid';
 
-export interface IGridData {
-    applicationName: string;
-    position: string;
-    detail: string;
-    delete: string;
-    alarm: string;
-}
-
 @Component({
     selector: 'pp-application-auth-and-alarm-info',
     templateUrl: './application-auth-and-alarm-info.component.html',
@@ -17,8 +9,8 @@ export interface IGridData {
 })
 export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
 
-    @Input() rowData: IGridData[];
-    @Output() outCellSelected: EventEmitter<{applicationName: string, field: string}> = new EventEmitter();
+    @Input() rowData: IApplicationAuthInfo[];
+    @Output() outCellSelected: EventEmitter<any> = new EventEmitter();
     gridOptions: GridOptions;
 
     constructor() {}
@@ -34,58 +26,47 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
             animateRows: true,
             rowHeight: 30,
             suppressRowClickSelection: false,
-            localeText: {noRowsToShow: 'User Group을 선택하세요.'}
+            suppressLoadingOverlay: true,
+            suppressCellSelection: true,
+            localeText: {noRowsToShow: 'No Application'}
         };
     }
     private makeColumnDefs(): any {
         return [
             {
-                headerName: 'Application Authentication',
+                headerName: 'Application Authentication & Alarm',
                 children: [
                     {
                         headerName: 'Application Name',
-                        field: 'applicationName',
-                        width: 400,
-                        cellStyle: this.argumentCellStyle
+                        field: 'applicationId',
+                        width: 500,
+                        cellStyle: this.alignCenterCellStyle
                     },
                     {
                         headerName: 'Position',
-                        field: 'position',
-                        width: 110,
+                        field: 'role',
+                        width: 150,
                         cellStyle: this.alignCenterCellStyle
                     },
                     {
                         headerName: 'Detail',
-                        field: 'detail',
-                        width: 110,
+                        field: 'configuration',
+                        width: 150,
                         cellRenderer: () => { return '<i class="far fa-list-alt"></i>'; },
                         cellStyle: this.alignCenterPointCellStyle
                     },
                     {
-                        headerName: 'Delete',
-                        field: 'delete',
-                        width: 110,
-                        cellRenderer: () => { return '<i class="far fa-trash-alt"></i>'; },
-                        cellStyle: this.alignCenterPointCellStyle
-                    }
-                ]
-            },
-            {
-                headerName: 'Alarm',
-                children: [
-                    {
-                        headerName: '',
-                        field: 'alarm',
-                        width: 300,
-                        cellRenderer: () => { return '<i class="far fa-bell"></i>'; },
+                        headerName: 'Edit & Alarm',
+                        field: 'role',
+                        width: 150,
+                        cellRenderer: (params: any) => {
+                            return params.value === 'manager' ? '<i class="fas fa-external-link-alt"></i>' : '';
+                        },
                         cellStyle: this.alignCenterPointCellStyle
                     }
                 ]
             }
         ];
-    }
-    argumentCellStyle(): any {
-        return {'text-align': 'left'};
     }
     alignCenterCellStyle(): any {
         return {'text-align': 'center'};
@@ -98,14 +79,24 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
     }
     onCellClick(row: any): void {
         switch (row.colDef.field) {
-            case 'detail':
-            case 'delete':
-            case 'alarm':
+            case 'configuration':
                 this.outCellSelected.next({
-                    applicationName : row.data.applicationName,
-                    field: row.colDef.field
+                    type: 'configuration',
+                    applicationId: row.data.applicationId,
+                    coord: (row.event.target as HTMLElement).getBoundingClientRect(),
+                    configuration: row.value
+                });
+                break;
+            case 'role':
+                this.outCellSelected.next({
+                    type: 'edit',
+                    applicationId : row.data.applicationId,
+                    position: row.data.role
                 });
                 break;
         }
+    }
+    onGridReady(params: any) {
+        params.api.sizeColumnsToFit();
     }
 }

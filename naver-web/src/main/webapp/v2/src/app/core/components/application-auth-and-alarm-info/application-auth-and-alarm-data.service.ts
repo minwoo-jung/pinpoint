@@ -5,14 +5,12 @@ import { retry } from 'rxjs/operators';
 
 @Injectable()
 export class ApplicationAuthAndAlarmDataService {
-    private url = 'roles/role.pinpoint';
+    private url = 'userGroup/applicationAuth.pinpoint';
     constructor(private http: HttpClient) {}
-    getInfo(userGroupId: string): Observable<any> {
-        // return this.http.get<IPermissions>(this.roleInfoURL, this.makeRequestOptionsArgs(userGroupId)).pipe(
-        //     retry(3)
-        // );
-        return of({
-        });
+    getData(userGroupId: string): Observable<IApplicationAuthInfo[]> {
+        return this.http.get<IApplicationAuthInfo[]>(this.url, this.makeRequestOptionsArgs(userGroupId)).pipe(
+            retry(3)
+        );
     }
     private makeRequestOptionsArgs(userGroupId: string): object {
         return {
