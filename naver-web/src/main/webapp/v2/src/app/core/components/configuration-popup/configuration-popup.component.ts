@@ -10,7 +10,7 @@ export class ConfigurationPopupComponent implements OnInit {
     @HostBinding('class.font-opensans') fontFamily = true;
     @Output() outMenuClick = new EventEmitter<string>();
     @Output() outOpenLink = new EventEmitter<void>();
-    @Input() isAllowedAdminMenuView = false;
+    @Input() canViewAdminMenu = false;
 
     constructor() {}
     ngOnInit() {}

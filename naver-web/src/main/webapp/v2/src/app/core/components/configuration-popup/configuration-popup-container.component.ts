@@ -15,7 +15,7 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
 
     private posX: number;
 
-    isAllowedAdminMenuView$: Observable<boolean>;
+    canViewAdminMenu: boolean;
 
 
     constructor(
@@ -27,7 +27,7 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
 
     ngOnInit() {
         this.posX = this.windowRefService.nativeWindow.innerWidth - this.el.nativeElement.offsetWidth;
-        this.isAllowedAdminMenuView$ = this.userPermissionCheckService.isAllowedAdminMenuView();
+        this.canViewAdminMenu = this.userPermissionCheckService.canViewAdminMenu();
     }
 
     ngAfterViewInit() {

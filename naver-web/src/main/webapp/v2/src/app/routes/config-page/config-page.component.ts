@@ -10,7 +10,7 @@ import { UserPermissionCheckService, RouteInfoCollectorService, UrlRouteManagerS
     styleUrls: ['./config-page.component.css']
 })
 export class ConfigPageComponent implements OnInit {
-    isAllowedAdminMenuView$: Observable<boolean>;
+    canViewAdminMenu: boolean;
     constructor(
         private routeInfoCollectorService: RouteInfoCollectorService,
         private urlRouteManagerService: UrlRouteManagerService,
@@ -19,7 +19,7 @@ export class ConfigPageComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.isAllowedAdminMenuView$ = this.userPermissionCheckService.isAllowedAdminMenuView();
+        this.canViewAdminMenu = this.userPermissionCheckService.canViewAdminMenu();
     }
     onClickExit(): void {
         this.storeHelperService.getURLPath().pipe(

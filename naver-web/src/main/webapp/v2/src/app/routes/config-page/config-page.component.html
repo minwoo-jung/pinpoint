@@ -5,7 +5,7 @@
 <div class="l-main-container font-opensans">
     <section class="l-sidemenu-section">
         <ul class="l-list">
-            <ng-container *ngIf="(isAllowedAdminMenuView$ | async) as view">
+            <ng-container *ngIf="canViewAdminMenu">
                 <li class="l-list-item l-depth">Administration</li>
                 <ul class="l-list">
                     <li class="l-list-item"><a routerLink="/config/users" routerLinkActive="active" class="l-link">Users</a></li>

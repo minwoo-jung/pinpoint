@@ -23,8 +23,7 @@ export class UserPermissionCheckService {
     }
 
     canViewAdminMenu(): boolean {
-        return false;
-        // return this.userPermissions.permissionCollection.permsGroupAdministration.viewAdminMenu || false;
+        return this.userPermissions.permissionCollection.permsGroupAdministration.viewAdminMenu;
     }
     canEditUser(): boolean {
         return this.userPermissions.permissionCollection.permsGroupAdministration.editUser;
