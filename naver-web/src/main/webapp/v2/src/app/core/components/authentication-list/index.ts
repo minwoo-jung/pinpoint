@@ -6,6 +6,7 @@ import { AuthenticationListComponent } from './authentication-list.component';
 import { AuthenticationListContainerComponent } from './authentication-list-container.component';
 import { AuthenticationCreateAndUpdateComponent } from './authentication-create-and-update.component';
 import { AuthenticationDataService } from './authentication-data.service';
+import { AuthenticationInteractionService } from './authentication-interaction.service';
 
 @NgModule({
     declarations: [
@@ -23,7 +24,8 @@ import { AuthenticationDataService } from './authentication-data.service';
         AuthenticationCreateAndUpdateComponent
     ],
     providers: [
-        AuthenticationDataService
+        AuthenticationDataService,
+        AuthenticationInteractionService
     ]
 })
 export class AuthenticationListModule { }

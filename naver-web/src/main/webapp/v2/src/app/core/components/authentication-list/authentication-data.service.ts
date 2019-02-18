@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { retry, tap } from 'rxjs/operators';
 
-export enum ROLE {
+export enum POSITION {
     USER = 'user',
     GUEST = 'guest',
     MANAGER = 'manager'
@@ -17,7 +17,8 @@ export interface IApplicationAuthData {
         serverMapData: boolean;
         sqlMetaData: boolean;
     };
-    role: string;
+    role?: string;
+    position?: string;
     userGroupId: string;
 }
 
@@ -49,9 +50,9 @@ export class AuthenticationDataService {
             tap((auth: IAuthentication) => {
                 this.outRole.emit({
                     applicationId: applicationId,
-                    isManager: auth.myRole === ROLE.MANAGER,
-                    isGuest: auth.myRole === ROLE.GUEST,
-                    isUser: auth.myRole === ROLE.USER
+                    isManager: auth.myRole === POSITION.MANAGER,
+                    isGuest: auth.myRole === POSITION.GUEST,
+                    isUser: auth.myRole === POSITION.USER
                 });
             })
         );

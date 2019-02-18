@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { combineLatest } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService } from 'app/shared/services';
+import { TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService } from 'app/shared/services';
 import { UserGroupInteractionService } from './user-group-interaction.service';
 import { UserGroupDataService, IUserGroup, IUserGroupCreated, IUserGroupDeleted } from './user-group-data.service';
 
@@ -30,7 +30,7 @@ export class UserGroupContainerComponent implements OnInit {
     message = '';
     selectedUserGroupId = '';
     constructor(
-        private webAppSettingDataService: WebAppSettingDataService,
+        private userConfigurationDataService: UserConfigurationDataService,
         private userGroupDataService: UserGroupDataService,
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
@@ -39,10 +39,8 @@ export class UserGroupContainerComponent implements OnInit {
     ) {}
     ngOnInit() {
         this.getI18NText();
-        this.webAppSettingDataService.getUserId().subscribe((userId: string = '') => {
-            this.userId = userId;
-            this.getUserGroupList({userId: this.userId});
-        });
+        this.userId = this.userConfigurationDataService.getUserId();
+        this.getUserGroupList({userId: this.userId});
         this.canAddUserGroup = this.userPermissionCheckService.canAddUserGroup();
     }
     private getI18NText(): void {

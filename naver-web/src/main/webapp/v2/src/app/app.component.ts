@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
         this.translateService.getTranslation(currentLang).subscribe((translate) => {
             if (currentLang === 'ko') {
                 translate.CONFIGURATION.COMMON.ROLE = '권한';
+                translate.CONFIGURATION.COMMON.POSITION = '포지션';
                 translate.CONFIGURATION.AUTH = {
                     SERVER_MAP: 'ServerMap 데이터 비노출',
                     API_META: 'API 데이터 비노출',
@@ -55,6 +56,7 @@ export class AppComponent implements OnInit {
                 translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'User Group의 Member 만 생성 및 수정 가능';
             } else {
                 translate.CONFIGURATION.COMMON.ROLE = 'Role';
+                translate.CONFIGURATION.COMMON.POSITION = 'Poistion';
                 translate.CONFIGURATION.AUTH = {
                     SERVER_MAP: 'Hide ServerMap data',
                     API_META: 'Hide API data',

@@ -9,6 +9,7 @@ import { Application } from 'app/core/models';
 @Injectable()
 export class UserConfigurationDataService {
     private url = 'users/user/permissionAndConfiguration.pinpoint';
+    private userId: string;
     constructor(
         private http: HttpClient,
         private store: Store<AppState>,
@@ -17,6 +18,7 @@ export class UserConfigurationDataService {
         return this.http.get<IUserConfiguration>(this.url).pipe(
             retry(3),
             map((res: IUserConfiguration) => {
+                this.userId = res.configuration.userId;
                 this.store.dispatch(new Actions.AddFavoriteApplication(
                     res.configuration.favoriteApplications.map(({applicationName, serviceType, code}) => {
                         return new Application(applicationName, serviceType, code);
@@ -31,5 +33,8 @@ export class UserConfigurationDataService {
         return this.http.put<{ favoriteApplications: IFavoriteApplication[] }>(this.url, {
             favoriteApplications: newFavoriateApplicationList
         });
+    }
+    getUserId(): string {
+        return this.userId;
     }
 }

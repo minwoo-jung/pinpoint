@@ -8,11 +8,11 @@
                 <th>
                     <div class="l-table-title">
                         Authentication
-                        <button class="btn btn-sm" [ngClass]="getAddButtonClass()" (click)="onAddAuthPopup()">+ Add</button>
+                        <button class="btn btn-sm" [ngClass]="getAddButtonClass()" (click)="onShowAddAuth()">+ Add</button>
                     </div>
                     <div class="l-authentication-th">                        
                         <div>User Group</div>
-                        <div>Role</div>
+                        <div>Position</div>
                     </div>
                 </th>
             </tr>
@@ -22,9 +22,10 @@
                 <td style="padding: 0;">
                     <div class="l-authentication-tr-wrap">
                         <pp-authentication-list
-                            [authenticationList]="authenticationList"
+                            [authorityList]="authorityList"
+                            [hasUpdateAndRemoveAuthority]="hasUpdateAndRemoveAuthority"
                             (outRemove)="onRemoveAuth($event)"
-                            (outEdit)="onEditAuth($event)"
+                            (outEdit)="onShowUpdateAuth($event)"
                             (outInfo)="onShowAuthInfo($event)">
                         </pp-authentication-list>
                         <div class="l-not-selected" *ngIf="!isApplicationSelected()">Select Application</div>
@@ -45,15 +46,8 @@
         <button class="fas fa-times-circle fa-lg" (click)="hideSelectedAuthInfo()"></button>
     </div>
     <pp-authentication-create-and-update
-        [showCreate]="showCreate"
-        [userGroupList]="filteredUserGroupList"
         [i18nLabel]="i18nLabel"
-        [i18nGuide]="i18nGuide"
-        [fixRole]="fixEditRole"
-        [editAuth]="editAuth"
-        (outUpdateAuth)="onUpdateAuth($event)"
-        (outCreateAuth)="onCreateAuth($event)"
-        (outClose)="onCloseCreateAuthPopup()">
+        [i18nGuide]="i18nGuide">
     </pp-authentication-create-and-update>
     <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
     <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>

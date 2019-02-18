@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { WebAppSettingDataService, UserPermissionCheckService } from 'app/shared/services';
+import { UserPermissionCheckService, UserConfigurationDataService } from 'app/shared/services';
 import { UserGroupInteractionService } from 'app/core/components/user-group/user-group-interaction.service';
 import { PinpointUserInteractionService } from 'app/core/components/pinpoint-user/pinpoint-user-interaction.service';
 import { GroupMemberInteractionService } from './group-member-interaction.service';
@@ -24,7 +24,7 @@ export class GroupMemberContainerComponent implements OnInit {
     showLoading = false;
     message = '';
     constructor(
-        private webAppSettingDataService: WebAppSettingDataService,
+        private userConfigurationDataService: UserConfigurationDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private groupMemberDataService: GroupMemberDataService,
         private groupMemberInteractionService: GroupMemberInteractionService,
@@ -32,9 +32,7 @@ export class GroupMemberContainerComponent implements OnInit {
         private pinpointUserInteracionService: PinpointUserInteractionService
     ) {}
     ngOnInit() {
-        this.webAppSettingDataService.getUserId().subscribe((userId: string = '') => {
-            this.userId = userId;
-        });
+        this.userId = this.userConfigurationDataService.getUserId();
         this.canRemoveAllGroupMember = this.userPermissionCheckService.canRemoveAllGroupMember();
         this.canRemoveAllGroupMemberExceptMe = this.userPermissionCheckService.canRemoveAllGroupMemberExceptMe();
         this.userGroupInteractionService.onSelect$.pipe(

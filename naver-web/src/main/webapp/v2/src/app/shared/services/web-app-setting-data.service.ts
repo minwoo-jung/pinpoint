@@ -57,9 +57,6 @@ export class WebAppSettingDataService {
     useActiveThreadChart(): Observable<boolean> {
         return this.newUrlStateNotificationService.getConfiguration('showActiveThread');
     }
-    getUserId(): Observable<string | undefined> {
-        return this.newUrlStateNotificationService.getConfiguration('userId');
-    }
     getUserDepartment(): Observable<string | undefined> {
         return this.newUrlStateNotificationService.getConfiguration('userDepartment');
     }

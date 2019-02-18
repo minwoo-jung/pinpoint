@@ -1,4 +1,4 @@
-<div [hidden]="!showCreate" class="l-wrapper">
+<div [hidden]="!showForm" class="l-wrapper">
         <button class="btn btn-black l-close" (click)="onClose(); formDir.resetForm();"><i class="fas fa-times"></i></button>
         <h1>{{title}}</h1> 
         <form [formGroup]="authForm" #formDir="ngForm" (ngSubmit)="onCreateOrUpdate()">
@@ -7,17 +7,17 @@
                     <div>{{ i18nLabel.USER_GROUP }}</div>
                     <select formControlName="userGroupId">
                         <option value="">{{i18nGuide.USER_GROUP_REQUIRED}}</option>
-                        <option value="guest" [hidden]="fixRole !== 'guest'">Guest</option>
+                        <option value="guest" [hidden]="fixPosition !== 'guest'">Guest</option>
                         <option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup}}</option>
                     </select>
                     <span class="fas fa-angle-down"></span>
                 </div>
                 <div>
-                    <div>{{ i18nLabel.ROLE }}</div>
-                    <select formControlName="role">
+                    <div>{{ i18nLabel.POSITION }}</div>
+                    <select formControlName="position">
                         <option value=""> {{i18nGuide.ROLE_REQUIRED}}</option>
-                        <option value="guest" [hidden]="fixRole !== 'guest'">Guest</option>
-                        <option *ngFor="let role of roleList" [value]="role">{{role.toUpperCase()}}</option>
+                        <option value="guest" [hidden]="fixPosition !== 'guest'">Guest</option>
+                        <option *ngFor="let position of positionList" [value]="position">{{position.toUpperCase()}}</option>
                     </select>
                     <span class="fas fa-angle-down"></span>
                 </div>

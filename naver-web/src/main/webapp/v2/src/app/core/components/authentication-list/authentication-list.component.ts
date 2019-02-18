@@ -12,7 +12,8 @@ interface IParam {
     styleUrls: ['./authentication-list.component.css']
 })
 export class AuthenticationListComponent implements OnInit {
-    @Input() authenticationList: any;
+    @Input() authorityList: any;
+    @Input() hasUpdateAndRemoveAuthority: boolean;
     @Output() outRemove: EventEmitter<IParam> = new EventEmitter();
     @Output() outEdit: EventEmitter<IParam> = new EventEmitter();
     @Output() outInfo: EventEmitter<IParam> = new EventEmitter();

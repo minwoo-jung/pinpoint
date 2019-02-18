@@ -1,17 +1,27 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthenticationInteractionService, CMD_TYPE } from './authentication-interaction.service';
+import { POSITION } from './authentication-data.service';
 
-export class Authentication {
-    public applicationId: string;
-    constructor(
-        public role: string,
-        public userGroupId: string,
-        public serverMap: boolean,
-        public apiMeta: boolean,
-        public paramMeta: boolean,
-        public sqlMeta: boolean
-    ) {
-    }
+export interface IAuthorityForm {
+    applicationId: string;
+    userGroupList: string[];
+    fixPosition: string;
+    data?: IApplicationAuthority;
+}
+export interface IAuthorityCommandForm {
+    type: string;
+    data?: IAuthorityForm | IApplicationAuthority;
+}
+
+export interface IApplicationAuthority {
+    applicationId: string;
+    position: string;
+    userGroupId: string;
+    serverMap: boolean;
+    apiMeta: boolean;
+    paramMeta: boolean;
+    sqlMeta: boolean;
 }
 
 @Component({
@@ -19,60 +29,57 @@ export class Authentication {
     templateUrl: './authentication-create-and-update.component.html',
     styleUrls: ['./authentication-create-and-update.component.css']
 })
-export class AuthenticationCreateAndUpdateComponent implements OnInit, OnChanges {
-    @Input() showCreate: boolean;
-    @Input() userGroupList: string[];
-    @Input() fixRole: string;
+export class AuthenticationCreateAndUpdateComponent implements OnInit {
     @Input() i18nLabel: any;
     @Input() i18nGuide: any;
-    @Input() editAuth: Authentication = null;
-    @Output() outUpdateAuth: EventEmitter<Authentication> = new EventEmitter();
-    @Output() outCreateAuth: EventEmitter<Authentication> = new EventEmitter();
-    @Output() outClose: EventEmitter<null> = new EventEmitter();
-    roleList = ['manager', 'user'];
-    newAuthModel = new Authentication('', '', false, false, false, false);
+    title = 'Authority';
+    showForm = false;
+    positionList = [POSITION.MANAGER, POSITION.USER];
+    userGroupList: string[];
     authForm: FormGroup;
-    title = 'Authentication';
+    actionParam: IAuthorityCommandForm;
 
-    constructor() {}
+    constructor(private authenticationInteractionService: AuthenticationInteractionService) {}
     ngOnInit() {
         this.authForm = new FormGroup({
-            'role': new FormControl(this.newAuthModel.role, [
-                Validators.required
-            ]),
-            'userGroupId': new FormControl(this.newAuthModel.userGroupId, [
-                Validators.required
-            ]),
-            'serverMap': new FormControl(this.newAuthModel.serverMap, []),
-            'apiMeta': new FormControl(this.newAuthModel.apiMeta, []),
-            'paramMeta': new FormControl(this.newAuthModel.paramMeta, []),
-            'sqlMeta': new FormControl(this.newAuthModel.sqlMeta, [])
+            'position': new FormControl('', [Validators.required]),
+            'userGroupId': new FormControl('', [Validators.required]),
+            'serverMap': new FormControl(false, []),
+            'apiMeta': new FormControl(false, []),
+            'paramMeta': new FormControl(false, []),
+            'sqlMeta': new FormControl(false, [])
+        });
+        this.authenticationInteractionService.onShowInput$.subscribe((param: IAuthorityCommandForm) => {
+            this.actionParam = param;
+            switch (param.type) {
+                case CMD_TYPE.CREATE:
+                    this.createForm(param.data as IAuthorityForm);
+                    break;
+                case CMD_TYPE.UPDATE:
+                    this.updateForm(param.data as IAuthorityForm);
+                    break;
+            }
+            this.showForm = true;
         });
     }
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes['showCreate'] && changes['showCreate'].currentValue === true) {
-            this.setValue(this.fixRole, '', false, false, false, false);
-            if (this.fixRole !== '') {
-                this.authForm.get('role').disable();
-            }
-        }
-        if (changes['editAuth'] && changes['editAuth'].currentValue) {
-            this.setValue(
-                this.editAuth.role,
-                this.editAuth.userGroupId,
-                this.editAuth.serverMap,
-                this.editAuth.apiMeta,
-                this.editAuth.paramMeta,
-                this.editAuth.sqlMeta
-            );
-            if (this.fixRole === 'manager' || this.fixRole === 'guest') {
-                this.authForm.get('userGroupId').disable();
-                this.authForm.get('role').disable();
-            }
+    private createForm(param: IAuthorityForm): void {
+        this.userGroupList = param.userGroupList;
+        this.setValue(param.fixPosition, '', false, false, false, false);
+        if (param.fixPosition !== '') {
+            this.authForm.get('position').disable();
         }
     }
-    private setValue(role: string, userGroupId: string, serverMap: boolean, apiMeta: boolean, paramMeta: boolean, sqlMeta: boolean): void {
-        this.authForm.get('role').setValue(role);
+    private updateForm(param: IAuthorityForm): void {
+        const { position, userGroupId, serverMap, apiMeta, paramMeta, sqlMeta } = param.data;
+        this.userGroupList = param.userGroupList;
+        this.setValue(position, userGroupId, serverMap, apiMeta, paramMeta, sqlMeta);
+        if (position === POSITION.MANAGER || position === POSITION.GUEST) {
+            this.authForm.get('userGroupId').disable();
+            this.authForm.get('position').disable();
+        }
+    }
+    private setValue(position: string, userGroupId: string, serverMap: boolean, apiMeta: boolean, paramMeta: boolean, sqlMeta: boolean): void {
+        this.authForm.get('position').setValue(position);
         this.authForm.get('userGroupId').setValue(userGroupId);
         this.authForm.get('serverMap').setValue(serverMap);
         this.authForm.get('apiMeta').setValue(apiMeta);
@@ -80,30 +87,26 @@ export class AuthenticationCreateAndUpdateComponent implements OnInit, OnChanges
         this.authForm.get('sqlMeta').setValue(sqlMeta);
     }
     onCreateOrUpdate() {
-        const auth = new Authentication(
-            this.authForm.get('role').value,
-            this.authForm.get('userGroupId').value,
-            this.authForm.get('serverMap').value,
-            this.authForm.get('apiMeta').value,
-            this.authForm.get('paramMeta').value,
-            this.authForm.get('sqlMeta').value
-        );
-        if (this.editAuth) {
-            this.outUpdateAuth.emit(auth);
-        } else {
-            this.outCreateAuth.emit(auth);
-        }
+        this.authenticationInteractionService.completeAction(this.actionParam.type, {
+            applicationId: this.actionParam.data.applicationId,
+            position: this.authForm.get('position').value,
+            userGroupId: this.authForm.get('userGroupId').value,
+            serverMap: this.authForm.get('serverMap').value,
+            apiMeta: this.authForm.get('apiMeta').value,
+            paramMeta: this.authForm.get('paramMeta').value,
+            sqlMeta: this.authForm.get('sqlMeta').value
+        });
         this.onClose();
     }
     onClose() {
-        this.editAuth = null;
-        this.outClose.emit();
-        this.authForm.get('role').enable();
+        this.authForm.get('position').enable();
         this.authForm.get('userGroupId').enable();
         this.authForm.reset();
+        this.showForm = false;
+        this.authenticationInteractionService.closeInput();
     }
     get role() {
-        return this.authForm.get('role');
+        return this.authForm.get('position');
     }
     get userGroupId() {
         return this.authForm.get('userGroupId');

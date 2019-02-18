@@ -31,6 +31,35 @@ export class UserPermissionCheckService {
     canEditRole(): boolean {
         return this.userPermissions.permissionCollection.permsGroupAdministration.editRole;
     }
+    canAddAuth(isManager: boolean): boolean {
+        if (this.userPermissions.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything) {
+            return true;
+        } else {
+            if (this.userPermissions.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager) {
+                return isManager;
+            }
+        }
+        return false;
+    }
+    canUpdateAndRemoveAuth(isManager: boolean): boolean {
+        if (this.userPermissions.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything) {
+            return true;
+        } else {
+            if (this.userPermissions.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager) {
+                return isManager;
+            }
+        }
+        return false;
+    }
+    canEditAllAuth(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything;
+    }
+    canEditMyAuth(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager;
+    }
+    canPreoccupancy(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupAppAuthorization.preoccupancy;
+    }
     canAddUserGroup(): boolean {
         return this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupForEverything ||
             this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember;
