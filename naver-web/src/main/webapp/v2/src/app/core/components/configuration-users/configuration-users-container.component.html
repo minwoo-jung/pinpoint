@@ -1,9 +1,26 @@
-<div class="l-content-item">
-    <div>
-        <pp-pinpoint-user-container></pp-pinpoint-user-container>
-    </div>
-    <div class="l-content-item">
-    </div>
-    <div class="l-content-item">
-    </div>
-</div>    
+<section class="l-user-list-wrapper">
+    <pp-pinpoint-user-container-for-users
+        (outAddUser)="onAddUser()"
+        (outSelectUser)="onSelectUser($event)"
+        (outRemoveUser)="onRemoveUser($event)"
+        (outClear)="onClear()">
+    </pp-pinpoint-user-container-for-users>
+</section>
+<section class="l-user-info-wrapper">
+    <ng-container [ngSwitch]="activeView">
+        <ng-container *ngSwitchCase="viewType.USER_INFO">
+            <!-- User Info Component -->
+        </ng-container>
+        <ng-container *ngSwitchCase="viewType.CONFIRM_REMOVE">
+            <!-- Confirm Remove Component -->
+        </ng-container>
+        <ng-container *ngSwitchCase="viewType.NOTHING"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="errorMessage">
+        <pp-server-error-message
+            [message]="errorMessage"
+            (outClose)="onCloseErrorMessage()">
+        </pp-server-error-message>
+    </ng-container>
+</section>
+    

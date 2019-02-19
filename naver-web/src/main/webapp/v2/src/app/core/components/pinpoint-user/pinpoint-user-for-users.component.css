@@ -1,0 +1,32 @@
+:host {
+    display: block;
+    width: 100%;
+    color: #333;
+    padding: 6px 17px;
+    font-size: 13px;    
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position: relative;
+    cursor: pointer;
+}
+
+:host:hover {
+    background: #e4f3eb;
+}
+
+.fa-trash-alt {
+    float: right;
+    color: #b3b6bf;
+    font-size: 14px;
+    margin-left: 4px;
+}
+
+.fa-trash-alt:hover {
+    color: #333;
+}
+
+.fa-trash-alt:disabled {
+    color: #e5e8f0;
+    cursor: not-allowed;
+}

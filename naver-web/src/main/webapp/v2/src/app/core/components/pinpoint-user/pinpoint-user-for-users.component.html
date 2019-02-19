@@ -1,0 +1,4 @@
+<span>({{pinpointUser.department}}) {{pinpointUser.name}}</span>
+<ng-container *ngIf="hasUserEditPerm">
+    <button class="far fa-trash-alt" id="removeBtn" [disabled]="isUserMe(pinpointUser.userId)"></button>
+</ng-container>

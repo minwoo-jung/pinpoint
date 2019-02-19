@@ -1,0 +1,39 @@
+<div class="l-pinpoint-user-title">
+    <span>Pinpoint User ({{pinpointUserList.length}})</span>
+    <div>
+        <ng-container *ngIf="hasUserEditPerm">
+            <button class="btn btn-sm btn-blue" (click)="onAddUser()"><i class="fas fa-plus"></i></button>
+        </ng-container>
+        <button class="btn btn-sm btn-blue" (click)="onReload()"><i class="fas fa-sync"></i></button> 
+    </div>
+</div>
+<div class="l-pinpoint-user-search">
+    <input type="text" [placeholder]="searchGuideText$ | async" class="l-search-input" 
+        ppSearchInput 
+        [searchMinLength]="minLengthConst.SEARCH"
+        [useEnter]="searchUseEnter"
+        (outSearch)="onSearch($event)"
+        #searchInput>
+    <button class="l-search-button" (click)="onSearch(searchInput.value)"><i class="fas fa-search"></i></button>
+</div>
+<div class="l-pinpoint-user-list">
+    <cdk-virtual-scroll-viewport itemSize="28" style="height: 100%;" *ngIf="pinpointUserList.length > 0">
+        <pp-pinpoint-user-for-users
+            *cdkVirtualFor="let pinpointUser of pinpointUserList; templateCacheSize: 22"
+            [pinpointUser]="pinpointUser"
+            [hasUserEditPerm]="hasUserEditPerm"
+            [loggedInUserId]="loggedInUserId$ | async"
+            (outSelect)="onSelectUser($event)"
+            (outRemove)="onRemoveUser($event)">
+        </pp-pinpoint-user-for-users>
+    </cdk-virtual-scroll-viewport>
+</div>
+<ng-container *ngIf="errorMessage">
+    <pp-server-error-message
+        [message]="errorMessage"
+        (outClose)="onCloseErrorMessage()">
+    </pp-server-error-message>
+</ng-container>
+<pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
+<pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
+        
