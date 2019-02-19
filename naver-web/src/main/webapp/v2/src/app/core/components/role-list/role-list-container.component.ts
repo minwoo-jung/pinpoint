@@ -14,7 +14,7 @@ import { RoleListDataService } from './role-list-data.service';
 export class RoleListContainerComponent implements OnInit, OnDestroy {
     private unsubscribe: Subject<null> = new Subject();
     roleList: any = [];
-    message: string;
+    errorMessage: string;
     useDisable = true;
     showLoading = true;
 
@@ -30,7 +30,7 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
             this.hideProcessing();
         }, (error: IServerErrorFormat) => {
             this.hideProcessing();
-            this.message = error.exception.message;
+            this.errorMessage = error.exception.message;
         });
     }
     ngOnDestroy() {
@@ -40,11 +40,8 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
     onSelected(selectedRole: string): void {
         this.storeHelperService.dispatch(new Actions.ChangeRoleSelection(selectedRole));
     }
-    hasMessage(): boolean {
-        return false;
-    }
-    onCloseMessage(): void {
-
+    onCloseErrorMessage(): void {
+        this.errorMessage = '';
     }
     private showProcessing(): void {
         this.useDisable = true;

@@ -405,3 +405,10 @@ interface IApplicationAuthInfo {
         sqlMetaData: boolean;
     }
 }
+
+interface IFormFieldErrorType {
+    required?: string;
+    minlength?: string;
+    min?: string;
+    max?: string;
+}

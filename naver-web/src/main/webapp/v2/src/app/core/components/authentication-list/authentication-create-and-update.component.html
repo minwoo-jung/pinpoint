@@ -11,6 +11,10 @@
                         <option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup}}</option>
                     </select>
                     <span class="fas fa-angle-down"></span>
+                    <pp-form-field-error-message
+                        [control]="authForm.get('userGroupId')"
+                        [errorMessage]="i18nGuide['userGroupId']">
+                    </pp-form-field-error-message>
                 </div>
                 <div>
                     <div>{{ i18nLabel.POSITION }}</div>
@@ -20,6 +24,10 @@
                         <option *ngFor="let position of positionList" [value]="position">{{position.toUpperCase()}}</option>
                     </select>
                     <span class="fas fa-angle-down"></span>
+                    <pp-form-field-error-message
+                        [control]="authForm.get('position')"
+                        [errorMessage]="i18nGuide['position']">
+                    </pp-form-field-error-message>
                 </div>
                 <div class="l-checkbox">
                     <input type="checkbox" id="serverMap" formControlName="serverMap">
@@ -41,3 +49,4 @@
             <button type="submit" class="btn btn-blue l-create" [class.btn-gray]="authForm.invalid" [disabled]="authForm.invalid">OK</button>
         </form>
     </div>
+    

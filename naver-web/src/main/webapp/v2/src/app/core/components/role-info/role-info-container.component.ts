@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+
 import { Actions } from 'app/shared/store';
 import { StoreHelperService } from 'app/shared/services';
 import { STORE_KEY } from 'app/shared/store';
@@ -17,7 +18,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     private unsubscribe: Subject<null> = new Subject();
     roleList: any = [];
     roleInfo: IPermissions;
-    message: string;
+    errorMessage: string;
     useDisable = false;
     showLoading = false;
 
@@ -155,11 +156,8 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             });
         });
     }
-    hasMessage(): boolean {
-        return false;
-    }
-    onCloseMessage(): void {
-
+    onCloseErrorMessage(): void {
+        this.errorMessage = '';
     }
     private showProcessing(): void {
         this.useDisable = true;

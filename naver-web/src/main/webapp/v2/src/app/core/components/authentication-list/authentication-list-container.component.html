@@ -34,10 +34,6 @@
             </tr>
         </tbody>
     </table>
-    <div class="l-message" [hidden]="!hasMessage()">
-        <button class="btn btn-black" (click)="onCloseMessage()"><i class="fas fa-times"></i></button>
-        <span>{{errorMessage}}</span>
-    </div>
     <div class="l-authentication-info" *ngIf="showSelectedAuthInfo">
         <span><i class="fas fa-check-square" [hidden]="!selectedAuth.configuration.serverMapData"></i><i class="far fa-square" [hidden]="selectedAuth.configuration.serverMapData"></i> {{ i18nLabel.SERVER_MAP }}</span>
         <span><i class="fas fa-check-square" [hidden]="!selectedAuth.configuration.apiMetaData"></i><i class="far fa-square" [hidden]="selectedAuth.configuration.apiMetaData"></i> {{ i18nLabel.API_META }}</span>
@@ -49,6 +45,12 @@
         [i18nLabel]="i18nLabel"
         [i18nGuide]="i18nGuide">
     </pp-authentication-create-and-update>
+    <ng-container *ngIf="errorMessage">
+        <pp-server-error-message
+            [message]="errorMessage"
+            (outClose)="onCloseErrorMessage()">
+        </pp-server-error-message>
+    </ng-container>
     <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
     <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
 </div>

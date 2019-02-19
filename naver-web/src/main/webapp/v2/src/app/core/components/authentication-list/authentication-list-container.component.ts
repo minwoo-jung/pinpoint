@@ -2,14 +2,16 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+
 import { TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService } from 'app/shared/services';
 import { Application } from 'app/core/models/application';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
 import { IParam } from './authentication-list.component';
-import { IAuthorityCommandForm, IAuthorityData, IGuide, ILabel } from './authentication-create-and-update.component';
+import { IAuthorityCommandForm, IAuthorityData, ILabel } from './authentication-create-and-update.component';
 import { AuthenticationInteractionService, CMD_TYPE } from './authentication-interaction.service';
 import { AuthenticationDataService, POSITION, IAuthentication, IApplicationAuthData, IAuthenticationCreated, IAuthenticationResponse } from 'app/core/components/authentication-list/authentication-data.service';
+import { isThatType } from 'app/core/utils/util';
 
 @Component({
     selector: 'pp-authentication-list-container',
@@ -23,7 +25,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     hasUpdateAndRemoveAuthority: boolean;
     showSelectedAuthInfo = false;
     selectedAuth: IApplicationAuthData;
-    errorMessage = '';
+    errorMessage: string;
     useDisable = false;
     showLoading = false;
     myPosition: string;
@@ -31,9 +33,10 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     userGroupList: string[] = [];
     filteredUserGroupList: string[];
 
-    DO_NOT_HAVE_PERMISSION: string;
+    noPermMessage: string;
     i18nLabel: ILabel;
-    i18nGuide: IGuide;
+    i18nGuide: { [key: string]: IFormFieldErrorType };
+
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
         private translateService: TranslateService,
@@ -65,9 +68,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 return userGroup.id;
             });
             this.changeDetectorRef.detectChanges();
-        }, (error: IServerErrorFormat) => {
-
-        });
+        }, (_: IServerErrorFormat) => {});
     }
     private connectApplicationList(): void {
         this.applicationListInteractionForConfigurationService.onSelectApplication$.pipe(
@@ -107,20 +108,21 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             this.translateService.get('CONFIGURATION.AUTH.API_META'),
             this.translateService.get('CONFIGURATION.AUTH.PARAM_META'),
             this.translateService.get('CONFIGURATION.AUTH.SQL_META'),
-        ).subscribe((i18n: string[]) => {
-            this.DO_NOT_HAVE_PERMISSION = i18n[1];
+        ).subscribe(([requiredMessage, noPermMessage, positionLabel, userGroupLabel, serverMapLabel, apiMetaLabel, paramMetaLabel, sqlMetaLabel]: string[]) => {
             this.i18nGuide = {
-                POSITION_REQUIRED: this.translateReplaceService.replace(i18n[0], i18n[2]),
-                USER_GROUP_REQUIRED: this.translateReplaceService.replace(i18n[0], i18n[3])
-            };
+                position: { required: this.translateReplaceService.replace(requiredMessage, positionLabel) },
+                userGroupId: { required: this.translateReplaceService.replace(requiredMessage, userGroupLabel) }
+            }
             this.i18nLabel = {
-                POSITION: i18n[2],
-                USER_GROUP: i18n[3],
-                SERVER_MAP: i18n[4],
-                API_META: i18n[5],
-                PARAM_META: i18n[6],
-                SQL_META: i18n[7]
+                POSITION: positionLabel,
+                USER_GROUP: userGroupLabel,
+                SERVER_MAP: serverMapLabel,
+                API_META: apiMetaLabel,
+                PARAM_META: paramMetaLabel,
+                SQL_META: sqlMetaLabel
             };
+            // TODO: 현재 안쓰이는중
+            this.noPermMessage = noPermMessage;
         });
     }
     private initStatus(): void {
@@ -129,13 +131,13 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     }
     private getAuthorityData(): void {
         this.showProcessing();
-        this.authenticationDataService.retrieve(this.currentApplication.getApplicationName()).subscribe((authenticationData: IAuthentication | IServerErrorShortFormat) => {
-            if ((authenticationData as IServerErrorShortFormat).errorCode) {
-                this.errorMessage = (authenticationData as IServerErrorShortFormat).errorMessage;
+        this.authenticationDataService.retrieve(this.currentApplication.getApplicationName()).subscribe((data: IAuthentication | IServerErrorShortFormat) => {
+            if (isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')) {
+                this.errorMessage = data.errorMessage;
                 this.hideProcessing();
             } else {
-                this.myPosition = (authenticationData as IAuthentication).myRole;
-                this.authorityList = (authenticationData as IAuthentication).userGroupAuthList;
+                this.myPosition = data.myRole;
+                this.authorityList = data.userGroupAuthList;
                 this.hasUpdateAndRemoveAuthority = this.userPermissionCheckService.canUpdateAndRemoveAuth(this.isManager());
                 this.hideProcessing();
                 this.changeDetectorRef.detectChanges();
@@ -203,8 +205,8 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     onCreateAuth(authInfo: IAuthorityData): void {
         this.showProcessing();
         this.authenticationDataService.create(this.getRequestParam(authInfo)).subscribe((response: IAuthenticationCreated | IServerErrorShortFormat) => {
-            if ((response as IServerErrorShortFormat).errorCode) {
-                this.errorMessage = (response as IServerErrorShortFormat).errorMessage;
+            if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
+                this.errorMessage = response.errorMessage;
                 this.hideProcessing();
             } else {
                 this.getAuthorityData();
@@ -217,8 +219,8 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     onUpdateAuth(authInfo: IAuthorityData): void {
         this.showProcessing();
         this.authenticationDataService.update(this.getRequestParam(authInfo)).subscribe((response: IAuthenticationCreated | IServerErrorShortFormat) => {
-            if ((response as IServerErrorShortFormat).errorCode) {
-                this.errorMessage = (response as IServerErrorShortFormat).errorMessage;
+            if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
+                this.errorMessage = response.errorMessage;
                 this.hideProcessing();
             } else {
                 this.getAuthorityData();
@@ -229,14 +231,14 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         });
     }
     onCloseAuth(): void {}
-    onCloseMessage(): void {
+    onCloseErrorMessage(): void {
         this.errorMessage = '';
     }
     onRemoveAuth(auth: IParam): void {
         this.showProcessing();
         this.authenticationDataService.remove(auth.userGroupId, auth.applicationId).subscribe((response: IAuthenticationResponse | IServerErrorShortFormat) => {
-            if ((response as IServerErrorShortFormat).errorCode) {
-                this.errorMessage = (response as IServerErrorShortFormat).errorMessage;
+            if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
+                this.errorMessage = response.errorMessage;
                 this.hideProcessing();
             } else {
                 this.getAuthorityData();
@@ -267,9 +269,6 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     onShowAuthInfo(auth: IParam): void {
         this.selectedAuth = this.getAuth(auth.userGroupId, auth.role);
         this.showSelectedAuthInfo = true;
-    }
-    hasMessage(): boolean {
-        return this.errorMessage !== '';
     }
     isApplicationSelected(): boolean {
         return this.currentApplication !== null;

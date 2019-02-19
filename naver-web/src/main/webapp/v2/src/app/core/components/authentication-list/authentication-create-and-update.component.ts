@@ -9,6 +9,7 @@ export interface IAuthorityForm {
     fixPosition: string;
     data?: IAuthorityData;
 }
+
 export interface IAuthorityCommandForm {
     type: string;
     data?: IAuthorityForm | IAuthorityData;
@@ -23,10 +24,7 @@ export interface IAuthorityData {
     paramMeta: boolean;
     sqlMeta: boolean;
 }
-export interface IGuide {
-    POSITION_REQUIRED: string;
-    USER_GROUP_REQUIRED: string;
-}
+
 export interface ILabel {
     POSITION: string;
     USER_GROUP: string;
@@ -43,7 +41,7 @@ export interface ILabel {
 })
 export class AuthenticationCreateAndUpdateComponent implements OnInit {
     @Input() i18nLabel: ILabel;
-    @Input() i18nGuide: IGuide;
+    @Input() i18nGuide: { [key: string]: IFormFieldErrorType };
     title = 'Authority';
     showForm = false;
     fixPosition: string;
@@ -52,7 +50,9 @@ export class AuthenticationCreateAndUpdateComponent implements OnInit {
     authForm: FormGroup;
     actionParam: IAuthorityCommandForm;
 
-    constructor(private authenticationInteractionService: AuthenticationInteractionService) {}
+    constructor(
+        private authenticationInteractionService: AuthenticationInteractionService
+    ) {}
     ngOnInit() {
         this.authForm = new FormGroup({
             'position': new FormControl('', [Validators.required]),
