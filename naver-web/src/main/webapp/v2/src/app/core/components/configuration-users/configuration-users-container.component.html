@@ -9,10 +9,10 @@
 <section class="l-user-info-wrapper">
     <ng-container [ngSwitch]="activeView">
         <ng-container *ngSwitchCase="viewType.USER_INFO">
-            <!-- User Info Component -->
+            <ng-container *ngComponentOutlet="userInfoComponent; injector: userInfoInjector"></ng-container>
         </ng-container>
         <ng-container *ngSwitchCase="viewType.CONFIRM_REMOVE">
-            <!-- Confirm Remove Component -->
+            <ng-container *ngComponentOutlet="confirmRemoveUserComponent; injector: userInfoInjector"></ng-container>
         </ng-container>
         <ng-container *ngSwitchCase="viewType.NOTHING"></ng-container>
     </ng-container>

@@ -1,0 +1,28 @@
+:host {
+    display: block;
+    height: 100%;
+    position: relative;
+}
+
+.l-user-profile-section,
+.l-user-password-section,
+.l-user-role-section {
+    margin-bottom: 30px;
+}
+
+.l-submit-button-section {
+    width: 100%;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.l-submit-button {
+    color: #fff;
+    background-color: #4b99e3;
+    border-radius: 3px;
+    outline: none;
+    font-size: 16px;
+    width: 130px;
+    height: 45px;
+}

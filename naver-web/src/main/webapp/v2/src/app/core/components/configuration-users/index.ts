@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from 'app/shared';
 import { PinpointUserModule } from 'app/core/components/pinpoint-user';
 import { ConfigurationUsersContainerComponent } from './configuration-users-container.component';
+import { ConfigurationUsersDataService } from './configuration-users-data.service';
+import { ConfigurationUserInfoModule } from 'app/core/components/configuration-user-info';
+import { ConfirmRemoveUserModule } from 'app/core/components/confirm-remove-user';
 
 @NgModule({
     declarations: [
@@ -11,10 +14,14 @@ import { ConfigurationUsersContainerComponent } from './configuration-users-cont
     imports: [
         SharedModule,
         PinpointUserModule,
+        ConfigurationUserInfoModule,
+        ConfirmRemoveUserModule
     ],
     exports: [
         ConfigurationUsersContainerComponent
     ],
-    providers: []
+    providers: [
+        ConfigurationUsersDataService
+    ]
 })
 export class ConfigurationUsersModule { }

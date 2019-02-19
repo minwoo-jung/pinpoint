@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector, ReflectiveInjector } from '@angular/core';
+
+import { ConfigurationUserInfoContainerComponent } from 'app/core/components/configuration-user-info/configuration-user-info-container.component';
+import { ConfirmRemoveUserContainerComponent } from 'app/core/components/confirm-remove-user/confirm-remove-user-container.component';
+import { ConfigurationUsersDataService } from './configuration-users-data.service';
+import { isThatType } from 'app/core/utils/util';
 
 enum ViewType {
     USER_INFO,
@@ -15,25 +20,39 @@ export class ConfigurationUsersContainerComponent implements OnInit {
     viewType = ViewType;
     activeView: ViewType = ViewType.NOTHING;
 
+    userInfoComponent = ConfigurationUserInfoContainerComponent;
+    confirmRemoveUserComponent = ConfirmRemoveUserContainerComponent;
+    userInfoInjector: Injector;
     errorMessage: string;
 
-    constructor() {}
+    constructor(
+        private injector: Injector,
+        private configurationUsersDataService: ConfigurationUsersDataService
+    ) {}
+
     ngOnInit() {}
     onAddUser(): void {
         this.setErrorMessageEmpty();
         this.showUserInfoView();
+        this.setInjector();
     }
 
     onSelectUser(userId: string): void {
         this.setErrorMessageEmpty();
-        this.showUserInfoView();
-        // TODO: Fetch the selected user info
+        this.configurationUsersDataService.selectUser(userId).subscribe((data: any | IServerErrorShortFormat) => {
+            isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
+                ? this.errorMessage = data.errorMessage
+                : (this.showUserInfoView(), this.setInjector(data));
+        });
     }
 
     onRemoveUser(userId: string): void {
         this.setErrorMessageEmpty();
-        this.showConfirmRemoveUserView();
-        // TODO: Fetch the selected user info
+        this.configurationUsersDataService.selectUser(userId).subscribe((data: any | IServerErrorShortFormat) => {
+            isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
+                ? this.errorMessage = data.errorMessage
+                : (this.showConfirmRemoveUserView(), this.setInjector(data));
+        });
     }
 
     onClear(): void {
@@ -46,6 +65,15 @@ export class ConfigurationUsersContainerComponent implements OnInit {
 
     private setErrorMessageEmpty(): void {
         this.errorMessage = '';
+    }
+
+    private setInjector(info?: any): void {
+        this.userInfoInjector = ReflectiveInjector.resolveAndCreate([
+            {
+                provide: 'userInfo',
+                useValue: info
+            }
+        ], this.injector);
     }
 
     private showConfirmRemoveUserView(): void {
