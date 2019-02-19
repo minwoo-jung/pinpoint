@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { IAuthorityForm, IAuthorityCommandForm, IApplicationAuthority } from './authentication-create-and-update.component';
+import { IAuthorityForm, IAuthorityCommandForm, IAuthorityData } from './authentication-create-and-update.component';
 
 export enum CMD_TYPE {
     CREATE = 'CREATE',
@@ -31,19 +31,19 @@ export class AuthenticationInteractionService {
             data: param
         });
     }
-    completeCreate(param: IApplicationAuthority): void {
+    completeCreate(param: IAuthorityData): void {
         this.outComplete.next({
             type: CMD_TYPE.CREATE,
             data: param
         });
     }
-    completeUpdate(param: IApplicationAuthority): void {
+    completeUpdate(param: IAuthorityData): void {
         this.outComplete.next({
             type: CMD_TYPE.UPDATE,
             data: param
         });
     }
-    completeAction(type: string, param: IApplicationAuthority): void {
+    completeAction(type: string, param: IAuthorityData): void {
         this.outComplete.next({
             type: type,
             data: param

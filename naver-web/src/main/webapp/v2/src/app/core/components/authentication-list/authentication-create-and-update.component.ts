@@ -7,14 +7,14 @@ export interface IAuthorityForm {
     applicationId: string;
     userGroupList: string[];
     fixPosition: string;
-    data?: IApplicationAuthority;
+    data?: IAuthorityData;
 }
 export interface IAuthorityCommandForm {
     type: string;
-    data?: IAuthorityForm | IApplicationAuthority;
+    data?: IAuthorityForm | IAuthorityData;
 }
 
-export interface IApplicationAuthority {
+export interface IAuthorityData {
     applicationId: string;
     position: string;
     userGroupId: string;
@@ -23,6 +23,18 @@ export interface IApplicationAuthority {
     paramMeta: boolean;
     sqlMeta: boolean;
 }
+export interface IGuide {
+    POSITION_REQUIRED: string;
+    USER_GROUP_REQUIRED: string;
+}
+export interface ILabel {
+    POSITION: string;
+    USER_GROUP: string;
+    SERVER_MAP: string;
+    API_META: string;
+    PARAM_META: string;
+    SQL_META: string;
+}
 
 @Component({
     selector: 'pp-authentication-create-and-update',
@@ -30,10 +42,11 @@ export interface IApplicationAuthority {
     styleUrls: ['./authentication-create-and-update.component.css']
 })
 export class AuthenticationCreateAndUpdateComponent implements OnInit {
-    @Input() i18nLabel: any;
-    @Input() i18nGuide: any;
+    @Input() i18nLabel: ILabel;
+    @Input() i18nGuide: IGuide;
     title = 'Authority';
     showForm = false;
+    fixPosition: string;
     positionList = [POSITION.MANAGER, POSITION.USER];
     userGroupList: string[];
     authForm: FormGroup;
@@ -66,6 +79,7 @@ export class AuthenticationCreateAndUpdateComponent implements OnInit {
         this.userGroupList = param.userGroupList;
         this.setValue(param.fixPosition, '', false, false, false, false);
         if (param.fixPosition !== '') {
+            this.fixPosition = param.fixPosition;
             this.authForm.get('position').disable();
         }
     }
@@ -74,6 +88,7 @@ export class AuthenticationCreateAndUpdateComponent implements OnInit {
         this.userGroupList = param.userGroupList;
         this.setValue(position, userGroupId, serverMap, apiMeta, paramMeta, sqlMeta);
         if (position === POSITION.MANAGER || position === POSITION.GUEST) {
+            this.fixPosition = position;
             this.authForm.get('userGroupId').disable();
             this.authForm.get('position').disable();
         }

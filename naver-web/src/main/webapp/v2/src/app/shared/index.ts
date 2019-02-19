@@ -17,7 +17,6 @@ import { SystemConfigurationDataService } from './services/system-configuration-
 import { SystemConfigurationResolverService } from './services/system-configuration-resolver.service';
 import { SplitRatioService } from './services/split-ratio.service';
 import { GutterEventService } from './services/gutter-event.service';
-import { AjaxExceptionCheckerService } from './services/ajax-exception-checker.service';
 import { ApplicationListResolverService } from './services/application-list-resolver.service';
 import { AnalyticsService } from './services/analytics.service';
 import { BrowserSupportCheckService } from './services/browser-support-check.service';
@@ -33,6 +32,7 @@ import { UrlRedirectorComponent } from './components/url-redirector';
 import { LoadingComponent } from './components/loading';
 import { FilmForDisableComponent } from './components/film-for-disable';
 import { SimpleProgressSliderComponent } from './components/simple-progress-slider';
+import { ServerErrorMessageComponent } from './components/server-error-message';
 import { SettingHeightDirective } from './directives/setting-height.directive';
 import { ContextPopupDirective } from './directives/context-popup.directive';
 import { SplitterDirective } from './directives/splitter.directive';
@@ -53,6 +53,7 @@ import { UserPermissionCheckService } from './services/user-permission-check.ser
         LoadingComponent,
         FilmForDisableComponent,
         SimpleProgressSliderComponent,
+        ServerErrorMessageComponent,
         SafeHtmlPipe,
         JSONTextParserPipe,
         SettingHeightDirective,
@@ -95,7 +96,6 @@ import { UserPermissionCheckService } from './services/user-permission-check.ser
         SystemConfigurationResolverService,
         SplitRatioService,
         GutterEventService,
-        AjaxExceptionCheckerService,
         ApplicationListResolverService,
         AnalyticsService,
         BrowserSupportCheckService,

@@ -15,7 +15,7 @@
                 <div>
                     <div>{{ i18nLabel.POSITION }}</div>
                     <select formControlName="position">
-                        <option value=""> {{i18nGuide.ROLE_REQUIRED}}</option>
+                        <option value=""> {{i18nGuide.POSITION_REQUIRED}}</option>
                         <option value="guest" [hidden]="fixPosition !== 'guest'">Guest</option>
                         <option *ngFor="let position of positionList" [value]="position">{{position.toUpperCase()}}</option>
                     </select>

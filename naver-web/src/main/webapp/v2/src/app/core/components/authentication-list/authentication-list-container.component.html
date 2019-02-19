@@ -8,7 +8,7 @@
                 <th>
                     <div class="l-table-title">
                         Authentication
-                        <button class="btn btn-sm" [ngClass]="getAddButtonClass()" (click)="onShowAddAuth()">+ Add</button>
+                        <button class="btn btn-sm" [ngClass]="getAddButtonClass()" (click)="onShowCreateAuth()">+ Add</button>
                     </div>
                     <div class="l-authentication-th">                        
                         <div>User Group</div>
@@ -36,7 +36,7 @@
     </table>
     <div class="l-message" [hidden]="!hasMessage()">
         <button class="btn btn-black" (click)="onCloseMessage()"><i class="fas fa-times"></i></button>
-        <span>{{message}}</span>
+        <span>{{errorMessage}}</span>
     </div>
     <div class="l-authentication-info" *ngIf="showSelectedAuthInfo">
         <span><i class="fas fa-check-square" [hidden]="!selectedAuth.configuration.serverMapData"></i><i class="far fa-square" [hidden]="selectedAuth.configuration.serverMapData"></i> {{ i18nLabel.SERVER_MAP }}</span>

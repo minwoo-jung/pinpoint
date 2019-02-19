@@ -1,11 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-interface IParam {
+export interface IParam {
     userGroupId: string;
     role?: string;
     applicationId?: string;
 }
-
 @Component({
     selector: 'pp-authentication-list',
     templateUrl: './authentication-list.component.html',
