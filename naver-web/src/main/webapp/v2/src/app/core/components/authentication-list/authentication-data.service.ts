@@ -33,7 +33,7 @@ export interface IAuthenticationCreated {
 export interface IAuthenticationResponse {
     result: string;
 }
-export interface IRole {
+export interface IPosition {
     applicationId: string;
     isManager: boolean;
     isGuest: boolean;
@@ -42,7 +42,7 @@ export interface IRole {
 @Injectable()
 export class AuthenticationDataService {
     private authenticationURL = 'application/userGroupAuth.pinpoint';
-    public outRole: EventEmitter<IRole> = new EventEmitter();
+    public outRole: EventEmitter<IPosition> = new EventEmitter();
     constructor(private http: HttpClient) {}
     retrieve(applicationId: string): Observable<IAuthentication> {
         return this.http.get<IAuthentication>(this.authenticationURL, this.makeRequestOptionsArgs(applicationId)).pipe(

@@ -4,7 +4,6 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 import { TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService } from 'app/shared/services';
-import { Application } from 'app/core/models/application';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
 import { IParam } from './authentication-list.component';
@@ -21,7 +20,7 @@ import { isThatType } from 'app/core/utils/util';
 })
 export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     private unsubscribe: Subject<null> = new Subject();
-    private currentApplication: Application = null;
+    private currentApplication: IApplication = null;
     hasUpdateAndRemoveAuthority: boolean;
     showSelectedAuthInfo = false;
     selectedAuth: IApplicationAuthData;
@@ -73,10 +72,10 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     private connectApplicationList(): void {
         this.applicationListInteractionForConfigurationService.onSelectApplication$.pipe(
             takeUntil(this.unsubscribe),
-            filter((selectedApplication: Application) => {
+            filter((selectedApplication: IApplication) => {
                 return selectedApplication !== null;
             })
-        ).subscribe((selectedApplication: Application) => {
+        ).subscribe((selectedApplication: IApplication) => {
             this.currentApplication = selectedApplication;
             this.initStatus();
             this.getAuthorityData();

@@ -8,7 +8,7 @@
                 <th>
                     <div class="l-table-title">
                         Alarm
-                        <button class="btn btn-sm" [ngClass]="getAddButtonClass()" (click)="onShowCreateAlarmPopup()"><i class="fas fa-plus"></i></button>
+                        <button class="btn btn-sm" [ngClass]="getAddButtonClass()" (click)="onShowCreateAlarm()"><i class="fas fa-plus"></i></button>
                     </div>
                     <div class="l-alarm-rules-th">
                         <div>Rule Name</div>
@@ -24,9 +24,10 @@
                 <td style="padding: 0;">
                     <div class="l-alarm-rules-tr-wrap">
                         <pp-alarm-rule-list
+                            [hasUpdateAndRemoveAlarm]="hasUpdateAndRemoveAlarm"
                             [alarmRuleList]="alarmRuleList"
                             (outRemove)="onRemoveAlarm($event)"
-                            (outEdit)="onEditAlarm($event)"
+                            (outEdit)="onShowUpdateAlarm($event)"
                         ></pp-alarm-rule-list>
                         <div class="l-not-selected" *ngIf="!isApplicationSelected()">Select Application</div>
                     </div>
@@ -35,20 +36,13 @@
         </tbody>
     </table>
     <pp-alarm-rule-create-and-update
-        [showCreate]="showCreate"
-        [checkerList]="checkerList"
-        [userGroupList]="userGroupList"
         [i18nLabel]="i18nLabel"
-        [i18nGuide]="i18nGuide"
-        [editAlarm]="editAlarm"
-        (outUpdateAlarm)="onUpdateAlarm($event)"
-        (outCreateAlarm)="onCreateAlarm($event)"
-        (outClose)="onCloseCreateAlarmPopup()">
+        [i18nGuide]="i18nGuide">
     </pp-alarm-rule-create-and-update>
     <ng-container *ngIf="errorMessage">
         <pp-server-error-message
             [message]="errorMessage"
-            (outClose)="onCloseErrorMessage()">
+            (outClose)="onCloseMessage()">
         </pp-server-error-message>
     </ng-container>
     <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    

@@ -60,6 +60,32 @@ export class UserPermissionCheckService {
     canPreoccupancy(): boolean {
         return this.userPermissions.permissionCollection.permsGroupAppAuthorization.preoccupancy;
     }
+    canAddAlarm(isManager: boolean): boolean {
+        if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmForEverything) {
+            return true;
+        } else {
+            if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember) {
+                return isManager;
+            }
+        }
+        return false;
+    }
+    canUpdateAndRemoveAlarm(isManager: boolean): boolean {
+        if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmForEverything) {
+            return true;
+        } else {
+            if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember) {
+                return isManager;
+            }
+        }
+        return false;
+    }
+    canEditAllAlarm(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmForEverything;
+    }
+    canEditMyAlarm(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember;
+    }
     canAddUserGroup(): boolean {
         return this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupForEverything ||
             this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember;

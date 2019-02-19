@@ -120,6 +120,9 @@ export class AuthenticationCreateAndUpdateComponent implements OnInit {
         this.showForm = false;
         this.authenticationInteractionService.closeInput();
     }
+    isFixPositionGuest(): boolean {
+        return this.fixPosition === POSITION.GUEST;
+    }
     get role() {
         return this.authForm.get('position');
     }
