@@ -123,7 +123,7 @@ export class AuthenticationCreateAndUpdateComponent implements OnInit {
     isFixPositionGuest(): boolean {
         return this.fixPosition === POSITION.GUEST;
     }
-    get role() {
+    get position() {
         return this.authForm.get('position');
     }
     get userGroupId() {

@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { TranslateReplaceService, UserConfigurationDataService, UserPermissionCheckService } from 'app/shared/services';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
-import { Alarm, IAlarmCommandForm, IGuide, ILabel } from './alarm-rule-create-and-update.component';
+import { Alarm, IAlarmCommandForm, NOTIFICATION_TYPE } from './alarm-rule-create-and-update.component';
 import { AlarmRuleDataService, IAlarmRule, IAlarmRuleCreated, IAlarmRuleResponse } from './alarm-rule-data.service';
 import { isThatType } from 'app/core/utils/util';
 import { AuthenticationDataService, IPosition } from 'app/core/components/authentication-list/authentication-data.service';
@@ -176,7 +176,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             });
     }
     private getFilteredUserGroupList(userGroupId?: string): string[] {
-        if (this.userPermissionCheckService.canEditAllAuth()) {
+        if (this.userPermissionCheckService.canEditAllAlarm()) {
             return this.userGroupList;
         } else {
             if (this.authInfo.isUser) {
@@ -191,19 +191,19 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
     }
     private getTypeStr(smsSend: boolean, emailSend: boolean): string {
         if (smsSend && emailSend) {
-            return 'all';
+            return NOTIFICATION_TYPE.ALL;
         } else {
             if (smsSend) {
-                return 'sms';
+                return NOTIFICATION_TYPE.SMS;
             }
             if (emailSend) {
-                return 'email';
+                return NOTIFICATION_TYPE.EMAIL;
             }
-            return 'none';
+            return '';
         }
     }
     onShowCreateAlarm(): void {
-        if (this.isApplicationSelected() === false && this.userPermissionCheckService.canAddAlarm(this.authInfo.isManager)) {
+        if (this.isApplicationSelected() === false || this.userPermissionCheckService.canAddAlarm(this.authInfo.isManager) === false) {
             return;
         }
         this.alarmInteractionService.showCreate({
@@ -228,6 +228,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
                 this.errorMessage = response.errorMessage;
                 this.hideProcessing();
+                this.changeDetectorRef.detectChanges();
             } else {
                 this.getAlarmData();
             }
@@ -252,6 +253,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
                 this.errorMessage = response.errorMessage;
                 this.hideProcessing();
+                this.changeDetectorRef.detectChanges();
             } else {
                 this.getAlarmData();
             }

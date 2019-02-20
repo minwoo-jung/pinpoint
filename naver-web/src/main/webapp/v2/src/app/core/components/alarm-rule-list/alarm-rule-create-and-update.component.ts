@@ -1,7 +1,12 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlarmInteractionService, CMD_TYPE } from './alarm-interaction.service';
 
+export enum NOTIFICATION_TYPE {
+    ALL = 'all',
+    EMAIL = 'email',
+    SMS = 'sms'
+}
 export class Alarm {
     public ruleId: string;
     public smsSend: boolean;
@@ -18,8 +23,8 @@ export class Alarm {
         this.setTypeInternalStatus();
     }
     setTypeInternalStatus(): void {
-        this.smsSend = this.type === 'all' || this.type === 'sms' ? true : false;
-        this.emailSend = this.type === 'all' || this.type === 'email' ? true : false;
+        this.smsSend = this.type === NOTIFICATION_TYPE.ALL || this.type === NOTIFICATION_TYPE.SMS ? true : false;
+        this.emailSend = this.type === NOTIFICATION_TYPE.ALL || this.type === NOTIFICATION_TYPE.EMAIL ? true : false;
     }
 }
 
@@ -90,7 +95,7 @@ export class AlarmRuleCreateAndUpdateComponent implements OnInit {
     private createForm(param: IAlarmForm): void {
         this.checkerList = param.checkerList;
         this.userGroupList = param.userGroupList;
-        this.setValue('', '', 1, 'all', '');
+        this.setValue('', '', 1, NOTIFICATION_TYPE.ALL, '');
     }
     private updateForm(param: IAlarmForm): void {
         this.checkerList = param.checkerList;

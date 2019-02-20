@@ -6,7 +6,7 @@
                 <div>
                     <div>{{ i18nLabel.USER_GROUP }}</div>
                     <select formControlName="userGroupId">
-                        <option value="">{{i18nGuide.USER_GROUP_REQUIRED}}</option>
+                        <option value="">{{i18nGuide.userGroupId.required}}</option>
                         <option value="guest" [hidden]="!isFixPositionGuest()">Guest</option>
                         <option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup}}</option>
                     </select>
@@ -19,7 +19,7 @@
                 <div>
                     <div>{{ i18nLabel.POSITION }}</div>
                     <select formControlName="position">
-                        <option value=""> {{i18nGuide.POSITION_REQUIRED}}</option>
+                        <option value=""> {{i18nGuide.position.required}}</option>
                         <option value="guest" [hidden]="!isFixPositionGuest()">Guest</option>
                         <option *ngFor="let position of positionList" [value]="position">{{position.toUpperCase()}}</option>
                     </select>

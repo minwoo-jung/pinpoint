@@ -111,7 +111,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             this.i18nGuide = {
                 position: { required: this.translateReplaceService.replace(requiredMessage, positionLabel) },
                 userGroupId: { required: this.translateReplaceService.replace(requiredMessage, userGroupLabel) }
-            }
+            };
             this.i18nLabel = {
                 POSITION: positionLabel,
                 USER_GROUP: userGroupLabel,
@@ -175,6 +175,10 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                     return true;
                 }
             }
+        } else {
+            if ((this.userPermissionCheckService.canEditAllAuth() || this.userPermissionCheckService.canEditMyAuth()) && this.isManager()) {
+                return true;
+            }
         }
         return false;
     }
@@ -192,7 +196,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         };
     }
     onShowCreateAuth(): void {
-        if ((this.isApplicationSelected() && this.hasAddAuthority()) === false) {
+        if ((this.isApplicationSelected() === false || this.hasAddAuthority()) === false) {
             return;
         }
         this.authenticationInteractionService.showCreate({
@@ -207,6 +211,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
                 this.errorMessage = response.errorMessage;
                 this.hideProcessing();
+                this.changeDetectorRef.detectChanges();
             } else {
                 this.getAuthorityData();
             }
@@ -221,6 +226,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
                 this.errorMessage = response.errorMessage;
                 this.hideProcessing();
+                this.changeDetectorRef.detectChanges();
             } else {
                 this.getAuthorityData();
             }

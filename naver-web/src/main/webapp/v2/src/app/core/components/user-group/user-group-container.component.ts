@@ -43,7 +43,11 @@ export class UserGroupContainerComponent implements OnInit {
     ngOnInit() {
         this.getI18NText();
         this.userId = this.userConfigurationDataService.getUserId();
-        this.getUserGroupList({userId: this.userId});
+        if (this.userPermissionCheckService.canEditAllUserGroup()) {
+            this.getUserGroupList();
+        } else {
+            this.getUserGroupList({userId: this.userId});
+        }
         this.canAddUserGroup = this.userPermissionCheckService.canAddUserGroup();
     }
     private getI18NText(): void {
@@ -63,11 +67,11 @@ export class UserGroupContainerComponent implements OnInit {
             this.i18nLabel.NAME_LABEL = nameLabel;
         });
     }
-    private getUserGroupList(params: any): void  {
+    private getUserGroupList(params?: any): void  {
         this.userGroupDataService.retrieve(params).subscribe((data: IUserGroup[] | IServerErrorShortFormat) => {
             isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
                 ? this.errorMessage = data.errorMessage
-                : this.userGroupList = data;
+                : this.userGroupList = data as IUserGroup[];
             this.hideProcessing();
         }, (error: IServerErrorFormat) => {
             this.hideProcessing();

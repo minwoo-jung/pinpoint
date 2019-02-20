@@ -86,6 +86,9 @@ export class UserPermissionCheckService {
     canEditMyAlarm(): boolean {
         return this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember;
     }
+    canEditAllUserGroup(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupForEverything;
+    }
     canAddUserGroup(): boolean {
         return this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupForEverything ||
             this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember;
