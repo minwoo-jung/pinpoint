@@ -412,3 +412,8 @@ interface IFormFieldErrorType {
     min?: string;
     max?: string;
 }
+
+interface IUserRequestSuccessResponse {
+    result: string;
+    userId: string;
+}

@@ -3,13 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { retry } from 'rxjs/operators';
 
-export interface IUserProfile {
-    userId: string;
-    name: string;
-    department?: string;
-    phoneNumber?: string;
-    email?: string;
-}
+import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 
 @Injectable()
 export class PinpointUserForUsersDataService {

@@ -1,10 +1,11 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Observable, iif, of, Subject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 
 import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService } from 'app/shared/services';
 import { PinpointUserForUsersDataService, IUserProfile } from './pinpoint-user-for-users-data.service';
+import { UserProfileInteractionService } from 'app/core/components/user-profile/user-profile-interaction.service';
 import { isThatType } from 'app/core/utils/util';
 
 enum MinLength {
@@ -40,15 +41,22 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
         private pinpointUserForUsersDataService: PinpointUserForUsersDataService,
-        private userPermissionCheckService: UserPermissionCheckService
+        private userPermissionCheckService: UserPermissionCheckService,
+        private userProfileInteractionService: UserProfileInteractionService,
     ) {}
 
     ngOnInit() {
-        this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
+        // this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
+        this.hasUserEditPerm = true;
         this.searchGuideText$ = this.translateService.get('COMMON.MIN_LENGTH').pipe(
             map((text: string) => this.translateReplaceService.replace(text, MinLength.SEARCH))
         );
         this.loggedInUserId$ = this.webAppSettingDataService.getUserId();
+        this.userProfileInteractionService.onUserProfileUpdate$.pipe(
+            takeUntil(this.unsubscribe)
+        ).subscribe(() => {
+            this.getPinpointUserList(this.searchQuery);
+        });
         this.getPinpointUserList();
     }
 

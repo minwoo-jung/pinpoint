@@ -1,0 +1,79 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+thead > tr {
+    background-color: #f6f8fb;
+    border-bottom: 1px solid #e5e8f0;
+}
+
+thead th {
+    color: inherit;
+    font-size: 13px;
+    padding: 15px 0;
+}
+
+tbody > tr:nth-child(even) {
+    background-color: #f6f8fb;
+}
+
+tbody > tr:last-child {
+    border-bottom: 0;
+}
+
+tbody th {
+    border-right: 1px solid #e5e8f0;
+    width: 165px;
+    font-weight: 600;
+    color: inherit;
+    font-size: 12px;
+    padding: 9px 0 9px 35px;
+    position: relative;
+}
+
+tbody td {
+    padding: 6px 12px;
+}
+
+tbody input {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px 1px #ccc;
+    padding: 5px 14px;
+    font-size: 13px;
+    width: 100%;
+    display: inline-block;
+    outline: none;
+    color: #333;
+}
+
+.l-required-icon {
+    color: #d00;
+    margin-left: 4px;
+}
+
+tbody input:focus {
+    border-color: #4D90FE;
+    box-shadow: 0 1px 1px 1px #4D90FE;
+    /* box-shadow: 0 0 2px #4D90FE; */
+}
+
+.ng-valid[required] {
+    border-left: 5px solid #42a948!important;
+}
+
+.ng-valid[required]:focus {
+    border-color: #42a948;
+    box-shadow: 0 0 1px 0px #42a948;
+}
+
+.ng-invalid:not(table).ng-touched {
+    border-left: 5px solid #a94442!important;
+    border-color: #d00;
+}
+
+.ng-invalid:not(table).ng-touched:focus {
+    border-color: #d00;
+    box-shadow: 0 0 1px 0px #d00;
+}
