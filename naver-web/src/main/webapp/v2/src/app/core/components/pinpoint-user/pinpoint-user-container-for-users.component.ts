@@ -4,8 +4,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 
 import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService } from 'app/shared/services';
-import { PinpointUserForUsersDataService, IUserProfile } from './pinpoint-user-for-users-data.service';
+import { PinpointUserForUsersDataService } from './pinpoint-user-for-users-data.service';
 import { UserProfileInteractionService } from 'app/core/components/user-profile/user-profile-interaction.service';
+import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 import { isThatType } from 'app/core/utils/util';
 
 enum MinLength {

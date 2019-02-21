@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitte
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { filterObj } from 'app/core/utils/util';
-import { IUserProfile } from 'app/core/components/pinpoint-user/pinpoint-user-for-users-data.service';
+import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 import { IChangedProfileState } from './user-profile-interaction.service';
 
 export const enum MinLength {
