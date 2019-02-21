@@ -6,6 +6,7 @@ import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService } from 'app/shared/services';
 import { PinpointUserForUsersDataService } from './pinpoint-user-for-users-data.service';
 import { UserProfileInteractionService } from 'app/core/components/user-profile/user-profile-interaction.service';
+import { ConfirmRemoveUserInteractionService } from 'app/core/components/confirm-remove-user/confirm-remove-user-interaction.service';
 import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 import { isThatType } from 'app/core/utils/util';
 
@@ -44,6 +45,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         private pinpointUserForUsersDataService: PinpointUserForUsersDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private userProfileInteractionService: UserProfileInteractionService,
+        private confirmRemoveUserInteractionService: ConfirmRemoveUserInteractionService,
     ) {}
 
     ngOnInit() {
@@ -53,10 +55,19 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
             map((text: string) => this.translateReplaceService.replace(text, MinLength.SEARCH))
         );
         this.loggedInUserId$ = this.webAppSettingDataService.getUserId();
+
         this.userProfileInteractionService.onUserProfileUpdate$.pipe(
             takeUntil(this.unsubscribe)
         ).subscribe(() => {
             this.getPinpointUserList(this.searchQuery);
+        });
+
+        this.confirmRemoveUserInteractionService.onUserRemove$.pipe(
+            takeUntil(this.unsubscribe)
+        ).subscribe((id: string) => {
+            this.pinpointUserList = this.pinpointUserList.filter(({userId}: {userId: string}) => {
+                return id !== userId;
+            });
         });
         this.getPinpointUserList();
     }

@@ -1,1 +1,19 @@
 <h3 class="l-confirm-remove-user-title">사용자 정보 삭제</h3>
+<pp-confirm-remove-user
+    [userProfile]="userInfo.profile">
+</pp-confirm-remove-user>
+<section class="l-button-section">
+    <ng-container *ngIf="isUserRemoved; then checkedIcon; else removeButton"></ng-container>
+    <ng-template #removeButton>
+        <button class="l-remove-button" (click)="onUserRemove(userInfo.profile.userId)">삭제</button>
+    </ng-template>
+    <ng-template #checkedIcon>
+        <i class="fas fa-check-circle"></i>
+    </ng-template>
+</section>
+<ng-container *ngIf="errorMessage">
+    <pp-server-error-message
+        [message]="errorMessage"
+        (outClose)="onCloseErrorMessage()">
+    </pp-server-error-message>
+</ng-container>

@@ -1,0 +1,18 @@
+:host {
+    display: block;
+}
+
+.l-confirm-text {
+    background-color: #fff;
+    border: 1px solid #e5e8f0;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 40px;
+    margin-bottom: 30px;
+}
+
+.l-user-name {
+    color: #f7a626;
+    font-size: 18px;
+}
