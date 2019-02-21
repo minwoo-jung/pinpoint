@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 
 import { ConfirmRemoveUserInteractionService } from './confirm-remove-user-interaction.service';
 import { ConfirmRemoveUserDataService } from './confirm-remove-user-data.service';
+import { IUserInfo } from 'app/core/components/configuration-users/configuration-users-data.service';
 import { isThatType } from 'app/core/utils/util';
 
 @Component({
@@ -14,14 +15,14 @@ export class ConfirmRemoveUserContainerComponent implements OnInit {
     isUserRemoved: boolean;
 
     constructor(
-        @Inject('userInfo') public userInfo: any,
+        @Inject('userInfo') public userInfo: IUserInfo,
         private confirmRemoveUserInteractionService: ConfirmRemoveUserInteractionService,
         private confirmRemoveUserDataService: ConfirmRemoveUserDataService,
     ) {}
 
     ngOnInit() {}
     onUserRemove(userId: string): void {
-        this.confirmRemoveUserDataService.removeUser(userId)
+        this.confirmRemoveUserDataService.remove(userId)
             .subscribe((result: IUserRequestSuccessResponse | IServerErrorShortFormat) => {
                 isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
                     ? this.errorMessage = result.errorMessage

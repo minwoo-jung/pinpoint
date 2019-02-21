@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { Observable, iif, of, Subject } from 'rxjs';
+import { Observable, iif, of, merge, Subject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 
@@ -7,6 +7,7 @@ import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckS
 import { PinpointUserForUsersDataService } from './pinpoint-user-for-users-data.service';
 import { UserProfileInteractionService } from 'app/core/components/user-profile/user-profile-interaction.service';
 import { ConfirmRemoveUserInteractionService } from 'app/core/components/confirm-remove-user/confirm-remove-user-interaction.service';
+import { ConfigurationUserInfoInteractionService } from 'app/core/components/configuration-user-info/configuration-user-info-interaction.service';
 import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 import { isThatType } from 'app/core/utils/util';
 
@@ -46,6 +47,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         private userPermissionCheckService: UserPermissionCheckService,
         private userProfileInteractionService: UserProfileInteractionService,
         private confirmRemoveUserInteractionService: ConfirmRemoveUserInteractionService,
+        private configurationUserInfoInteractionService: ConfigurationUserInfoInteractionService,
     ) {}
 
     ngOnInit() {
@@ -56,7 +58,10 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         );
         this.loggedInUserId$ = this.webAppSettingDataService.getUserId();
 
-        this.userProfileInteractionService.onUserProfileUpdate$.pipe(
+        merge(
+            this.configurationUserInfoInteractionService.onUserCreate$,
+            this.userProfileInteractionService.onUserProfileUpdate$
+        ).pipe(
             takeUntil(this.unsubscribe)
         ).subscribe(() => {
             this.getPinpointUserList(this.searchQuery);

@@ -1,23 +1,31 @@
 
 import { NgModule } from '@angular/core';
+
 import { SharedModule } from 'app/shared';
 import { RoleListComponent } from './role-list.component';
 import { RoleListContainerComponent } from './role-list-container.component';
 import { RoleListDataService } from './role-list-data.service';
+import { RoleListForUsersComponent } from './role-list-for-users.component';
+import { RoleListContainerForUsersComponent } from './role-list-container-for-users.component';
+import { RoleListInteractionService } from './role-list-interaction.service';
 
 @NgModule({
     declarations: [
         RoleListComponent,
-        RoleListContainerComponent
+        RoleListContainerComponent,
+        RoleListForUsersComponent,
+        RoleListContainerForUsersComponent
     ],
     imports: [
         SharedModule
     ],
     exports: [
-        RoleListContainerComponent
+        RoleListContainerComponent,
+        RoleListContainerForUsersComponent
     ],
     providers: [
-        RoleListDataService
+        RoleListDataService,
+        RoleListInteractionService
     ]
 })
 export class RoleListModule { }

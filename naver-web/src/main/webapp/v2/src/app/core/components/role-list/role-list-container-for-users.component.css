@@ -1,17 +1,37 @@
 :host {
     display: block;
-    height: 100%;
+    width: 100%;
     position: relative;
 }
 
-.l-user-profile-section,
-.l-user-password-section,
-.l-user-role-section {
-    margin-bottom: 30px;
+.l-role-title {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    padding: 10px 0;
+    font-weight: 600;
+    background-color: #f6f8fb;
+    border-top: 1px solid #e5e8f0;
+    border-left: 1px solid #e5e8f0;
+    border-right: 1px solid #e5e8f0;
+}
+
+.l-role-content-wrapper {
+    display: flex;
+    border: 1px solid #e5e8f0;
+}
+
+.fa-arrow-right {
+    color: #4a8fd2;
+}
+
+.disabled {
+    color: #ccc;
 }
 
 .l-submit-button-section {
     width: 100%;
+    margin-top: 30px;
     display: flex;
     justify-content: center;
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, Injector, ReflectiveInjector } from '@angular/core';
 
 import { ConfigurationUserInfoContainerComponent } from 'app/core/components/configuration-user-info/configuration-user-info-container.component';
 import { ConfirmRemoveUserContainerComponent } from 'app/core/components/confirm-remove-user/confirm-remove-user-container.component';
-import { ConfigurationUsersDataService } from './configuration-users-data.service';
+import { ConfigurationUsersDataService, IUserInfo } from './configuration-users-data.service';
 import { isThatType } from 'app/core/utils/util';
 
 enum ViewType {
@@ -67,7 +67,7 @@ export class ConfigurationUsersContainerComponent implements OnInit {
         this.errorMessage = '';
     }
 
-    private setInjector(info?: any): void {
+    private setInjector(info?: IUserInfo): void {
         this.userInfoInjector = ReflectiveInjector.resolveAndCreate([
             {
                 provide: 'userInfo',

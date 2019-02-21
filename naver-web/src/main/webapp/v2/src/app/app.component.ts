@@ -36,6 +36,7 @@ export class AppComponent implements OnInit {
                 };
                 translate.INSPECTOR.APPLICAITION_NAME_ISSUE.ISSUE_SOLUTIONS = ['문제 발생시 핀포인트 개발팀에 문의 해 주세요. 해결 해 드립니다.'];
 
+                translate.CONFIGURATION.COMMON.PASSWORD = '비밀번호';
                 translate.CONFIGURATION.PERMISSION = {};
                 translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin 메뉴';
                 translate.CONFIGURATION.PERMISSION.VIEW_ADMIN_MENU = 'Admin menu 보기';
@@ -65,6 +66,7 @@ export class AppComponent implements OnInit {
                 };
                 translate.INSPECTOR.APPLICAITION_NAME_ISSUE.ISSUE_SOLUTIONS = ['Please contact the pinpoint development team in case of problems. We will solve it.'];
 
+                translate.CONFIGURATION.COMMON.PASSWORD = 'Password';
                 translate.CONFIGURATION.PERMISSION = {};
                 translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin Menu';
                 translate.CONFIGURATION.PERMISSION.VIEW_ADMIN_MENU = 'View admin menu';

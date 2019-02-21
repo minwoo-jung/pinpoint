@@ -14,11 +14,21 @@ import { isThatType } from 'app/core/utils/util';
     styleUrls: ['./user-password-container.component.css']
 })
 export class UserPasswordContainerComponent implements OnInit {
-    @Input() userPassword: IUserPassword;
+    @Input()
+    set userPassword(userPassword: IUserPassword) {
+        this._userPassword = userPassword;
+        this.isValid = false;
+    }
+
+    get userPassword(): IUserPassword {
+        return this._userPassword;
+    }
+
     @Input() userId: string;
 
     private tempUserPassword: IUserPassword;
 
+    _userPassword: IUserPassword;
     isValid: boolean;
     isUpdated = false;
     fieldErrorMessage$: Observable<{ [key: string]: IFormFieldErrorType }>;

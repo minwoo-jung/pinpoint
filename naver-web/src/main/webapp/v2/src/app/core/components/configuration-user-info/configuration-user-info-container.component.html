@@ -13,7 +13,26 @@
     </section>
 </ng-container>
 <section class="l-user-role-section">
+    <pp-role-list-container-for-users
+        [userRole]="userInfo?.role"
+        [hasUserEditPerm]="hasUserEditPerm"
+        [userId]="userInfo?.profile.userId">
+    </pp-role-list-container-for-users>
 </section>
-<section class="l-submit-button-section">
-    <button class="l-submit-button">저장</button>
-</section>
+<ng-container *ngIf="hasUserEditPerm && !userInfo">
+    <section class="l-submit-button-section">
+        <ng-container *ngIf="isUserInserted; then checkedIcon; else insertButton"></ng-container>
+        <ng-template #insertButton>
+            <button class="l-submit-button" (click)="onClickInsertUser()" [disabled]="!(isUserProfileValid && isUserPasswordValid)">저장</button>
+        </ng-template>      
+        <ng-template #checkedIcon>
+            <i class="fas fa-check-circle"></i>
+        </ng-template>
+    </section>
+</ng-container>
+<ng-container *ngIf="errorMessage">
+    <pp-server-error-message
+        [message]="errorMessage"
+        (outClose)="onCloseErrorMessage()">
+    </pp-server-error-message>
+</ng-container>

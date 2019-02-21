@@ -1,0 +1,37 @@
+<h3 class="l-role-title">Role</h3>
+<section class="l-role-content-wrapper">
+    <pp-role-list-for-users
+        [roleList]="restRoleList"
+        [hasUserEditPerm]="hasUserEditPerm"
+        [emptyText]="emptyText$ | async"
+        [iconTemplate]="selectIcon"
+        (outSelectRole)="onAssignRole($event)">
+    </pp-role-list-for-users>
+    <hr width="1">
+    <pp-role-list-for-users
+        [roleList]="userRoleList"
+        [hasUserEditPerm]="hasUserEditPerm"
+        [emptyText]="emptyText$ | async"
+        [iconTemplate]="removeIcon"
+        (outSelectRole)="onUnAssignRole($event)">
+    </pp-role-list-for-users>
+</section>
+<ng-container *ngIf="hasUserEditPerm && userId">
+    <section class="l-submit-button-section">
+        <ng-container *ngIf="isUpdated; then checkedIcon; else updateButton"></ng-container>
+        <ng-template #updateButton>
+            <button class="l-submit-button" (click)="onClickUpdateButton()" [disabled]="!isValid">저장</button>
+        </ng-template>
+        <ng-template #checkedIcon>
+            <i class="fas fa-check-circle"></i>
+        </ng-template>
+    </section>
+</ng-container>
+<ng-template #selectIcon><i class="fas fa-arrow-right" [class.disabled]="!hasUserEditPerm"></i></ng-template>
+<ng-template #removeIcon><i class="far fa-trash-alt" [class.disabled]="!hasUserEditPerm"></i></ng-template>
+<ng-container *ngIf="errorMessage">
+    <pp-server-error-message
+        [message]="errorMessage"
+        (outClose)="onCloseErrorMessage()">
+    </pp-server-error-message>
+</ng-container>
