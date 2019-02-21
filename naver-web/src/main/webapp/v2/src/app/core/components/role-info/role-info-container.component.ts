@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Subject, combineLatest } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Actions } from 'app/shared/store';
@@ -50,95 +50,20 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.getI18NText();
         this.storeHelperService.getObservable(STORE_KEY.ROLE_SELECTION, this.unsubscribe).subscribe((role: string) => {
-            // this.showProcessing();
-            // this.roleInfoDataService.getRoleInfo(role).pipe(
-            //     takeUntil(this.unsubscribe)
-            // ).subscribe((roleInfo: IPermissions) => {
-            //     this.hideProcessing();
-            //     this.roleInfo = roleInfo;
-            // }, () => {
-            //     this.hideProcessing();
-            // });
-            switch (role) {
-                case 'admin':
-                    this.roleInfo = {
-                        roleId: role,
-                        permissionCollection: {
-                            permsGroupAdministration: {
-                                viewAdminMenu: true,
-                                editUser: true,
-                                editRole: true
-                            },
-                            permsGroupAppAuthorization: {
-                                preoccupancy: true,
-                                editAuthorForEverything: true,
-                                editAuthorOnlyManager: false
-                            },
-                            permsGroupAlarm: {
-                                editAlarmForEverything: true,
-                                editAlarmOnlyGroupMember: false
-                            },
-                            permsGroupUserGroup: {
-                                editGroupForEverything: true,
-                                editGroupOnlyGroupMember: false
-                            }
-                        }
-                    };
-                    break;
-                case 'user':
-                    this.roleInfo = {
-                        roleId: role,
-                        permissionCollection: {
-                            permsGroupAdministration: {
-                                viewAdminMenu: false,
-                                editUser: false,
-                                editRole: false
-                            },
-                            permsGroupAppAuthorization: {
-                                preoccupancy: true,
-                                editAuthorForEverything: false,
-                                editAuthorOnlyManager: true
-                            },
-                            permsGroupAlarm: {
-                                editAlarmForEverything: false,
-                                editAlarmOnlyGroupMember: true
-                            },
-                            permsGroupUserGroup: {
-                                editGroupForEverything: false,
-                                editGroupOnlyGroupMember: true
-                            }
-                        }
-                    };
-                    break;
-                case 'anonymouse':
-                    this.roleInfo = {
-                        roleId: role,
-                        permissionCollection: {
-                            permsGroupAdministration: {
-                                viewAdminMenu: false,
-                                editUser: false,
-                                editRole: false
-                            },
-                            permsGroupAppAuthorization: {
-                                preoccupancy: false,
-                                editAuthorForEverything: false,
-                                editAuthorOnlyManager: true
-                            },
-                            permsGroupAlarm: {
-                                editAlarmForEverything: false,
-                                editAlarmOnlyGroupMember: true
-                            },
-                            permsGroupUserGroup: {
-                                editGroupForEverything: false,
-                                editGroupOnlyGroupMember: true
-                            }
-                        }
-                    };
-                    break;
-                default:
-                    return;
+            if (typeof role === 'undefined') {
+                return;
             }
-            this.changeDetectorRef.detectChanges();
+            this.showProcessing();
+            this.roleInfoDataService.getRoleInfo(role).pipe(
+                takeUntil(this.unsubscribe)
+            ).subscribe((roleInfo: IPermissions) => {
+                this.hideProcessing();
+                this.roleInfo = roleInfo;
+                this.changeDetectorRef.detectChanges();
+            }, () => {
+                this.hideProcessing();
+                this.changeDetectorRef.detectChanges();
+            });
         });
     }
     ngOnDestroy() {

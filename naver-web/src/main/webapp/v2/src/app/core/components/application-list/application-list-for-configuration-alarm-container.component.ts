@@ -60,6 +60,9 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
             this.applicationList = applicationList;
             this.filteredApplicationList = this.filterList(this.applicationList);
             if (this.applicationQuery) {
+                this.applicationQuery = this.filteredApplicationList.find((app: IApplication) => {
+                    return this.applicationQuery.getApplicationName() === app.getApplicationName();
+                });
                 this.onSelectApplication(this.applicationQuery);
             }
             this.changeDetector.detectChanges();

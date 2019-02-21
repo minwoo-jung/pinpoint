@@ -5,11 +5,11 @@ import { retry } from 'rxjs/operators';
 
 @Injectable()
 export class RoleListDataService {
-    private roleListURL = 'roles.pinpoint';
+    private url = 'roles.pinpoint';
     constructor(private http: HttpClient) {}
     getRoleList(): Observable<string[]> {
-        return of(['admin', 'user', 'anonymouse']);
-        // return this.http.get<string[]>(this.roleListURL).pipe(
+        return of(['admin', 'user']);
+        // return this.http.get<string[]>(this.url).pipe(
         //     retry(3)
         // );
     }

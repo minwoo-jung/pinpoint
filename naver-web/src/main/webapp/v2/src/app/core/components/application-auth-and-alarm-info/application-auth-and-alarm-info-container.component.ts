@@ -7,7 +7,6 @@ import { UrlRouteManagerService, DynamicPopupService } from 'app/shared/services
 import { UserGroupInteractionService } from 'app/core/components/user-group/user-group-interaction.service';
 import { ApplicationAuthAndAlarmDataService } from './application-auth-and-alarm-data.service';
 import { ApplicationAuthAndAlarmPopupComponent } from './application-auth-and-alarm-popup.component';
-import { RowColumnDefinition } from 'gojs';
 
 @Component({
     selector: 'pp-application-auth-and-alarm-info-container',
