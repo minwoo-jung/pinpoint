@@ -76,7 +76,7 @@ export class UserProfileContainerComponent implements OnInit {
                     : (
                         this.isUpdated = true,
                         this.userProfile = this.tempUserProfile,
-                        this.userProfileInteractionService.notifyUserProfileUpdate(result.userId)
+                        this.userProfileInteractionService.notifyUserProfileUpdate()
                     );
             });
     }

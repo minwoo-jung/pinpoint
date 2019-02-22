@@ -77,7 +77,7 @@ export class UserPasswordContainerComponent implements OnInit {
                     : (
                         this.isUpdated = true,
                         this.userPassword = {} as IUserPassword,
-                        this.userPasswordInteractionService.notifyUserPasswordUpdate(result.userId)
+                        this.userPasswordInteractionService.notifyUserPasswordUpdate(this.userId)
                     );
             });
     }

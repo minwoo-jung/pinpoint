@@ -24,6 +24,8 @@ export class ConfigurationUsersContainerComponent implements OnInit {
     confirmRemoveUserComponent = ConfirmRemoveUserContainerComponent;
     userInfoInjector: Injector;
     errorMessage: string;
+    useDisable = false;
+    showLoading = false;
 
     constructor(
         private injector: Injector,
@@ -39,7 +41,9 @@ export class ConfigurationUsersContainerComponent implements OnInit {
 
     onSelectUser(userId: string): void {
         this.setErrorMessageEmpty();
-        this.configurationUsersDataService.selectUser(userId).subscribe((data: any | IServerErrorShortFormat) => {
+        this.showProcessing();
+        this.configurationUsersDataService.selectUser(userId).subscribe((data: IUserInfo | IServerErrorShortFormat) => {
+            this.hideProcessing();
             isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
                 ? this.errorMessage = data.errorMessage
                 : (this.showUserInfoView(), this.setInjector(data));
@@ -48,7 +52,9 @@ export class ConfigurationUsersContainerComponent implements OnInit {
 
     onRemoveUser(userId: string): void {
         this.setErrorMessageEmpty();
-        this.configurationUsersDataService.selectUser(userId).subscribe((data: any | IServerErrorShortFormat) => {
+        this.showProcessing();
+        this.configurationUsersDataService.selectUser(userId).subscribe((data: IUserInfo | IServerErrorShortFormat) => {
+            this.hideProcessing();
             isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
                 ? this.errorMessage = data.errorMessage
                 : (this.showConfirmRemoveUserView(), this.setInjector(data));
@@ -82,5 +88,15 @@ export class ConfigurationUsersContainerComponent implements OnInit {
 
     private showUserInfoView(): void {
         this.activeView = ViewType.USER_INFO;
+    }
+
+    private showProcessing(): void {
+        this.useDisable = true;
+        this.showLoading = true;
+    }
+
+    private hideProcessing(): void {
+        this.useDisable = false;
+        this.showLoading = false;
     }
 }

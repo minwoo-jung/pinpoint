@@ -415,5 +415,4 @@ interface IFormFieldErrorType {
 
 interface IUserRequestSuccessResponse {
     result: string;
-    userId: string;
 }

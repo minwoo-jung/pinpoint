@@ -72,7 +72,7 @@ export class RoleListContainerForUsersComponent implements OnInit {
                     ? this.errorMessage = result.errorMessage
                     : (
                         this.isUpdated = true,
-                        this.roleListInteractionService.notifyUserRoleListUpdate(result.userId)
+                        this.roleListInteractionService.notifyUserRoleListUpdate(this.userId)
                     );
             });
     }

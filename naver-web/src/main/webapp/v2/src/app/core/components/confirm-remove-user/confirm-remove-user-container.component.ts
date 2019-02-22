@@ -26,7 +26,7 @@ export class ConfirmRemoveUserContainerComponent implements OnInit {
             .subscribe((result: IUserRequestSuccessResponse | IServerErrorShortFormat) => {
                 isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
                     ? this.errorMessage = result.errorMessage
-                    : (this.isUserRemoved = true, this.confirmRemoveUserInteractionService.notifyUserRemove(result.userId));
+                    : (this.isUserRemoved = true, this.confirmRemoveUserInteractionService.notifyUserRemove(userId));
             });
     }
 

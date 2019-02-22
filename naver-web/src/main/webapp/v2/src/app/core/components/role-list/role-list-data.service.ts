@@ -24,19 +24,9 @@ export class RoleListDataService {
     }
 
     update(userId: string, roleList: string[]): Observable<IUserRequestSuccessResponse | IServerErrorShortFormat> {
-        // return this.http.put<IUserRequestSuccessResponse | IServerErrorShortFormat>(this.updateRoleListUrl, {
-        //     params: {
-        //         userId,
-        //         roleList
-        //     }
-        // });
-        return of({
-            result: 'success',
-            userId
+        return this.http.put<IUserRequestSuccessResponse | IServerErrorShortFormat>(this.updateRoleListUrl, {
+            userId,
+            roleList
         });
-        // return of({
-        //     errorCode: 'ErrorCode',
-        //     errorMessage: 'ErrorMessage!'
-        // });
     }
 }

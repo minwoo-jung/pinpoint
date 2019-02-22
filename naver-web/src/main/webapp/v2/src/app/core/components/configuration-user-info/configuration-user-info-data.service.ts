@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { IUserInfo } from 'app/core/components/configuration-users/configuration-users-data.service';
 
@@ -13,15 +13,6 @@ export class ConfigurationUserInfoDataService {
     ) {}
 
     insertUser(user: IUserInfo): Observable<IUserRequestSuccessResponse | IServerErrorShortFormat> {
-        console.log(user);
-        // return this.http.post<IUserRequestSuccessResponse | IServerErrorShortFormat>(this.url, user);
-        return of({
-            result: 'success',
-            userId: user.profile.userId
-        });
-        // return of({
-        //     errorCode: 'ErrorCode',
-        //     errorMessage: 'ErrorMessage!'
-        // });
+        return this.http.post<IUserRequestSuccessResponse | IServerErrorShortFormat>(this.url, user);
     }
 }

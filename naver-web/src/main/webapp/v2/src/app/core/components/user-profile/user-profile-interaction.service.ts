@@ -11,10 +11,10 @@ export interface IChangedProfileState {
 @Injectable()
 export class UserProfileInteractionService {
     private outUserProfileChange = new Subject<IChangedProfileState>();
-    private outUserProfileUpdate = new Subject<string>();
+    private outUserProfileUpdate = new Subject<void>();
 
     onUserProfileChange$: Observable<IChangedProfileState>;
-    onUserProfileUpdate$: Observable<string>;
+    onUserProfileUpdate$: Observable<void>;
 
     constructor() {
         this.onUserProfileChange$ = this.outUserProfileChange.asObservable();
@@ -25,7 +25,7 @@ export class UserProfileInteractionService {
         this.outUserProfileChange.next(change);
     }
 
-    notifyUserProfileUpdate(userId: string): void {
-        this.outUserProfileUpdate.next(userId);
+    notifyUserProfileUpdate(): void {
+        this.outUserProfileUpdate.next();
     }
 }

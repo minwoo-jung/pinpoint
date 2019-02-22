@@ -7,8 +7,7 @@ import { IUserProfile } from 'app/core/components/user-profile/user-profile-data
 
 @Injectable()
 export class PinpointUserForUsersDataService {
-    // private url = 'users.pinpoint';
-    private url = 'user.pinpoint';
+    private url = 'users.pinpoint';
 
     constructor(
         private http: HttpClient

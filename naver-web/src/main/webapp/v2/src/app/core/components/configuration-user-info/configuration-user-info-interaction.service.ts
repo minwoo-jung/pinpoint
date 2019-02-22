@@ -3,15 +3,15 @@ import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class ConfigurationUserInfoInteractionService {
-    private outUserCreate = new Subject<string>();
+    private outUserCreate = new Subject<void>();
 
-    onUserCreate$: Observable<string>;
+    onUserCreate$: Observable<void>;
 
     constructor() {
         this.onUserCreate$ = this.outUserCreate.asObservable();
     }
 
-    notifyUserCreate(userId: string): void {
-        this.outUserCreate.next(userId);
+    notifyUserCreate(): void {
+        this.outUserCreate.next();
     }
 }

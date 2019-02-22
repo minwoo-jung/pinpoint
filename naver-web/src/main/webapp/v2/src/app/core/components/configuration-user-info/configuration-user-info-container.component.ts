@@ -30,6 +30,8 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
     isUserRoleValid: boolean;
     isUserInserted: boolean;
     errorMessage: string;
+    useDisable = false;
+    showLoading = false;
 
     constructor(
         @Inject('userInfo') public userInfo: IUserInfo,
@@ -54,7 +56,6 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
             }),
             pluck('profile')
         ).subscribe((profile: IUserProfile) => {
-            console.log(profile);
             this.userProfile = profile;
         });
 
@@ -69,7 +70,6 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
             }),
             pluck('password')
         ).subscribe((password: IUserPassword) => {
-            console.log(password);
             this.userPassword = password;
         });
 
@@ -86,22 +86,24 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
     }
 
     onClickInsertUser(): void {
+        this.showProcessing();
         this.configurationUserInfoDataService.insertUser({
             profile: this.userProfile,
             account: this.userPassword,
             role: { roleList: this.userRoleList }
         }).subscribe((result: IUserRequestSuccessResponse | IServerErrorShortFormat) => {
             isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
-                ? this.errorMessage = result.errorMessage
+                ? (this.errorMessage = result.errorMessage, this.hideProcessing())
                 : (
                     this.isUserInserted = true,
-                    this.configurationUserInfoInteractionService.notifyUserCreate(result.userId),
+                    this.configurationUserInfoInteractionService.notifyUserCreate(),
+                    this.userInfo = {
+                        profile: this.userProfile,
+                        account: {} as IUserPassword,
+                        role: { roleList: this.userRoleList }
+                    },
                     setTimeout(() => {
-                        this.userInfo = {
-                            profile: this.userProfile,
-                            account: {} as IUserPassword,
-                            role: { roleList: this.userRoleList }
-                        };
+                        this.hideProcessing();
                     }, 1000)
                 );
         });
@@ -109,5 +111,15 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
 
     onCloseErrorMessage(): void {
         this.errorMessage = '';
+    }
+
+    private showProcessing(): void {
+        this.useDisable = true;
+        this.showLoading = true;
+    }
+
+    private hideProcessing(): void {
+        this.useDisable = false;
+        this.showLoading = false;
     }
 }
