@@ -3,7 +3,7 @@ import { Observable, iif, of, merge, Subject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 
-import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService } from 'app/shared/services';
+import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService } from 'app/shared/services';
 import { PinpointUserForUsersDataService } from './pinpoint-user-for-users-data.service';
 import { UserProfileInteractionService } from 'app/core/components/user-profile/user-profile-interaction.service';
 import { ConfirmRemoveUserInteractionService } from 'app/core/components/confirm-remove-user/confirm-remove-user-interaction.service';
@@ -37,7 +37,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
     minLengthConst = MinLength;
     useDisable = true;
     showLoading = true;
-    loggedInUserId$: Observable<string>;
+    loggedInUserId: string;
 
     constructor(
         private webAppSettingDataService: WebAppSettingDataService,
@@ -45,6 +45,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         private translateReplaceService: TranslateReplaceService,
         private pinpointUserForUsersDataService: PinpointUserForUsersDataService,
         private userPermissionCheckService: UserPermissionCheckService,
+        private userConfigurationDataService: UserConfigurationDataService,
         private userProfileInteractionService: UserProfileInteractionService,
         private confirmRemoveUserInteractionService: ConfirmRemoveUserInteractionService,
         private configurationUserInfoInteractionService: ConfigurationUserInfoInteractionService,
@@ -56,7 +57,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         this.searchGuideText$ = this.translateService.get('COMMON.MIN_LENGTH').pipe(
             map((text: string) => this.translateReplaceService.replace(text, MinLength.SEARCH))
         );
-        this.loggedInUserId$ = this.webAppSettingDataService.getUserId();
+        this.loggedInUserId = this.userConfigurationDataService.getUserId();
 
         merge(
             this.configurationUserInfoInteractionService.onUserCreate$,

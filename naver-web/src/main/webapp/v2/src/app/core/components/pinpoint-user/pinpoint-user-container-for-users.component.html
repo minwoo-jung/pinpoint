@@ -22,7 +22,7 @@
             *cdkVirtualFor="let pinpointUser of pinpointUserList; templateCacheSize: 22"
             [pinpointUser]="pinpointUser"
             [hasUserEditPerm]="hasUserEditPerm"
-            [loggedInUserId]="loggedInUserId$ | async"
+            [loggedInUserId]="loggedInUserId"
             (outSelect)="onSelectUser($event)"
             (outRemove)="onRemoveUser($event)">
         </pp-pinpoint-user-for-users>
