@@ -1,12 +1,17 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, forkJoin, iif } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { UserPasswordInteractionService, IChangedPasswordState } from './user-password-interaction.service';
 import { IUserPassword, UserPasswordDataService } from 'app/core/components/user-password/user-password-data.service';
 import { TranslateReplaceService } from 'app/shared/services';
 import { isThatType } from 'app/core/utils/util';
+
+export enum UserType {
+    ADMIN,
+    ELSE
+}
 
 @Component({
     selector: 'pp-user-password-container',
@@ -25,9 +30,11 @@ export class UserPasswordContainerComponent implements OnInit {
     }
 
     @Input() userId: string;
+    @Input() loggedInUserType: UserType
 
     private tempUserPassword: IUserPassword;
 
+    userType = UserType;
     _userPassword: IUserPassword;
     isValid: boolean;
     isUpdated = false;
@@ -49,11 +56,16 @@ export class UserPasswordContainerComponent implements OnInit {
         this.fieldErrorMessage$ = forkJoin(
             this.translateService.get('COMMON.REQUIRED'),
             this.translateService.get('CONFIGURATION.COMMON.PASSWORD'),
+            this.translateService.get('CONFIGURATION.COMMON.PASSWORD_MISMATCH')
         ).pipe(
-            map(([requiredMessage, passwordLabel]: string[]) => {
+            map(([requiredMessage, passwordLabel, mismatchMessage]: string[]) => {
                 return {
                     password: {
                         required: this.translateReplaceService.replace(requiredMessage, passwordLabel),
+                    },
+                    confirmPassword: {
+                        required: this.translateReplaceService.replace(requiredMessage, passwordLabel),
+                        pwMustMatch: mismatchMessage
                     }
                 };
             })

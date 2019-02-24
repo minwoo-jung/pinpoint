@@ -6,11 +6,13 @@ import { UserPasswordComponent } from './user-password.component';
 import { SharedModule } from 'app/shared';
 import { UserPasswordInteractionService } from './user-password-interaction.service';
 import { UserPasswordDataService } from './user-password-data.service';
+import { UserPasswordForGeneralComponent } from './user-password-for-general.component';
 
 @NgModule({
     declarations: [
         UserPasswordContainerComponent,
-        UserPasswordComponent
+        UserPasswordComponent,
+        UserPasswordForGeneralComponent
     ],
     imports: [
         ReactiveFormsModule,

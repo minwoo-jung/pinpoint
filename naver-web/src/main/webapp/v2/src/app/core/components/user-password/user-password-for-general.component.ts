@@ -1,0 +1,62 @@
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { FormGroup, FormControl, Validators, ValidationErrors } from '@angular/forms';
+
+import { IChangedPasswordState } from './user-password-interaction.service';
+import { IUserPassword } from 'app/core/components/user-password/user-password-data.service';
+
+@Component({
+    selector: 'pp-user-password-for-general',
+    templateUrl: './user-password-for-general.component.html',
+    styleUrls: ['./user-password.component.css']
+})
+export class UserPasswordForGeneralComponent implements OnInit {
+    @Input()
+    set userPassword(_: IUserPassword) {
+        this.userPasswordForm.reset();
+    }
+    @Input() fieldErrorMessage: { [key: string]: IFormFieldErrorType };
+    @Input() fieldLabel: { [key: string]: string };
+    @Output() outUserPasswordChange = new EventEmitter<IChangedPasswordState>();
+
+    userPasswordForm = new FormGroup({
+        currentPassword: new FormControl('', [
+            Validators.required
+        ]),
+        password: new FormControl('', [
+            // TODO: password 규칙?
+            Validators.required
+        ]),
+        confirmPassword: new FormControl('', [
+            Validators.required
+        ])
+    }, { validators: this.mustMatch });
+
+    constructor() {}
+    ngOnInit() {}
+    onKeyUp(): void {
+        this.userPasswordForm.valid
+            ? this.outUserPasswordChange.emit({ isValid: true, password: {
+                currentPassword: this.userPasswordForm.get('currentPassword').value,
+                password: this.userPasswordForm.get('password').value,
+            }})
+            : this.outUserPasswordChange.emit({ isValid: false });
+    }
+
+    private mustMatch(formGroup: FormGroup): ValidationErrors | null {
+        const pwControl = formGroup.get('password');
+        const confirmPwControl = formGroup.get('confirmPassword');
+
+        if (confirmPwControl.errors && !confirmPwControl.errors.pwMustMatch) {
+            return;
+        }
+
+        if (pwControl.value !== confirmPwControl.value) {
+            const errors = { pwMustMatch : true };
+
+            confirmPwControl.setErrors(errors);
+            return errors;
+        } else {
+            return null;
+        }
+    }
+}

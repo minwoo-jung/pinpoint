@@ -411,6 +411,7 @@ interface IFormFieldErrorType {
     minlength?: string;
     min?: string;
     max?: string;
+    pwMustMatch?: string;
 }
 
 interface IUserRequestSuccessResponse {
