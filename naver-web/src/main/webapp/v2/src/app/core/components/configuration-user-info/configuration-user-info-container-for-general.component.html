@@ -1,0 +1,12 @@
+<section class="l-user-profile-section">
+    <pp-user-profile-container
+        [userProfile]="userInfo.profile"
+        [hasUserEditPerm]="hasUserEditPerm">
+    </pp-user-profile-container>
+</section>
+<section class="l-user-password-section">
+    <pp-user-password-container
+        [userId]="userInfo.profile.userId"
+        [loggedInUserType]="loggedInUserType">
+    </pp-user-password-container>
+</section>

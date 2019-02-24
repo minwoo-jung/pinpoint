@@ -1,0 +1,11 @@
+<ng-container *ngIf="(userInfo$ | async) as userInfo">
+    <pp-configuration-user-info-container-for-general
+        [userInfo]="userInfo">
+    </pp-configuration-user-info-container-for-general>
+</ng-container>
+<ng-container *ngIf="errorMessage">
+    <pp-server-error-message
+        [message]="errorMessage"
+        (outClose)="onCloseErrorMessage()">
+    </pp-server-error-message>
+</ng-container>

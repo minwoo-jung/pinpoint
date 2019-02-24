@@ -7,10 +7,12 @@ import { UserPasswordModule } from 'app/core/components/user-password';
 import { RoleListModule } from 'app/core/components/role-list';
 import { ConfigurationUserInfoInteractionService } from './configuration-user-info-interaction.service';
 import { ConfigurationUserInfoDataService } from './configuration-user-info-data.service';
+import { ConfigurationUserInfoContainerForGeneralComponent } from './configuration-user-info-container-for-general.component';
 
 @NgModule({
     declarations: [
-        ConfigurationUserInfoContainerComponent
+        ConfigurationUserInfoContainerComponent,
+        ConfigurationUserInfoContainerForGeneralComponent
     ],
     imports: [
         SharedModule,
@@ -18,9 +20,11 @@ import { ConfigurationUserInfoDataService } from './configuration-user-info-data
         UserPasswordModule,
         RoleListModule
     ],
-    exports: [],
+    exports: [
+        ConfigurationUserInfoContainerForGeneralComponent
+    ],
     entryComponents: [
-        ConfigurationUserInfoContainerComponent
+        ConfigurationUserInfoContainerComponent,
     ],
     providers: [
         ConfigurationUserInfoInteractionService,

@@ -6,10 +6,12 @@ import { ConfigurationUsersContainerComponent } from './configuration-users-cont
 import { ConfigurationUsersDataService } from './configuration-users-data.service';
 import { ConfigurationUserInfoModule } from 'app/core/components/configuration-user-info';
 import { ConfirmRemoveUserModule } from 'app/core/components/confirm-remove-user';
+import { ConfigurationUsersContainerForGeneralComponent } from './configuration-users-container-for-general.component';
 
 @NgModule({
     declarations: [
-        ConfigurationUsersContainerComponent
+        ConfigurationUsersContainerComponent,
+        ConfigurationUsersContainerForGeneralComponent
     ],
     imports: [
         SharedModule,
@@ -18,7 +20,8 @@ import { ConfirmRemoveUserModule } from 'app/core/components/confirm-remove-user
         ConfirmRemoveUserModule
     ],
     exports: [
-        ConfigurationUsersContainerComponent
+        ConfigurationUsersContainerComponent,
+        ConfigurationUsersContainerForGeneralComponent
     ],
     providers: [
         ConfigurationUsersDataService

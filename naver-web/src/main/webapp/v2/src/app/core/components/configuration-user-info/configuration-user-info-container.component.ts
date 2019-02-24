@@ -13,6 +13,7 @@ import { RoleListInteractionService } from 'app/core/components/role-list/role-l
 import { ConfigurationUserInfoInteractionService } from './configuration-user-info-interaction.service';
 import { ConfigurationUserInfoDataService } from './configuration-user-info-data.service';
 import { isThatType } from 'app/core/utils/util';
+import { UserType } from 'app/core/components/user-password/user-password-container.component';
 
 @Component({
     selector: 'pp-configuration-user-info-container',
@@ -33,6 +34,7 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
     errorMessage: string;
     useDisable = false;
     showLoading = false;
+    loggedInUserType = UserType.ADMIN;
     buttonText$: Observable<string>;
 
     constructor(
@@ -47,6 +49,7 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
     ) {}
 
     ngOnInit() {
+        // TODO: true -> 원래걸로 돌려놓기.
         // this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
         this.hasUserEditPerm = true;
         this.buttonText$ = this.translateService.get('COMMON.SUBMIT');
