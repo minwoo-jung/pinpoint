@@ -1,3 +1,13 @@
 :host {
     display: flex;
 }
+
+.l-user-profile-section,
+.l-user-password-section {
+    width: 33%;
+    margin-right: 10px;
+}
+
+.l-user-rolelist-section {
+    width: 33%;
+}

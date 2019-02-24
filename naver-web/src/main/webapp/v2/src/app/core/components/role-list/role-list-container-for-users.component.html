@@ -2,17 +2,15 @@
 <section class="l-role-content-wrapper">
     <pp-role-list-for-users
         [roleList]="restRoleList"
-        [hasUserEditPerm]="hasUserEditPerm"
         [emptyText]="emptyText$ | async"
-        [iconTemplate]="selectIcon"
+        [buttonTemplate]="selectButton"
         (outSelectRole)="onAssignRole($event)">
     </pp-role-list-for-users>
     <hr width="1">
     <pp-role-list-for-users
         [roleList]="userRoleList"
-        [hasUserEditPerm]="hasUserEditPerm"
         [emptyText]="emptyText$ | async"
-        [iconTemplate]="removeIcon"
+        [buttonTemplate]="removeButton"
         (outSelectRole)="onUnAssignRole($event)">
     </pp-role-list-for-users>
 </section>
@@ -27,8 +25,16 @@
         </ng-template>
     </section>
 </ng-container>
-<ng-template #selectIcon><i class="fas fa-arrow-right" [class.disabled]="!hasUserEditPerm"></i></ng-template>
-<ng-template #removeIcon><i class="far fa-trash-alt" [class.disabled]="!hasUserEditPerm"></i></ng-template>
+<ng-template #selectButton let-role="role" let-handler="handler">
+    <button class="l-role-select-button" (click)="handler(role)" [disabled]="!hasUserEditPerm">
+        <i class="fas fa-arrow-right" [class.disabled]="!hasUserEditPerm"></i>
+    </button>
+</ng-template>
+<ng-template #removeButton let-role="role" let-handler="handler">
+    <button class="l-role-select-button" (click)="handler(role)" [disabled]="!hasUserEditPerm">
+        <i class="far fa-trash-alt" [class.disabled]="!hasUserEditPerm"></i>
+    </button>
+</ng-template>
 <ng-container *ngIf="errorMessage">
     <pp-server-error-message
         [message]="errorMessage"

@@ -8,20 +8,23 @@ import { RoleListDataService } from './role-list-data.service';
 import { RoleListForUsersComponent } from './role-list-for-users.component';
 import { RoleListContainerForUsersComponent } from './role-list-container-for-users.component';
 import { RoleListInteractionService } from './role-list-interaction.service';
+import { RoleListContainerForGeneralComponent } from './role-list-container-for-general.component';
 
 @NgModule({
     declarations: [
         RoleListComponent,
         RoleListContainerComponent,
         RoleListForUsersComponent,
-        RoleListContainerForUsersComponent
+        RoleListContainerForUsersComponent,
+        RoleListContainerForGeneralComponent
     ],
     imports: [
         SharedModule
     ],
     exports: [
         RoleListContainerComponent,
-        RoleListContainerForUsersComponent
+        RoleListContainerForUsersComponent,
+        RoleListContainerForGeneralComponent
     ],
     providers: [
         RoleListDataService,

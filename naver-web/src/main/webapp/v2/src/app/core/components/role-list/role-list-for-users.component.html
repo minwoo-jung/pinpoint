@@ -5,9 +5,7 @@
     <ul class="l-role-list">
         <li *ngFor="let role of roleList" class="l-role-list-item">
             {{role | uppercase}}
-            <button class="l-role-select-button" (click)="onClickRole(role)" [disabled]="!hasUserEditPerm">
-                <ng-container *ngTemplateOutlet="iconTemplate"></ng-container>
-            </button>
+            <ng-container *ngTemplateOutlet="buttonTemplate; context: { role: role, handler: onClickRole.bind(this) }"></ng-container>
         </li>
     </ul>
 </ng-template>

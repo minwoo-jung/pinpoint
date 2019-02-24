@@ -1,0 +1,20 @@
+:host {
+    display: block;
+    /* width: 100%; */
+}
+
+.l-role-title {
+    /* width: 100%; */
+    text-align: center;
+    font-size: 13px;
+    padding: 15px 0;
+    font-weight: 600;
+    background-color: #f6f8fb;
+    border-top: 1px solid #e5e8f0;
+    border-left: 1px solid #e5e8f0;
+    border-right: 1px solid #e5e8f0;
+}
+
+.l-role-content-wrapper {
+    border: 1px solid #e5e8f0;
+}

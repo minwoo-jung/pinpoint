@@ -8,9 +8,8 @@ import { Component, OnInit, Input, Output, EventEmitter, TemplateRef, HostBindin
 export class RoleListForUsersComponent implements OnInit {
     @HostBinding('class.font-opensans') fontFamily = true;
     @Input() roleList: string[];
-    @Input() hasUserEditPerm: boolean;
     @Input() emptyText: string;
-    @Input() iconTemplate: TemplateRef<any>;
+    @Input() buttonTemplate: TemplateRef<any>;
     @Output() outSelectRole = new EventEmitter<string>();
 
     constructor() {}

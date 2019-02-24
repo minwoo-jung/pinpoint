@@ -29,6 +29,15 @@
     color: #ccc;
 }
 
+.l-role-select-button {
+    float: right;
+    font-size: 14px;
+}
+
+.l-role-select-button:disabled {
+    cursor: default;
+}
+
 .l-submit-button-section {
     width: 100%;
     margin-top: 30px;
