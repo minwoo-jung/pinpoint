@@ -6,7 +6,7 @@
     </thead>
     <tbody>
         <tr>
-            <th>ID<span class="l-required-icon">*</span></th>
+            <th>{{fieldLabel.userId}}<span class="l-required-icon">*</span></th>
             <td>
                 <input type="text" formControlName="userId" [readonly]="!hasUserEditPerm || !!userProfile" required>
                 <pp-form-field-error-message
@@ -16,7 +16,7 @@
             </td>
         </tr>
         <tr>
-            <th>Name<span class="l-required-icon">*</span></th>
+            <th>{{fieldLabel.name}}<span class="l-required-icon">*</span></th>
             <td>
                 <input type="text" formControlName="name" [readonly]="!hasUserEditPerm" required>
                 <pp-form-field-error-message
@@ -26,13 +26,13 @@
             </td>
         </tr>
         <tr>
-            <th>Department</th>
+            <th>{{fieldLabel.department}}</th>
             <td>
                 <input type="text" formControlName="department" [readonly]="!hasUserEditPerm">
             </td>
         </tr>
         <tr>
-            <th>Phone Number</th>
+            <th>{{fieldLabel.phone}}</th>
             <td>
                 <input type="tel" formControlName="phoneNumber" [readonly]="!hasUserEditPerm">
                 <pp-form-field-error-message
@@ -41,7 +41,7 @@
             </td>
         </tr>
         <tr>
-            <th>Email</th>
+            <th>{{fieldLabel.email}}</th>
             <td>
                 <input type="email" formControlName="email" [readonly]="!hasUserEditPerm">
             </td>

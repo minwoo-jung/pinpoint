@@ -23,7 +23,9 @@ export class UserProfileContainerComponent implements OnInit {
     isValid: boolean;
     isUpdated = false;
     fieldErrorMessage$: Observable<{ [key: string]: IFormFieldErrorType }>;
+    fieldLabel$: Observable<{ [key: string]: string }>;
     errorMessage: string;
+    buttonText$: Observable<string>;
 
     constructor(
         private translateService: TranslateService,
@@ -34,6 +36,7 @@ export class UserProfileContainerComponent implements OnInit {
 
     ngOnInit() {
         this.isValid = !!this.userProfile;
+        this.buttonText$ = this.translateService.get('COMMON.SUBMIT');
         this.tempUserProfile = this.userProfile;
         this.fieldErrorMessage$ = forkJoin(
             this.translateService.get('COMMON.REQUIRED'),
@@ -54,6 +57,17 @@ export class UserProfileContainerComponent implements OnInit {
                 };
             })
         );
+        this.fieldLabel$ = forkJoin(
+            this.translateService.get('CONFIGURATION.COMMON.USER_ID'),
+            this.translateService.get('CONFIGURATION.COMMON.NAME'),
+            this.translateService.get('CONFIGURATION.COMMON.DEPARTMENT'),
+            this.translateService.get('CONFIGURATION.COMMON.PHONE'),
+            this.translateService.get('CONFIGURATION.COMMON.EMAIL'),
+        ).pipe(
+            map(([userId, name, department, phone, email]: string[]) => {
+                return { userId, name, department, phone, email }
+            })
+        )
     }
 
     onUserProfileChange(change: IChangedProfileState): void {

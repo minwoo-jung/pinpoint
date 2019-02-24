@@ -2,13 +2,14 @@
     [userProfile]="userProfile"
     [hasUserEditPerm]="hasUserEditPerm"
     [fieldErrorMessage]="fieldErrorMessage$ | async"
+    [fieldLabel]="fieldLabel$ | async"
     (outUserProfileChange)="onUserProfileChange($event)">
 </pp-user-profile>
 <ng-container *ngIf="hasUserEditPerm && userProfile">
     <section class="l-submit-button-section">
         <ng-container *ngIf="isUpdated; then checkedIcon; else updateButton"></ng-container>
         <ng-template #updateButton>
-            <button class="l-submit-button" (click)="onClickUpdateButton()" [disabled]="!isValid">저장</button>
+            <button class="l-submit-button" (click)="onClickUpdateButton()" [disabled]="!isValid">{{buttonText$ | async}}</button>
         </ng-template>
         <ng-template #checkedIcon>
             <i class="fas fa-check-circle"></i>

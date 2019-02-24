@@ -36,6 +36,7 @@ export class RoleListContainerForUsersComponent implements OnInit {
     _userRoleList: string[];
     emptyText$: Observable<string>;
     errorMessage: string;
+    buttonText$: Observable<string>;
 
     constructor(
         private translateService: TranslateService,
@@ -44,6 +45,7 @@ export class RoleListContainerForUsersComponent implements OnInit {
     ) {}
 
     ngOnInit() {
+        this.buttonText$ = this.translateService.get('COMMON.SUBMIT');
         this.roleListDataService.getRoleList().subscribe((roleList: string[]) => {
             this.roleList = roleList;
         });

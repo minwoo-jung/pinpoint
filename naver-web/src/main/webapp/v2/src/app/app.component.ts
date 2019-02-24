@@ -36,7 +36,11 @@ export class AppComponent implements OnInit {
                 };
                 translate.INSPECTOR.APPLICAITION_NAME_ISSUE.ISSUE_SOLUTIONS = ['문제 발생시 핀포인트 개발팀에 문의 해 주세요. 해결 해 드립니다.'];
 
+                translate.CONFIGURATION.COMMON.CURRENT_PASSWORD = '기존 비밀번호';
+                translate.CONFIGURATION.COMMON.NEW_PASSWORD = '신규 비밀번호';
+                translate.CONFIGURATION.COMMON.CONFIRM_NEW_PASSWORD = '신규 비밀번호 재확인';
                 translate.CONFIGURATION.COMMON.PASSWORD = '비밀번호';
+                translate.CONFIGURATION.COMMON.PASSWORD_MISMATCH = '비밀번호가 일치하지 않습니다.';
                 translate.CONFIGURATION.USERS = {
                     GUIDE: '사용자를 추가, 조회 또는 삭제할 수 있습니다.'
                 };
@@ -69,7 +73,11 @@ export class AppComponent implements OnInit {
                 };
                 translate.INSPECTOR.APPLICAITION_NAME_ISSUE.ISSUE_SOLUTIONS = ['Please contact the pinpoint development team in case of problems. We will solve it.'];
 
+                translate.CONFIGURATION.COMMON.CURRENT_PASSWORD = 'Current Password';
+                translate.CONFIGURATION.COMMON.NEW_PASSWORD = 'New Password';
+                translate.CONFIGURATION.COMMON.CONFIRM_NEW_PASSWORD = 'Confirm New Password';
                 translate.CONFIGURATION.COMMON.PASSWORD = 'Password';
+                translate.CONFIGURATION.COMMON.PASSWORD_MISMATCH = 'Password does not match.';
                 translate.CONFIGURATION.USERS = {
                     GUIDE: 'Add, query or delete users.'
                 };

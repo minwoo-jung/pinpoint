@@ -32,7 +32,9 @@ export class UserPasswordContainerComponent implements OnInit {
     isValid: boolean;
     isUpdated = false;
     fieldErrorMessage$: Observable<{ [key: string]: IFormFieldErrorType }>;
+    fieldLabel$: Observable<{ [key: string]: string }>;
     errorMessage: string;
+    buttonText$: Observable<string>;
 
     constructor(
         private translateService: TranslateService,
@@ -43,6 +45,7 @@ export class UserPasswordContainerComponent implements OnInit {
 
     ngOnInit() {
         this.isValid = false;
+        this.buttonText$ = this.translateService.get('COMMON.SUBMIT');
         this.fieldErrorMessage$ = forkJoin(
             this.translateService.get('COMMON.REQUIRED'),
             this.translateService.get('CONFIGURATION.COMMON.PASSWORD'),
@@ -54,6 +57,20 @@ export class UserPasswordContainerComponent implements OnInit {
                     }
                 };
             })
+        );
+        this.fieldLabel$ = iif(() => this.loggedInUserType === UserType.ADMIN,
+            this.translateService.get('CONFIGURATION.COMMON.PASSWORD').pipe(
+                map((password: string) => ({ password }))
+            ),
+            forkJoin(
+                this.translateService.get('CONFIGURATION.COMMON.CURRENT_PASSWORD'),
+                this.translateService.get('CONFIGURATION.COMMON.NEW_PASSWORD'),
+                this.translateService.get('CONFIGURATION.COMMON.CONFIRM_NEW_PASSWORD'),
+            ).pipe(
+                map(([currentPassword, newPassword, confirmNewPassword]: string[]) => {
+                    return { currentPassword, newPassword, confirmNewPassword };
+                })
+            )
         );
     }
 

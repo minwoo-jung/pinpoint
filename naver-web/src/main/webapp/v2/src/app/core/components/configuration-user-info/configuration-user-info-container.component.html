@@ -23,7 +23,7 @@
     <section class="l-submit-button-section">
         <ng-container *ngIf="isUserInserted; then checkedIcon; else insertButton"></ng-container>
         <ng-template #insertButton>
-            <button class="l-submit-button" (click)="onClickInsertUser()" [disabled]="!(isUserProfileValid && isUserPasswordValid)">저장</button>
+            <button class="l-submit-button" (click)="onClickInsertUser()" [disabled]="!(isUserProfileValid && isUserPasswordValid)">{{buttonText$ | async}}</button>
         </ng-template>      
         <ng-template #checkedIcon>
             <i class="fas fa-check-circle"></i>

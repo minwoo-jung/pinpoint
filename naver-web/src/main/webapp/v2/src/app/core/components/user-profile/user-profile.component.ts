@@ -19,6 +19,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
     @Input() userProfile: IUserProfile;
     @Input() hasUserEditPerm: boolean;
     @Input() fieldErrorMessage: { [key: string]: IFormFieldErrorType };
+    @Input() fieldLabel: { [key: string]: string };
     @Output() outUserProfileChange = new EventEmitter<IChangedProfileState>();
 
     userProfileForm = new FormGroup({

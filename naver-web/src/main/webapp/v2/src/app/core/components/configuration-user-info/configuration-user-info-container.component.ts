@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { tap, filter, pluck, takeUntil } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
 import { UserProfileInteractionService, IChangedProfileState } from 'app/core/components/user-profile/user-profile-interaction.service';
 import { UserPasswordInteractionService, IChangedPasswordState } from 'app/core/components/user-password/user-password-interaction.service';
@@ -32,6 +33,7 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
     errorMessage: string;
     useDisable = false;
     showLoading = false;
+    buttonText$: Observable<string>;
 
     constructor(
         @Inject('userInfo') public userInfo: IUserInfo,
@@ -40,12 +42,14 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
         private roleListInteractionService: RoleListInteractionService,
         private configurationUserInfoInteractionService: ConfigurationUserInfoInteractionService,
         private configurationUserInfoDataService: ConfigurationUserInfoDataService,
-        private userPermissionCheckService: UserPermissionCheckService
+        private userPermissionCheckService: UserPermissionCheckService,
+        private translateService: TranslateService,
     ) {}
 
     ngOnInit() {
         // this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
         this.hasUserEditPerm = true;
+        this.buttonText$ = this.translateService.get('COMMON.SUBMIT');
         this.userProfileInteractionService.onUserProfileChange$.pipe(
             takeUntil(this.unsubscribe),
             tap((v: IChangedProfileState) => {
