@@ -4,6 +4,16 @@
     position: relative;
 }
 
+.l-user-info-wrapper {
+    display: flex;
+}
+
+.l-user-profile-section,
+.l-user-password-section {
+    flex: 1;
+    margin-right: 10px;
+}
+
 .l-user-profile-section,
 .l-user-password-section,
 .l-user-role-section {

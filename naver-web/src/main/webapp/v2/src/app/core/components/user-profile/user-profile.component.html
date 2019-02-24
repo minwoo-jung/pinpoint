@@ -1,50 +1,30 @@
-<table class="table" [formGroup]="userProfileForm" (keyup)="onKeyUp()">
-    <thead>
-        <tr>
-            <th colspan="2">User Information</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th>{{fieldLabel.userId}}<span class="l-required-icon">*</span></th>
-            <td>
-                <input type="text" formControlName="userId" [readonly]="!hasUserEditPerm || !!userProfile" required>
-                <pp-form-field-error-message
-                    [control]="userProfileForm.get('userId')"
-                    [errorMessage]="fieldErrorMessage['userId']">
-                </pp-form-field-error-message>
-            </td>
-        </tr>
-        <tr>
-            <th>{{fieldLabel.name}}<span class="l-required-icon">*</span></th>
-            <td>
-                <input type="text" formControlName="name" [readonly]="!hasUserEditPerm" required>
-                <pp-form-field-error-message
-                    [control]="userProfileForm.get('name')"
-                    [errorMessage]="fieldErrorMessage['name']">
-                </pp-form-field-error-message>
-            </td>
-        </tr>
-        <tr>
-            <th>{{fieldLabel.department}}</th>
-            <td>
-                <input type="text" formControlName="department" [readonly]="!hasUserEditPerm">
-            </td>
-        </tr>
-        <tr>
-            <th>{{fieldLabel.phone}}</th>
-            <td>
-                <input type="tel" formControlName="phoneNumber" [readonly]="!hasUserEditPerm">
-                <pp-form-field-error-message
-                    [errorMessage]="">
-                </pp-form-field-error-message>
-            </td>
-        </tr>
-        <tr>
-            <th>{{fieldLabel.email}}</th>
-            <td>
-                <input type="email" formControlName="email" [readonly]="!hasUserEditPerm">
-            </td>
-        </tr>
-    </tbody>
-</table>
+<section class="l-form-wrapper" [formGroup]="userProfileForm" (keyup)="onKeyUp()">
+    <div class="l-field-wrapper">
+        <label for="userId">{{fieldLabel.userId}} <span class="l-required-icon">*</span></label>
+        <input type="text" formControlName="userId" id="userId" [readonly]="!hasUserEditPerm || !!userProfile" required>
+        <pp-form-field-error-message
+            [control]="userProfileForm.get('userId')"
+            [errorMessage]="fieldErrorMessage['userId']">
+        </pp-form-field-error-message>
+    </div>
+    <div class="l-field-wrapper">
+        <label for="name">{{fieldLabel.name}} <span class="l-required-icon">*</span></label>
+        <input type="text" formControlName="name" id="name" [readonly]="!hasUserEditPerm" required>
+        <pp-form-field-error-message
+            [control]="userProfileForm.get('name')"
+            [errorMessage]="fieldErrorMessage['name']">
+        </pp-form-field-error-message>
+    </div>
+    <div class="l-field-wrapper">
+        <label for="department">{{fieldLabel.department}}</label>
+        <input type="text" formControlName="department" id="department" [readonly]="!hasUserEditPerm">
+    </div>
+    <div class="l-field-wrapper">
+        <label for="phone">{{fieldLabel.phone}}</label>
+        <input type="tel" formControlName="phoneNumber" id="phone" [readonly]="!hasUserEditPerm">
+    </div>
+    <div class="l-field-wrapper">
+        <label for="email">{{fieldLabel.email}}</label>
+        <input type="email" formControlName="email" id="email" [readonly]="!hasUserEditPerm">
+    </div>
+</section>

@@ -4,10 +4,10 @@
 
 .l-user-profile-section,
 .l-user-password-section {
-    width: 33%;
     margin-right: 10px;
+    flex: 1;
 }
 
 .l-user-rolelist-section {
-    width: 33%;
+    flex: 1;
 }

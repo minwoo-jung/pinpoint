@@ -14,6 +14,7 @@ export class UserPasswordComponent implements OnInit {
     set userPassword(_: IUserPassword) {
         this.userPasswordForm.reset();
     }
+    @Input() hasUserEditPerm: boolean;
     @Input() fieldErrorMessage: { [key: string]: IFormFieldErrorType };
     @Input() fieldLabel: { [key: string]: string };
     @Output() outUserPasswordChange = new EventEmitter<IChangedPasswordState>();
@@ -26,7 +27,12 @@ export class UserPasswordComponent implements OnInit {
     });
 
     constructor() {}
-    ngOnInit() {}
+    ngOnInit() {
+        const pwControl = this.userPasswordForm.get('password');
+
+        this.hasUserEditPerm ? pwControl.enable() : pwControl.disable();
+    }
+    
     onKeyUp(): void {
         this.userPasswordForm.valid
             ? this.outUserPasswordChange.emit({ isValid: true, password: this.userPasswordForm.value })

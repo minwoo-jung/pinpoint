@@ -29,6 +29,7 @@ export class UserPasswordContainerComponent implements OnInit {
         return this._userPassword;
     }
 
+    @Input() hasUserEditPerm: boolean;
     @Input() userId: string;
     @Input() loggedInUserType: UserType
 

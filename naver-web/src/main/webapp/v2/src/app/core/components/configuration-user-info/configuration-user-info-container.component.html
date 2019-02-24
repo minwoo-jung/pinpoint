@@ -1,18 +1,19 @@
-<section class="l-user-profile-section">
-    <pp-user-profile-container
-        [userProfile]="userInfo?.profile"
-        [hasUserEditPerm]="hasUserEditPerm">
-    </pp-user-profile-container>
-</section>
-<ng-container *ngIf="hasUserEditPerm">
+<div class="l-user-info-wrapper">
+    <section class="l-user-profile-section">
+        <pp-user-profile-container
+            [userProfile]="userInfo?.profile"
+            [hasUserEditPerm]="hasUserEditPerm">
+        </pp-user-profile-container>
+    </section>
     <section class="l-user-password-section">
         <pp-user-password-container
             [userPassword]="userInfo?.account"
             [userId]="userInfo?.profile.userId"
-            [loggedInUserType]="loggedInUserType">
+            [loggedInUserType]="loggedInUserType"
+            [hasUserEditPerm]="hasUserEditPerm">
         </pp-user-password-container>
     </section>
-</ng-container>
+</div>
 <section class="l-user-role-section">
     <pp-role-list-container-for-users
         [userRole]="userInfo?.role"

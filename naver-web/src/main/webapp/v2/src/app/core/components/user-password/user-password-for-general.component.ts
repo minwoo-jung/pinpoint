@@ -14,6 +14,7 @@ export class UserPasswordForGeneralComponent implements OnInit {
     set userPassword(_: IUserPassword) {
         this.userPasswordForm.reset();
     }
+    @Input() hasUserEditPerm: boolean;
     @Input() fieldErrorMessage: { [key: string]: IFormFieldErrorType };
     @Input() fieldLabel: { [key: string]: string };
     @Output() outUserPasswordChange = new EventEmitter<IChangedPasswordState>();

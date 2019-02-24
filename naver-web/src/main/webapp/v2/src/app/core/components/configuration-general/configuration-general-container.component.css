@@ -12,8 +12,7 @@
 }
 
 .l-user-info-wrapper {
-    margin-bottom: 17px;
-    height: 360px;
+    margin-bottom: 20px;
 }
 
 .l-popup-table {
@@ -44,7 +43,7 @@
 }
 
 .l-favorite-application-table {
-    margin-top: 17px;
+    margin-top: 20px;
     table-layout: fixed;
 }
 
@@ -74,7 +73,7 @@
 }
 
 .l-timezone-dateformat-table {
-    margin-top: 17px;
+    margin-top: 20px;
 }
 
 .l-timezone-dateformat-table th {
