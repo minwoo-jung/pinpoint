@@ -1,8 +1,11 @@
 import { Component, OnInit, Injector, ReflectiveInjector } from '@angular/core';
+import { Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigurationUserInfoContainerComponent } from 'app/core/components/configuration-user-info/configuration-user-info-container.component';
 import { ConfirmRemoveUserContainerComponent } from 'app/core/components/confirm-remove-user/confirm-remove-user-container.component';
 import { ConfigurationUsersDataService, IUserInfo } from './configuration-users-data.service';
+import { UserPermissionCheckService } from 'app/shared/services';
 import { isThatType } from 'app/core/utils/util';
 
 enum ViewType {
@@ -26,13 +29,22 @@ export class ConfigurationUsersContainerComponent implements OnInit {
     errorMessage: string;
     useDisable = false;
     showLoading = false;
+    hasUserEditPerm: boolean;
+    guide$: Observable<string>;
 
     constructor(
         private injector: Injector,
-        private configurationUsersDataService: ConfigurationUsersDataService
+        private configurationUsersDataService: ConfigurationUsersDataService,
+        private userPermissionCheckService: UserPermissionCheckService,
+        private translateService: TranslateService,
     ) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        // this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
+        this.hasUserEditPerm = true;
+        this.guide$ = this.translateService.get('CONFIGURATION.USERS.GUIDE');
+    }
+
     onAddUser(): void {
         this.setErrorMessageEmpty();
         this.showUserInfoView();

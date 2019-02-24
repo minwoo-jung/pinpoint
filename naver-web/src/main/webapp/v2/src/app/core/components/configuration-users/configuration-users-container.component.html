@@ -14,7 +14,11 @@
         <ng-container *ngSwitchCase="viewType.CONFIRM_REMOVE">
             <ng-container *ngComponentOutlet="confirmRemoveUserComponent; injector: userInfoInjector"></ng-container>
         </ng-container>
-        <ng-container *ngSwitchCase="viewType.NOTHING"></ng-container>
+        <ng-container *ngSwitchCase="viewType.NOTHING">
+            <ng-container *ngIf="hasUserEditPerm">
+                <p class="l-guide-message">{{guide$ | async}}</p>
+            </ng-container>
+        </ng-container>
     </ng-container>
     <ng-container *ngIf="errorMessage">
         <pp-server-error-message
