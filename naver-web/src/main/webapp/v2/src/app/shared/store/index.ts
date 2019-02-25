@@ -25,7 +25,6 @@ import * as serverMapLoadingState from './server-map-loading-state.reducer';
 import * as uiState from './ui-state.reducer';
 import * as urlPath from './url-path.reducer';
 import * as userPermissions from './user-permissions.reducer';
-import * as roleSelection from './role-selection.reducer';
 
 export interface AppState {
     timeline: ITimelineInfo;
@@ -81,8 +80,7 @@ export const STORE_KEY = {
     SERVER_AND_AGENT: 'serverAndAgent',
     UI_STATE: 'uiState',
     URL_PATH: 'urlPath',
-    USER_PERMISSIONS: 'userPermissions',
-    ROLE_SELECTION: 'roleSelection'
+    USER_PERMISSIONS: 'userPermissions'
 };
 
 
@@ -112,8 +110,7 @@ export const reducers: ActionReducerMap<any> = {
     uiState: uiState.Reducer,
     timeline: timeline.Reducer,
     urlPath: urlPath.Reducer,
-    userPermissions: userPermissions.Reducer,
-    roleSelection: roleSelection.Reducer
+    userPermissions: userPermissions.Reducer
 };
 
 export const Actions = {
@@ -143,8 +140,7 @@ export const Actions = {
     'ChangeInfoPerServerVisibleState': uiState.ChangeInfoPerServerVisibleState,
     'UpdateTimelineData': timeline.UpdateTimelineData,
     'UpdateURLPath': urlPath.UpdateURLPath,
-    'UpdatePermissions': userPermissions.UpdateUserPermissions,
-    'ChangeRoleSelection': roleSelection.ChangeRoleSelection
+    'UpdatePermissions': userPermissions.UpdateUserPermissions
 };
 
 const getUI = createFeatureSelector('uiState');

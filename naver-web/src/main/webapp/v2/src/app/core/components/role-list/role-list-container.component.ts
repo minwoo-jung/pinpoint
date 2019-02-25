@@ -1,8 +1,7 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Actions } from 'app/shared/store';
-import { StoreHelperService } from 'app/shared/services';
+import { MessageQueueService, MESSAGE_TO } from 'app/shared/services';
 import { RoleListDataService } from './role-list-data.service';
 
 @Component({
@@ -19,10 +18,11 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
     showLoading = true;
 
     constructor(
-        private storeHelperService: StoreHelperService,
-        private roleListDataService: RoleListDataService
+        private roleListDataService: RoleListDataService,
+        private messageQueueService: MessageQueueService
     ) {}
     ngOnInit() {
+        this.showProcessing();
         this.roleListDataService.getRoleList().pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((roleList: any) => {
@@ -38,7 +38,10 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
         this.unsubscribe.complete();
     }
     onSelected(selectedRole: string): void {
-        this.storeHelperService.dispatch(new Actions.ChangeRoleSelection(selectedRole));
+        this.messageQueueService.sendMessage({
+            to: MESSAGE_TO.SELECT_ROLE,
+            param: [selectedRole]
+        });
     }
     onCloseErrorMessage(): void {
         this.errorMessage = '';

@@ -1,12 +1,10 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Actions } from 'app/shared/store';
-import { StoreHelperService } from 'app/shared/services';
-import { STORE_KEY } from 'app/shared/store';
 import { RoleInfoDataService } from './role-info-data.service';
+import { MessageQueueService, MESSAGE_TO } from 'app/shared/services/message-queue.service';
 
 @Component({
     selector: 'pp-role-info-container',
@@ -43,16 +41,14 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     };
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
-        private storeHelperService: StoreHelperService,
+        private messageQueueService: MessageQueueService,
         private translateService: TranslateService,
         private roleInfoDataService: RoleInfoDataService
     ) {}
     ngOnInit() {
         this.getI18NText();
-        this.storeHelperService.getObservable(STORE_KEY.ROLE_SELECTION, this.unsubscribe).subscribe((role: string) => {
-            if (typeof role === 'undefined') {
-                return;
-            }
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SELECT_ROLE).subscribe((param: string[]) => {
+            const role = param[0];
             this.showProcessing();
             this.roleInfoDataService.getRoleInfo(role).pipe(
                 takeUntil(this.unsubscribe)
@@ -67,7 +63,6 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         });
     }
     ngOnDestroy() {
-        this.storeHelperService.dispatch(new Actions.ChangeRoleSelection(''));
         this.unsubscribe.next();
         this.unsubscribe.complete();
     }
