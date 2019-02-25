@@ -12,8 +12,14 @@ export class RoleListForUsersComponent implements OnInit {
     @Input() buttonTemplate: TemplateRef<any>;
     @Output() outSelectRole = new EventEmitter<string>();
 
+    listItemStyle: { [key: string]: string };
+
     constructor() {}
-    ngOnInit() {}
+    ngOnInit() {
+        this.listItemStyle = this.buttonTemplate
+            ? { padding: '10px 15px 10px 20px' }
+            : { padding: '10px 0', 'text-align': 'center' };
+    }
     onClickRole(role: string): void {
         this.outSelectRole.emit(role);
     }

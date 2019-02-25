@@ -21,6 +21,12 @@
     border: 1px solid #e5e8f0;
 }
 
+.l-rest-role-list-wrapper,
+.l-user-role-list-wrapper {
+    flex: 1;
+    height: 150px;
+}
+
 .fa-arrow-right {
     color: #4a8fd2;
 }

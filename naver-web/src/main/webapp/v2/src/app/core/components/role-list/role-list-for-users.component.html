@@ -3,7 +3,7 @@
 </ng-container>
 <ng-template #list>
     <ul class="l-role-list">
-        <li *ngFor="let role of roleList" class="l-role-list-item">
+        <li *ngFor="let role of roleList" [ngStyle]="listItemStyle">
             {{role | uppercase}}
             <ng-container *ngTemplateOutlet="buttonTemplate; context: { role: role, handler: onClickRole.bind(this) }"></ng-container>
         </li>
