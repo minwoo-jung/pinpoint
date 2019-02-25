@@ -24,7 +24,8 @@
 .l-rest-role-list-wrapper,
 .l-user-role-list-wrapper {
     flex: 1;
-    height: 150px;
+    /* height: 150px; */
+    max-height: 150px;
 }
 
 .fa-arrow-right {

@@ -20,6 +20,7 @@ export class RoleListForUsersComponent implements OnInit {
             ? { padding: '10px 15px 10px 20px' }
             : { padding: '10px 0', 'text-align': 'center' };
     }
+
     onClickRole(role: string): void {
         this.outSelectRole.emit(role);
     }
