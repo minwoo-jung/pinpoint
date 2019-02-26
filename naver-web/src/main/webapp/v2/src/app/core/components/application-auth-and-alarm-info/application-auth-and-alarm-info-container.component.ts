@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject, Observable, of, combineLatest } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { UrlPath, UrlPathId } from 'app/shared/models';
-import { UrlRouteManagerService, DynamicPopupService } from 'app/shared/services';
-import { UserGroupInteractionService } from 'app/core/components/user-group/user-group-interaction.service';
+import { UrlRouteManagerService, DynamicPopupService, MessageQueueService, MESSAGE_TO } from 'app/shared/services';
 import { ApplicationAuthAndAlarmDataService } from './application-auth-and-alarm-data.service';
 import { ApplicationAuthAndAlarmPopupComponent } from './application-auth-and-alarm-popup.component';
 
@@ -27,15 +25,13 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit {
         private translateService: TranslateService,
         private urlRouteManagerService: UrlRouteManagerService,
         private dynamicPopupService: DynamicPopupService,
-        private userGroupInteractionService: UserGroupInteractionService,
+        private messageQueueService: MessageQueueService,
         private applicationAuthAndAlarmDataService: ApplicationAuthAndAlarmDataService
     ) {}
     ngOnInit() {
-        this.userGroupInteractionService.onSelect$.pipe(
-            takeUntil(this.unsubscribe)
-        ).subscribe((id: string) => {
-            this.selectedUserGroupId = id;
-            this.rowData = this.applicationAuthAndAlarmDataService.getData(id);
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((param: any[]) => {
+            this.selectedUserGroupId = param[0] as string;
+            this.rowData = this.applicationAuthAndAlarmDataService.getData(this.selectedUserGroupId);
         });
         this.getI18NText();
     }

@@ -47,7 +47,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     ) {}
     ngOnInit() {
         this.getI18NText();
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SELECT_ROLE).subscribe((param: string[]) => {
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_SELECT_ROLE).subscribe((param: string[]) => {
             const role = param[0];
             this.showProcessing();
             this.roleInfoDataService.getRoleInfo(role).pipe(

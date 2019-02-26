@@ -39,7 +39,7 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
     }
     onSelected(selectedRole: string): void {
         this.messageQueueService.sendMessage({
-            to: MESSAGE_TO.SELECT_ROLE,
+            to: MESSAGE_TO.ROLE_INFO_SELECT_ROLE,
             param: [selectedRole]
         });
     }
