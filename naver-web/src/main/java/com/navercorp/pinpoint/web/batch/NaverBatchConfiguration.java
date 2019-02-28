@@ -21,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -40,6 +41,9 @@ public class NaverBatchConfiguration implements InitializingBean {
     @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['alarm.sms.cellphone.number'] ?: ''), ',')}")
     private List<String> cellPhoneNumberList;
 
+    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['admin.user.list'] ?: ''), ',')}")
+    private List<String> adminUserList = Collections.emptyList();
+
     public NaverBatchConfiguration() {
     }
 
@@ -55,6 +59,10 @@ public class NaverBatchConfiguration implements InitializingBean {
             logger.info("{}={}", propertyName, result);
         }
         return result ;
+    }
+
+    public List<String> getAdminUserList() {
+        return adminUserList;
     }
 
     public String getMexServerUrl() {

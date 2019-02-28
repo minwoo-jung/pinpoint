@@ -16,6 +16,8 @@
 package com.navercorp.pinpoint.web.controller;
 
 import com.navercorp.pinpoint.common.util.StringUtils;
+import com.navercorp.pinpoint.web.security.NaverPermissionEvaluator;
+import com.navercorp.pinpoint.web.security.PermissionChecker;
 import com.navercorp.pinpoint.web.service.*;
 import com.navercorp.pinpoint.web.vo.*;
 import com.navercorp.pinpoint.web.vo.role.*;
@@ -23,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,17 +41,15 @@ import java.util.Map;
 @Controller
 @RequestMapping(value= "users")
 public class UserInformationController {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final String EMPTY = "";
-    private final String ERROR_USER_ID_NULL = "you must enter a user id.";
-    private final String ERROR_USER_EXITST = "User with (%s) that name already exists";
-    private final String ERROR_PASSWORD_NULL = "You must enter a password.";
-    private final String ERROR_NAME_NULL = "You must enter a name.";
-    private final String ERROR_PASSWORD_INCORRECT = "The current password is incorrect.";
-
+    private static final String EMPTY = "";
+    private static final String ERROR_USER_ID_NULL = "you must enter a user id.";
+    private static final String ERROR_USER_EXITST = "User with (%s) that name already exists";
+    private static final String ERROR_PASSWORD_NULL = "You must enter a password.";
+    private static final String ERROR_NAME_NULL = "You must enter a name.";
+    private static final String ERROR_PASSWORD_INCORRECT = "The current password is incorrect.";
     private static final String SSO_USER = "SSO_USER";
-
     private static final RoleInformation FIXED_ROLE;
+
     static {
         PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration();
         PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(true, false, true);
@@ -57,6 +58,9 @@ public class UserInformationController {
         PermissionCollection permissionCollection = new PermissionCollection(permsGroupAdministration, permsGroupAppAuthorization, permsGroupAlarm, permsGroupUserGroup);
         FIXED_ROLE = new RoleInformation("fixedRole", permissionCollection);
     }
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Value("#{pinpointWebProps['user.permission.use.fixed.value'] ?: true}")
     private boolean isAlwaysDefaultPermission;
 
@@ -74,6 +78,9 @@ public class UserInformationController {
 
     @Autowired
     private UserConfigService userConfigService;
+
+    @Autowired
+    private NaverPermissionEvaluator naverPermissionEvaluator;
 
     //TODO : (minwoo) 파라미터 validation 체크 필요함.
     @RequestMapping(method = RequestMethod.GET)
@@ -116,6 +123,7 @@ public class UserInformationController {
         }
     }
 
+    @PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_USER)")
     @RequestMapping(value="user", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> insertUserInformation(@RequestBody UserInformation userInformation) {
@@ -127,6 +135,7 @@ public class UserInformationController {
             logger.error(message);
             return result;
         }
+
         String userId = userInformation.getProfile().getUserId();
         userInformation.getAccount().setUserId(userId);
         userInformation.getRole().setUserId(userId);
@@ -157,6 +166,7 @@ public class UserInformationController {
         return EMPTY;
     }
 
+    @PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_USER)")
     @RequestMapping(value="user", method = RequestMethod.DELETE)
     @ResponseBody
     public Map<String, String> deleteUserInformation(@RequestBody User user) {
@@ -167,6 +177,8 @@ public class UserInformationController {
         return result;
     }
 
+
+    @PreAuthorize("hasPermission(#user.getUserId(), null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_USER)")
     @RequestMapping(value="user/profile", method = RequestMethod.PUT)
     @ResponseBody
     public Map<String, String> updateUserProfile(@RequestBody User user) {
@@ -177,17 +189,21 @@ public class UserInformationController {
         return result;
     }
 
+    @PreAuthorize("hasPermission(#changedUserAccount.getUserId(), null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_USER)")
     @RequestMapping(value="user/account", method = RequestMethod.PUT)
     @ResponseBody
     public Map<String, String> updateUserProfile(@RequestBody ChangedUserAccount changedUserAccount) {
-        boolean isCollectPassword = userAccountService.isCollectPassword(new UserAccount(changedUserAccount.getUserId(), changedUserAccount.getCurrentPassword()));
 
-        if (isCollectPassword == false) {
-            Map<String, String> result = new HashMap<>();
-            result.put("errorCode", "500");
-            result.put("errorMessage", ERROR_PASSWORD_INCORRECT);
-            logger.error(ERROR_PASSWORD_INCORRECT);
-            return result;
+        if (naverPermissionEvaluator.hasPermission(PermissionChecker.PERMISSION_ADMINISTRATION_EDIT_USER) == false) {
+            boolean isCollectPassword = userAccountService.isCollectPassword(new UserAccount(changedUserAccount.getUserId(), changedUserAccount.getCurrentPassword()));
+
+            if (isCollectPassword == false) {
+                Map<String, String> result = new HashMap<>();
+                result.put("errorCode", "500");
+                result.put("errorMessage", ERROR_PASSWORD_INCORRECT);
+                logger.error(ERROR_PASSWORD_INCORRECT);
+                return result;
+            }
         }
 
         userAccountService.updateUserAccount(new UserAccount(changedUserAccount.getUserId(), changedUserAccount.getNewPassword()));
@@ -197,6 +213,7 @@ public class UserInformationController {
         return result;
     }
 
+    @PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_USER)")
     @RequestMapping(value="user/role", method = RequestMethod.PUT)
     @ResponseBody
     public Map<String, String> updateUserRole(@RequestBody UserRole userRole) {

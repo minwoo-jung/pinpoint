@@ -21,6 +21,10 @@ package com.navercorp.pinpoint.web.vo.role;
 public class PermsGroupAdministration {
 
     public final static PermsGroupAdministration DEFAULT = new PermsGroupAdministration(false, false, false);
+    public final static String ADMINISTRATION = "administration";
+    public final static String VIEW_ADMIN_MENU = "viewAdminMenu";
+    public final static String EDIT_USER = "editUser";
+    public final static String EDIT_ROLE = "editRole";
 
     private boolean viewAdminMenu;
 

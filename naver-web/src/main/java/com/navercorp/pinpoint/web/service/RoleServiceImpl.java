@@ -105,6 +105,16 @@ public class RoleServiceImpl implements RoleService {
         return mergeRoleInformation(roleInformationList);
     }
 
+    @Override
+    public List<String> selectRoleList() {
+        return roleDao.selectRoleList();
+    }
+
+    @Override
+    public void dropAndCreateUserRoleTable() {
+        roleDao.dropAndCreateUserRoleTable();
+    }
+
     private RoleInformation mergeRoleInformation(List<RoleInformation> roleInformationList) {
         final int listSize = roleInformationList.size();
 

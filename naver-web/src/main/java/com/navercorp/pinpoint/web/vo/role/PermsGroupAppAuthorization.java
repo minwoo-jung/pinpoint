@@ -21,6 +21,10 @@ package com.navercorp.pinpoint.web.vo.role;
 public class PermsGroupAppAuthorization {
 
     public final static PermsGroupAppAuthorization DEFAULT = new PermsGroupAppAuthorization(false, false, false);
+    public final static String APP_AUTHORIZATION = "appAuthorization";
+    public final static String PREOCCUPANCY = "preoccupancy";
+    public final static String EDIT_AUTHOR_FOR_EVERYTHING = "editAuthorForEverything";
+    public final static String EDIT_AUTHOR_ONLY_MANAGER = "editAuthorOnlyManager";
 
     private boolean preoccupancy; //First of all, you can assign userGroup to manager for application.
 

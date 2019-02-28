@@ -21,6 +21,9 @@ package com.navercorp.pinpoint.web.vo.role;
 public class PermsGroupUserGroup {
 
     public final static PermsGroupUserGroup DEFAULT = new PermsGroupUserGroup(false, false);
+    public final static String USER_GROUP = "userGroup";
+    public final static String EDIT_GROUP_FOR_EVERYTHING = "editGroupForEverything";
+    public final static String EDIT_GROUP_ONLY_GROUPMEMBER = "editGroupOnlyGroupMember";
 
     private boolean editGroupForEverything;
     private boolean editGroupOnlyGroupMember;

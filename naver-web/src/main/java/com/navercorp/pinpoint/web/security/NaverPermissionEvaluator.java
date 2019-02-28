@@ -26,47 +26,62 @@ import com.navercorp.pinpoint.web.service.AgentInfoService;
 import com.navercorp.pinpoint.web.vo.AgentInfo;
 import com.navercorp.pinpoint.web.vo.AgentParam;
 import com.navercorp.pinpoint.web.vo.Application;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @author minwoo-jung
  */
-public class NaverPermissionEvaluator extends AppConfigOrganizer implements PermissionEvaluator {
+public class NaverPermissionEvaluator implements PermissionEvaluator {
 
     public static final String ADMIN = "admin";
     public static final String INSPECTOR = "inspector";
     public static final String APPLICATION = "application";
     public static final String AGENT_PARAM = "agentParam";
-    
+    private static final EmptyObject EMPTY_OBJECT = new EmptyObject();
+    private static final String EMPTY_STRING = "";
+
     @Autowired
     ServerMapDataFilter serverMapDataFilter;
     
     @Autowired
     AgentInfoService agentInfoService;
 
-    @Override
-    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        return true;
+    @Autowired
+    PermissionChecker permissionChecker;
+
+    public boolean hasPermission(String permissionCollection) {
+        return hasPermission(permissionCollection, EMPTY_OBJECT);
+    }
+
+    public boolean hasPermission(String permissionCollection, Serializable parameter) {
+        return hasPermission(SecurityContextHolder.getContext().getAuthentication(), parameter, EMPTY_STRING, permissionCollection);
     }
 
     @Override
-    public boolean hasPermission(Authentication authentication, Serializable target, String targetType, Object permission) {
+    public boolean hasPermission(Authentication authentication, Serializable parameter, String targetType, Object permissionOrAuthorizationType) {
         final PinpointAuthentication pinAuth = (PinpointAuthentication) authentication;
+
+        final String permissionType = (String)permissionOrAuthorizationType;
+        if (permissionType.startsWith(PermissionChecker.PREFIX_PERMISSION)) {
+            return permissionChecker.checkPermission(pinAuth, permissionType, parameter);
+        }
 
         if (pinAuth.isPinpointManager()) {
             return true;
         }
 
-        if (ADMIN.equals(permission)) {
+        final String authorizationType = (String)permissionOrAuthorizationType;
+        if (ADMIN.equals(authorizationType)) {
             return pinAuth.isPinpointManager();
         }
-        if (INSPECTOR.equals(permission)) {
-            return hasPermissionForAppAuth(target, targetType, (String)permission);
+        if (INSPECTOR.equals(authorizationType)) {
+            return hasAppAuthorization(parameter, targetType, authorizationType);
         }
         
         return false;
     }
 
-    private boolean hasPermissionForAppAuth(Serializable target, String targetType, String permission) {
+    private boolean hasAppAuthorization(Serializable target, String targetType, String authorizationType) {
         if (APPLICATION.equals(targetType)) {
             String applicationId = (String)target;
             boolean filtered = serverMapDataFilter.filter(new Application(applicationId, ServiceType.UNKNOWN));
@@ -79,5 +94,13 @@ public class NaverPermissionEvaluator extends AppConfigOrganizer implements Perm
         }
         
         return false;
+    }
+
+    @Override
+    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
+        throw new UnsupportedOperationException();
+    }
+
+    private static class EmptyObject implements Serializable {
     }
 }

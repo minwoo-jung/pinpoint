@@ -21,6 +21,9 @@ package com.navercorp.pinpoint.web.vo.role;
 public class PermsGroupAlarm {
 
     public final static PermsGroupAlarm DEFAULT = new PermsGroupAlarm(false, false);
+    public final static String ALARM = "alarm";
+    public final static String EDIT_ALARM_FOR_EVERYTHING = "editAlarmForEverything";
+    public final static String EDIT_ALARM_ONLY_GROUPMEMBER = "editAlarmOnlyGroupMember";
 
     private boolean editAlarmForEverything;
     private boolean editAlarmOnlyGroupMember;

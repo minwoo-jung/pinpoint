@@ -18,6 +18,8 @@ package com.navercorp.pinpoint.web.service;
 import com.navercorp.pinpoint.web.vo.UserRole;
 import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 
+import java.util.List;
+
 /**
  * @author minwoo.jung
  */
@@ -39,4 +41,8 @@ public interface RoleService {
     UserRole selectUserRole(String userId);
 
     RoleInformation getUserPermission(String userId);
+
+    List<String> selectRoleList();
+
+    void dropAndCreateUserRoleTable();
 }

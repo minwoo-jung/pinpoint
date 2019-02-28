@@ -104,25 +104,19 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId) {
-        ApplicationConfiguration appConfig = selectApplicationConfiguration(appUserGroupAuth.getApplicationId());
-        
-        if (appConfig.getAppUserGroupAuth().isEmpty() || existManager(appConfig) == false) {
-            Map<String, UserGroup> userGroups = getUserGroups(userId);
-            if (userGroups.containsKey(appUserGroupAuth.getUserGroupId()) && Role.MANAGER.equals(appUserGroupAuth.getRole())) {
-                return anyOneOccupyAtfirst; 
-            } else {
-                return false;
-            }
-        }
-        if (canEditConfiguration(appUserGroupAuth.getApplicationId(), userId)) {
+    public boolean isCanPreoccupancy(String applicationId) {
+        ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
+
+        if (appConfig.getAppUserGroupAuth().isEmpty()) {
             return true;
         }
-        
+        if (existManager(appConfig) == false) {
+            return true;
+        }
+
         return false;
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public boolean canEditConfiguration(String applicationId, String userId) {

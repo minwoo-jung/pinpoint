@@ -3,6 +3,16 @@
 
 <mapper namespace="com.navercorp.pinpoint.web.dao.RoleDao">
 
+
+    <select id="dropAndCreateUserRoleTable">
+        TRUNCATE user_role;
+    </select>
+
+    <select id="selectRoleList" resultType="java.lang.String">
+        SELECT role_id
+        FROM role_definition
+    </select>
+
     <insert id="insertRoleInformation" parameterType="RoleInfoConvertedJson">
         INSERT INTO role_definition (role_id, permission_collection)
         VALUES (#{roleId}, #{permissionCollectionJson})

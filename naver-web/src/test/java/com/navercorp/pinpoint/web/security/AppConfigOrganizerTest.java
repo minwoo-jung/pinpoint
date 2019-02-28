@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 import com.navercorp.pinpoint.web.vo.UserGroup;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -119,7 +120,7 @@ public class AppConfigOrganizerTest {
         List<UserGroup> userGroupList = new ArrayList<>(1);
         UserGroup userGroup = new UserGroup("1", userGroupId);
         userGroupList.add(userGroup);
-        PinpointAuthentication pinpointAuthentication = new PinpointAuthentication("userId", "name", userGroupList, true, false);
+        PinpointAuthentication pinpointAuthentication = new PinpointAuthentication("userId", "name", userGroupList, true, false, RoleInformation.UNASSIGNED_ROLE);
         pinpointAuthentication.addApplicationConfiguration(applicationConfiguration);
 
         List<AppUserGroupAuth> appUserGroupAuths = appConfigOrganizer.userGroupAuth(pinpointAuthentication, applicationId);
@@ -184,7 +185,7 @@ public class AppConfigOrganizerTest {
         AppConfigOrganizer appConfigOrganizer = new AppConfigOrganizer();
 
         List<UserGroup> userGroupList = new ArrayList<>(0);
-        PinpointAuthentication pinpointAuthentication = new PinpointAuthentication("userId", "name", userGroupList, true, true);
+        PinpointAuthentication pinpointAuthentication = new PinpointAuthentication("userId", "name", userGroupList, true, true, RoleInformation.UNASSIGNED_ROLE);
 
         boolean isPinpointManager = appConfigOrganizer.isPinpointManager(pinpointAuthentication);
         assertTrue(isPinpointManager);

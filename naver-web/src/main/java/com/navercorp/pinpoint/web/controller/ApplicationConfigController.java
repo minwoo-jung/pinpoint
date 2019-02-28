@@ -19,9 +19,12 @@ package com.navercorp.pinpoint.web.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.navercorp.pinpoint.web.security.NaverPermissionEvaluator;
+import com.navercorp.pinpoint.web.security.PermissionChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -53,25 +56,31 @@ public class ApplicationConfigController {
     
     @Autowired
     ApplicationConfigService appConfigService;
-    
+
+    @Autowired
+    NaverPermissionEvaluator naverPermissionEvaluator;
+
+    /**
+     * Check the permissions in the method.
+     * Because this API supports both preoccupancy and insert actions, so you need to determine the two actions and check the permissions accordingly.
+     */
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> insertUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth, @RequestHeader(SSO_USER) String userId) {
         Map<String, String> result = new HashMap<>();
-        boolean isvalid = ValidationCheck(appUserGroupAuth);
-        
+        boolean isvalid = validationCheck(appUserGroupAuth);
         if (isvalid == false) {
             result.put("errorCode", "500");
             result.put("errorMessage", "there is not applicationId/userGroupId/role/configuration. params value : " + appUserGroupAuth);
             return result;
         }
 
-        if (canInsertConfiguration(appUserGroupAuth, userId) == false) {
+        if (checkPermissionForInsert(appUserGroupAuth.getApplicationId()) == false) {
             result.put("errorCode", "500");
             result.put("errorMessage", "user can not edit configuration . params value : " + appUserGroupAuth);
             return result;
         }
-        
+
         appConfigService.insertAppUserGroupAuth(appUserGroupAuth);
         Role role = appConfigService.searchMyRole(appUserGroupAuth.getApplicationId(), userId);
 
@@ -80,11 +89,15 @@ public class ApplicationConfigController {
         return result;
     }
 
-    private boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId) {
-        return appConfigService.canInsertConfiguration(appUserGroupAuth, userId);
+    private boolean checkPermissionForInsert(String applicationId) {
+        if (appConfigService.isCanPreoccupancy(applicationId)) {
+            return naverPermissionEvaluator.hasPermission(PermissionChecker.PERMISSION_APPAUTHORIZATION_PREOCCUPANCY);
+        }
+
+        return naverPermissionEvaluator.hasPermission(PermissionChecker.PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER, applicationId);
     }
 
-    private boolean ValidationCheck(AppUserGroupAuth appUserGroupAuth) {
+    private boolean validationCheck(AppUserGroupAuth appUserGroupAuth) {
         if (StringUtils.isEmpty(appUserGroupAuth.getApplicationId()) || StringUtils.isEmpty(appUserGroupAuth.getUserGroupId()) || (appUserGroupAuth.getRole() == null)) {
             return false;
         }
@@ -93,6 +106,7 @@ public class ApplicationConfigController {
     }
 
 
+    @PreAuthorize("hasPermission(#appUserGroupAuth.getApplicationId(), null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER)")
     @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
     public Map<String, String> deleteUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth, @RequestHeader(SSO_USER) String userId) {
@@ -102,13 +116,6 @@ public class ApplicationConfigController {
             result.put("errorMessage", "There is not applicationId/userGroupId/userId.");
             return result;
         }
-        
-        if(canEditConfiguration(appUserGroupAuth, userId) == false) {
-            result.put("errorCode", "500");
-            result.put("errorMessage", "User can not edit configuration. params value : " + appUserGroupAuth);
-            return result;
-        }
-        
         if(Role.GUEST.getName().equals(appUserGroupAuth.getUserGroupId())) {
             result.put("errorCode", "500");
             result.put("errorMessage", "You can't delete guest userGroup. params value : " + appUserGroupAuth);
@@ -122,21 +129,17 @@ public class ApplicationConfigController {
         result.put(MY_ROLE, role.toString());
         return result;
     }
-    
+
+    @PreAuthorize("hasPermission(#appUserGroupAuth.getApplicationId(), null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER)")
     @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
     public Map<String, String> updateUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth, @RequestHeader(SSO_USER) String userId) {
         Map<String, String> result = new HashMap<>();
-        boolean isvalid = ValidationCheck(appUserGroupAuth);
+        boolean isvalid = validationCheck(appUserGroupAuth);
         
         if (isvalid == false) {
             result.put("errorCode", "500");
             result.put("errorMessage", "There is not applicationId/userGroupId/role/configuration. params value : " + appUserGroupAuth);
-            return result;
-        }
-        if (canEditConfiguration(appUserGroupAuth, userId) == false) {
-            result.put("errorCode", "500");
-            result.put("errorMessage", "User can not edit configuration . params value : " + appUserGroupAuth);
             return result;
         }
         
@@ -146,10 +149,6 @@ public class ApplicationConfigController {
         result.put("result", "SUCCESS");
         result.put(MY_ROLE, role.toString());
         return result;
-    }
-    
-    private boolean canEditConfiguration(AppUserGroupAuth appUserGroupAuth, String userId) {
-        return appConfigService.canEditConfiguration(appUserGroupAuth.getApplicationId(), userId);
     }
 
     @RequestMapping(method = RequestMethod.GET)

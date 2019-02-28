@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.web.security;
 
 import com.navercorp.pinpoint.web.service.MetaDataService;
 import com.navercorp.pinpoint.web.service.SecurityService;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,7 @@ public class LocalAuthenticationProviderTest {
         ReflectionTestUtils.setField(provider, "metaDataService", metaDataService);
 
         SecurityService securityService = mock(SecurityService.class);
-        PinpointAuthentication authentication = new PinpointAuthentication(userId, "name", Collections.emptyList(), true, true);
+        PinpointAuthentication authentication = new PinpointAuthentication(userId, "name", Collections.emptyList(), true, true, RoleInformation.UNASSIGNED_ROLE);
         when(securityService.createPinpointAuthentication(userId)).thenReturn(authentication);
         ReflectionTestUtils.setField(provider, "securityService", securityService);
 

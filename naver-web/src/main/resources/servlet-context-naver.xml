@@ -29,6 +29,7 @@
     </bean>
 
     <bean id="naverPermissionEvaluator" class="com.navercorp.pinpoint.web.security.NaverPermissionEvaluator"/>
+    <bean id="permissionChecker" class="com.navercorp.pinpoint.web.security.PermissionChecker"/>
 
     <bean id="applicationControllerInterceptor" class="com.navercorp.pinpoint.web.controller.ApplicationControllerInterceptor"/>
     <aop:config>

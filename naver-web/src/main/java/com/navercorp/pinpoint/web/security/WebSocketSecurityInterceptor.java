@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
+import com.navercorp.pinpoint.web.service.RoleService;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -32,6 +34,9 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
     
     @Autowired
     private ApplicationConfigService configService;
+
+    @Autowired
+    private RoleService roleService;
     
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         String userId = request.getHeaders().get(SSO_USER).get(0);
@@ -39,9 +44,10 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
         Authentication authentication;
         
         if (user != null) {
-            List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-            boolean pinpointManager = configService.isManager(userId);
-            authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, true, pinpointManager);
+            final List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
+            final boolean pinpointManager = configService.isManager(userId);
+            final RoleInformation roleInformation = roleService.getUserPermission(userId);
+            authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, true, pinpointManager, roleInformation);
         } else {
             authentication = new PinpointAuthentication();
         }

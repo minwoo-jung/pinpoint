@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.web.security;
 
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -51,7 +52,7 @@ public class LocalAuthenticationFilterTest {
 
     @Test
     public void doFilterInternal2Test() throws ServletException, IOException {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);

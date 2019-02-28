@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.web.security;
 import java.util.*;
 
 import com.navercorp.pinpoint.common.util.StringUtils;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -38,9 +39,10 @@ public class PinpointAuthentication implements Authentication {
     private final Map<String, ApplicationConfiguration> appConfigCache;
     private final Collection<GrantedAuthority> authorities;
     private final boolean PinpointManager;
+    private final RoleInformation roleInformation;
     private boolean authenticated;
 
-    public PinpointAuthentication(String userId, String name, List<UserGroup> affiliatedUserGroupList, boolean authenticated, boolean pinpointManager) {
+    public PinpointAuthentication(String userId, String name, List<UserGroup> affiliatedUserGroupList, boolean authenticated, boolean pinpointManager, RoleInformation roleInformation) {
         if (StringUtils.isEmpty(userId)) {
             throw new IllegalArgumentException("userId must not be empty");
         }
@@ -48,6 +50,7 @@ public class PinpointAuthentication implements Authentication {
             throw new IllegalArgumentException("name must not be empty");
         }
         Objects.requireNonNull(affiliatedUserGroupList, "affiliatedUserGroupList must not be empty");
+        Objects.requireNonNull(roleInformation, "roleInformation must not be empty");
 
         this.userId = userId;
         this.name = name;
@@ -55,7 +58,8 @@ public class PinpointAuthentication implements Authentication {
         this.authenticated = authenticated;
         this.PinpointManager = pinpointManager;
         this.authorities = new ArrayList<>(0);
-        appConfigCache = new HashMap<String, ApplicationConfiguration>();
+        this.appConfigCache = new HashMap<String, ApplicationConfiguration>();
+        this.roleInformation = roleInformation;
     }
 
     public PinpointAuthentication() {
@@ -66,6 +70,7 @@ public class PinpointAuthentication implements Authentication {
         authenticated = false;
         authorities = new ArrayList<>(0);
         PinpointManager = false;
+        roleInformation = RoleInformation.UNASSIGNED_ROLE;
     }
 
     public boolean isPinpointManager() {
@@ -110,6 +115,10 @@ public class PinpointAuthentication implements Authentication {
     @Override
     public void setAuthenticated(boolean authenticated) throws IllegalArgumentException {
         this.authenticated = authenticated;
+    }
+
+    public RoleInformation getRoleInformation() {
+        return roleInformation;
     }
 
     public ApplicationConfiguration getApplicationConfiguration(String applicationId) {

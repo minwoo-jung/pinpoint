@@ -17,7 +17,9 @@ package com.navercorp.pinpoint.web.batch;
 
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.web.service.MetaDataService;
+import com.navercorp.pinpoint.web.service.RoleService;
 import com.navercorp.pinpoint.web.service.UserService;
+import com.navercorp.pinpoint.web.vo.UserRole;
 import com.navercorp.pinpoint.web.vo.exception.PinpointWebSocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.navercorp.pinpoint.web.dao.UserDao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +47,13 @@ public class InitListener implements StepExecutionListener {
 
     @Autowired
     UserService userService;
-    
+
+    @Autowired
+    RoleService roleService;
+
+    @Autowired
+    NaverBatchConfiguration naverBatchConfiguration;
+
     @Override
     public void beforeStep(StepExecution stepExecution) {
         insertNamespace(stepExecution);
@@ -65,11 +74,22 @@ public class InitListener implements StepExecutionListener {
 
     private void initTable() {
         userService.dropAndCreateUserTable();
+        roleService.dropAndCreateUserRoleTable();
+    }
+
+    private final static List<String> ROLE = new ArrayList<>(1);
+    static {
+        ROLE.add("admin");
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
+        List<String> userIdList = naverBatchConfiguration.getAdminUserList();
+
+        for (String userId : userIdList){
+            roleService.insertUserRole(new UserRole(userId, ROLE));
+        }
+
         return null;
     }
-
 }

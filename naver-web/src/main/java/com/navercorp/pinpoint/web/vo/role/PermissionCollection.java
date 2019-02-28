@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.web.vo.role;
 
+import java.security.Permission;
 import java.util.Objects;
 
 /**
@@ -22,12 +23,14 @@ import java.util.Objects;
  */
 public class PermissionCollection {
 
+    public final static String PERMISSION = "permission";
     public final static PermissionCollection DEFAULT = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
 
     private PermsGroupAdministration permsGroupAdministration;
     private PermsGroupAppAuthorization permsGroupAppAuthorization;
     private PermsGroupAlarm permsGroupAlarm;
     private PermsGroupUserGroup permsGroupUserGroup;
+
 
     public PermissionCollection() {
     }

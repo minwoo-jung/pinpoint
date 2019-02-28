@@ -15,25 +15,40 @@
  */
 package com.navercorp.pinpoint.web.batch;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.navercorp.pinpoint.web.service.RoleService;
 import com.navercorp.pinpoint.web.service.UserService;
+import com.navercorp.pinpoint.web.vo.UserRole;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.navercorp.pinpoint.web.dao.UserDao;
 import com.navercorp.pinpoint.web.vo.User;
 
 /**
  * @author minwoo.jung <minwoo.jung@navercorp.com>
  */
 public class UserWriter implements ItemWriter<User> {
-	
+
+    private final static List<String> ROLE = new ArrayList<>(1);
+
+    static {
+        ROLE.add("user");
+    }
+
     @Autowired
 	UserService userService;
+
+    @Autowired
+    RoleService roleService;
 	
 	@Override
 	public void write(List<? extends User> users) throws Exception {
 		userService.insertUserList((List<User>) users);
+
+        for (User user : users) {
+            roleService.insertUserRole(new UserRole(user.getUserId(), ROLE));
+        }
 	}
 }

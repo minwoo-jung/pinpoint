@@ -18,6 +18,8 @@ package com.navercorp.pinpoint.web.dao;
 import com.navercorp.pinpoint.web.vo.UserRole;
 import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 
+import java.util.List;
+
 /**
  * @author minwoo.jung
  */
@@ -35,4 +37,8 @@ public interface RoleDao {
     void deleteUserRole(String userId);
 
     UserRole selectUserRole(String userId);
+
+    List<String> selectRoleList();
+
+    void dropAndCreateUserRoleTable();
 }

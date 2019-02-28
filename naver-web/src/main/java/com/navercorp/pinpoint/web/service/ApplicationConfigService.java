@@ -31,8 +31,6 @@ public interface ApplicationConfigService {
 
     Role searchMyRole(String applicationId, String userId);
 
-    boolean canInsertConfiguration(AppUserGroupAuth appUserGroupAuth, String userId);
-
     boolean canEditConfiguration(String applicationId, String userId);
 
     void updateAppUserGroupAuth(AppUserGroupAuth appUserGroupAuth);
@@ -46,4 +44,6 @@ public interface ApplicationConfigService {
     boolean isManager(String userId);
 
     List<AppUserGroupAuth> selectApplicationConfigurationByUserGroupId(String userGroupId);
+
+    boolean isCanPreoccupancy(String applicationId);
 }

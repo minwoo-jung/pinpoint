@@ -20,17 +20,19 @@ import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author minwoo.jung
  */
 @Controller
-@RequestMapping(value = {"roles"})
+@RequestMapping(value = "roles")
 public class RoleController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -40,9 +42,15 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
 
-    //TODO : (minwoo) admin 권한 체크 role 추가 가능한지.
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public List<String> getRoleList() {
+        return roleService.selectRoleList();
+    }
+
     //TODO : (minwoo) parameter valid 체크
     //TODO : (minwoo) 예외 처리
+    @PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_ROLE)")
     @RequestMapping(value = "/role", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> insertRole(@RequestBody RoleInformation roleInformation) {
@@ -60,6 +68,7 @@ public class RoleController {
         return roleInformation;
     }
 
+    @PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_ROLE)")
     @RequestMapping(value = "/role", method = RequestMethod.DELETE)
     @ResponseBody
     public Object deleteRole(@RequestParam(value = ROLE_ID) String roleId) {
@@ -70,6 +79,7 @@ public class RoleController {
         return result;
     }
 
+    @PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_ROLE)")
     @RequestMapping(value = "/role", method = RequestMethod.PUT)
     @ResponseBody
     public Object updateRole(@RequestBody RoleInformation roleInformation) {

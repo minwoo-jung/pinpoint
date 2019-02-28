@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.web.service;
 import com.navercorp.pinpoint.web.security.PinpointAuthentication;
 import com.navercorp.pinpoint.web.vo.User;
 import com.navercorp.pinpoint.web.vo.UserGroup;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,15 +41,19 @@ public class SecurityServiceImpl implements SecurityService {
     @Autowired
     private ApplicationConfigService configService;
 
+    @Autowired
+    private RoleService roleService;
+
     @Override
     @Transactional(readOnly = true, rollbackFor = {Exception.class})
     public PinpointAuthentication createPinpointAuthentication(String userId) {
         User user = userService.selectUserByUserId(userId);
 
         if (user != null) {
-            List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-            boolean pinpointManager = configService.isManager(userId);
-            return new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, true, pinpointManager);
+            final List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
+            final boolean pinpointManager = configService.isManager(userId);
+            final RoleInformation roleInformation = roleService.getUserPermission(userId);
+            return new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, true, pinpointManager, roleInformation);
         } else {
             return new PinpointAuthentication();
         }

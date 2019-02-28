@@ -45,6 +45,16 @@ public class MysqlRoleDao implements RoleDao {
     private SqlSessionTemplate sqlSessionTemplate;
 
     @Override
+    public List<String> selectRoleList() {
+        return sqlSessionTemplate.selectList(NAMESPACE + "selectRoleList");
+    }
+
+    @Override
+    public void dropAndCreateUserRoleTable() {
+        sqlSessionTemplate.selectList(NAMESPACE + "dropAndCreateUserRoleTable");
+    }
+
+    @Override
     public void insertRoleInformation(RoleInformation roleInformation) {
         RoleInfoConvertedJson roleInfo = new RoleInfoConvertedJson(roleInformation);
         sqlSessionTemplate.insert(NAMESPACE + "insertRoleInformation", roleInfo);
