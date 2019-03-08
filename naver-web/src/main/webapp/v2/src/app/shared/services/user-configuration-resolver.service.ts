@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router, Resolve, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, EMPTY } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+
 import { UrlPath } from 'app/shared/models';
 import { UserConfigurationDataService } from './user-configuration-data.service';
 import { UserPermissionCheckService } from './user-permission-check.service';

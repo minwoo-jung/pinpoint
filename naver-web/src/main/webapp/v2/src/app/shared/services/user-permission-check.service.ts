@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
+
 import { UrlPath, UrlPathId } from 'app/shared/models';
 import { AppState, STORE_KEY } from 'app/shared/store';
 
@@ -13,7 +14,9 @@ export class UserPermissionCheckService {
     ];
     private unsubscribe: Subject<null> = new Subject();
     private userPermissions: IPermissions;
-    constructor(private store: Store<AppState>) {
+    constructor(
+        private store: Store<AppState>
+    ) {
         this.store.pipe(
             select(STORE_KEY.USER_PERMISSIONS),
             takeUntil(this.unsubscribe)

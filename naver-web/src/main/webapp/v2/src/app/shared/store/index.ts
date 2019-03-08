@@ -23,7 +23,6 @@ import * as serverMap from './server-map.reducer';
 import * as serverMapSelectedTarget from './server-map-selected-target.reducer';
 import * as serverMapLoadingState from './server-map-loading-state.reducer';
 import * as uiState from './ui-state.reducer';
-import * as urlPath from './url-path.reducer';
 import * as userPermissions from './user-permissions.reducer';
 
 export interface AppState {
@@ -79,7 +78,6 @@ export const STORE_KEY = {
     ADMIN_AGENT_LIST: 'adminAgentList',
     SERVER_AND_AGENT: 'serverAndAgent',
     UI_STATE: 'uiState',
-    URL_PATH: 'urlPath',
     USER_PERMISSIONS: 'userPermissions'
 };
 
@@ -109,7 +107,6 @@ export const reducers: ActionReducerMap<any> = {
     serverAndAgent: serverAndAgent.Reducer,
     uiState: uiState.Reducer,
     timeline: timeline.Reducer,
-    urlPath: urlPath.Reducer,
     userPermissions: userPermissions.Reducer
 };
 
@@ -139,7 +136,6 @@ export const Actions = {
     'ChangeServerMapDisableState': uiState.ChangeServerMapDisableState,
     'ChangeInfoPerServerVisibleState': uiState.ChangeInfoPerServerVisibleState,
     'UpdateTimelineData': timeline.UpdateTimelineData,
-    'UpdateURLPath': urlPath.UpdateURLPath,
     'UpdatePermissions': userPermissions.UpdateUserPermissions
 };
 

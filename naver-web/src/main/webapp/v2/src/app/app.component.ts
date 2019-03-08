@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { WindowRefService } from 'app/shared/services';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
+import { WindowRefService, RouteInfoCollectorService } from 'app/shared/services';
 
 @Component({
     selector: 'pp-root',
@@ -10,8 +13,18 @@ import { WindowRefService } from 'app/shared/services';
 export class AppComponent implements OnInit {
     constructor(
         private windowRefService: WindowRefService,
-        private translateService: TranslateService
-    ) {
+        private translateService: TranslateService,
+        private routeInfoCollectorService: RouteInfoCollectorService,
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+    ) {}
+
+    ngOnInit() {
+        this.setLang();
+        this.listenToRouter();
+    }
+
+    private setLang(): void {
         const supportLanguages = ['en', 'ko'];
         const defaultLang = 'en';
         const currentLang = this.windowRefService.nativeWindow.navigator.language.substring(0, 2);
@@ -24,6 +37,7 @@ export class AppComponent implements OnInit {
         } else {
             this.translateService.use(defaultLang);
         }
+
         this.translateService.getTranslation(currentLang).subscribe((translate) => {
             if (currentLang === 'ko') {
                 translate.CONFIGURATION.COMMON.ROLE = '권한';
@@ -102,22 +116,12 @@ export class AppComponent implements OnInit {
             }
         });
     }
-    ngOnInit() {}
-    // 동작 안함.
-    // private setTranslateForNaver(): void {
-    //     this.translateService.setTranslation('ko', {
-    //         CONFIGURATION: {
-    //             COMMON: {
-    //                 ROLE: 'Role'
-    //             }
-    //         }
-    //     }, true);
-    //     this.translateService.setTranslation('en', {
-    //         CONFIGURATION: {
-    //             COMMON: {
-    //                 ROLE: 'Role'
-    //             }
-    //         }
-    //     }, true);
-    // }
+
+    private listenToRouter(): void {
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd)
+        ).subscribe(() => {
+            this.routeInfoCollectorService.collectUrlInfo(this.activatedRoute);
+        });
+    }
 }

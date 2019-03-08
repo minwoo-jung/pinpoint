@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector, ComponentFactoryResolver } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { LocalStorageService } from 'angular-2-local-storage';
@@ -46,7 +46,9 @@ export class WebAppSettingDataService {
         private componentDefaultSettingDataService: ComponentDefaultSettingDataService,
         private dynamicPopupService: DynamicPopupService,
         private newUrlStateNotificationService: NewUrlStateNotificationService,
-        private userConfigurationDataService: UserConfigurationDataService
+        private userConfigurationDataService: UserConfigurationDataService,
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private injector: Injector
     ) {
         this.store.dispatch(new Actions.ChangeTimezone(this.getTimezone()));
         this.store.dispatch(new Actions.ChangeDateFormat(this.getDateFormat()));
@@ -135,6 +137,9 @@ export class WebAppSettingDataService {
                     contents: error
                 },
                 component: ServerErrorPopupContainerComponent
+            }, {
+                resolver: this.componentFactoryResolver,
+                injector: this.injector
             });
         });
     }

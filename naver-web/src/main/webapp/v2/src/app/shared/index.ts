@@ -1,5 +1,5 @@
 
-import { NgModule } from '@angular/core';
+import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClipboardModule } from 'ngx-clipboard';
@@ -42,6 +42,8 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { JSONTextParserPipe } from './pipes/json-text-parser.pipe';
 import { DynamicPopupService } from 'app/shared/services/dynamic-popup.service';
 import { MessageQueueService } from './services/message-queue.service';
+import { WindowRefService } from './services/window-ref.service';
+import { ApplicationListDataService } from './services/application-list-data.service';
 import { UserConfigurationDataService } from './services/user-configuration-data.service';
 import { UserConfigurationResolverService } from './services/user-configuration-resolver.service';
 import { UserPermissionCheckService } from './services/user-permission-check.service';
@@ -88,32 +90,41 @@ import { UserPermissionCheckService } from './services/user-permission-check.ser
         SplitterDirective,
         SearchInputDirective
     ],
-    providers: [
-        TranslateReplaceService,
-        ServerTimeDataService,
-        ServerTimeResolverService,
-        ComponentDefaultSettingDataService,
-        RouteInfoCollectorService,
-        WebAppSettingDataService,
-        NewUrlStateNotificationService,
-        UrlRouteManagerService,
-        SystemConfigurationDataService,
-        SystemConfigurationResolverService,
-        SplitRatioService,
-        GutterEventService,
-        ApplicationListResolverService,
-        AnalyticsService,
-        BrowserSupportCheckService,
-        AgentHistogramDataService,
-        TransactionDetailDataService,
-        TransactionViewTypeService,
-        StoreHelperService,
-        UrlValidateGuard,
-        DynamicPopupService,
-        MessageQueueService,
-        UserConfigurationDataService,
-        UserConfigurationResolverService,
-        UserPermissionCheckService
-    ]
+    providers: []
 })
-export class SharedModule { }
+export class SharedModule {
+    static forRoot(): ModuleWithProviders {
+        return {
+            ngModule: SharedModule,
+            providers: [
+                TranslateReplaceService,
+                ServerTimeDataService,
+                ServerTimeResolverService,
+                ComponentDefaultSettingDataService,
+                RouteInfoCollectorService,
+                WebAppSettingDataService,
+                NewUrlStateNotificationService,
+                UrlRouteManagerService,
+                SystemConfigurationDataService,
+                SystemConfigurationResolverService,
+                SplitRatioService,
+                GutterEventService,
+                ApplicationListResolverService,
+                AnalyticsService,
+                BrowserSupportCheckService,
+                AgentHistogramDataService,
+                TransactionDetailDataService,
+                TransactionViewTypeService,
+                StoreHelperService,
+                UrlValidateGuard,
+                DynamicPopupService,
+                MessageQueueService,
+                ApplicationListDataService,
+                WindowRefService,
+                UserConfigurationDataService,
+                UserConfigurationResolverService,
+                UserPermissionCheckService
+            ]
+        }
+    }
+}

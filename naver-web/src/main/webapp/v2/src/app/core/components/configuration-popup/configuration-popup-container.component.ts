@@ -1,7 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, AfterViewInit, Input, ElementRef } from '@angular/core';
 
-import { DynamicPopup, WindowRefService, PopupConstant, UrlRouteManagerService, StoreHelperService, UserPermissionCheckService } from 'app/shared/services';
-import { Actions } from 'app/shared/store';
+import { DynamicPopup, WindowRefService, PopupConstant, UrlRouteManagerService, UserPermissionCheckService } from 'app/shared/services';
 
 @Component({
     selector: 'pp-configuration-popup-container',
@@ -23,7 +22,6 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
         private windowRefService: WindowRefService,
         private el: ElementRef,
         private userPermissionCheckService: UserPermissionCheckService,
-        private storeHelperService: StoreHelperService,
     ) {}
 
     ngOnInit() {
@@ -49,7 +47,6 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
     }
 
     onMenuClick(type: string): void {
-        this.updateURLPathState();
         this.urlRouteManagerService.moveToConfigPage(type);
         this.outClose.emit();
     }
@@ -61,11 +58,5 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
 
     onClickOutside(): void {
         this.outClose.emit();
-    }
-
-    private updateURLPathState(): void {
-        const pathName = (this.windowRefService.nativeWindow as Window).location.pathname;
-
-        this.storeHelperService.dispatch(new Actions.UpdateURLPath(pathName));
     }
 }

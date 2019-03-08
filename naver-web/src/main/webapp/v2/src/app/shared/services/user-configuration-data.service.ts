@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 
 import { AppState, Actions } from 'app/shared/store';
 import { Application } from 'app/core/models';
+
 @Injectable()
 export class UserConfigurationDataService {
     private url = 'users/user/permissionAndConfiguration.pinpoint';

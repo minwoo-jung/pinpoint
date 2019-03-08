@@ -21,6 +21,7 @@ export * from './web-app-setting-data.service';
 export * from './window-ref.service';
 export * from './dynamic-popup.service';
 export * from './message-queue.service';
+export * from './application-list-data.service';
 export * from './user-configuration-data.service';
 export * from './user-configuration-resolver.service';
 export * from './user-permission-check.service';

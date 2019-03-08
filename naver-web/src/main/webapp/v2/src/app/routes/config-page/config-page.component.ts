@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { take, map } from 'rxjs/operators';
 
-import { UserPermissionCheckService, RouteInfoCollectorService, UrlRouteManagerService, StoreHelperService } from 'app/shared/services';
+import { UserPermissionCheckService, NewUrlStateNotificationService, UrlRouteManagerService } from 'app/shared/services';
+import { UrlPath } from 'app/shared/models';
 
 @Component({
     selector: 'pp-config-page',
@@ -12,9 +11,8 @@ import { UserPermissionCheckService, RouteInfoCollectorService, UrlRouteManagerS
 export class ConfigPageComponent implements OnInit {
     canViewAdminMenu: boolean;
     constructor(
-        private routeInfoCollectorService: RouteInfoCollectorService,
         private urlRouteManagerService: UrlRouteManagerService,
-        private storeHelperService: StoreHelperService,
+        private newUrlStateNotificationService: NewUrlStateNotificationService,
         private userPermissionCheckService: UserPermissionCheckService
     ) {}
 
@@ -22,13 +20,12 @@ export class ConfigPageComponent implements OnInit {
         this.canViewAdminMenu = this.userPermissionCheckService.canViewAdminMenu();
     }
     onClickExit(): void {
-        this.storeHelperService.getURLPath().pipe(
-            take(1),
-            map((urlPath: string) => {
-                return urlPath.split('/').slice(1).map((path: string) => decodeURIComponent(path));
-            })
-        ).subscribe((url: string[]) => {
-            this.urlRouteManagerService.moveOnPage({ url });
-        });
+        const { startPath, pathParams, queryParams } = this.newUrlStateNotificationService.getPrevPageUrlInfo();
+        const url = startPath === UrlPath.CONFIG ? [UrlPath.MAIN] : [startPath, ...[ ...pathParams.values() ]];
+        const queryParam = [ ...queryParams.entries() ].reduce((acc: object, [key, value]: string[]) => {
+            return { ...acc, [key]: value };
+        }, {});
+
+        this.urlRouteManagerService.moveOnPage({ url, queryParam });
     }
 }

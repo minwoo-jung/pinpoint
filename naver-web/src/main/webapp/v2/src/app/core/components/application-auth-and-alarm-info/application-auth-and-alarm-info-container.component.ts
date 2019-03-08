@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector, ComponentFactoryResolver } from '@angular/core';
 import { Subject, Observable, of, combineLatest } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+
 import { UrlPath, UrlPathId } from 'app/shared/models';
 import { UrlRouteManagerService, DynamicPopupService, MessageQueueService, MESSAGE_TO } from 'app/shared/services';
 import { ApplicationAuthAndAlarmDataService } from './application-auth-and-alarm-data.service';
@@ -26,7 +27,9 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit {
         private urlRouteManagerService: UrlRouteManagerService,
         private dynamicPopupService: DynamicPopupService,
         private messageQueueService: MessageQueueService,
-        private applicationAuthAndAlarmDataService: ApplicationAuthAndAlarmDataService
+        private applicationAuthAndAlarmDataService: ApplicationAuthAndAlarmDataService,
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private injector: Injector
     ) {}
     ngOnInit() {
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((param: any[]) => {
@@ -87,6 +90,9 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit {
                 coordY: top + height / 2 - 130
             },
             component: ApplicationAuthAndAlarmPopupComponent
+        }, {
+            resolver: this.componentFactoryResolver,
+            injector: this.injector
         });
     }
 }
