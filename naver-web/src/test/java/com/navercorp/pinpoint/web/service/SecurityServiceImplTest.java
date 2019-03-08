@@ -19,6 +19,8 @@ package com.navercorp.pinpoint.web.service;
 import com.navercorp.pinpoint.web.security.PinpointAuthentication;
 import com.navercorp.pinpoint.web.vo.User;
 import com.navercorp.pinpoint.web.vo.UserGroup;
+import com.navercorp.pinpoint.web.vo.role.PermissionCollection;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -50,6 +52,11 @@ public class SecurityServiceImplTest {
         when(userGroupService.selectUserGroupByUserId(userId)).thenReturn(userGroupList);
         ReflectionTestUtils.setField(securityService, "userGroupService", userGroupService);
 
+        RoleService roleService = mock(RoleService.class);
+        RoleInformation roleInformation = new RoleInformation("roleId", PermissionCollection.DEFAULT);
+        when(roleService.getUserPermission(userId)).thenReturn(roleInformation);
+        ReflectionTestUtils.setField(securityService, "roleService", roleService);
+
         ApplicationConfigService configService = mock(ApplicationConfigService.class);
         when(configService.isManager(userId)).thenReturn(true);
         ReflectionTestUtils.setField(securityService, "configService", configService);
@@ -62,6 +69,7 @@ public class SecurityServiceImplTest {
         assertEquals(pinpointAuthentication.getUserGroupList(), userGroupList);
         assertTrue(pinpointAuthentication.isPinpointManager());
         assertTrue(pinpointAuthentication.isAuthenticated());
+        assertEquals(pinpointAuthentication.getRoleInformation(), roleInformation);
     }
 
     @Test

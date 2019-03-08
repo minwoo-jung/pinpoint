@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
  */
 public class NaverPermissionEvaluatorTest {
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void hasPermissionTest() {
         NaverPermissionEvaluator naverPermissionEvaluator = new NaverPermissionEvaluator();
         assertTrue(naverPermissionEvaluator.hasPermission(null, null, null));

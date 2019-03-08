@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.web.batch;
 
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.web.service.MetaDataService;
+import com.navercorp.pinpoint.web.service.RoleService;
 import com.navercorp.pinpoint.web.service.UserService;
 import com.navercorp.pinpoint.web.vo.exception.PinpointWebSocketException;
 import org.junit.Test;
@@ -43,6 +44,8 @@ public class InitListenerTest {
         ReflectionTestUtils.setField(initListener, "metaDataService", metaDataService);
         UserService userService = mock(UserService.class);
         ReflectionTestUtils.setField(initListener, "userService", userService);
+        RoleService roleService = mock(RoleService.class);
+        ReflectionTestUtils.setField(initListener, "roleService", roleService);
 
         StepExecution stepExecution = new StepExecution("test_step", new JobExecution(1L, new JobParameters(), "jobConfig"));
 

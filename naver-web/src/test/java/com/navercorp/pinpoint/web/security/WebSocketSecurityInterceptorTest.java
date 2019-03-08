@@ -17,9 +17,12 @@
 package com.navercorp.pinpoint.web.security;
 
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
+import com.navercorp.pinpoint.web.service.RoleService;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.service.UserService;
 import com.navercorp.pinpoint.web.vo.User;
+import com.navercorp.pinpoint.web.vo.role.PermissionCollection;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.http.server.ServerHttpRequest;
@@ -65,6 +68,11 @@ public class WebSocketSecurityInterceptorTest {
         ApplicationConfigService configService = mock(ApplicationConfigService.class);
         when(configService.isManager(userId)).thenReturn(true);
         ReflectionTestUtils.setField(interceptor, "configService", configService);
+        RoleService roleService = mock(RoleService.class);
+        RoleInformation roleInformation = new RoleInformation("roleId", PermissionCollection.DEFAULT);
+        when(roleService.getUserPermission(userId)).thenReturn(roleInformation);
+        ReflectionTestUtils.setField(interceptor, "roleService", roleService);
+
 
         assertTrue(interceptor.beforeHandshake(request, response, null, null));
 
