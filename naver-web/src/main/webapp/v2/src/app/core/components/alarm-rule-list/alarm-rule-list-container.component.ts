@@ -269,7 +269,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
     }
     onRemoveAlarm(ruleId: string): void {
         this.showProcessing();
-        this.alarmRuleDataService.remove(ruleId).subscribe((response: IAlarmRuleResponse | IServerErrorShortFormat) => {
+        this.alarmRuleDataService.remove(this.currentApplication.getApplicationName(), ruleId).subscribe((response: IAlarmRuleResponse | IServerErrorShortFormat) => {
             if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
                 this.errorMessage = response.errorMessage;
                 this.hideProcessing();

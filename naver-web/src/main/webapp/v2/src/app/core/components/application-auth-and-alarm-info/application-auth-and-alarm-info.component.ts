@@ -56,11 +56,11 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
                         cellStyle: this.alignCenterPointCellStyle
                     },
                     {
-                        headerName: 'Edit & Alarm',
+                        headerName: 'More',
                         field: 'role',
                         width: 150,
                         cellRenderer: (params: any) => {
-                            return params.value === 'manager' ? '<i class="fas fa-external-link-alt"></i>' : '';
+                            return '<i class="fas fa-external-link-alt"></i>';
                         },
                         cellStyle: this.alignCenterPointCellStyle
                     }
