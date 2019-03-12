@@ -20,11 +20,12 @@ package com.navercorp.pinpoint.web.vo.role;
  */
 public class PermsGroupAdministration {
 
-    public final static PermsGroupAdministration DEFAULT = new PermsGroupAdministration(false, false, false);
+    public final static PermsGroupAdministration DEFAULT = new PermsGroupAdministration(false, false, false, false);
     public final static String ADMINISTRATION = "administration";
     public final static String VIEW_ADMIN_MENU = "viewAdminMenu";
     public final static String EDIT_USER = "editUser";
     public final static String EDIT_ROLE = "editRole";
+    public final static String CALL_ADMIN_API = "callAdminApi";
 
     private boolean viewAdminMenu;
 
@@ -32,10 +33,13 @@ public class PermsGroupAdministration {
 
     private boolean editRole;
 
-    public PermsGroupAdministration(boolean viewAdminMenu, boolean editUser, boolean editRole) {
+    private boolean callAdminApi;
+
+    public PermsGroupAdministration(boolean viewAdminMenu, boolean editUser, boolean editRole, boolean callAdminApi) {
         this.viewAdminMenu = viewAdminMenu;
         this.editUser = editUser;
         this.editRole = editRole;
+        this.callAdminApi = callAdminApi;
     }
 
     public PermsGroupAdministration() {
@@ -65,11 +69,20 @@ public class PermsGroupAdministration {
         this.editUser = editUser;
     }
 
+    public boolean getCallAdminApi() {
+        return callAdminApi;
+    }
+
+    public void setCallAdminApi(boolean callAdminApi) {
+        this.callAdminApi = callAdminApi;
+    }
+
     public static PermsGroupAdministration merge(PermsGroupAdministration permsGroupAdministration1, PermsGroupAdministration permsGroupAdministration2) {
         final boolean viewAdminMenu = permsGroupAdministration1.getViewAdminMenu() || permsGroupAdministration2.getViewAdminMenu();
         final boolean editUser = permsGroupAdministration1.getEditUser() || permsGroupAdministration2.getEditUser();
         final boolean editRole = permsGroupAdministration1.getEditRole() || permsGroupAdministration2.getEditRole();
-        return new PermsGroupAdministration(viewAdminMenu, editUser, editRole);
+        final boolean callAdminApi = permsGroupAdministration1.getCallAdminApi() || permsGroupAdministration2.getCallAdminApi();
+        return new PermsGroupAdministration(viewAdminMenu, editUser, editRole, callAdminApi);
     }
 
     @Override
@@ -78,6 +91,7 @@ public class PermsGroupAdministration {
         sb.append("viewAdminMenu=").append(viewAdminMenu);
         sb.append(", editUser=").append(editUser);
         sb.append(", editRole=").append(editRole);
+        sb.append(", callAdminApi=").append(callAdminApi);
         sb.append('}');
         return sb.toString();
     }

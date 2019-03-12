@@ -64,7 +64,7 @@ public class MysqlRoleDaoTest extends RequestContextInitializer {
     }
 
     private void insertAndDelete() {
-        PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration(false, true, true);
+        PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration(false, true, true, false);
         PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(false, false, false);
         PermsGroupAlarm permsGroupAlarm = new PermsGroupAlarm(false, false);
         PermsGroupUserGroup permsGroupUserGroup = new PermsGroupUserGroup(false, false);
@@ -74,7 +74,7 @@ public class MysqlRoleDaoTest extends RequestContextInitializer {
     }
 
     private void insertAndDelete02() {
-        PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration(false, false, false);
+        PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration(false, false, false, true);
         PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(false, false, false);
         PermsGroupAlarm permsGroupAlarm = new PermsGroupAlarm(false, false);
         PermsGroupUserGroup permsGroupUserGroup = new PermsGroupUserGroup(false, false);

@@ -20,14 +20,12 @@ import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.role.*;
-import org.apache.hadoop.hbase.protobuf.generated.AccessControlProtos;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -49,66 +47,83 @@ public class PermissionCheckerTest {
 
     @Test
     public void PermsGroupAdministrationTest01() {
-        PermsGroupAdministration permsGroupAdministration01 = new PermsGroupAdministration(true, false, false);
+        PermsGroupAdministration permsGroupAdministration01 = new PermsGroupAdministration(true, false, false, false);
         PermissionCollection permissionCollection01 = new PermissionCollection(permsGroupAdministration01, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_administration_viewAdminMenu", "");
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_VIEW_ADMIN_MENU, "");
         assertTrue(result01);
 
-        PermsGroupAdministration permsGroupAdministration02 = new PermsGroupAdministration(false, false, false);
+        PermsGroupAdministration permsGroupAdministration02 = new PermsGroupAdministration(false, false, false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(permsGroupAdministration02, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_administration_viewAdminMenu","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_VIEW_ADMIN_MENU,"");
         assertFalse(result02);
     }
 
     @Test
     public void PermsGroupAdministrationTest02() {
-        PermsGroupAdministration permsGroupAdministration01 = new PermsGroupAdministration(false, true, false);
+        PermsGroupAdministration permsGroupAdministration01 = new PermsGroupAdministration(false, true, false, false);
         PermissionCollection permissionCollection01 = new PermissionCollection(permsGroupAdministration01, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_administration_editUser","");
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_EDIT_USER,"");
         assertTrue(result01);
 
-        PermsGroupAdministration permsGroupAdministration02 = new PermsGroupAdministration(false, false, false);
+        PermsGroupAdministration permsGroupAdministration02 = new PermsGroupAdministration(false, false, false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(permsGroupAdministration02, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_administration_editUser","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_EDIT_USER,"");
         assertFalse(result02);
 
-        PermsGroupAdministration permsGroupAdministration03 = new PermsGroupAdministration(false, false, false);
+        PermsGroupAdministration permsGroupAdministration03 = new PermsGroupAdministration(false, false, false, false);
         PermissionCollection permissionCollection03 = new PermissionCollection(permsGroupAdministration03, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation03 = new RoleInformation("testRole", permissionCollection03);
         PinpointAuthentication authentication03 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation03);
-        boolean result03 = permissionChecker.checkPermission(authentication03, "permission_administration_editUser","test_id");
+        boolean result03 = permissionChecker.checkPermission(authentication03, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_EDIT_USER,"test_id");
         assertTrue(result03);
 
-        PermsGroupAdministration permsGroupAdministration04 = new PermsGroupAdministration(false, false, false);
+        PermsGroupAdministration permsGroupAdministration04 = new PermsGroupAdministration(false, false, false, false);
         PermissionCollection permissionCollection04 = new PermissionCollection(permsGroupAdministration04, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation04 = new RoleInformation("testRole", permissionCollection04);
         PinpointAuthentication authentication04 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation04);
-        boolean result04 = permissionChecker.checkPermission(authentication04, "permission_administration_editUser",new Object());
+        boolean result04 = permissionChecker.checkPermission(authentication04, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_EDIT_USER, new Object());
         assertFalse(result04);
     }
 
     @Test
     public void PermsGroupAdministrationTest03() {
-        PermsGroupAdministration permsGroupAdministration01 = new PermsGroupAdministration(false, true, true);
+        PermsGroupAdministration permsGroupAdministration01 = new PermsGroupAdministration(false, true, true, false);
         PermissionCollection permissionCollection01 = new PermissionCollection(permsGroupAdministration01, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_administration_editRole","");
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_EDIT_ROLE,"");
         assertTrue(result01);
 
-        PermsGroupAdministration permsGroupAdministration02 = new PermsGroupAdministration(false, false, false);
+        PermsGroupAdministration permsGroupAdministration02 = new PermsGroupAdministration(false, false, false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(permsGroupAdministration02, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_administration_editRole","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_EDIT_ROLE,"");
+        assertFalse(result02);
+    }
+
+    @Test
+    public void PermsGroupAdministrationTest04() {
+        PermsGroupAdministration permsGroupAdministration01 = new PermsGroupAdministration(false, false, false, true);
+        PermissionCollection permissionCollection01 = new PermissionCollection(permsGroupAdministration01, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
+        RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
+        PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_CALL_API_FOR_APP_AGENT_MANAGEMENT,"");
+        assertTrue(result01);
+
+        PermsGroupAdministration permsGroupAdministration02 = new PermsGroupAdministration(false, false, false, false);
+        PermissionCollection permissionCollection02 = new PermissionCollection(permsGroupAdministration02, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
+        RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
+        PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_ADMINISTRATION_CALL_API_FOR_APP_AGENT_MANAGEMENT,"");
         assertFalse(result02);
     }
 
@@ -118,14 +133,14 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection01 = new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization01, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_appAuthorization_preoccupancy","");
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_APPAUTHORIZATION_PREOCCUPANCY,"");
         assertTrue(result01);
 
         PermsGroupAppAuthorization permsGroupAppAuthorization02 = new PermsGroupAppAuthorization(false, false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization02, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_appAuthorization_preoccupancy","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_APPAUTHORIZATION_PREOCCUPANCY,"");
         assertFalse(result02);
     }
 
@@ -135,14 +150,14 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection01 = new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization01, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_appAuthorization_editAuthorForEverything","");
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_FOR_EVERYTHING,"");
         assertTrue(result01);
 
         PermsGroupAppAuthorization permsGroupAppAuthorization02 = new PermsGroupAppAuthorization(false, false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization02, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_appAuthorization_editAuthorForEverything","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_FOR_EVERYTHING,"");
         assertFalse(result02);
     }
 
@@ -152,14 +167,14 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection01 = new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization01, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_appAuthorization_editAuthorOnlyManager","");
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER,"");
         assertTrue(result01);
 
         PermsGroupAppAuthorization permsGroupAppAuthorization02 = new PermsGroupAppAuthorization(false, false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization02, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_appAuthorization_editAuthorOnlyManager","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER,"");
         assertFalse(result02);
 
         final String applicationId ="testApplication";
@@ -171,7 +186,7 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection03 = new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization03, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation03 = new RoleInformation("testRole", permissionCollection03);
         PinpointAuthentication authentication03 = new PinpointAuthentication(userId, "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation03);
-        boolean result03 = permissionChecker.checkPermission(authentication03, "permission_appAuthorization_editAuthorOnlyManager",applicationId);
+        boolean result03 = permissionChecker.checkPermission(authentication03, PermissionCollectionDefinition.PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER,applicationId);
         assertTrue(result03);
 
         ApplicationConfigService applicationConfigService02 = mock(ApplicationConfigService.class);
@@ -181,7 +196,7 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection04 = new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization04, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation04 = new RoleInformation("testRole", permissionCollection04);
         PinpointAuthentication authentication04 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation04);
-        boolean result04 = permissionChecker.checkPermission(authentication04, "permission_appAuthorization_editAuthorOnlyManager",applicationId);
+        boolean result04 = permissionChecker.checkPermission(authentication04, PermissionCollectionDefinition.PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER, applicationId);
         assertFalse(result04);
     }
 
@@ -191,14 +206,14 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection01 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, permsGroupAlarm01, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_alarm_editAlarmForEverything","");
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_ALARM_EDIT_ALARM_FOR_EVERYTHING,"");
         assertTrue(result01);
 
         PermsGroupAlarm permsGroupAlarm02 = new PermsGroupAlarm(false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, permsGroupAlarm02, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_alarm_editAlarmForEverything","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_ALARM_EDIT_ALARM_FOR_EVERYTHING,"");
         assertFalse(result02);
     }
 
@@ -208,7 +223,7 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection03 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, permsGroupAlarm03, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation03 = new RoleInformation("testRole", permissionCollection03);
         PinpointAuthentication authentication03 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation03);
-        boolean result03 = permissionChecker.checkPermission(authentication03, "permission_alarm_editAlarmOnlyGroupMember","");
+        boolean result03 = permissionChecker.checkPermission(authentication03, PermissionCollectionDefinition.PERMISSION_ALARM_EDIT_ALARM_ONLY_MANAGER,"");
         assertTrue(result03);
 
         final String applicationId ="testApplication";
@@ -220,7 +235,7 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection01 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, permsGroupAlarm01, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication(userId, "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_alarm_editAlarmOnlyGroupMember",applicationId);
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_ALARM_EDIT_ALARM_ONLY_MANAGER, applicationId);
         assertTrue(result01);
 
         ApplicationConfigService applicationConfigService02 = mock(ApplicationConfigService.class);
@@ -230,14 +245,14 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection04 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, permsGroupAlarm04, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation04 = new RoleInformation("testRole", permissionCollection04);
         PinpointAuthentication authentication04 = new PinpointAuthentication(userId, "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation04);
-        boolean result04 = permissionChecker.checkPermission(authentication04, "permission_alarm_editAlarmOnlyGroupMember",applicationId);
+        boolean result04 = permissionChecker.checkPermission(authentication04, PermissionCollectionDefinition.PERMISSION_ALARM_EDIT_ALARM_ONLY_MANAGER, applicationId);
         assertFalse(result04);
 
         PermsGroupAlarm permsGroupAlarm02 = new PermsGroupAlarm(false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, permsGroupAlarm02, PermsGroupUserGroup.DEFAULT);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_alarm_editAlarmOnlyGroupMember","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_ALARM_EDIT_ALARM_ONLY_MANAGER,"");
         assertFalse(result02);
     }
 
@@ -247,14 +262,14 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection01 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, permsGroupUserGroup01);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_userGroup_editGroupForEverything","");
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_USERGROUP_EDIT_GROUP_FOR_EVERYTHING,"");
         assertTrue(result01);
 
         PermsGroupUserGroup permsGroupUserGroup02 = new PermsGroupUserGroup(false, false);
         PermissionCollection permissionCollection02 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, permsGroupUserGroup02);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_userGroup_editGroupForEverything","");
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_USERGROUP_EDIT_GROUP_FOR_EVERYTHING,"");
         assertFalse(result02);
     }
 
@@ -264,7 +279,7 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection03 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, permsGroupUserGroup03);
         RoleInformation roleInformation03 = new RoleInformation("testRole", permissionCollection03);
         PinpointAuthentication authentication03 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation03);
-        boolean result03 = permissionChecker.checkPermission(authentication03, "permission_userGroup_editGroupOnlyGroupMember","");
+        boolean result03 = permissionChecker.checkPermission(authentication03, PermissionCollectionDefinition.PERMISSION_USERGROUP_EDIT_GROUP_ONLY_GROUPMEMBER,"");
         assertTrue(result03);
 
         final String applicationId ="testApplication";
@@ -276,7 +291,7 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection01 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, permsGroupUserGroup01);
         RoleInformation roleInformation01 = new RoleInformation("testRole", permissionCollection01);
         PinpointAuthentication authentication01 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation01);
-        boolean result01 = permissionChecker.checkPermission(authentication01, "permission_userGroup_editGroupOnlyGroupMember",userId);
+        boolean result01 = permissionChecker.checkPermission(authentication01, PermissionCollectionDefinition.PERMISSION_USERGROUP_EDIT_GROUP_ONLY_GROUPMEMBER, userId);
         assertFalse(result01);
 
         UserGroupService userGroupService02 = mock(UserGroupService.class);
@@ -286,14 +301,14 @@ public class PermissionCheckerTest {
         PermissionCollection permissionCollection02 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, permsGroupUserGroup02);
         RoleInformation roleInformation02 = new RoleInformation("testRole", permissionCollection02);
         PinpointAuthentication authentication02 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation02);
-        boolean result02 = permissionChecker.checkPermission(authentication02, "permission_userGroup_editGroupOnlyGroupMember",userId);
+        boolean result02 = permissionChecker.checkPermission(authentication02, PermissionCollectionDefinition.PERMISSION_USERGROUP_EDIT_GROUP_ONLY_GROUPMEMBER,userId);
         assertFalse(result02);
 
         PermsGroupUserGroup permsGroupUserGroup04 = new PermsGroupUserGroup(false, false);
         PermissionCollection permissionCollection04 = new PermissionCollection(PermsGroupAdministration.DEFAULT, PermsGroupAppAuthorization.DEFAULT, PermsGroupAlarm.DEFAULT, permsGroupUserGroup04);
         RoleInformation roleInformation04 = new RoleInformation("testRole", permissionCollection04);
         PinpointAuthentication authentication04 = new PinpointAuthentication("test_id", "test_user", new ArrayList<UserGroup>(0), false, false, roleInformation04);
-        boolean result04 = permissionChecker.checkPermission(authentication04, "permission_userGroup_editGroupOnlyGroupMember",userId);
+        boolean result04 = permissionChecker.checkPermission(authentication04, PermissionCollectionDefinition.PERMISSION_USERGROUP_EDIT_GROUP_ONLY_GROUPMEMBER,userId);
         assertFalse(result04);
     }
 }

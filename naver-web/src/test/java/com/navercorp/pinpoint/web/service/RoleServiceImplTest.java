@@ -56,7 +56,7 @@ public class RoleServiceImplTest {
         UserRole userRole = new UserRole(USER_ID, roleList);
         when(roleDao.selectUserRole(USER_ID)).thenReturn(userRole);
 
-        PermsGroupAdministration permsGroupAdministration1 = new PermsGroupAdministration(false, false, false);
+        PermsGroupAdministration permsGroupAdministration1 = new PermsGroupAdministration(false, false, false, true);
         PermsGroupAppAuthorization permsGroupAppAuthorization1 = new PermsGroupAppAuthorization(false, false, false);
         PermsGroupAlarm permsGroupAlarm1 = new PermsGroupAlarm(false, false);
         PermsGroupUserGroup permsGroupUserGroup1 = new PermsGroupUserGroup(false, false);
@@ -64,7 +64,7 @@ public class RoleServiceImplTest {
         RoleInformation roleInformation1 = new RoleInformation(ROLE_ID_1, permissionCollection1);
         when(roleDao.selectRoleInformation(ROLE_ID_1)).thenReturn(roleInformation1);
 
-        PermsGroupAdministration permsGroupAdministration2 = new PermsGroupAdministration(true, false, false);
+        PermsGroupAdministration permsGroupAdministration2 = new PermsGroupAdministration(true, false, false, false);
         PermsGroupAppAuthorization permsGroupAppAuthorization2 = new PermsGroupAppAuthorization(true, false, false);
         PermsGroupAlarm permsGroupAlarm2 = new PermsGroupAlarm(true, false);
         PermsGroupUserGroup permsGroupUserGroup2 = new PermsGroupUserGroup(true, false);
@@ -72,7 +72,7 @@ public class RoleServiceImplTest {
         RoleInformation roleInformation2 = new RoleInformation(ROLE_ID_2, permissionCollection2);
         when(roleDao.selectRoleInformation(ROLE_ID_2)).thenReturn(roleInformation2);
 
-        PermsGroupAdministration permsGroupAdministration3 = new PermsGroupAdministration(false, true, false);
+        PermsGroupAdministration permsGroupAdministration3 = new PermsGroupAdministration(false, true, false, false);
         PermsGroupAppAuthorization permsGroupAppAuthorization3 = new PermsGroupAppAuthorization(false, true, false);
         PermsGroupAlarm permsGroupAlarm3 = new PermsGroupAlarm(false, true);
         PermsGroupUserGroup permsGroupUserGroup3 = new PermsGroupUserGroup(false, true);
@@ -80,7 +80,7 @@ public class RoleServiceImplTest {
         RoleInformation roleInformation3 = new RoleInformation(ROLE_ID_3, permissionCollection3);
         when(roleDao.selectRoleInformation(ROLE_ID_3)).thenReturn(roleInformation3);
 
-        PermsGroupAdministration permsGroupAdministration4 = new PermsGroupAdministration(false, true, false);
+        PermsGroupAdministration permsGroupAdministration4 = new PermsGroupAdministration(false, true, false, false);
         PermsGroupAppAuthorization permsGroupAppAuthorization4 = new PermsGroupAppAuthorization(false, true, false);
         PermsGroupAlarm permsGroupAlarm4 = new PermsGroupAlarm(false, true);
         PermsGroupUserGroup permsGroupUserGroup4 = new PermsGroupUserGroup(false, true);
@@ -88,7 +88,7 @@ public class RoleServiceImplTest {
         RoleInformation roleInformation4 = new RoleInformation(ROLE_ID_4, permissionCollection4);
         when(roleDao.selectRoleInformation(ROLE_ID_4)).thenReturn(roleInformation4);
 
-        PermsGroupAdministration permsGroupAdministration5 = new PermsGroupAdministration(false, false, true);
+        PermsGroupAdministration permsGroupAdministration5 = new PermsGroupAdministration(false, false, true, false);
         PermsGroupAppAuthorization permsGroupAppAuthorization5 = new PermsGroupAppAuthorization(false, false, false);
         PermsGroupAlarm permsGroupAlarm5 = new PermsGroupAlarm(false, false);
         PermsGroupUserGroup permsGroupUserGroup5 = new PermsGroupUserGroup(false, false);
@@ -106,6 +106,7 @@ public class RoleServiceImplTest {
         assertTrue(permsGroupAdministration.getViewAdminMenu());
         assertTrue(permsGroupAdministration.getEditUser());
         assertTrue(permsGroupAdministration.getEditRole());
+        assertTrue(permsGroupAdministration.getCallAdminApi());
 
         PermsGroupAppAuthorization permsGroupAppAuthorization = permissionCollection.getPermsGroupAppAuthorization();
         assertTrue(permsGroupAppAuthorization.getPreoccupancy());

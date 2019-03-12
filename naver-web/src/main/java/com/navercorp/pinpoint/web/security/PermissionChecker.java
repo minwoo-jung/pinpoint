@@ -116,7 +116,9 @@ public final class PermissionChecker extends PermissionCollectionDefinition {
     }
 
     private static boolean checkPermsGroupAdministration(PermsGroupAdministration permsGroupAdministration, String permission, Object parameter, String userId) {
-        if (PermsGroupAdministration.VIEW_ADMIN_MENU.equals(permission)) {
+        if (permsGroupAdministration.CALL_ADMIN_API.equals(permission)) {
+            return permsGroupAdministration.getCallAdminApi();
+        } else if (PermsGroupAdministration.VIEW_ADMIN_MENU.equals(permission)) {
             return permsGroupAdministration.getViewAdminMenu();
         } else if (PermsGroupAdministration.EDIT_USER.equals(permission)) {
             if (permsGroupAdministration.getEditUser()) {
