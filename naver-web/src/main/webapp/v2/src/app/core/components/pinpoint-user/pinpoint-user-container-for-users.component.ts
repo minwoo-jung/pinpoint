@@ -52,8 +52,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
     ) {}
 
     ngOnInit() {
-        // this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
-        this.hasUserEditPerm = true;
+        this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
         this.searchGuideText$ = this.translateService.get('COMMON.MIN_LENGTH').pipe(
             map((text: string) => this.translateReplaceService.replace(text, MinLength.SEARCH))
         );

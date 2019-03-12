@@ -49,9 +49,7 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
     ) {}
 
     ngOnInit() {
-        // TODO: true -> 원래걸로 돌려놓기.
-        // this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
-        this.hasUserEditPerm = true;
+        this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
         this.buttonText$ = this.translateService.get('COMMON.SUBMIT');
         this.userProfileInteractionService.onUserProfileChange$.pipe(
             takeUntil(this.unsubscribe),

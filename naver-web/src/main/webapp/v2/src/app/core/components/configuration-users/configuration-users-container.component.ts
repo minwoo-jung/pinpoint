@@ -40,8 +40,7 @@ export class ConfigurationUsersContainerComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        // this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
-        this.hasUserEditPerm = true;
+        this.hasUserEditPerm = this.userPermissionCheckService.canEditUser();
         this.guide$ = this.translateService.get('CONFIGURATION.USERS.GUIDE');
     }
 
