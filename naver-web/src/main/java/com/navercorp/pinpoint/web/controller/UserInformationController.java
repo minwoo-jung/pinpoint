@@ -48,21 +48,8 @@ public class UserInformationController {
     private static final String ERROR_NAME_NULL = "You must enter a name.";
     private static final String ERROR_PASSWORD_INCORRECT = "The current password is incorrect.";
     private static final String SSO_USER = "SSO_USER";
-    private static final RoleInformation FIXED_ROLE;
-
-    static {
-        PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration();
-        PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(true, false, true);
-        PermsGroupAlarm permsGroupAlarm = new PermsGroupAlarm(false, true);
-        PermsGroupUserGroup permsGroupUserGroup = new PermsGroupUserGroup(false, true);
-        PermissionCollection permissionCollection = new PermissionCollection(permsGroupAdministration, permsGroupAppAuthorization, permsGroupAlarm, permsGroupUserGroup);
-        FIXED_ROLE = new RoleInformation("fixedRole", permissionCollection);
-    }
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    @Value("#{pinpointWebProps['user.permission.use.fixed.value'] ?: true}")
-    private boolean isAlwaysDefaultPermission;
 
     @Autowired
     private UserInformationService userInformationService;
@@ -228,11 +215,7 @@ public class UserInformationController {
     @ResponseBody
     public Map<String, Object> selectPermissionAndConfiguration(@RequestHeader(SSO_USER) String userId) {
         UserConfiguration userConfiguration = userConfigService.selectUserConfiguration(userId);
-
-        RoleInformation roleInformation = FIXED_ROLE;
-        if (isAlwaysDefaultPermission == false) {
-            roleInformation = roleService.getUserPermission(userId);
-        }
+        RoleInformation roleInformation = roleService.getUserPermission(userId);
 
         Map<String, Object> result = new HashMap<>();
         result.put("configuration", userConfiguration);
