@@ -5,6 +5,7 @@ export interface IPermissionData {
     viewAdminMenu: boolean;
     editUser: boolean;
     editRole: boolean;
+    callAdminApi: boolean;
     preoccupancy: boolean;
     editAuthorForEverything: boolean;
     editAuthorOnlyManager: boolean;
@@ -26,6 +27,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
     viewAdminMenu: boolean;
     editUser: boolean;
     editRole: boolean;
+    callAdminApi: boolean;
     preoccupancy: boolean;
     editAuthorForEverything: boolean;
     editAuthorOnlyManager: boolean;
@@ -40,6 +42,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
             this.viewAdminMenu = this.roleInfo.permissionCollection.permsGroupAdministration.viewAdminMenu;
             this.editUser = this.roleInfo.permissionCollection.permsGroupAdministration.editUser;
             this.editRole = this.roleInfo.permissionCollection.permsGroupAdministration.editRole;
+            this.callAdminApi = this.roleInfo.permissionCollection.permsGroupAdministration.callAdminApi;
             this.preoccupancy = this.roleInfo.permissionCollection.permsGroupAppAuthorization.preoccupancy;
             this.editAuthorForEverything = this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything;
             this.editAuthorOnlyManager = this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager;
@@ -55,6 +58,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
             viewAdminMenu: this.viewAdminMenu,
             editUser: this.editUser,
             editRole: this.editRole,
+            callAdminApi: this.callAdminApi,
             preoccupancy: this.preoccupancy,
             editAuthorForEverything: this.editAuthorForEverything,
             editAuthorOnlyManager: this.editAuthorOnlyManager,
@@ -68,6 +72,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
         return this.viewAdminMenu !== this.roleInfo.permissionCollection.permsGroupAdministration.viewAdminMenu ||
             this.editUser !== this.roleInfo.permissionCollection.permsGroupAdministration.editUser ||
             this.editRole !== this.roleInfo.permissionCollection.permsGroupAdministration.editRole ||
+            this.callAdminApi !== this.roleInfo.permissionCollection.permsGroupAdministration.callAdminApi ||
             this.preoccupancy !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.preoccupancy ||
             this.editAuthorForEverything !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything ||
             this.editAuthorOnlyManager !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager ||

@@ -34,6 +34,9 @@ export class UserPermissionCheckService {
     canEditRole(): boolean {
         return this.userPermissions.permissionCollection.permsGroupAdministration.editRole;
     }
+    canCallAdminApi(): boolean {
+        return this.userPermissions.permissionCollection.permsGroupAdministration.callAdminApi;
+    }
     canAddAuth(isManager: boolean): boolean {
         if (this.userPermissions.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything) {
             return true;

@@ -45,6 +45,8 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         editRole: '',
         editUserTitle: '',
         editUser: '',
+        callAdminApiTitle: '',
+        callAdminApi: '',
         preoccupancyTitle: '',
         preoccupancy: '',
         editAuthorTitle: '',
@@ -194,7 +196,8 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
                 permsGroupAdministration: {
                     viewAdminMenu: data ? data.viewAdminMenu : false,
                     editUser: data ? data.editUser : false,
-                    editRole: data ? data.editRole : false
+                    editRole: data ? data.editRole : false,
+                    callAdminApi: data ? data.callAdminApi : false
                 },
                 permsGroupAppAuthorization: {
                     preoccupancy: data ? data.preoccupancy : false,

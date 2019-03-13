@@ -70,6 +70,8 @@ export class AppComponent implements OnInit {
                 translate.CONFIGURATION.PERMISSION.EDIT_USER = 'User 추가 삭제, Role 할당';
                 translate.CONFIGURATION.PERMISSION.EDIT_ROLE_TITLE = 'Role 수정';
                 translate.CONFIGURATION.PERMISSION.EDIT_ROLE = 'Role 추가 삭제, Permission 수정';
+                translate.CONFIGURATION.PERMISSION.CALL_ADMIN_API_TITLE = 'Application, Agent 정보 관리 API';
+                translate.CONFIGURATION.PERMISSION.CALL_ADMIN_API = 'API 호출 가능';
                 translate.CONFIGURATION.PERMISSION.PREOCCUPANCY_TITLE = '최초 할당';
                 translate.CONFIGURATION.PERMISSION.PREOCCUPANCY = 'User Group 최초 할당 가능';
                 translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_TITLE = 'Authentication 수정';
@@ -112,6 +114,8 @@ export class AppComponent implements OnInit {
                 translate.CONFIGURATION.PERMISSION.EDIT_USER = 'Edit User Info';
                 translate.CONFIGURATION.PERMISSION.EDIT_ROLE_TITLE = 'Role Modification';
                 translate.CONFIGURATION.PERMISSION.EDIT_ROLE = 'Edit Role Info';
+                translate.CONFIGURATION.PERMISSION.CALL_ADMIN_API_TITLE = 'Application, Agent Management API';
+                translate.CONFIGURATION.PERMISSION.CALL_ADMIN_API = 'API access available';
                 translate.CONFIGURATION.PERMISSION.PREOCCUPANCY_TITLE = 'Preoccupancy';
                 translate.CONFIGURATION.PERMISSION.PREOCCUPANCY = 'Can have the authority first';
                 translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_TITLE = 'Authentication Modification';
