@@ -25,7 +25,7 @@ public class PermsGroupAdministration {
     public final static String VIEW_ADMIN_MENU = "viewAdminMenu";
     public final static String EDIT_USER = "editUser";
     public final static String EDIT_ROLE = "editRole";
-    public final static String CALL_ADMIN_API = "callAdminApi";
+    public final static String CALL_API_FOR_APP_AGENT_MANAGEMENT = "callApiForAppAgentManagement";
 
     private boolean viewAdminMenu;
 
