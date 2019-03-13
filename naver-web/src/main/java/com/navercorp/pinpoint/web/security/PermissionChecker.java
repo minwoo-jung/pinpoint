@@ -78,11 +78,11 @@ public final class PermissionChecker extends PermissionCollectionDefinition {
     private boolean checkPermsGroupAlarm(PermsGroupAlarm permsGroupAlarm, String permission, Object parameter,String userId) {
         if (PermsGroupAlarm.EDIT_ALARM_FOR_EVERYTHING.equals(permission)) {
             return permsGroupAlarm.getEditAlarmForEverything();
-        } else if (PermsGroupAlarm.EDIT_ALARM_ONLY_GROUPMEMBER.equals(permission)) {
+        } else if (PermsGroupAlarm.EDIT_ALARM_ONLY_MANAGER.equals(permission)) {
             if (permsGroupAlarm.getEditAlarmForEverything()) {
                 return true;
             }
-            if (permsGroupAlarm.getEditAlarmOnlyGroupMember()) {
+            if (permsGroupAlarm.getEditAlarmOnlyManager()) {
                 if (parameter instanceof String) {
                     return applicationConfigService.canEditConfiguration((String) parameter, userId);
                 }

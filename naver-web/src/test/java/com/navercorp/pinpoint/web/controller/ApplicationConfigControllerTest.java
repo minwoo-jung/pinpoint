@@ -55,7 +55,7 @@ public class ApplicationConfigControllerTest {
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
         
-//        AppUserGroupAuth appAuth1 = new AppUserGroupAuth("", TEST_APPLICATION_ID, "tesUserGroup01", Role.MANAGER.toString(), "");
+//        AppUserGroupAuth appAuth1 = new AppUserGroupAuth("", TEST_APPLICATION_ID, "tesUserGroup01", Position.MANAGER.toString(), "");
 //        appConfigDao.deleteAppAuthUserGroup(appAuth1);
     }
     
@@ -65,13 +65,13 @@ public class ApplicationConfigControllerTest {
     
     @Test
     public void insertAndDeleteUserGroup() throws Exception {
-//        MvcResult andReturn = this.mockMvc.perform(post("/application/userGroupAuth.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"userId\" : \"" + TEST_USER_GROUP_USER1 + "\"," + "\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"role\" : \"" + Role.MANAGER.getName() + "\", \"configuration\" :" + "{\"apiMetaData\":true}" + "}"))
+//        MvcResult andReturn = this.mockMvc.perform(post("/application/userGroupAuth.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"userId\" : \"" + TEST_USER_GROUP_USER1 + "\"," + "\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"role\" : \"" + Position.MANAGER.getName() + "\", \"configuration\" :" + "{\"apiMetaData\":true}" + "}"))
 //                    .andExpect(status().isOk())
 //                    .andExpect(content().contentType("application/json;charset=UTF-8"))
 //                    .andExpect(jsonPath("$", hasKey("result")))
 //                    .andReturn();
 
-//        MvcResult andReturn = this.mockMvc.perform(put("/application/userGroupAuth.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"userId\" : \"" + TEST_USER_GROUP_USER1 + "\"," + "\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"role\" : \"" + Role.MANAGER.getName() + "\", \"configuration\" :" + "{\"apiMetaData\":true}" + "}"))
+//        MvcResult andReturn = this.mockMvc.perform(put("/application/userGroupAuth.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"userId\" : \"" + TEST_USER_GROUP_USER1 + "\"," + "\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"role\" : \"" + Position.MANAGER.getName() + "\", \"configuration\" :" + "{\"apiMetaData\":true}" + "}"))
 //                .andExpect(status().isOk())
 ////                    .andExpect(content().contentType("application/json;charset=UTF-8"))
 ////                    .andExpect(jsonPath("$", hasKey("result")))
@@ -102,13 +102,13 @@ public class ApplicationConfigControllerTest {
     
     @Test
     public void updateUserGroup() throws Exception {
-//        this.mockMvc.perform(post("/application/userGroupAuth.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + Role.MANAGER.getName() + "\"}"))
+//        this.mockMvc.perform(post("/application/userGroupAuth.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + Position.MANAGER.getName() + "\"}"))
 //                    .andExpect(status().isOk())
 //                    .andExpect(content().contentType("application/json;charset=UTF-8"))
 //                    .andExpect(jsonPath("$", hasKey("result")))
 //                    .andReturn();
 //        
-//        this.mockMvc.perform(put("/application/userGroupAuth.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + Role.USER.getName() + "\"}"))
+//        this.mockMvc.perform(put("/application/userGroupAuth.pinpoint").contentType(MediaType.APPLICATION_JSON).content("{\"applicationId\" : \"" + TEST_APPLICATION_ID + "\"," + "\"userGroupId\" : \"" + TEST_USER_GROUP_ID1 + "\", \"authority\" : \"" + Position.USER.getName() + "\"}"))
 //                    .andExpect(status().isOk())
 //                    .andExpect(content().contentType("application/json;charset=UTF-8"))
 //                    .andExpect(jsonPath("$", hasKey("result")))

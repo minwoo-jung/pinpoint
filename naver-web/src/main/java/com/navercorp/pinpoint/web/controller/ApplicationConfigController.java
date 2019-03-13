@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Position;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 
 /**
@@ -51,7 +51,7 @@ public class ApplicationConfigController {
     
     private static final String SSO_USER = "SSO_USER";
     private static final String APPLICATION_ID = "applicationId";
-    private static final String MY_ROLE = "myRole";
+    private static final String MY_POSITION = "myPosition";
     private static final String USER_GROUP_AUTH_LIST = "userGroupAuthList";
     
     @Autowired
@@ -71,7 +71,7 @@ public class ApplicationConfigController {
         boolean isvalid = validationCheck(appUserGroupAuth);
         if (isvalid == false) {
             result.put("errorCode", "500");
-            result.put("errorMessage", "there is not applicationId/userGroupId/role/configuration. params value : " + appUserGroupAuth);
+            result.put("errorMessage", "there is not applicationId/userGroupId/position/configuration. params value : " + appUserGroupAuth);
             return result;
         }
 
@@ -82,10 +82,10 @@ public class ApplicationConfigController {
         }
 
         appConfigService.insertAppUserGroupAuth(appUserGroupAuth);
-        Role role = appConfigService.searchMyRole(appUserGroupAuth.getApplicationId(), userId);
+        Position position = appConfigService.searchMyPosition(appUserGroupAuth.getApplicationId(), userId);
 
         result.put("result", "SUCCESS");
-        result.put(MY_ROLE, role.toString());
+        result.put(MY_POSITION, position.toString());
         return result;
     }
 
@@ -98,7 +98,7 @@ public class ApplicationConfigController {
     }
 
     private boolean validationCheck(AppUserGroupAuth appUserGroupAuth) {
-        if (StringUtils.isEmpty(appUserGroupAuth.getApplicationId()) || StringUtils.isEmpty(appUserGroupAuth.getUserGroupId()) || (appUserGroupAuth.getRole() == null)) {
+        if (StringUtils.isEmpty(appUserGroupAuth.getApplicationId()) || StringUtils.isEmpty(appUserGroupAuth.getUserGroupId()) || (appUserGroupAuth.getPosition() == null)) {
             return false;
         }
 
@@ -116,17 +116,17 @@ public class ApplicationConfigController {
             result.put("errorMessage", "There is not applicationId/userGroupId/userId.");
             return result;
         }
-        if(Role.GUEST.getName().equals(appUserGroupAuth.getUserGroupId())) {
+        if(AppUserGroupAuth.Position.GUEST.getName().equals(appUserGroupAuth.getUserGroupId())) {
             result.put("errorCode", "500");
             result.put("errorMessage", "You can't delete guest userGroup. params value : " + appUserGroupAuth);
             return result;
         }
         
         appConfigService.deleteAppUserGroupAuth(appUserGroupAuth);
-        Role role = appConfigService.searchMyRole(appUserGroupAuth.getApplicationId(), userId);
+        Position position = appConfigService.searchMyPosition(appUserGroupAuth.getApplicationId(), userId);
         
         result.put("result", "SUCCESS");
-        result.put(MY_ROLE, role.toString());
+        result.put(MY_POSITION, position.toString());
         return result;
     }
 
@@ -139,15 +139,15 @@ public class ApplicationConfigController {
         
         if (isvalid == false) {
             result.put("errorCode", "500");
-            result.put("errorMessage", "There is not applicationId/userGroupId/role/configuration. params value : " + appUserGroupAuth);
+            result.put("errorMessage", "There is not applicationId/userGroupId/position/configuration. params value : " + appUserGroupAuth);
             return result;
         }
         
         appConfigService.updateAppUserGroupAuth(appUserGroupAuth);
-        Role role = appConfigService.searchMyRole(appUserGroupAuth.getApplicationId(), userId);
+        Position position = appConfigService.searchMyPosition(appUserGroupAuth.getApplicationId(), userId);
 
         result.put("result", "SUCCESS");
-        result.put(MY_ROLE, role.toString());
+        result.put(MY_POSITION, position.toString());
         return result;
     }
 
@@ -164,8 +164,8 @@ public class ApplicationConfigController {
         
         appConfigService.initApplicationConfiguration(applicationId);
         ApplicationConfiguration appConfig = appConfigService.selectApplicationConfiguration(applicationId);
-        Role role = appConfigService.searchMyRole(applicationId, userId);
-        result.put(MY_ROLE, role.toString());
+        Position position = appConfigService.searchMyPosition(applicationId, userId);
+        result.put(MY_POSITION, position.toString());
         result.put(USER_GROUP_AUTH_LIST, appConfig.getAppUserGroupAuth());
         
         return result;

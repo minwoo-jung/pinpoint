@@ -18,7 +18,6 @@ package com.navercorp.pinpoint.web.controller;
 
 import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,7 +37,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
 
 
-import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -95,17 +93,17 @@ public class UserGroupAdditionControllerTest {
         AppAuthConfiguration AppAuthConfiguration01 = new AppAuthConfiguration();
         AppAuthConfiguration01.setServerMapData(true);
         AppAuthConfiguration01.setParamMetaData(true);
-        AppUserGroupAuth appAuth01 = new AppUserGroupAuth(TEST_APPLICATION_ID_01, TEST_USER_GROUP, AppUserGroupAuth.Role.MANAGER.toString(), AppAuthConfiguration01);
+        AppUserGroupAuth appAuth01 = new AppUserGroupAuth(TEST_APPLICATION_ID_01, TEST_USER_GROUP, AppUserGroupAuth.Position.MANAGER.toString(), AppAuthConfiguration01);
         appConfigDao.insertAppUserGroupAuth(appAuth01);
 
         AppAuthConfiguration AppAuthConfiguration02 = new AppAuthConfiguration();
         AppAuthConfiguration02.setApiMetaData(true);
         AppAuthConfiguration02.setSqlMetaData(true);
-        AppUserGroupAuth appAuth02 = new AppUserGroupAuth(TEST_APPLICATION_ID_02, TEST_USER_GROUP, AppUserGroupAuth.Role.USER.toString(), AppAuthConfiguration02);
+        AppUserGroupAuth appAuth02 = new AppUserGroupAuth(TEST_APPLICATION_ID_02, TEST_USER_GROUP, AppUserGroupAuth.Position.USER.toString(), AppAuthConfiguration02);
         appConfigDao.insertAppUserGroupAuth(appAuth02);
 
         AppAuthConfiguration AppAuthConfiguration03 = new AppAuthConfiguration();
-        AppUserGroupAuth appAuth03 = new AppUserGroupAuth(TEST_APPLICATION_ID_03, TEST_USER_GROUP, AppUserGroupAuth.Role.MANAGER.toString(), AppAuthConfiguration03);
+        AppUserGroupAuth appAuth03 = new AppUserGroupAuth(TEST_APPLICATION_ID_03, TEST_USER_GROUP, AppUserGroupAuth.Position.MANAGER.toString(), AppAuthConfiguration03);
         appConfigDao.insertAppUserGroupAuth(appAuth03);
     }
 
@@ -113,17 +111,17 @@ public class UserGroupAdditionControllerTest {
         AppAuthConfiguration AppAuthConfiguration01 = new AppAuthConfiguration();
         AppAuthConfiguration01.setServerMapData(true);
         AppAuthConfiguration01.setParamMetaData(true);
-        AppUserGroupAuth appAuth01 = new AppUserGroupAuth(TEST_APPLICATION_ID_01, TEST_USER_GROUP, AppUserGroupAuth.Role.MANAGER.toString(), AppAuthConfiguration01);
+        AppUserGroupAuth appAuth01 = new AppUserGroupAuth(TEST_APPLICATION_ID_01, TEST_USER_GROUP, AppUserGroupAuth.Position.MANAGER.toString(), AppAuthConfiguration01);
         appConfigDao.deleteAppUserGroupAuth(appAuth01);
 
         AppAuthConfiguration AppAuthConfiguration02 = new AppAuthConfiguration();
         AppAuthConfiguration02.setApiMetaData(true);
         AppAuthConfiguration02.setSqlMetaData(true);
-        AppUserGroupAuth appAuth02 = new AppUserGroupAuth(TEST_APPLICATION_ID_02, TEST_USER_GROUP, AppUserGroupAuth.Role.USER.toString(), AppAuthConfiguration02);
+        AppUserGroupAuth appAuth02 = new AppUserGroupAuth(TEST_APPLICATION_ID_02, TEST_USER_GROUP, AppUserGroupAuth.Position.USER.toString(), AppAuthConfiguration02);
         appConfigDao.deleteAppUserGroupAuth(appAuth02);
 
         AppAuthConfiguration AppAuthConfiguration03 = new AppAuthConfiguration();
-        AppUserGroupAuth appAuth03 = new AppUserGroupAuth(TEST_APPLICATION_ID_03, TEST_USER_GROUP, AppUserGroupAuth.Role.MANAGER.toString(), AppAuthConfiguration03);
+        AppUserGroupAuth appAuth03 = new AppUserGroupAuth(TEST_APPLICATION_ID_03, TEST_USER_GROUP, AppUserGroupAuth.Position.MANAGER.toString(), AppAuthConfiguration03);
         appConfigDao.deleteAppUserGroupAuth(appAuth03);
     }
 

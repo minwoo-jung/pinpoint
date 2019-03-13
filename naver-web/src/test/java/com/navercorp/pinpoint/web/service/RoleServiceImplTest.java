@@ -20,8 +20,6 @@ import com.navercorp.pinpoint.web.dao.RoleDao;
 import com.navercorp.pinpoint.web.vo.UserRole;
 import com.navercorp.pinpoint.web.vo.role.*;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -115,7 +113,7 @@ public class RoleServiceImplTest {
 
         PermsGroupAlarm permsGroupAlarm = permissionCollection.getPermsGroupAlarm();
         assertTrue(permsGroupAlarm.getEditAlarmForEverything());
-        assertTrue(permsGroupAlarm.getEditAlarmOnlyGroupMember());
+        assertTrue(permsGroupAlarm.getEditAlarmOnlyManager());
 
         PermsGroupUserGroup permsGroupUserGroup = permissionCollection.getPermsGroupUserGroup();
         assertTrue(permsGroupUserGroup.getEditGroupForEverything());

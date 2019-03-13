@@ -93,8 +93,8 @@ public class ServerMapDataFilterImplTest {
 
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration("applicationId", appUserGroupAuthList);
@@ -120,7 +120,7 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
         appAuthConfiguration.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList.add(appUserGroupAuth1);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration("applicationId", appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
@@ -148,7 +148,7 @@ public class ServerMapDataFilterImplTest {
         userGroupList.add(new UserGroup("0", userGroupId));
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration("applicationId", appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
@@ -172,7 +172,7 @@ public class ServerMapDataFilterImplTest {
         userGroupList.add(new UserGroup("0", userGroupId));
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration("applicationId", appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
@@ -229,15 +229,15 @@ public class ServerMapDataFilterImplTest {
 
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);
@@ -280,8 +280,8 @@ public class ServerMapDataFilterImplTest {
 
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -289,8 +289,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
         appAuthConfiguration.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);
@@ -327,8 +327,8 @@ public class ServerMapDataFilterImplTest {
 
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -336,8 +336,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
         appAuthConfiguration.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);
@@ -384,8 +384,8 @@ public class ServerMapDataFilterImplTest {
 
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -393,8 +393,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
         appAuthConfiguration.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);
@@ -465,8 +465,8 @@ public class ServerMapDataFilterImplTest {
 
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -474,8 +474,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
         appAuthConfiguration.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);
@@ -525,8 +525,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
         appAuthConfiguration1.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration1);
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration1);
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -534,8 +534,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration2 = new AppAuthConfiguration();
         appAuthConfiguration2.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration2);
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration2);
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);
@@ -587,8 +587,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
         appAuthConfiguration1.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration1);
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration1);
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -596,8 +596,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration2 = new AppAuthConfiguration();
         appAuthConfiguration2.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration2);
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration2);
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);
@@ -644,8 +644,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
         appAuthConfiguration1.setServerMapData(false);
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration1);
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration1);
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -653,8 +653,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration2 = new AppAuthConfiguration();
         appAuthConfiguration2.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration2);
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration2);
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);
@@ -707,8 +707,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
         appAuthConfiguration1.setServerMapData(true);
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration1);
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration1);
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -716,8 +716,8 @@ public class ServerMapDataFilterImplTest {
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration2 = new AppAuthConfiguration();
         appAuthConfiguration2.setServerMapData(false);
-        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration2);
-        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Role.MANAGER.getName(), appAuthConfiguration2);
+        AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
+        AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
         appUserGroupAuthList2.add(appUserGroupAuth2_2);
         ApplicationConfiguration applicationConfiguration2 = new ApplicationConfiguration(applicationId2, appUserGroupAuthList2);

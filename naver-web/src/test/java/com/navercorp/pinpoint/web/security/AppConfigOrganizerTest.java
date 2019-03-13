@@ -45,8 +45,8 @@ public class AppConfigOrganizerTest {
         ApplicationConfigService applicationConfigService = mock(ApplicationConfigService.class);
 
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -64,8 +64,8 @@ public class AppConfigOrganizerTest {
         AppConfigOrganizer appConfigOrganizer = new AppConfigOrganizer();
 
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
@@ -84,9 +84,9 @@ public class AppConfigOrganizerTest {
         AppConfigOrganizer appConfigOrganizer = new AppConfigOrganizer();
 
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, userGroupId2, AppUserGroupAuth.Role.USER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth3 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.GUEST.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, userGroupId2, AppUserGroupAuth.Position.USER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth3 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.GUEST.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         appUserGroupAuthList.add(appUserGroupAuth3);
@@ -109,9 +109,9 @@ public class AppConfigOrganizerTest {
         AppConfigOrganizer appConfigOrganizer = new AppConfigOrganizer();
 
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, userGroupId2, AppUserGroupAuth.Role.USER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth3 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.GUEST.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, userGroupId2, AppUserGroupAuth.Position.USER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth3 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.GUEST.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth2);
         appUserGroupAuthList.add(appUserGroupAuth3);
@@ -128,7 +128,7 @@ public class AppConfigOrganizerTest {
         AppUserGroupAuth appUserGroupAuth = appUserGroupAuths.get(0);
         assertEquals(appUserGroupAuth.getApplicationId(), applicationId);
         assertEquals(appUserGroupAuth.getUserGroupId(), userGroupId);
-        assertEquals(appUserGroupAuth.getRole(), AppUserGroupAuth.Role.MANAGER);
+        assertEquals(appUserGroupAuth.getPosition(), AppUserGroupAuth.Position.MANAGER);
     }
 
     @Test
@@ -139,8 +139,8 @@ public class AppConfigOrganizerTest {
         AppConfigOrganizer appConfigOrganizer = new AppConfigOrganizer();
 
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Role.MANAGER.getName(), new AppAuthConfiguration());
-        AppUserGroupAuth appUserGroupAuth3 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Role.GUEST.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
+        AppUserGroupAuth appUserGroupAuth3 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.GUEST.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
         appUserGroupAuthList.add(appUserGroupAuth3);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);

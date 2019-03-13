@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Position;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -39,10 +39,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     
     @Autowired
     private UserGroupService userGroupService;
-    
-    //추후 옵션으로 빼야함. paas 형태로 제공할때 false가 필요함
-    boolean anyOneOccupyAtfirst = true;
-    
+
     @Override
     @Transactional(readOnly = true)
     public ApplicationConfiguration selectApplicationConfiguration(String applicationId) {
@@ -54,7 +51,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     public void initApplicationConfiguration(String applicationId) {
         List<AppUserGroupAuth> appUserGroupAuthList = applicationConfigDao.selectAppUserGroupAuthList(applicationId);
         if (appUserGroupAuthList.isEmpty()) {
-            AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, Role.GUEST.toString(), Role.GUEST.toString(), new AppAuthConfiguration());
+            AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, AppUserGroupAuth.Position.GUEST.toString(), Position.GUEST.toString(), new AppAuthConfiguration());
             applicationConfigDao.insertAppUserGroupAuth(appUserGroupAuth);
         }
     }
@@ -73,23 +70,23 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
 
     @Override
     @Transactional(readOnly = true)
-    public Role searchMyRole(String applicationId, String userId) {
+    public Position searchMyPosition(String applicationId, String userId) {
         ApplicationConfiguration appConfig = selectApplicationConfiguration(applicationId);
         Map<String, AppUserGroupAuth> appUserGroupAuthes = appConfig.getAppUserGroupAuthes();
         Map<String, UserGroup> myUserGroups = getUserGroups(userId); 
-        Role myRole = Role.GUEST; 
+        AppUserGroupAuth.Position myPosition = AppUserGroupAuth.Position.GUEST;
         
         for(Map.Entry<String, AppUserGroupAuth> entry : appUserGroupAuthes.entrySet()) {
             String userGroupId = entry.getKey();
             if (myUserGroups.containsKey(userGroupId)) {
-                Role role = entry.getValue().getRole();
-                if (role != null && role.isHigherOrEqualLevel(myRole)){
-                    myRole = role;
+                Position position = entry.getValue().getPosition();
+                if (position != null && position.isHigherOrEqualLevel(myPosition)){
+                    myPosition = position;
                 }
             }
         }
         
-        return myRole;
+        return myPosition;
     }
     
     private Map<String, UserGroup> getUserGroups(String userId) {
@@ -120,8 +117,8 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
     @Override
     @Transactional(readOnly = true)
     public boolean canEditConfiguration(String applicationId, String userId) {
-        Role myRole = searchMyRole(applicationId, userId);
-        if (myRole.equals(Role.MANAGER)) {
+        AppUserGroupAuth.Position myPosition = searchMyPosition(applicationId, userId);
+        if (myPosition.equals(AppUserGroupAuth.Position.MANAGER)) {
             return true;
         }
         
@@ -133,7 +130,7 @@ public class ApplicationConfigServiceImpl implements ApplicationConfigService {
         List<AppUserGroupAuth> appUserGroupAuthList = appConfig.getAppUserGroupAuth();
         
         for (AppUserGroupAuth auth : appUserGroupAuthList) {
-            if (Role.MANAGER.equals(auth.getRole())) {
+            if (AppUserGroupAuth.Position.MANAGER.equals(auth.getPosition())) {
                 return true;
             }
         }

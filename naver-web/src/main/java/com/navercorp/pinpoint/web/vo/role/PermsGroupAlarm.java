@@ -23,14 +23,14 @@ public class PermsGroupAlarm {
     public final static PermsGroupAlarm DEFAULT = new PermsGroupAlarm(false, false);
     public final static String ALARM = "alarm";
     public final static String EDIT_ALARM_FOR_EVERYTHING = "editAlarmForEverything";
-    public final static String EDIT_ALARM_ONLY_GROUPMEMBER = "editAlarmOnlyGroupMember";
+    public final static String EDIT_ALARM_ONLY_MANAGER = "editAlarmOnlyManager";
 
     private boolean editAlarmForEverything;
-    private boolean editAlarmOnlyGroupMember;
+    private boolean editAlarmOnlyManager;
 
-    public PermsGroupAlarm(boolean editAlarmForEverything, boolean editAlarmOnlyGroupMember) {
+    public PermsGroupAlarm(boolean editAlarmForEverything, boolean editAlarmOnlyManager) {
         this.editAlarmForEverything = editAlarmForEverything;
-        this.editAlarmOnlyGroupMember = editAlarmOnlyGroupMember;
+        this.editAlarmOnlyManager = editAlarmOnlyManager;
     }
 
     public PermsGroupAlarm() {
@@ -40,21 +40,21 @@ public class PermsGroupAlarm {
         return editAlarmForEverything;
     }
 
-    public boolean getEditAlarmOnlyGroupMember() {
-        return editAlarmOnlyGroupMember;
+    public boolean getEditAlarmOnlyManager() {
+        return editAlarmOnlyManager;
     }
 
     public void setEditAlarmForEverything(boolean editAlarmForEverything) {
         this.editAlarmForEverything = editAlarmForEverything;
     }
 
-    public void setEditAlarmOnlyGroupMember(boolean editAlarmOnlyGroupMember) {
-        this.editAlarmOnlyGroupMember = editAlarmOnlyGroupMember;
+    public void setEditAlarmOnlyManager(boolean editAlarmOnlyManager) {
+        this.editAlarmOnlyManager = editAlarmOnlyManager;
     }
 
     public static PermsGroupAlarm merge(PermsGroupAlarm permsGroupAlarm1, PermsGroupAlarm permsGroupAlarm2) {
         final boolean mergedEditAlarmForEverything = permsGroupAlarm1.getEditAlarmForEverything() || permsGroupAlarm2.getEditAlarmForEverything();
-        final boolean mergedEditAlarmOnlyGroupMember = permsGroupAlarm1.getEditAlarmOnlyGroupMember() || permsGroupAlarm2.getEditAlarmOnlyGroupMember();
+        final boolean mergedEditAlarmOnlyGroupMember = permsGroupAlarm1.getEditAlarmOnlyManager() || permsGroupAlarm2.getEditAlarmOnlyManager();
         return new PermsGroupAlarm(mergedEditAlarmForEverything, mergedEditAlarmOnlyGroupMember);
     }
 
@@ -62,7 +62,7 @@ public class PermsGroupAlarm {
     public String toString() {
         final StringBuilder sb = new StringBuilder("PermsGroupAlarm{");
         sb.append("editAlarmForEverything=").append(editAlarmForEverything);
-        sb.append(", editAlarmOnlyGroupMember=").append(editAlarmOnlyGroupMember);
+        sb.append(", editAlarmOnlyManager=").append(editAlarmOnlyManager);
         sb.append('}');
         return sb.toString();
     }

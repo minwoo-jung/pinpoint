@@ -15,10 +15,9 @@
  */
 package com.navercorp.pinpoint.web.service;
 
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Position;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
-import com.navercorp.pinpoint.web.vo.User;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ public interface ApplicationConfigService {
 
     ApplicationConfiguration selectApplicationConfiguration(String applicationId);
 
-    Role searchMyRole(String applicationId, String userId);
+    Position searchMyPosition(String applicationId, String userId);
 
     boolean canEditConfiguration(String applicationId, String userId);
 

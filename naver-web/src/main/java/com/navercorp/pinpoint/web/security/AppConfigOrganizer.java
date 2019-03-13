@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Role;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Position;
 import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 import com.navercorp.pinpoint.web.vo.UserGroup;
 
@@ -39,7 +39,7 @@ public class AppConfigOrganizer {
             }
         }
         if (containedUserGroups.isEmpty()) {
-            AppUserGroupAuth appUserGroupAuth = appUserGroupAuthes.get(Role.GUEST.getName());
+            AppUserGroupAuth appUserGroupAuth = appUserGroupAuthes.get(Position.GUEST.getName());
             if (appUserGroupAuth != null) {
                 containedUserGroups.add(appUserGroupAuth);
             }

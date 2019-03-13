@@ -35,17 +35,17 @@ public class AppUserGroupAuth {
     private String number;
     private String applicationId;
     private String userGroupId;
-    private String roleName;
+    private String positionName;
     private String configurationString;
     private AppAuthConfiguration configuration;
     
     public AppUserGroupAuth() {
     }
     
-    public AppUserGroupAuth(String applicationId, String userGroupId, String roleName, AppAuthConfiguration appAuthConfig) {
+    public AppUserGroupAuth(String applicationId, String userGroupId, String positionName, AppAuthConfiguration appAuthConfig) {
         this.applicationId = applicationId;
         this.userGroupId = userGroupId;
-        this.roleName = roleName;
+        this.positionName = positionName;
         this.configuration = appAuthConfig;
         try {
             this.configurationString = OBJECT_MAPPER.writeValueAsString(appAuthConfig);
@@ -100,12 +100,12 @@ public class AppUserGroupAuth {
         this.userGroupId = userGroupId;
     }
 
-    public Role getRole() {
-        return Role.findRole(roleName);
+    public Position getPosition() {
+        return Position.findPosition(positionName);
     }
     
-    public void setRole(String roleName) {
-        this.roleName = roleName;
+    public void setPosition(String positionName) {
+        this.positionName = positionName;
     }
     
     public AppAuthConfiguration getConfiguration(){
@@ -117,22 +117,22 @@ public class AppUserGroupAuth {
         final StringBuilder sb = new StringBuilder("AppUserGroupAuth{");
         sb.append(", applicationId='").append(applicationId).append('\'');
         sb.append(", userGroupId='").append(userGroupId).append('\'');
-        sb.append(", roleName='").append(roleName).append('\'');
+        sb.append(", positionName='").append(positionName).append('\'');
         sb.append(", configurationString='").append(configurationString).append('\'');
         sb.append(", configuration=").append(configuration);
         sb.append('}');
         return sb.toString();
     }
 
-    public enum Role {
+    public enum Position {
         GUEST("guest", 1), USER("user", 2), MANAGER("manager", 3);
         
         private final String name;
         private final int level;
 
-        private static final Set<Role> ROLES = EnumSet.allOf(Role.class);
+        private static final Set<Position> POSITIONS = EnumSet.allOf(Position.class);
         
-        Role(String name, int level) {
+        Position(String name, int level) {
             this.name = name;
             this.level = level;
         }
@@ -149,26 +149,26 @@ public class AppUserGroupAuth {
             return this.name;
         }
         
-        public boolean isHigherOrEqualLevel(Role role) {
-            if (role == null) {
+        public boolean isHigherOrEqualLevel(Position position) {
+            if (position == null) {
                 return true;
             }
             
-            if (this.level >= role.getLevel()) {
+            if (this.level >= position.getLevel()) {
                 return true;
             } else {
                 return false;
             }
         }
         
-        public static Role findRole(String roleName){
+        public static Position findPosition(String positionName){
 
-            for (Role role : ROLES) {
-                if(role.getName().equals(roleName)){
-                    return role;
+            for (Position position : POSITIONS) {
+                if(position.getName().equals(positionName)){
+                    return position;
                 }
             }
-            throw new RuntimeException("There was no match for is roleName : " + roleName );
+            throw new RuntimeException("There was no match for is positionName : " + positionName );
         }
         
     }
