@@ -23,11 +23,11 @@ export interface IApplicationAuthData {
 }
 
 export interface IAuthentication {
-    myRole: string;
+    myPosition: string;
     userGroupAuthList: IApplicationAuthData[];
 }
 export interface IAuthenticationCreated {
-    myRole: string;
+    myPosition: string;
     result: string;
 }
 export interface IAuthenticationResponse {
@@ -42,17 +42,17 @@ export interface IPosition {
 @Injectable()
 export class AuthenticationDataService {
     private authenticationURL = 'application/userGroupAuth.pinpoint';
-    public outRole: EventEmitter<IPosition> = new EventEmitter();
+    public outPosition: EventEmitter<IPosition> = new EventEmitter();
     constructor(private http: HttpClient) {}
     retrieve(applicationId: string): Observable<IAuthentication> {
         return this.http.get<IAuthentication>(this.authenticationURL, this.makeRequestOptionsArgs(applicationId)).pipe(
             retry(3),
             tap((auth: IAuthentication) => {
-                this.outRole.emit({
+                this.outPosition.emit({
                     applicationId: applicationId,
-                    isManager: auth.myRole === POSITION.MANAGER,
-                    isGuest: auth.myRole === POSITION.GUEST,
-                    isUser: auth.myRole === POSITION.USER
+                    isManager: auth.myPosition === POSITION.MANAGER,
+                    isGuest: auth.myPosition === POSITION.GUEST,
+                    isUser: auth.myPosition === POSITION.USER
                 });
             })
         );

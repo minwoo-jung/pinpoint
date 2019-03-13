@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 export interface IParam {
     userGroupId: string;
-    role?: string;
+    position?: string;
     applicationId?: string;
 }
 @Component({
@@ -24,8 +24,8 @@ export class AuthenticationListComponent implements OnInit {
         this.removeConformId = userGroupId;
         this.removeConformApplicationId = applicationId;
     }
-    onEdit(userGroupId: string, role: string): void {
-        this.outEdit.emit({ userGroupId, role});
+    onEdit(userGroupId: string, position: string): void {
+        this.outEdit.emit({ userGroupId, position});
     }
     onCancelRemove(): void {
         this.removeConformId = '';
@@ -39,8 +39,8 @@ export class AuthenticationListComponent implements OnInit {
         this.removeConformId = '';
         this.removeConformApplicationId = '';
     }
-    onShowInfo(userGroupId: string, role: string): void {
-        this.outInfo.emit({ userGroupId, role });
+    onShowInfo(userGroupId: string, position: string): void {
+        this.outInfo.emit({ userGroupId, position });
     }
     isRemoveTarget(userGroupId: string, applicationId: string): boolean {
         return this.removeConformId === userGroupId && this.removeConformApplicationId === applicationId;

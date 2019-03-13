@@ -86,7 +86,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
 
             this.changeDetectorRef.detectChanges();
         });
-        this.authenticationDataService.outRole.pipe(
+        this.authenticationDataService.outPosition.pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((authInfo: IPosition) => {
             this.authInfo = authInfo;
@@ -107,7 +107,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
         });
     }
     private connectAuthenticationComponent(): void {
-        this.authenticationDataService.outRole.pipe(
+        this.authenticationDataService.outPosition.pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((authInfo: IPosition) => {
             this.authInfo = authInfo;

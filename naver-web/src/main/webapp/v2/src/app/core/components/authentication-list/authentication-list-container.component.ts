@@ -135,7 +135,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 this.errorMessage = data.errorMessage;
                 this.hideProcessing();
             } else {
-                this.myPosition = data.myRole;
+                this.myPosition = data.myPosition;
                 this.authorityList = data.userGroupAuthList;
                 this.hasUpdateAndRemoveAuthority = this.userPermissionCheckService.canUpdateAndRemoveAuth(this.isManager());
                 this.hideProcessing();
@@ -161,9 +161,9 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         }
         return this.userGroupList;
     }
-    private getAuth(userGroupId: string, role: string): IApplicationAuthData {
+    private getAuth(userGroupId: string, position: string): IApplicationAuthData {
         return this.authorityList.find((auth: IApplicationAuthData) => {
-            return userGroupId === auth.userGroupId && role === auth.role;
+            return userGroupId === auth.userGroupId && position === auth.position;
         });
     }
     private hasAddAuthority(): boolean {
@@ -171,7 +171,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             if (this.userPermissionCheckService.canAddAuth(this.isManager())) {
                 return true;
             } else {
-                if (this.includeManagerRoleInList() === false) {
+                if (this.includeManagerPositionInList() === false) {
                     return true;
                 }
             }
@@ -191,7 +191,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 serverMapData: authInfo.serverMap,
                 sqlMetaData: authInfo.sqlMeta
             },
-            role: authInfo.position,
+            position: authInfo.position,
             userGroupId: authInfo.userGroupId
         };
     }
@@ -202,7 +202,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         this.authenticationInteractionService.showCreate({
             applicationId: this.currentApplication.getApplicationName(),
             userGroupList: this.getFilteredUserGroupList(),
-            fixPosition: this.includeManagerRoleInList() ? '' : POSITION.MANAGER
+            fixPosition: this.includeManagerPositionInList() ? '' : POSITION.MANAGER
         });
     }
     onCreateAuth(authInfo: IAuthorityData): void {
@@ -262,7 +262,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
             userGroupList: this.getFilteredUserGroupList(authInfo.userGroupId),
             fixPosition: '',
             data: {
-                position: authInfo.position || authInfo.role,
+                position: authInfo.position,
                 userGroupId: authInfo.userGroupId,
                 serverMap: authInfo.configuration.serverMapData,
                 apiMeta: authInfo.configuration.apiMetaData,
@@ -272,7 +272,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         });
     }
     onShowAuthInfo(auth: IParam): void {
-        this.selectedAuth = this.getAuth(auth.userGroupId, auth.role);
+        this.selectedAuth = this.getAuth(auth.userGroupId, auth.position);
         this.showSelectedAuthInfo = true;
     }
     isApplicationSelected(): boolean {
@@ -290,9 +290,9 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     private isManager(position?: string): boolean {
         return (position || this.myPosition) === POSITION.MANAGER;
     }
-    private includeManagerRoleInList(): boolean {
+    private includeManagerPositionInList(): boolean {
         return this.authorityList.reduce((prev: boolean, auth: IApplicationAuthData) => {
-            return prev || auth.role === POSITION.MANAGER;
+            return prev || auth.position === POSITION.MANAGER;
         }, false);
     }
     private showProcessing(): void {
