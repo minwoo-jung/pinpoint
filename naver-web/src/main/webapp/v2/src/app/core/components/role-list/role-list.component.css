@@ -30,3 +30,11 @@ li.selected {
     color: #F00;
     margin-left: 10px;
 }
+.l-role-select-button {
+    float: right;
+    font-size: 14px;
+}
+
+.l-role-select-button:disabled {
+    cursor: default;
+}

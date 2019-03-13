@@ -7,8 +7,25 @@ import { retry } from 'rxjs/operators';
 export class RoleInfoDataService {
     private roleInfoURL = 'roles/role.pinpoint';
     constructor(private http: HttpClient) {}
-    getRoleInfo(role: string): Observable<IPermissions> {
+    get(role: string): Observable<IPermissions> {
         return this.http.get<IPermissions>(this.roleInfoURL, this.makeRequestOptionsArgs(role)).pipe(
+            retry(3)
+        );
+    }
+    create(params: IPermissions): Observable<IUserRequestSuccessResponse> {
+        return this.http.post<any>(this.roleInfoURL, params).pipe(
+            retry(3)
+        );
+    }
+    update(params: IPermissions): Observable<IUserRequestSuccessResponse> {
+        return this.http.put<any>(this.roleInfoURL, params).pipe(
+            retry(3)
+        );
+    }
+    remove(roleId: string): Observable<IUserRequestSuccessResponse> {
+        return this.http.request<IUserRequestSuccessResponse>('delete', this.roleInfoURL, {
+            body: { roleId }
+        }).pipe(
             retry(3)
         );
     }

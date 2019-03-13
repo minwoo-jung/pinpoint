@@ -78,8 +78,8 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
         };
     }
     onCellClick(row: any): void {
-        switch (row.colDef.field) {
-            case 'configuration':
+        switch (row.colDef.headerName) {
+            case 'Detail':
                 this.outCellSelected.next({
                     type: 'configuration',
                     applicationId: row.data.applicationId,
@@ -87,7 +87,7 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
                     configuration: row.value
                 });
                 break;
-            case 'role':
+            case 'More':
                 this.outCellSelected.next({
                     type: 'edit',
                     applicationId : row.data.applicationId,

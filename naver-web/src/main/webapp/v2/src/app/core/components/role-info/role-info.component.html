@@ -3,43 +3,43 @@
     <div>
         <dl>
             <dt>{{i18nText.adminMenuTitle}}</dt>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAdministration.viewAdminMenu"> {{i18nText.viewAdminMenu}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()" [(ngModel)]="viewAdminMenu"> {{i18nText.viewAdminMenu}}</mat-checkbox></dd>
         </dl>
         <dl>
             <dt>{{i18nText.editUserTitle}}</dt>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAdministration.editUser"> {{i18nText.editUser}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editUser"> {{i18nText.editUser}}</mat-checkbox></dd>
         </dl>
         <dl>
             <dt>{{i18nText.editRoleTitle}}</dt>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAdministration.editRole"> {{i18nText.editRole}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editRole"> {{i18nText.editRole}}</mat-checkbox></dd>
         </dl>            
     </div>
     <div>Authentication</div>
     <div>
         <dl>
             <dt>{{i18nText.preoccupancyTitle}}</dt>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAppAuthorization.preoccupancy"> {{i18nText.preoccupancy}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="preoccupancy"> {{i18nText.preoccupancy}}</mat-checkbox></dd>
         </dl>
         <dl>
             <dt>{{i18nText.editAuthorTitle}}</dt>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything"> {{i18nText.editAuthorForEverything}}</mat-checkbox></dd>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager"> {{i18nText.editAuthorOnlyManager}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAuthorForEverything"> {{i18nText.editAuthorForEverything}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAuthorOnlyManager"> {{i18nText.editAuthorOnlyManager}}</mat-checkbox></dd>
         </dl>
     </div>
     <div>Alarm</div>
     <div>
         <dl>
             <dt>{{i18nText.editAlarmTitle}}</dt>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAlarm.editAlarmForEverything"> {{i18nText.editAlarmForEverything}}</mat-checkbox></dd>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember"> {{i18nText.editAlarmOnlyGroupMember}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAlarmForEverything"> {{i18nText.editAlarmForEverything}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAlarmOnlyGroupMember"> {{i18nText.editAlarmOnlyGroupMember}}</mat-checkbox></dd>
         </dl>
     </div>
     <div>User Group</div>
     <div>
         <dl>
             <dt>{{i18nText.editGroupTitle}}</dt>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupUserGroup.editGroupForEverything"> {{i18nText.editGroupForEverything}}</mat-checkbox></dd>
-            <dd><mat-checkbox class="example-margin" [disabled]="disableFormControl" [(ngModel)]="roleInfo.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember"> {{i18nText.editGroupOnlyGroupMember}}</mat-checkbox></dd>    
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editGroupForEverything"> {{i18nText.editGroupForEverything}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editGroupOnlyGroupMember"> {{i18nText.editGroupOnlyGroupMember}}</mat-checkbox></dd>    
         </dl>
     </div>
 </div>

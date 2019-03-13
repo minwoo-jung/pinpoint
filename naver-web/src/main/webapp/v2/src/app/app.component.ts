@@ -58,6 +58,9 @@ export class AppComponent implements OnInit {
                 translate.CONFIGURATION.USERS = {
                     GUIDE: '사용자를 추가, 조회 또는 삭제할 수 있습니다.'
                 };
+                translate.CONFIGURATION.ROLE = {
+                    SELECT: 'Role 을 선택하여 정보를 조회하거나 추가, 삭제할 수 있습니다.'
+                };
                 translate.CONFIGURATION.PERMISSION = {};
                 translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin 메뉴';
                 translate.CONFIGURATION.PERMISSION.VIEW_ADMIN_MENU = 'Admin menu 보기';
@@ -94,6 +97,9 @@ export class AppComponent implements OnInit {
                 translate.CONFIGURATION.COMMON.PASSWORD_MISMATCH = 'Password does not match.';
                 translate.CONFIGURATION.USERS = {
                     GUIDE: 'Add, query or delete users.'
+                };
+                translate.CONFIGURATION.ROLE = {
+                    SELECT: 'Select role or add, delete role'
                 };
                 translate.CONFIGURATION.PERMISSION = {};
                 translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin Menu';

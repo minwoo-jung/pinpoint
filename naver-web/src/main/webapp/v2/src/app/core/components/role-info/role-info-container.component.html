@@ -1,19 +1,39 @@
 <div class="l-role-info-wrapper">
-    <div class="l-role-info-title">
-        <span>Permission</span>
-    </div>
-    <div class="l-role-info-list">
-        <pp-role-info [roleInfo]="roleInfo" [i18nText]="i18nText" *ngIf="roleInfo; else elseBlock"></pp-role-info>
-        <ng-template #elseBlock>
-            <div class="l-role-do-not-selected">Select Role</div>
-        </ng-template>
-    </div>
-    <ng-container *ngIf="errorMessage">
-        <pp-server-error-message
-            [message]="errorMessage"
-            (outClose)="onCloseErrorMessage()">
-        </pp-server-error-message>
-    </ng-container> 
+    <ng-container *ngIf="!isNone();else elseBlock">
+        <div class="l-role-info-title">
+            <span>Permission</span>
+            <div *ngIf="isCreate()">
+                <input class="l-input-name" [(ngModel)]="roleId" type="text" placeholder="Role의 이름을 입력하세요."/>
+            </div>
+        </div>
+        <div class="l-role-info-list">
+            <pp-role-info 
+                [roleInfo]="roleInfo"
+                [hasRoleEditPerm]="hasRoleEditPerm"
+                [i18nText]="i18nText"
+                (outChanged)="onChangedPermission($event)"></pp-role-info>
+        </div>
+        <ng-container *ngIf="isRemove()">
+            <div class="l-remove-message">
+                <div class="l-band">
+                    <div><span>{{roleInfo.roleId.toUpperCase()}}</span></div>
+                    <div>Role을 삭제합니다.</div>
+                </div>
+            </div>
+            <button class="l-submit-button" (click)="onRemove()">{{removeButtonText}}</button>            
+        </ng-container>
+        <button *ngIf="isUpdate() && hasRoleEditPerm" class="l-submit-button" (click)="onUpdate()" [disabled]="checkSaveBtnDisable()">{{saveButtonText}}</button>
+        <button *ngIf="isCreate() && hasRoleEditPerm" class="l-submit-button" (click)="onCreate()" [disabled]="checkSaveBtnDisable()">{{saveButtonText}}</button>
+        <ng-container *ngIf="errorMessage">
+            <pp-server-error-message
+                [message]="errorMessage"
+                (outClose)="onCloseErrorMessage()">
+            </pp-server-error-message>
+        </ng-container> 
+    </ng-container>
+    <ng-template #elseBlock>
+        <div class="l-role-do-not-selected">{{selectText}}</div>
+    </ng-template>
     <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
     <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
 </div>

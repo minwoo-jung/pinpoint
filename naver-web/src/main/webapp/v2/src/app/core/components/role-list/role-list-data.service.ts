@@ -17,10 +17,9 @@ export class RoleListDataService {
     ) {}
 
     getRoleList(): Observable<string[]> {
-        return of(['admin', 'user']);
-        // return this.http.get<string[]>(this.getRoleListUrl).pipe(
-        //     retry(3),
-        // );
+        return this.http.get<string[]>(this.getRoleListUrl).pipe(
+            retry(3),
+        );
     }
 
     update(userId: string, roleList: string[]): Observable<IUserRequestSuccessResponse | IServerErrorShortFormat> {

@@ -1,12 +1,15 @@
 <div class="l-role-list-wrapper">
     <div class="l-role-list-title">
         <span>Role List</span>
+        <button *ngIf="hasRoleEditPerm" class="btn btn-sm btn-blue" (click)="onAddRole()"><i class="fas fa-plus"></i></button>
     </div>
     <div class="l-role-list-list">
         <pp-role-list
             [roleList]="roleList"
-            (outSelected)="onSelected($event)"
-        ></pp-role-list>
+            [hasRoleEditPerm]="hasRoleEditPerm"
+            (outSelectRole)="onSelectRole($event)"
+            (outSelectBtnRole)="onRemoveRole($event)">
+        </pp-role-list>
     </div>
     <ng-container *ngIf="errorMessage">
         <pp-server-error-message
@@ -17,4 +20,3 @@
     <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
     <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
 </div>
-    

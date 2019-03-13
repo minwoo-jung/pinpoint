@@ -2,6 +2,9 @@
     <li *ngFor="let role of roleList" [class.selected]="isSelected(role)" (click)="onSelect(role)">
         <div class="l-item-wrapper">
             <span>{{role | uppercase }}</span>
+            <button class="l-role-select-button" (click)="onRemove($event, role)" *ngIf="hasRoleEditPerm">
+                <i class="far fa-trash-alt"></i>
+            </button>
         </div>
     </li>
 </ul>
