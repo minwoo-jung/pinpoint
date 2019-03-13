@@ -380,6 +380,7 @@ interface IPermissions {
             viewAdminMenu: boolean;
             editUser: boolean;
             editRole: boolean;
+            callAdminApi: boolean;
         };
         permsGroupAppAuthorization: {
             preoccupancy: boolean;
