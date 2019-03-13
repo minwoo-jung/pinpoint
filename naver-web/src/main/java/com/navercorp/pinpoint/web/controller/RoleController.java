@@ -71,8 +71,8 @@ public class RoleController {
     @PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_ROLE)")
     @RequestMapping(value = "/role", method = RequestMethod.DELETE)
     @ResponseBody
-    public Object deleteRole(@RequestParam(value = ROLE_ID) String roleId) {
-        roleService.deleteRoleInformation(roleId);
+    public Object deleteRole(@RequestBody RoleInformation roleInformation) {
+        roleService.deleteRoleInformation(roleInformation.getRoleId());
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");
