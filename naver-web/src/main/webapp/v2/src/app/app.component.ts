@@ -59,7 +59,9 @@ export class AppComponent implements OnInit {
                     GUIDE: '사용자를 추가, 조회 또는 삭제할 수 있습니다.'
                 };
                 translate.CONFIGURATION.ROLE = {
-                    SELECT: 'Role 을 선택하여 정보를 조회하거나 추가, 삭제할 수 있습니다.'
+                    SELECT: 'Role 을 선택하여 정보를 조회하거나 추가, 삭제할 수 있습니다.',
+                    WILL_REMOVE: '선택한 Role을 삭제합니다.',
+                    INPUT_NAME: 'Role의 이름을 입력하세요.'
                 };
                 translate.CONFIGURATION.PERMISSION = {};
                 translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin 메뉴';
@@ -75,7 +77,7 @@ export class AppComponent implements OnInit {
                 translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_ONLY_MANAGER = 'Position이 Manager인 User Group에 소속된 경우에만 Authentication 수정 가능';
                 translate.CONFIGURATION.PERMISSION.EDIT_ALARM_TITLE = 'Alarm 수정';
                 translate.CONFIGURATION.PERMISSION.EDIT_ALARM_FOR_EVERYTHING = '모든 Alarm 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_GROUP_MEMBER = 'Position이 Manager인 User Group에 소속된 Member만 Alarm 수정 가능';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_MANAGER = 'Position이 Manager인 User Group에 소속된 Member만 Alarm 수정 가능';
                 translate.CONFIGURATION.PERMISSION.EDIT_GROUP_TITLE = 'User Group 수정';
                 translate.CONFIGURATION.PERMISSION.EDIT_GROUP_FOR_EVERYTHING = 'User Group 생성 및 수정 가능';
                 translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'User Group의 Member 만 생성 및 수정 가능';
@@ -99,7 +101,9 @@ export class AppComponent implements OnInit {
                     GUIDE: 'Add, query or delete users.'
                 };
                 translate.CONFIGURATION.ROLE = {
-                    SELECT: 'Select role or add, delete role'
+                    SELECT: 'Select role or add, delete role',
+                    WILL_REMOVE: 'Remove selected role.',
+                    INPUT_NAME: 'Input role name'
                 };
                 translate.CONFIGURATION.PERMISSION = {};
                 translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin Menu';
@@ -115,7 +119,7 @@ export class AppComponent implements OnInit {
                 translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_ONLY_MANAGER = 'Edit Author only manager';
                 translate.CONFIGURATION.PERMISSION.EDIT_ALARM_TITLE = 'Alarm Modification';
                 translate.CONFIGURATION.PERMISSION.EDIT_ALARM_FOR_EVERYTHING = 'Edit alarm for everything';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_GROUP_MEMBER = 'Edit alarm only group member';
+                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_MANAGER = 'Edit alarm only group member';
                 translate.CONFIGURATION.PERMISSION.EDIT_GROUP_TITLE = 'User Group Modification';
                 translate.CONFIGURATION.PERMISSION.EDIT_GROUP_FOR_EVERYTHING = 'Edit group for everything';
                 translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'Edit Group only group member';

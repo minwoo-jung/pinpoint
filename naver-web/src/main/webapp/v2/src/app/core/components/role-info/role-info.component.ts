@@ -9,7 +9,7 @@ export interface IPermissionData {
     editAuthorForEverything: boolean;
     editAuthorOnlyManager: boolean;
     editAlarmForEverything: boolean;
-    editAlarmOnlyGroupMember: boolean;
+    editAlarmOnlyManager: boolean;
     editGroupForEverything: boolean;
     editGroupOnlyGroupMember: boolean;
 }
@@ -30,7 +30,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
     editAuthorForEverything: boolean;
     editAuthorOnlyManager: boolean;
     editAlarmForEverything: boolean;
-    editAlarmOnlyGroupMember: boolean;
+    editAlarmOnlyManager: boolean;
     editGroupForEverything: boolean;
     editGroupOnlyGroupMember: boolean;
     constructor() {}
@@ -44,7 +44,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
             this.editAuthorForEverything = this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything;
             this.editAuthorOnlyManager = this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager;
             this.editAlarmForEverything = this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmForEverything;
-            this.editAlarmOnlyGroupMember = this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember;
+            this.editAlarmOnlyManager = this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmOnlyManager;
             this.editGroupForEverything = this.roleInfo.permissionCollection.permsGroupUserGroup.editGroupForEverything;
             this.editGroupOnlyGroupMember = this.roleInfo.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember;
         }
@@ -59,7 +59,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
             editAuthorForEverything: this.editAuthorForEverything,
             editAuthorOnlyManager: this.editAuthorOnlyManager,
             editAlarmForEverything: this.editAlarmForEverything,
-            editAlarmOnlyGroupMember: this.editAlarmOnlyGroupMember,
+            editAlarmOnlyManager: this.editAlarmOnlyManager,
             editGroupForEverything: this.editGroupForEverything,
             editGroupOnlyGroupMember: this.editGroupOnlyGroupMember
         });
@@ -72,7 +72,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
             this.editAuthorForEverything !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything ||
             this.editAuthorOnlyManager !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager ||
             this.editAlarmForEverything !== this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmForEverything ||
-            this.editAlarmOnlyGroupMember !== this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember ||
+            this.editAlarmOnlyManager !== this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmOnlyManager ||
             this.editGroupForEverything !== this.roleInfo.permissionCollection.permsGroupUserGroup.editGroupForEverything ||
             this.editGroupOnlyGroupMember !== this.roleInfo.permissionCollection.permsGroupUserGroup.editGroupOnlyGroupMember;
     }

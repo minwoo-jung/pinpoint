@@ -44,7 +44,7 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
                     },
                     {
                         headerName: 'Position',
-                        field: 'role',
+                        field: 'position',
                         width: 150,
                         cellStyle: this.alignCenterCellStyle
                     },
@@ -57,7 +57,7 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
                     },
                     {
                         headerName: 'More',
-                        field: 'role',
+                        field: 'position',
                         width: 150,
                         cellRenderer: (params: any) => {
                             return '<i class="fas fa-external-link-alt"></i>';
@@ -91,7 +91,7 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
                 this.outCellSelected.next({
                     type: 'edit',
                     applicationId : row.data.applicationId,
-                    position: row.data.role
+                    position: row.data.position
                 });
                 break;
         }

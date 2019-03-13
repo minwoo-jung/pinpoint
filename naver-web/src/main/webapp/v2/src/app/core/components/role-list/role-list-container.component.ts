@@ -13,6 +13,7 @@ import { RoleListDataService } from './role-list-data.service';
 export class RoleListContainerComponent implements OnInit, OnDestroy {
     private unsubscribe: Subject<null> = new Subject();
     hasRoleEditPerm = false;
+    selectedRoleId: string;
     roleList: any = [];
     errorMessage: string;
     useDisable = true;
@@ -27,10 +28,12 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.getRoleList();
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_REMOVED).subscribe((param: string[]) => {
+            this.selectedRoleId = '';
             this.getRoleList();
         });
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_CREATED).subscribe((param: string[]) => {
             this.getRoleList();
+            this.selectedRoleId = param[0];
             this.onSelectRole(param[0]);
         });
         this.hasRoleEditPerm = this.userPermissionCheckService.canEditRole();

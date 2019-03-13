@@ -6,6 +6,7 @@
     <div class="l-role-list-list">
         <pp-role-list
             [roleList]="roleList"
+            [selectedRoleId]="selectedRoleId"
             [hasRoleEditPerm]="hasRoleEditPerm"
             (outSelectRole)="onSelectRole($event)"
             (outSelectBtnRole)="onRemoveRole($event)">

@@ -67,7 +67,7 @@ export class UserPermissionCheckService {
         if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmForEverything) {
             return true;
         } else {
-            if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember) {
+            if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyManager) {
                 return isManager;
             }
         }
@@ -77,7 +77,7 @@ export class UserPermissionCheckService {
         if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmForEverything) {
             return true;
         } else {
-            if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember) {
+            if (this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyManager) {
                 return isManager;
             }
         }
@@ -87,7 +87,7 @@ export class UserPermissionCheckService {
         return this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmForEverything;
     }
     canEditMyAlarm(): boolean {
-        return this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyGroupMember;
+        return this.userPermissions.permissionCollection.permsGroupAlarm.editAlarmOnlyManager;
     }
     canEditAllUserGroup(): boolean {
         return this.userPermissions.permissionCollection.permsGroupUserGroup.editGroupForEverything;

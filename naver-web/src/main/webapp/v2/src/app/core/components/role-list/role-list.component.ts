@@ -7,21 +7,21 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class RoleListComponent implements OnInit {
     @Input() roleList: string[];
+    @Input() selectedRoleId: string;
     @Input() hasRoleEditPerm: boolean;
     @Output() outSelectRole: EventEmitter<string> = new EventEmitter();
     @Output() outSelectBtnRole: EventEmitter<string> = new EventEmitter();
-    private selectedRole: string;
     constructor() {}
     ngOnInit() {}
     isSelected(id: string): boolean {
-        return this.selectedRole === id;
+        return this.selectedRoleId === id;
     }
     onSelect(role: string): void {
-        this.selectedRole = role;
+        this.selectedRoleId = role;
         this.outSelectRole.emit(role);
     }
     onRemove($event: MouseEvent, role: string): void {
-        this.selectedRole = role;
+        this.selectedRoleId = role;
         this.outSelectBtnRole.emit(role);
         $event.stopPropagation();
     }

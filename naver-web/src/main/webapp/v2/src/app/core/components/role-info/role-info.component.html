@@ -31,7 +31,7 @@
         <dl>
             <dt>{{i18nText.editAlarmTitle}}</dt>
             <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAlarmForEverything"> {{i18nText.editAlarmForEverything}}</mat-checkbox></dd>
-            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAlarmOnlyGroupMember"> {{i18nText.editAlarmOnlyGroupMember}}</mat-checkbox></dd>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAlarmOnlyManager"> {{i18nText.editAlarmOnlyManager}}</mat-checkbox></dd>
         </dl>
     </div>
     <div>User Group</div>

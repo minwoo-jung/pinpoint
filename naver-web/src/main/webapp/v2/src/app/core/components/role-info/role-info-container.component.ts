@@ -24,20 +24,21 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     private unsubscribe: Subject<null> = new Subject();
     hasRoleEditPerm = false;
     currentRoleId = '';
-    roleId: string;
+    createRoleId: string;
     roleInfo: IPermissions;
     errorMessage: string;
     useDisable = false;
     showLoading = false;
-    saveButtonText: string;
-    removeButtonText: string;
-    createButtonText: string;
-    selectText: string;
     dataChanged = false;
     lastChangedData: IPermissionData;
     currentAction: CRUD_ACTION = CRUD_ACTION.NONE;
 
     i18nText: {[key: string]: string} = {
+        saveButton: '',
+        removeButton: '',
+        removeGuide: '',
+        inputGuide: '',
+        select: '',
         adminMenuTitle: '',
         viewAdminMenu: '',
         editRoleTitle: '',
@@ -51,7 +52,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         editAuthorOnlyManager: '',
         editAlarmTitle: '',
         editAlarmForEverything: '',
-        editAlarmOnlyGroupMember: '',
+        editAlarmOnlyManager: '',
         editGroupTitle: '',
         editGroupForEverything: '',
         editGroupOnlyGroupMember: ''
@@ -78,8 +79,8 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         });
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_CREATE_ROLE).subscribe((param: string[]) => {
             this.currentAction = CRUD_ACTION.CREATE;
-            this.currentRoleId = 'new';
-            this.initRoleInfo();
+            this.createRoleId = '';
+            this.roleInfo = this.getPermissionForm('');
             this.changeDetectorRef.detectChanges();
         });
     }
@@ -88,10 +89,19 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         this.unsubscribe.complete();
     }
     private getI18NText(): void {
-        this.translateService.get(['COMMON.SUBMIT', 'COMMON.REMOVE', 'CONFIGURATION.ROLE.SELECT', 'CONFIGURATION.PERMISSION']).subscribe((texts: {[key: string]: any}) => {
-            this.saveButtonText = texts['COMMON.SUBMIT'];
-            this.removeButtonText = texts['COMMON.REMOVE'];
-            this.selectText = texts['CONFIGURATION.ROLE.SELECT'];
+        this.translateService.get([
+            'COMMON.SUBMIT',
+            'COMMON.REMOVE',
+            'CONFIGURATION.ROLE.WILL_REMOVE',
+            'CONFIGURATION.ROLE.INPUT_NAME',
+            'CONFIGURATION.ROLE.SELECT',
+            'CONFIGURATION.PERMISSION'
+        ]).subscribe((texts: {[key: string]: any}) => {
+            this.i18nText.saveButton = texts['COMMON.SUBMIT'];
+            this.i18nText.removeButton = texts['COMMON.REMOVE'];
+            this.i18nText.select = texts['CONFIGURATION.ROLE.SELECT'];
+            this.i18nText.removeGuide = texts['CONFIGURATION.ROLE.WILL_REMOVE'];
+            this.i18nText.inputGuide = texts['CONFIGURATION.ROLE.INPUT_NAME'];
 
             const permissionTexts = texts['CONFIGURATION.PERMISSION'];
             Object.keys(permissionTexts).map((key: string) => {
@@ -103,9 +113,9 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         });
     }
     private getRoleInfo(): void {
+        this.showProcessing();
         this.lastChangedData = null;
         this.dataChanged = false;
-        this.showProcessing();
         this.roleInfoDataService.get(this.currentRoleId).pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((roleInfo: IPermissions) => {
@@ -116,37 +126,16 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             this.hideProcessing();
             this.changeDetectorRef.detectChanges();
         });
-    }
-    private initRoleInfo(): void {
-        this.roleInfo = {
-            roleId: '',
-            permissionCollection: {
-                permsGroupAdministration: {
-                    viewAdminMenu: false,
-                    editUser: false,
-                    editRole: false
-                },
-                permsGroupAppAuthorization: {
-                    preoccupancy: false,
-                    editAuthorForEverything: false,
-                    editAuthorOnlyManager: false
-                },
-                permsGroupAlarm: {
-                    editAlarmForEverything: false,
-                    editAlarmOnlyGroupMember: false
-                },
-                permsGroupUserGroup: {
-                    editGroupForEverything: false,
-                    editGroupOnlyGroupMember: false
-                }
-            }
-        };
+        this.changeDetectorRef.detectChanges();
     }
     onCloseErrorMessage(): void {
         this.errorMessage = '';
     }
-    checkSaveBtnDisable(): boolean {
+    checkUpdateBtnDisable(): boolean {
         return !(this.hasRoleEditPerm === true && this.isSelectedRole() && this.dataChanged);
+    }
+    checkCreateBtnDisable(): boolean {
+        return !(this.hasRoleEditPerm === true && this.createRoleId !== '');
     }
     isRemove(): boolean {
         return this.currentAction === CRUD_ACTION.REMOVE;
@@ -169,39 +158,16 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     }
     onCreate(): void {
         this.showProcessing();
-        this.roleInfoDataService.create({
-            roleId: this.roleId,
-            permissionCollection: {
-                permsGroupAdministration: {
-                    viewAdminMenu: this.lastChangedData.viewAdminMenu,
-                    editUser: this.lastChangedData.editUser,
-                    editRole: this.lastChangedData.editRole
-                },
-                permsGroupAppAuthorization: {
-                    preoccupancy: this.lastChangedData.preoccupancy,
-                    editAuthorForEverything: this.lastChangedData.editAuthorForEverything,
-                    editAuthorOnlyManager: this.lastChangedData.editAuthorOnlyManager
-                },
-                permsGroupAlarm: {
-                    editAlarmForEverything: this.lastChangedData.editAlarmForEverything,
-                    editAlarmOnlyGroupMember: this.lastChangedData.editAlarmOnlyGroupMember
-                },
-                permsGroupUserGroup: {
-                    editGroupForEverything: this.lastChangedData.editGroupForEverything,
-                    editGroupOnlyGroupMember: this.lastChangedData.editGroupOnlyGroupMember
-                }
-            }
-        }).subscribe((response: IUserRequestSuccessResponse | IServerErrorShortFormat) => {
-            if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
-                this.errorMessage = (response as IServerErrorShortFormat).errorMessage;
-                this.hideProcessing();
+        this.roleInfoDataService.create(this.getPermissionForm(this.createRoleId, this.lastChangedData)).subscribe((response: IUserRequestSuccessResponse | any) => {
+            if (isThatType<any>(response, 'exception')) {
+                this.errorMessage = (response as any).exception.message;
             } else {
                 this.messageQueueService.sendMessage({
                     to: MESSAGE_TO.ROLE_INFO_CREATED,
-                    param: [this.roleId]
+                    param: [this.createRoleId]
                 });
-                this.hideProcessing();
             }
+            this.hideProcessing();
             this.changeDetectorRef.detectChanges();
         }, (error: any) => {
             this.hideProcessing();
@@ -210,46 +176,47 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     }
     onUpdate(): void {
         this.showProcessing();
-        this.roleInfoDataService.update({
-            roleId: this.roleInfo.roleId,
-            permissionCollection: {
-                permsGroupAdministration: {
-                    viewAdminMenu: this.lastChangedData.viewAdminMenu,
-                    editUser: this.lastChangedData.editUser,
-                    editRole: this.lastChangedData.editRole
-                },
-                permsGroupAppAuthorization: {
-                    preoccupancy: this.lastChangedData.preoccupancy,
-                    editAuthorForEverything: this.lastChangedData.editAuthorForEverything,
-                    editAuthorOnlyManager: this.lastChangedData.editAuthorOnlyManager
-                },
-                permsGroupAlarm: {
-                    editAlarmForEverything: this.lastChangedData.editAlarmForEverything,
-                    editAlarmOnlyGroupMember: this.lastChangedData.editAlarmOnlyGroupMember
-                },
-                permsGroupUserGroup: {
-                    editGroupForEverything: this.lastChangedData.editGroupForEverything,
-                    editGroupOnlyGroupMember: this.lastChangedData.editGroupOnlyGroupMember
-                }
+        this.roleInfoDataService.update(this.getPermissionForm(this.roleInfo.roleId, this.lastChangedData)).subscribe((response: IUserRequestSuccessResponse | any) => {
+            if (isThatType<any>(response, 'exception')) {
+                this.errorMessage = (response as any).exception.message;
             }
-        }).subscribe((response: IUserRequestSuccessResponse | IServerErrorShortFormat) => {
-            if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
-                this.errorMessage = (response as IServerErrorShortFormat).errorMessage;
-                this.hideProcessing();
-            } else {
-                this.hideProcessing();
-            }
+            this.hideProcessing();
             this.changeDetectorRef.detectChanges();
         }, (error: any) => {
             this.hideProcessing();
             this.changeDetectorRef.detectChanges();
         });
     }
+    private getPermissionForm(roleId: string, data?: IPermissionData): IPermissions {
+        return {
+            roleId: roleId,
+            permissionCollection: {
+                permsGroupAdministration: {
+                    viewAdminMenu: data ? data.viewAdminMenu : false,
+                    editUser: data ? data.editUser : false,
+                    editRole: data ? data.editRole : false
+                },
+                permsGroupAppAuthorization: {
+                    preoccupancy: data ? data.preoccupancy : false,
+                    editAuthorForEverything: data ? data.editAuthorForEverything : false,
+                    editAuthorOnlyManager: data ? data.editAuthorOnlyManager : false
+                },
+                permsGroupAlarm: {
+                    editAlarmForEverything: data ? data.editAlarmForEverything : false,
+                    editAlarmOnlyManager: data ? data.editAlarmOnlyManager : false
+                },
+                permsGroupUserGroup: {
+                    editGroupForEverything: data ? data.editGroupForEverything : false,
+                    editGroupOnlyGroupMember: data ? data.editGroupOnlyGroupMember : false
+                }
+            }
+        };
+    }
     onRemove(): void {
         this.showProcessing();
-        this.roleInfoDataService.remove(this.roleInfo.roleId).subscribe((response: IUserRequestSuccessResponse | IServerErrorShortFormat) => {
-            if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
-                this.errorMessage = (response as IServerErrorShortFormat).errorMessage;
+        this.roleInfoDataService.remove(this.roleInfo.roleId).subscribe((response: IUserRequestSuccessResponse | any) => {
+            if (isThatType<any>(response, 'exception')) {
+                this.errorMessage = (response as any).exception.message;
                 this.hideProcessing();
             } else {
                 this.messageQueueService.sendMessage({
