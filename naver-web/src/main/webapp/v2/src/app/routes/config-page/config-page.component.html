@@ -4,10 +4,14 @@
 </header>
 <div class="l-main-container font-opensans">
     <section class="l-sidemenu-section">
-        <ul class="l-list">
+        <ul class="l-list l-depth-0">
             <ng-container *ngIf="canViewAdminMenu">
-                <li class="l-list-item l-depth">Administration</li>
-                <ul class="l-list">
+                <li class="l-list-item">
+                    <a class="l-link l-link-with-arrow" [class.active]="isActive(link)" (click)="toggleMenu()" #link>
+                        <span class="l-link-text">Administration</span><i class="fas fa-angle-right" [@rightDown]="getCollapsedState()"></i>
+                    </a>
+                </li>
+                <ul class="l-list l-depth-1" [@collapseSpread]="getCollapsedState()">
                     <li class="l-list-item"><a routerLink="/config/users" routerLinkActive="active" class="l-link">Users</a></li>
                     <li class="l-list-item"><a routerLink="/config/role" routerLinkActive="active" class="l-link">Role</a></li>
                 </ul>

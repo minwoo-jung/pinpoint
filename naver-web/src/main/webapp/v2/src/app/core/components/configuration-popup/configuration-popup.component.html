@@ -1,12 +1,14 @@
-<ul class="l-list">
+<ul class="l-list l-depth-0">
     <ng-container *ngIf="canViewAdminMenu">
-        <li class="l-list-item l-depth">Administrator</li>
-        <li class="l-list-time">
-            <ul class="l-list">
-                <li class="l-list-item"><a (click)="onMenuClick('users')" class="l-link">Users</a></li>
-                <li class="l-list-item"><a (click)="onMenuClick('role')" class="l-link">Role</a></li>    
-            </ul>
+        <li class="l-list-item">
+            <a class="l-link l-link-with-arrow" [class.active]="isActive(link)" (click)="toggleMenu()" #link>
+                <span class="l-link-text">Administration</span><i class="fas fa-angle-right" [@rightDown]="getCollapsedState()"></i>
+            </a>
         </li>
+        <ul class="l-list l-depth-1" [@collapseSpread]="getCollapsedState()">
+            <li class="l-list-item"><a (click)="onMenuClick('users')" class="l-link">Users</a></li>
+            <li class="l-list-item"><a (click)="onMenuClick('role')" class="l-link">Role</a></li>
+        </ul>
         <li class="l-list-item l-separator"></li>
     </ng-container>
     <li class="l-list-item"><a (click)="onMenuClick('general')" class="l-link">General</a></li>
