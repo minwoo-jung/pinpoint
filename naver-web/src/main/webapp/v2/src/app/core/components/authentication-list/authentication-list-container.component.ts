@@ -58,9 +58,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         this.unsubscribe.complete();
     }
     private loadUserData(): void {
-        this.userGroupDataSerivce.retrieve(
-            this.userPermissionCheckService.canEditAllAuth() ? {} : { userId: this.userConfigurationDataService.getUserId() }
-        ).pipe(
+        this.userGroupDataSerivce.retrieve().pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((userGroupList: IUserGroup[]) => {
             this.userGroupList = userGroupList.map((userGroup: IUserGroup) => {
@@ -130,7 +128,9 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     }
     private getAuthorityData(): void {
         this.showProcessing();
-        this.authenticationDataService.retrieve(this.currentApplication.getApplicationName()).subscribe((data: IAuthentication | IServerErrorShortFormat) => {
+        this.authenticationDataService.retrieve(this.currentApplication.getApplicationName()).pipe(
+            takeUntil(this.unsubscribe)
+        ).subscribe((data: IAuthentication | IServerErrorShortFormat) => {
             if (isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')) {
                 this.errorMessage = data.errorMessage;
                 this.hideProcessing();

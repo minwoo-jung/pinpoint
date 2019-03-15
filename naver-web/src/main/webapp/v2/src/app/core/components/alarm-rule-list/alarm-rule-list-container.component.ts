@@ -76,7 +76,8 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
     }
     private loadUserData(): void {
         this.userGroupDataSerivce.retrieve(
-            this.userPermissionCheckService.canEditAllAlarm() ? {} : { userId: this.userConfigurationDataService.getUserId() }
+            // this.userPermissionCheckService.canEditAllAlarm() ? {} : { userId: this.userConfigurationDataService.getUserId() }
+            {}
         ).pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((result: IUserGroup[] | IServerErrorShortFormat) => {
