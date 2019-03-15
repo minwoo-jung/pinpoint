@@ -144,7 +144,7 @@ export class CallTreeComponent implements OnInit, OnChanges {
                 width: 350,
                 cellRenderer: 'group',
                 cellRendererParams: {
-                    innerRenderer: this.innerCellRenderer,
+                    innerRenderer: this.innerCellRenderer.bind(this),
                     suppressCount: true
                 },
                 tooltipField: 'method'

@@ -1,4 +1,4 @@
-import { Component, OnInit, Injector, ComponentFactoryResolver } from '@angular/core';
+import { Component, OnInit, Injector, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 import { Subject, Observable, of, combineLatest } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -12,7 +12,7 @@ import { ApplicationAuthAndAlarmPopupComponent } from './application-auth-and-al
     templateUrl: './application-auth-and-alarm-info-container.component.html',
     styleUrls: ['./application-auth-and-alarm-info-container.component.css']
 })
-export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit {
+export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, OnDestroy {
     private unsubscribe: Subject<null> = new Subject();
     selectedUserGroupId: string;
     rowData: Observable<IApplicationAuthInfo[]>;
@@ -37,6 +37,10 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit {
             this.rowData = this.applicationAuthAndAlarmDataService.getData(this.selectedUserGroupId);
         });
         this.getI18NText();
+    }
+    ngOnDestroy() {
+        this.unsubscribe.next();
+        this.unsubscribe.complete();
     }
     private getI18NText(): void {
         combineLatest(
