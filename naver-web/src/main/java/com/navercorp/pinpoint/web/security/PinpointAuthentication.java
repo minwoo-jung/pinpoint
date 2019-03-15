@@ -36,13 +36,12 @@ public class PinpointAuthentication implements Authentication {
     private final String userId;
     private final String name;
     private final List<UserGroup> affiliatedUserGroupList;
-    private final Map<String, ApplicationConfiguration> appConfigCache;
+    private final ApplicationConfigurations applicationConfigurations;
     private final Collection<GrantedAuthority> authorities;
-    private final boolean PinpointManager;
     private final RoleInformation roleInformation;
     private boolean authenticated;
 
-    public PinpointAuthentication(String userId, String name, List<UserGroup> affiliatedUserGroupList, boolean authenticated, boolean pinpointManager, RoleInformation roleInformation) {
+    public PinpointAuthentication(String userId, String name, List<UserGroup> affiliatedUserGroupList, boolean authenticated, RoleInformation roleInformation) {
         if (StringUtils.isEmpty(userId)) {
             throw new IllegalArgumentException("userId must not be empty");
         }
@@ -56,27 +55,21 @@ public class PinpointAuthentication implements Authentication {
         this.name = name;
         this.affiliatedUserGroupList = affiliatedUserGroupList;
         this.authenticated = authenticated;
-        this.PinpointManager = pinpointManager;
         this.authorities = new ArrayList<>(0);
-        this.appConfigCache = new HashMap<String, ApplicationConfiguration>();
         this.roleInformation = roleInformation;
+        this.applicationConfigurations = new ApplicationConfigurations(roleInformation.getPermissionCollection().getPermsGroupAppAuthorization().getObtainAllAuthorization());
     }
 
     public PinpointAuthentication() {
         userId = EMPTY_STRING;
         name = EMPTY_STRING;
         affiliatedUserGroupList = new ArrayList<>(0);
-        appConfigCache = new HashMap<String, ApplicationConfiguration>();
         authenticated = false;
         authorities = new ArrayList<>(0);
-        PinpointManager = false;
         roleInformation = RoleInformation.UNASSIGNED_ROLE;
+        this.applicationConfigurations = new ApplicationConfigurations(false);
     }
 
-    public boolean isPinpointManager() {
-        return PinpointManager;
-    }
-    
     @Override
     public String getName() {
         return name;
@@ -87,8 +80,7 @@ public class PinpointAuthentication implements Authentication {
         return authorities;
     }
 
-    public void addAuthority(GrantedAuthority authoritiy)
-    {
+    public void addAuthority(GrantedAuthority authoritiy) {
         this.authorities.add(authoritiy);
     }
 
@@ -122,15 +114,41 @@ public class PinpointAuthentication implements Authentication {
     }
 
     public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
-        return appConfigCache.get(applicationId);
+        return applicationConfigurations.getApplicationConfiguration(applicationId);
     }
 
     public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
-        appConfigCache.put(appConfig.getApplicationId(), appConfig);
+        applicationConfigurations.addApplicationConfiguration(appConfig);
+    }
+
+    public boolean isObtainAllAuthorization() {
+        return applicationConfigurations.isObtainAllAuthorization();
     }
 
     public List<UserGroup> getUserGroupList() {
         return this.affiliatedUserGroupList;
+    }
+
+    private static class ApplicationConfigurations {
+        private final boolean obtainAllAuthorization;
+        private final Map<String, ApplicationConfiguration> appConfigCache;
+
+        public ApplicationConfigurations (boolean obtainAllAuthorization) {
+            this.obtainAllAuthorization = obtainAllAuthorization;
+            this.appConfigCache = new HashMap<String, ApplicationConfiguration>();
+        }
+
+        public ApplicationConfiguration getApplicationConfiguration(String applicationId) {
+            return appConfigCache.get(applicationId);
+        }
+
+        public void addApplicationConfiguration(ApplicationConfiguration appConfig) {
+            appConfigCache.put(appConfig.getApplicationId(), appConfig);
+        }
+
+        public boolean isObtainAllAuthorization() {
+            return obtainAllAuthorization;
+        }
     }
 
 }

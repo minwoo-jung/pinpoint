@@ -39,9 +39,6 @@ public class SecurityServiceImpl implements SecurityService {
     private UserGroupService userGroupService;
 
     @Autowired
-    private ApplicationConfigService configService;
-
-    @Autowired
     private RoleService roleService;
 
     @Override
@@ -51,9 +48,8 @@ public class SecurityServiceImpl implements SecurityService {
 
         if (user != null) {
             final List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-            final boolean pinpointManager = configService.isManager(userId);
             final RoleInformation roleInformation = roleService.getUserPermission(userId);
-            return new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, true, pinpointManager, roleInformation);
+            return new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, true, roleInformation);
         } else {
             return new PinpointAuthentication();
         }

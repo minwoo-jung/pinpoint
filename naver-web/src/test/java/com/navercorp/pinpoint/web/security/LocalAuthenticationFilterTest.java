@@ -52,7 +52,7 @@ public class LocalAuthenticationFilterTest {
 
     @Test
     public void doFilterInternal2Test() throws ServletException, IOException {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);

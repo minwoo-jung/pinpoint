@@ -57,17 +57,13 @@ public class SecurityServiceImplTest {
         when(roleService.getUserPermission(userId)).thenReturn(roleInformation);
         ReflectionTestUtils.setField(securityService, "roleService", roleService);
 
-        ApplicationConfigService configService = mock(ApplicationConfigService.class);
-        when(configService.isManager(userId)).thenReturn(true);
-        ReflectionTestUtils.setField(securityService, "configService", configService);
-
         PinpointAuthentication pinpointAuthentication = securityService.createPinpointAuthentication(userId);
 
         assertNotNull(pinpointAuthentication);
         assertEquals(pinpointAuthentication.getPrincipal(), userId);
         assertEquals(pinpointAuthentication.getName(), user.getName());
         assertEquals(pinpointAuthentication.getUserGroupList(), userGroupList);
-        assertTrue(pinpointAuthentication.isPinpointManager());
+        assertFalse(pinpointAuthentication.isObtainAllAuthorization());
         assertTrue(pinpointAuthentication.isAuthenticated());
         assertEquals(pinpointAuthentication.getRoleInformation(), roleInformation);
     }
@@ -86,9 +82,6 @@ public class SecurityServiceImplTest {
         when(userGroupService.selectUserGroupByUserId(userId)).thenReturn(null);
         ReflectionTestUtils.setField(securityService, "userGroupService", userGroupService);
 
-        ApplicationConfigService configService = mock(ApplicationConfigService.class);
-        when(configService.isManager(userId)).thenReturn(false);
-        ReflectionTestUtils.setField(securityService, "configService", configService);
 
         PinpointAuthentication pinpointAuthentication = securityService.createPinpointAuthentication(userId);
 
@@ -96,7 +89,7 @@ public class SecurityServiceImplTest {
         assertEquals(pinpointAuthentication.getPrincipal(), "");
         assertEquals(pinpointAuthentication.getName(), "");
         assertFalse(pinpointAuthentication.isAuthenticated());
-        assertFalse(pinpointAuthentication.isPinpointManager());
+        assertFalse(pinpointAuthentication.isObtainAllAuthorization());
         assertEquals(pinpointAuthentication.getUserGroupList().size(), 0);
     }
 }

@@ -349,7 +349,7 @@ public class UserInformationControllerTest {
 
     private void insertRoleInfo() {
         PermsGroupAdministration permsGroupAdministration1 = new PermsGroupAdministration(false, false, false, false);
-        PermsGroupAppAuthorization permsGroupAppAuthorization1 = new PermsGroupAppAuthorization(false, false, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization1 = new PermsGroupAppAuthorization(false, false, false, false);
         PermsGroupAlarm permsGroupAlarm1 = new PermsGroupAlarm(false, false);
         PermsGroupUserGroup permsGroupUserGroup1 = new PermsGroupUserGroup(false, false);
         PermissionCollection permissionCollection1 = new PermissionCollection(permsGroupAdministration1, permsGroupAppAuthorization1, permsGroupAlarm1, permsGroupUserGroup1);
@@ -357,7 +357,7 @@ public class UserInformationControllerTest {
         roleService.insertRoleInformation(roleInformation1);
 
         PermsGroupAdministration permsGroupAdministration2 = new PermsGroupAdministration(true, false, false, true);
-        PermsGroupAppAuthorization permsGroupAppAuthorization2 = new PermsGroupAppAuthorization(true, false, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization2 = new PermsGroupAppAuthorization(true, false, false, false);
         PermsGroupAlarm permsGroupAlarm2 = new PermsGroupAlarm(true, false);
         PermsGroupUserGroup permsGroupUserGroup2 = new PermsGroupUserGroup(true, false);
         PermissionCollection permissionCollection2 = new PermissionCollection(permsGroupAdministration2, permsGroupAppAuthorization2, permsGroupAlarm2, permsGroupUserGroup2);
@@ -365,7 +365,7 @@ public class UserInformationControllerTest {
         roleService.insertRoleInformation(roleInformation2);
 
         PermsGroupAdministration permsGroupAdministration3 = new PermsGroupAdministration(false, true, false, true);
-        PermsGroupAppAuthorization permsGroupAppAuthorization3 = new PermsGroupAppAuthorization(false, true, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization3 = new PermsGroupAppAuthorization(false, true, false, false);
         PermsGroupAlarm permsGroupAlarm3 = new PermsGroupAlarm(false, true);
         PermsGroupUserGroup permsGroupUserGroup3 = new PermsGroupUserGroup(false, true);
         PermissionCollection permissionCollection3 = new PermissionCollection(permsGroupAdministration3, permsGroupAppAuthorization3, permsGroupAlarm3, permsGroupUserGroup3);
@@ -373,7 +373,7 @@ public class UserInformationControllerTest {
         roleService.insertRoleInformation(roleInformation3);
 
         PermsGroupAdministration permsGroupAdministration4 = new PermsGroupAdministration(false, true, false, true);
-        PermsGroupAppAuthorization permsGroupAppAuthorization4 = new PermsGroupAppAuthorization(false, true, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization4 = new PermsGroupAppAuthorization(false, true, false, false);
         PermsGroupAlarm permsGroupAlarm4 = new PermsGroupAlarm(false, true);
         PermsGroupUserGroup permsGroupUserGroup4 = new PermsGroupUserGroup(false, true);
         PermissionCollection permissionCollection4 = new PermissionCollection(permsGroupAdministration4, permsGroupAppAuthorization4, permsGroupAlarm4, permsGroupUserGroup4);
@@ -381,7 +381,7 @@ public class UserInformationControllerTest {
         roleService.insertRoleInformation(roleInformation4);
 
         PermsGroupAdministration permsGroupAdministration5 = new PermsGroupAdministration(false, false, true, true);
-        PermsGroupAppAuthorization permsGroupAppAuthorization5 = new PermsGroupAppAuthorization(false, false, false);
+        PermsGroupAppAuthorization permsGroupAppAuthorization5 = new PermsGroupAppAuthorization(false, false, false, false);
         PermsGroupAlarm permsGroupAlarm5 = new PermsGroupAlarm(false, false);
         PermsGroupUserGroup permsGroupUserGroup5 = new PermsGroupUserGroup(false, false);
         PermissionCollection permissionCollection5 = new PermissionCollection(permsGroupAdministration5, permsGroupAppAuthorization5, permsGroupAlarm5, permsGroupUserGroup5);

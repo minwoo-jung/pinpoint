@@ -31,9 +31,6 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
     
     @Autowired
     private UserGroupService userGroupService;
-    
-    @Autowired
-    private ApplicationConfigService configService;
 
     @Autowired
     private RoleService roleService;
@@ -45,9 +42,8 @@ public class WebSocketSecurityInterceptor implements HandshakeInterceptor {
         
         if (user != null) {
             final List<UserGroup> userGroups = userGroupService.selectUserGroupByUserId(userId);
-            final boolean pinpointManager = configService.isManager(userId);
             final RoleInformation roleInformation = roleService.getUserPermission(userId);
-            authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, true, pinpointManager, roleInformation);
+            authentication = new PinpointAuthentication(user.getUserId(), user.getName(), userGroups, true, roleInformation);
         } else {
             authentication = new PinpointAuthentication();
         }

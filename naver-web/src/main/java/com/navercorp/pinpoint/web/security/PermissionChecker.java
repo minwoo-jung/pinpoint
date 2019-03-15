@@ -97,6 +97,8 @@ public final class PermissionChecker extends PermissionCollectionDefinition {
     private boolean checkPermsGroupAppAuthorization(PermsGroupAppAuthorization permsGroupAppAuthorization, String permission, Object parameter, String userId) {
         if (PermsGroupAppAuthorization.PREOCCUPANCY.equals(permission)) {
             return permsGroupAppAuthorization.getPreoccupancy();
+        } else if (PermsGroupAppAuthorization.OBTAIN_ALL_AUTHORIZATION.equals(permission)) {
+            return permsGroupAppAuthorization.getObtainAllAuthorization();
         } else if (PermsGroupAppAuthorization.EDIT_AUTHOR_FOR_EVERYTHING.equals(permission)) {
             return permsGroupAppAuthorization.getEditAuthorForEverything();
         } else if (PermsGroupAppAuthorization.EDIT_AUTHOR_ONLY_MANAGER.equals(permission)) {

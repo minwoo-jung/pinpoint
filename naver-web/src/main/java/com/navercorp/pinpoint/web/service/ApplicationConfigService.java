@@ -40,8 +40,6 @@ public interface ApplicationConfigService {
 
     void initApplicationConfiguration(String applicationId);
 
-    boolean isManager(String userId);
-
     List<AppUserGroupAuth> selectApplicationConfigurationByUserGroupId(String userGroupId);
 
     boolean isCanPreoccupancy(String applicationId);

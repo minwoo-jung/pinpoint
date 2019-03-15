@@ -20,21 +20,25 @@ package com.navercorp.pinpoint.web.vo.role;
  */
 public class PermsGroupAppAuthorization {
 
-    public final static PermsGroupAppAuthorization DEFAULT = new PermsGroupAppAuthorization(false, false, false);
+    public final static PermsGroupAppAuthorization DEFAULT = new PermsGroupAppAuthorization(false, false, false, false);
     public final static String APP_AUTHORIZATION = "appAuthorization";
     public final static String PREOCCUPANCY = "preoccupancy";
     public final static String EDIT_AUTHOR_FOR_EVERYTHING = "editAuthorForEverything";
     public final static String EDIT_AUTHOR_ONLY_MANAGER = "editAuthorOnlyManager";
+    public final static String OBTAIN_ALL_AUTHORIZATION = "obtainAllAuthorization";
 
     private boolean preoccupancy; //First of all, you can assign userGroup to manager for application.
 
     private boolean editAuthorForEverything; // can edit authorization configue.
     private boolean editAuthorOnlyManager; // can edit only manager
 
-    public PermsGroupAppAuthorization(boolean preoccupancy, boolean editAuthorForEverything, boolean editAuthorOnlyManager) {
+    private boolean obtainAllAuthorization;
+
+    public PermsGroupAppAuthorization(boolean preoccupancy, boolean editAuthorForEverything, boolean editAuthorOnlyManager, boolean obtainAllAuthorization) {
         this.preoccupancy = preoccupancy;
         this.editAuthorForEverything = editAuthorForEverything;
         this.editAuthorOnlyManager = editAuthorOnlyManager;
+        this.obtainAllAuthorization = obtainAllAuthorization;
     }
 
     public PermsGroupAppAuthorization() {
@@ -64,11 +68,20 @@ public class PermsGroupAppAuthorization {
         this.editAuthorOnlyManager = editAuthorOnlyManager;
     }
 
+    public boolean getObtainAllAuthorization() {
+        return obtainAllAuthorization;
+    }
+
+    public void setObtainAllAuthorization(boolean obtainAllAuthorization) {
+        this.obtainAllAuthorization = obtainAllAuthorization;
+    }
+
     public static PermsGroupAppAuthorization merge(PermsGroupAppAuthorization permsGroupAppAuthorization1, PermsGroupAppAuthorization permsGroupAppAuthorization2) {
         final boolean mergedPreoccupancy = permsGroupAppAuthorization1.getPreoccupancy() || permsGroupAppAuthorization2.getPreoccupancy();
         final boolean mergedEditAuthorForEverything = permsGroupAppAuthorization1.getEditAuthorForEverything() || permsGroupAppAuthorization2.getEditAuthorForEverything();
         final boolean mergedEditAuthorOnlyManager = permsGroupAppAuthorization1.getEditAuthorOnlyManager() || permsGroupAppAuthorization2.getEditAuthorOnlyManager();
-        return new PermsGroupAppAuthorization(mergedPreoccupancy, mergedEditAuthorForEverything, mergedEditAuthorOnlyManager);
+        final boolean mergedObtainAllAuthorization = permsGroupAppAuthorization1.getObtainAllAuthorization() || permsGroupAppAuthorization2.getObtainAllAuthorization();
+        return new PermsGroupAppAuthorization(mergedPreoccupancy, mergedEditAuthorForEverything, mergedEditAuthorOnlyManager, mergedObtainAllAuthorization);
     }
 
     @Override
@@ -77,6 +90,7 @@ public class PermsGroupAppAuthorization {
         sb.append("preoccupancy=").append(preoccupancy);
         sb.append(", EditAuthorForEverything=").append(editAuthorForEverything);
         sb.append(", EditAuthorOnlyManager=").append(editAuthorOnlyManager);
+        sb.append(", ObtainAllAuthorization=").append(obtainAllAuthorization);
         sb.append('}');
         return sb.toString();
     }

@@ -93,7 +93,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
             logger.info("Authorization is fail. Because authentication is null.");
             return false;
         }
-        if (isPinpointManager(authentication)) {
+        if (authentication.isObtainAllAuthorization()) {
             return true;
         }
         if(isEmptyUserGroup(authentication, applicationId)) {
@@ -113,7 +113,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
     @Override
     public ApplicationMap dataFiltering(final ApplicationMap map) {
         PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
-        if (isPinpointManager(authentication)) {
+        if (authentication.isObtainAllAuthorization()) {
             return map;
         }
 

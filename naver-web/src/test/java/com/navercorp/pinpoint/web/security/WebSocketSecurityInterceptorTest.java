@@ -65,9 +65,6 @@ public class WebSocketSecurityInterceptorTest {
         UserGroupService userGroupService = mock(UserGroupService.class);
         when(userGroupService.selectUserGroupByUserId(userId)).thenReturn(Collections.EMPTY_LIST);
         ReflectionTestUtils.setField(interceptor, "userGroupService", userGroupService);
-        ApplicationConfigService configService = mock(ApplicationConfigService.class);
-        when(configService.isManager(userId)).thenReturn(true);
-        ReflectionTestUtils.setField(interceptor, "configService", configService);
         RoleService roleService = mock(RoleService.class);
         RoleInformation roleInformation = new RoleInformation("roleId", PermissionCollection.DEFAULT);
         when(roleService.getUserPermission(userId)).thenReturn(roleInformation);

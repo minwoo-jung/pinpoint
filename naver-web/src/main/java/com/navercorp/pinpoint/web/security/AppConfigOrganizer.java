@@ -57,11 +57,4 @@ public class AppConfigOrganizer {
         
         return false;
     }
-
-    protected boolean isPinpointManager(PinpointAuthentication authentication) {
-        if (authentication.isPinpointManager()) {
-            return true;
-        }
-        return false;
-    }
 }

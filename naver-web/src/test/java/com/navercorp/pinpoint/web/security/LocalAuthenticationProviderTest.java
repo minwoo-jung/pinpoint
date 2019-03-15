@@ -47,7 +47,7 @@ public class LocalAuthenticationProviderTest {
         ReflectionTestUtils.setField(provider, "metaDataService", metaDataService);
 
         SecurityService securityService = mock(SecurityService.class);
-        PinpointAuthentication authentication = new PinpointAuthentication(userId, "name", Collections.emptyList(), true, true, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication(userId, "name", Collections.emptyList(), true, RoleInformation.UNASSIGNED_ROLE);
         when(securityService.createPinpointAuthentication(userId)).thenReturn(authentication);
         ReflectionTestUtils.setField(provider, "securityService", securityService);
 

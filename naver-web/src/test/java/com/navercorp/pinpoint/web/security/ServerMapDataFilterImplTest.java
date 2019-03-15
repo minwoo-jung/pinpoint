@@ -32,7 +32,7 @@ import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallDataMap;
 import com.navercorp.pinpoint.web.exception.AuthorityException;
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.vo.*;
-import com.navercorp.pinpoint.web.vo.role.RoleInformation;
+import com.navercorp.pinpoint.web.vo.role.*;
 import com.navercorp.pinpoint.web.websocket.ActiveThreadCountHandler;
 import com.navercorp.pinpoint.web.websocket.message.RequestMessage;
 import org.junit.Test;
@@ -61,7 +61,9 @@ public class ServerMapDataFilterImplTest {
 
     @Test
     public void filter2Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, true, RoleInformation.UNASSIGNED_ROLE);
+        PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(false, false, false, true);
+        RoleInformation roleInformation = new RoleInformation("roleId", new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT));
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, roleInformation);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -72,7 +74,7 @@ public class ServerMapDataFilterImplTest {
 
     @Test
     public void filter3Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration("applicationId", Collections.EMPTY_LIST);
         authentication.addApplicationConfiguration(applicationConfiguration);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -91,7 +93,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId = "applicationId";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -116,7 +118,7 @@ public class ServerMapDataFilterImplTest {
 
         List<UserGroup> userGroupList = new ArrayList<>();
         userGroupList.add(new UserGroup("0", userGroupId));
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
         appAuthConfiguration.setServerMapData(true);
@@ -146,7 +148,7 @@ public class ServerMapDataFilterImplTest {
 
         List<UserGroup> userGroupList = new ArrayList<>();
         userGroupList.add(new UserGroup("0", userGroupId));
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
@@ -170,7 +172,7 @@ public class ServerMapDataFilterImplTest {
 
         List<UserGroup> userGroupList = new ArrayList<>();
         userGroupList.add(new UserGroup("0", userGroupId));
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         appUserGroupAuthList.add(appUserGroupAuth1);
@@ -203,7 +205,9 @@ public class ServerMapDataFilterImplTest {
 
     @Test
     public void dataFilteringTest() {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, true, RoleInformation.UNASSIGNED_ROLE);
+        PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(false, false, false, true);
+        RoleInformation roleInformation = new RoleInformation("roleId", new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT));
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, roleInformation);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -227,7 +231,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -278,7 +282,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -325,7 +329,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -382,7 +386,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -437,7 +441,7 @@ public class ServerMapDataFilterImplTest {
 
     @Test(expected = AuthorityException.class)
     public void dataFiltering6Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
@@ -463,7 +467,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -521,7 +525,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
         appAuthConfiguration1.setServerMapData(true);
@@ -583,7 +587,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
         appAuthConfiguration1.setServerMapData(true);
@@ -640,7 +644,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
         appAuthConfiguration1.setServerMapData(false);
@@ -703,7 +707,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
         appAuthConfiguration1.setServerMapData(true);

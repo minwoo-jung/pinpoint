@@ -33,7 +33,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class NaverPermissionEvaluator implements PermissionEvaluator {
 
-    public static final String ADMIN = "admin";
     public static final String INSPECTOR = "inspector";
     public static final String APPLICATION = "application";
     public static final String AGENT_PARAM = "agentParam";
@@ -66,28 +65,25 @@ public class NaverPermissionEvaluator implements PermissionEvaluator {
             return permissionChecker.checkPermission(pinAuth, permissionType, parameter);
         }
 
-        if (pinAuth.isPinpointManager()) {
-            return true;
-        }
-
         final String authorizationType = (String)permissionOrAuthorizationType;
-        if (ADMIN.equals(authorizationType)) {
-            return pinAuth.isPinpointManager();
-        }
         if (INSPECTOR.equals(authorizationType)) {
-            return hasAppAuthorization(parameter, targetType, authorizationType);
+            return hasAppAuthorization(pinAuth, parameter, targetType);
         }
         
         return false;
     }
 
-    private boolean hasAppAuthorization(Serializable target, String targetType, String authorizationType) {
-        if (APPLICATION.equals(targetType)) {
-            String applicationId = (String)target;
+    private boolean hasAppAuthorization(PinpointAuthentication pinAuth, Serializable parameter, String parameterType) {
+        if (pinAuth.isObtainAllAuthorization()) {
+            return true;
+        }
+
+        if (APPLICATION.equals(parameterType)) {
+            String applicationId = (String)parameter;
             boolean filtered = serverMapDataFilter.filter(new Application(applicationId, ServiceType.UNKNOWN));
             return !filtered;
-        } else if (AGENT_PARAM.equals(targetType)) {
-            AgentParam agentParam = (AgentParam)target;
+        } else if (AGENT_PARAM.equals(parameterType)) {
+            AgentParam agentParam = (AgentParam)parameter;
             AgentInfo agentInfo = agentInfoService.getAgentInfo(agentParam.getAgentId(), agentParam.getTimeStamp());
             boolean filtered = serverMapDataFilter.filter(new Application(agentInfo.getApplicationName(), ServiceType.UNKNOWN));
             return !filtered;

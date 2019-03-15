@@ -48,7 +48,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
             logger.info("Authorization is fail. Because authentication is null.");
             return false;
         }
-        if (isPinpointManager(authentication)) {
+        if (authentication.isObtainAllAuthorization()) {
             return true;
         }
         
@@ -130,7 +130,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
     }
 
 
-    public String getHttpUrl(final String uriString, final boolean param) {
+    private String getHttpUrl(final String uriString, final boolean param) {
         if (com.navercorp.pinpoint.common.util.StringUtils.isEmpty(uriString)) {
             return "";
         }

@@ -21,7 +21,7 @@ import com.navercorp.pinpoint.web.vo.AgentInfo;
 import com.navercorp.pinpoint.web.vo.AgentParam;
 import com.navercorp.pinpoint.web.vo.Application;
 import com.navercorp.pinpoint.web.vo.UserGroup;
-import com.navercorp.pinpoint.web.vo.role.RoleInformation;
+import com.navercorp.pinpoint.web.vo.role.*;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -46,23 +46,17 @@ public class NaverPermissionEvaluatorTest {
 
     @Test
     public void hasPermission2Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("userId", "name", Collections.emptyList(), true, true, RoleInformation.UNASSIGNED_ROLE);
+        PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(false, false, false, true);
+        RoleInformation roleInformation = new RoleInformation("roleId", new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT));
+        PinpointAuthentication authentication = new PinpointAuthentication("userId", "name", Collections.emptyList(), true, roleInformation);
         NaverPermissionEvaluator naverPermissionEvaluator = new NaverPermissionEvaluator();
 
         assertTrue(naverPermissionEvaluator.hasPermission(authentication, new String(), NaverPermissionEvaluator.APPLICATION, NaverPermissionEvaluator.INSPECTOR));
     }
 
     @Test
-    public void hasPermission3Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("userId", "name", Collections.emptyList(), true, false, RoleInformation.UNASSIGNED_ROLE);
-        NaverPermissionEvaluator naverPermissionEvaluator = new NaverPermissionEvaluator();
-
-        assertFalse(naverPermissionEvaluator.hasPermission(authentication, new String(), NaverPermissionEvaluator.APPLICATION, NaverPermissionEvaluator.ADMIN));
-    }
-
-    @Test
     public void hasPermission4Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, RoleInformation.UNASSIGNED_ROLE);
         NaverPermissionEvaluator naverPermissionEvaluator = new NaverPermissionEvaluator();
 
         ServerMapDataFilter serverMapDataFilter = mock(ServerMapDataFilter.class);
@@ -73,7 +67,7 @@ public class NaverPermissionEvaluatorTest {
 
     @Test
     public void hasPermission5Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, RoleInformation.UNASSIGNED_ROLE);
         NaverPermissionEvaluator naverPermissionEvaluator = new NaverPermissionEvaluator();
 
         ServerMapDataFilter serverMapDataFilter = mock(ServerMapDataFilter.class);
@@ -91,7 +85,7 @@ public class NaverPermissionEvaluatorTest {
 
     @Test
     public void hasPermission6Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, RoleInformation.UNASSIGNED_ROLE);
         NaverPermissionEvaluator naverPermissionEvaluator = new NaverPermissionEvaluator();
 
         ServerMapDataFilter serverMapDataFilter = mock(ServerMapDataFilter.class);
@@ -109,7 +103,7 @@ public class NaverPermissionEvaluatorTest {
 
     @Test
     public void hasPermission7Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, RoleInformation.UNASSIGNED_ROLE);
         NaverPermissionEvaluator naverPermissionEvaluator = new NaverPermissionEvaluator();
 
         ServerMapDataFilter serverMapDataFilter = mock(ServerMapDataFilter.class);
@@ -127,7 +121,7 @@ public class NaverPermissionEvaluatorTest {
 
     @Test
     public void hasPermission8Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("userId", "applicationId", Collections.emptyList(), true, RoleInformation.UNASSIGNED_ROLE);
         NaverPermissionEvaluator naverPermissionEvaluator = new NaverPermissionEvaluator();
 
         ServerMapDataFilter serverMapDataFilter = mock(ServerMapDataFilter.class);

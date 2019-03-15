@@ -62,10 +62,4 @@ public class MysqlApplicationConfigDao implements ApplicationConfigDao {
     public List<AppUserGroupAuth> selectAppUserGroupAuthListByUserGroupId(String userGroupId) {
         return sqlSessionTemplate.selectList(NAMESPACE + "selectAppUserGroupAuthListByUserGroupId", userGroupId);
     }
-
-    @Override
-    public boolean isManager(String userId) {
-        return sqlSessionTemplate.selectOne(NAMESPACE + "isManager", userId);
-    }
-
 }

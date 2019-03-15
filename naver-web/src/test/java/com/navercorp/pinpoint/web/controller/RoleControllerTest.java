@@ -115,7 +115,7 @@ public class RoleControllerTest {
 
     private void insertRoleInformation() {
         PermsGroupAdministration permsGroupAdministration = new PermsGroupAdministration(true, true, true, true);
-        PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(true, true, true);
+        PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(true, true, true, true);
         PermsGroupAlarm permsGroupAlarm = new PermsGroupAlarm(true, true);
         PermsGroupUserGroup permsGroupUserGroup = new PermsGroupUserGroup(true, true);
         PermissionCollection permissionCollection = new PermissionCollection(permsGroupAdministration, permsGroupAppAuthorization, permsGroupAlarm, permsGroupUserGroup);

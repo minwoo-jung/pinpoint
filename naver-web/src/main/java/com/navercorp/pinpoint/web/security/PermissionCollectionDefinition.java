@@ -49,6 +49,8 @@ public class PermissionCollectionDefinition {
     public static final String PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_FOR_EVERYTHING = PREFIX_APP_AUTHORIZATION + PermsGroupAppAuthorization.EDIT_AUTHOR_FOR_EVERYTHING;
     //permission_appAuthorization_editAuthorOnlyManager
     public static final String PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER = PREFIX_APP_AUTHORIZATION + PermsGroupAppAuthorization.EDIT_AUTHOR_ONLY_MANAGER;
+    //permission_appAuthorization_obtainAllAuthorization
+    public static final String PERMISSION_APPAUTHORIZATION_OBTAIN_ALL_AUTHORIZATION = PREFIX_APP_AUTHORIZATION + PermsGroupAppAuthorization.OBTAIN_ALL_AUTHORIZATION;
 
     //permission_alarm_
     private static final String PREFIX_ALARM = PREFIX_PERMISSION + PermsGroupAlarm.ALARM + DELIMITER;
