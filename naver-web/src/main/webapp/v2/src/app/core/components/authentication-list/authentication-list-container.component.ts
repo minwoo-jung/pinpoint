@@ -48,7 +48,10 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService
     ) {}
     ngOnInit() {
-        this.loadUserData();
+        this.hasUpdateAndRemoveAuthority = this.userPermissionCheckService.canUpdateAndRemoveAuth(false);
+        if (this.hasUpdateAndRemoveAuthority) {
+            this.loadUserData();
+        }
         this.connectApplicationList();
         this.connectAuthenticationComponent();
         this.getI18NText();
@@ -58,7 +61,10 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         this.unsubscribe.complete();
     }
     private loadUserData(): void {
-        this.userGroupDataSerivce.retrieve().pipe(
+        this.userGroupDataSerivce.retrieve(
+            this.userPermissionCheckService.canUpdateAndRemoveAuth(this.isManager())
+            ? {} : { userId: this.userConfigurationDataService.getUserId() }
+        ).pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((userGroupList: IUserGroup[]) => {
             this.userGroupList = userGroupList.map((userGroup: IUserGroup) => {
@@ -127,6 +133,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         this.showSelectedAuthInfo = false;
     }
     private getAuthorityData(): void {
+        const prevHasUpdateAndRemoveAuthority = this.hasUpdateAndRemoveAuthority;
         this.showProcessing();
         this.authenticationDataService.retrieve(this.currentApplication.getApplicationName()).pipe(
             takeUntil(this.unsubscribe)
@@ -138,6 +145,9 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 this.myPosition = data.myPosition;
                 this.authorityList = data.userGroupAuthList;
                 this.hasUpdateAndRemoveAuthority = this.userPermissionCheckService.canUpdateAndRemoveAuth(this.isManager());
+                if (prevHasUpdateAndRemoveAuthority === false) {
+                    this.loadUserData();
+                }
                 this.hideProcessing();
                 this.changeDetectorRef.detectChanges();
             }

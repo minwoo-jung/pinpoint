@@ -55,7 +55,6 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
     ) {}
     ngOnInit() {
         this.loadAlarmRule();
-        this.loadUserData();
         this.connectApplicationList();
         this.connectAuthenticationComponent();
         this.connectAlarmComponent();
@@ -75,10 +74,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
         });
     }
     private loadUserData(): void {
-        this.userGroupDataSerivce.retrieve(
-            // this.userPermissionCheckService.canEditAllAlarm() ? {} : { userId: this.userConfigurationDataService.getUserId() }
-            {}
-        ).pipe(
+        this.userGroupDataSerivce.retrieve().pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((result: IUserGroup[] | IServerErrorShortFormat) => {
             isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
@@ -104,6 +100,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             this.currentApplication = selectedApplication;
             this.errorMessage = '';
             this.getAlarmData();
+            this.loadUserData();
             this.changeDetectorRef.detectChanges();
         });
     }
