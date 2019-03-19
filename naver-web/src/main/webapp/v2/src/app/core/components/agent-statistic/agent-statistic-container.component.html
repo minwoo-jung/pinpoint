@@ -1,0 +1,21 @@
+<div class="l-wrapper">
+    <div>
+        <pp-agent-statistic-chart
+            [title]="'JVM'"
+            [type]="'jvmVersion'"
+            [barColor]="'rgb(75, 192, 192)'"
+            [chartData]="chartData"></pp-agent-statistic-chart>
+    </div>
+    <div></div>
+    <div>
+    <pp-agent-statistic-chart
+        [title]="'Agent( ' + agentCount + ' )'"
+        [type]="'agentVersion'"
+        [barColor]="'rgb(54, 162, 235)'"
+        [chartData]="chartData"></pp-agent-statistic-chart>
+    </div>
+</div>
+<pp-agent-statistic-list
+    [gridData]="agentListData"
+    [agentCount]="agentCount"
+    (outCellClick)="onCellClick($event)"></pp-agent-statistic-list>

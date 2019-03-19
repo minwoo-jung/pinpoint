@@ -10,6 +10,8 @@ import { ConfigurationInstallationContainerComponent } from 'app/core/components
 import { ConfigurationHelpContainerComponent } from 'app/core/components/configuration-help/configuration-help-container.component';
 import { ConfigurationUsersContainerComponent } from 'app/core/components/configuration-users/configuration-users-container.component';
 import { ConfigurationRoleContainerComponent } from 'app/core/components/configuration-role/configuration-role-container.component';
+import { ConfigurationAgentStatisticContainerComponent } from 'app/core/components/configuration-agent-statistic/configuration-agent-statistic-container.component';
+import { ConfigurationAgentManagementContainerComponent } from 'app/core/components/configuration-agent-management/configuration-agent-management-container.component';
 
 const routes: Routes = [
     {
@@ -23,6 +25,14 @@ const routes: Routes = [
             {
                 path: UrlPathId.ROLE,
                 component: ConfigurationRoleContainerComponent
+            },
+            {
+                path: UrlPathId.AGENT_STATISTIC,
+                component: ConfigurationAgentStatisticContainerComponent
+            },
+            {
+                path: UrlPathId.AGENT_MANAGEMENT,
+                component: ConfigurationAgentManagementContainerComponent
             },
             {
                 path: UrlPathId.GENERAL,

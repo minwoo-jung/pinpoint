@@ -70,14 +70,12 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         this.hasRoleEditPerm = this.userPermissionCheckService.canEditRole();
         this.getI18NText();
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_SELECT_ROLE).subscribe((param: string[]) => {
-            this.currentAction = CRUD_ACTION.UPDATE;
             this.currentRoleId = param[0];
-            this.getRoleInfo();
+            this.getRoleInfo(CRUD_ACTION.UPDATE);
         });
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_REMOVE_SELECT_ROLE).subscribe((param: string[]) => {
-            this.currentAction = CRUD_ACTION.REMOVE;
             this.currentRoleId = param[0];
-            this.getRoleInfo();
+            this.getRoleInfo(CRUD_ACTION.REMOVE);
         });
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_CREATE_ROLE).subscribe((param: string[]) => {
             this.currentAction = CRUD_ACTION.CREATE;
@@ -94,18 +92,20 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         this.translateService.get([
             'COMMON.SUBMIT',
             'COMMON.REMOVE',
+            'COMMON.CANCEL',
             'CONFIGURATION.ROLE.WILL_REMOVE',
             'CONFIGURATION.ROLE.INPUT_NAME',
             'CONFIGURATION.ROLE.SELECT',
             'CONFIGURATION.PERMISSION'
-        ]).subscribe((texts: {[key: string]: any}) => {
-            this.i18nText.saveButton = texts['COMMON.SUBMIT'];
-            this.i18nText.removeButton = texts['COMMON.REMOVE'];
-            this.i18nText.select = texts['CONFIGURATION.ROLE.SELECT'];
-            this.i18nText.removeGuide = texts['CONFIGURATION.ROLE.WILL_REMOVE'];
-            this.i18nText.inputGuide = texts['CONFIGURATION.ROLE.INPUT_NAME'];
+        ]).subscribe((i18nTexts: {[key: string]: any}) => {
+            this.i18nText.saveButton = i18nTexts['COMMON.SUBMIT'];
+            this.i18nText.removeButton = i18nTexts['COMMON.REMOVE'];
+            this.i18nText.cancelButton = i18nTexts['COMMON.CANCEL'];
+            this.i18nText.select = i18nTexts['CONFIGURATION.ROLE.SELECT'];
+            this.i18nText.removeGuide = i18nTexts['CONFIGURATION.ROLE.WILL_REMOVE'];
+            this.i18nText.inputGuide = i18nTexts['CONFIGURATION.ROLE.INPUT_NAME'];
 
-            const permissionTexts = texts['CONFIGURATION.PERMISSION'];
+            const permissionTexts = i18nTexts['CONFIGURATION.PERMISSION'];
             Object.keys(permissionTexts).map((key: string) => {
                 const newKey = key.toLowerCase().replace(/\_(\D)/ig, function(m, s) {
                     return s.toUpperCase();
@@ -114,7 +114,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             });
         });
     }
-    private getRoleInfo(): void {
+    private getRoleInfo(nextAction: CRUD_ACTION): void {
         this.showProcessing();
         this.lastChangedData = null;
         this.dataChanged = false;
@@ -123,6 +123,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         ).subscribe((roleInfo: IPermissions) => {
             this.hideProcessing();
             this.roleInfo = roleInfo;
+            this.currentAction = nextAction;
             this.changeDetectorRef.detectChanges();
         }, () => {
             this.hideProcessing();
@@ -215,7 +216,11 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             }
         };
     }
-    onRemove(): void {
+    onRemoveCancel(): void {
+        this.currentAction = CRUD_ACTION.NONE;
+        this.changeDetectorRef.detectChanges();
+    }
+    onRemoveConfirm(): void {
         this.showProcessing();
         this.roleInfoDataService.remove(this.roleInfo.roleId).subscribe((response: IUserRequestSuccessResponse | any) => {
             if (isThatType<any>(response, 'exception')) {

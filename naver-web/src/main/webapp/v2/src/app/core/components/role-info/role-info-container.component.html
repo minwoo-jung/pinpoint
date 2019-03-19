@@ -19,8 +19,9 @@
                     <div><span>{{roleInfo.roleId.toUpperCase()}}</span></div>
                     <div>{{i18nText.removeGuide}}</div>
                 </div>
+                <button class="l-submit-button" (click)="onRemoveCancel()">{{i18nText.cancelButton}}</button>            
+                <button class="l-submit-button btn-red" (click)="onRemoveConfirm()">{{i18nText.removeButton}}</button>                
             </div>
-            <button class="l-submit-button" (click)="onRemove()">{{i18nText.removeButton}}</button>            
         </ng-container>
         <button *ngIf="isUpdate() && hasRoleEditPerm" class="l-submit-button" (click)="onUpdate()" [disabled]="checkUpdateBtnDisable()">{{i18nText.saveButton}}</button>
         <button *ngIf="isCreate() && hasRoleEditPerm" class="l-submit-button" (click)="onCreate()" [disabled]="checkCreateBtnDisable()">{{i18nText.saveButton}}</button>

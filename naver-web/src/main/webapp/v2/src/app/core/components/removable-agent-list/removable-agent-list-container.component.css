@@ -2,7 +2,7 @@
     height: 100%;
     position: relative;
 }
-.l-role-info-wrapper {
+.l-agent-wrapper {
     color: #333;
     height: 100%;
     display: flex;
@@ -13,33 +13,23 @@
     flex-direction: column;
     align-items: center;
 }
-.l-role-info-title {
+.l-agent-title {
     width: 100%;
-    height: 48px;
-    border: 1px solid #e5e8f0;
+    height: 52px;
     display: flex;
-    padding: 12px 15px;
+    padding: 12px 0px;
     align-items: center;
-    justify-content: space-between;
-    background-color: #f6f8fb;
-    border-bottom: 1px solid #e5e8f0;
+    justify-content: flex-end;
 }
-.l-role-info-title button:last-child {
+.l-agent-title button:last-child {
     margin-left: 2px;
 }
-.l-role-info-search {
-    padding: 10px 15px;
-    border-bottom: 1px solid #e5e8f0;
-}
-.l-role-info-list {
+.l-agent-list {
     width: 100%;
     height: 100%;
-    border: 1px solid #e5e8f0;
-    border-top: none;
     overflow-y: auto;
-    background-color: #FFF;
 }
-.l-role-do-not-selected {
+.l-agent-do-not-selected {
     color: #CCC;
     width: 100%;
     height: 100%;
@@ -48,35 +38,27 @@
     align-items: center;
     justify-content: center;
 }
-.btn {
-    padding: 0 9px;
-    border-radius: 2px;
-}
 .l-submit-button {
     color: #fff;
     background-color: #4b99e3;
     border-radius: 3px;
     outline: none;
     font-size: 16px;
-    width: 130px;
+    width: 200px;
     height: 45px;
     text-align: center;
     margin-top: 30px;
 }
-.l-submit-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
 .l-remove-message {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 50px);
     display: flex;
     position: absolute;
     font-size: 40px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%);
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%);
 }
 .l-band {
     width: 100%;
@@ -88,15 +70,12 @@
 .l-remove-message span {
     color: #f7a626;
 }
-.l-input-name {
-    width: 400px;
-    height: 30px;
-    padding: 0px 10px;
-    font-size: 18px;
-    font-weight: 600;
-    background-color: #FDFDDE;
-    border: 1px solid #18E200;
+.btn {
+    padding: 0 9px;
+    border-radius: 2px;
 }
 .btn-red {
-    background-color: #F00;
+    color: #FFF;
+    border: 1xp solid #c70606;
+    background-color: #c70606;
 }

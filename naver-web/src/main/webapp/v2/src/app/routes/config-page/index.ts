@@ -10,6 +10,8 @@ import { ConfigurationHelpModule } from 'app/core/components/configuration-help'
 import { ConfigurationAlarmModule } from 'app/core/components/configuration-alarm';
 import { ConfigurationUsersModule } from 'app/core/components/configuration-users';
 import { ConfigurationRoleModule } from 'app/core/components/configuration-role';
+import { ConfigurationAgentManagementModule } from 'app/core/components/configuration-agent-management';
+import { ConfigurationAgentStatisticModule } from 'app/core/components/configuration-agent-statistic';
 
 @NgModule({
     declarations: [
@@ -24,7 +26,9 @@ import { ConfigurationRoleModule } from 'app/core/components/configuration-role'
         ConfigurationInstallationModule,
         ConfigurationHelpModule,
         ConfigurationUsersModule,
-        ConfigurationRoleModule
+        ConfigurationRoleModule,
+        ConfigurationAgentManagementModule,
+        ConfigurationAgentStatisticModule
     ],
     exports: [],
     providers: []

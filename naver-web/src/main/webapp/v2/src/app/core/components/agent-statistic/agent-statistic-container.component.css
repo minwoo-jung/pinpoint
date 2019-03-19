@@ -1,0 +1,6 @@
+.l-wrapper {
+    height: 500px;
+    display: grid;
+    grid-template-columns: 45% 10% 45%;
+    grid-template-rows: 100%;
+}
