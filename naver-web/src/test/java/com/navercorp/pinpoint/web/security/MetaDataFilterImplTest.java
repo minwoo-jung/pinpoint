@@ -366,22 +366,16 @@ public class MetaDataFilterImplTest {
     @Test
     public void replaceAnnotationBo2Test() {
         List<AnnotationBo> annotationBoList = new ArrayList<>();
-        AnnotationBo annotationBo1 = new AnnotationBo();
-        annotationBo1.setKey(AnnotationKey.HTTP_URL.getCode());
+        AnnotationBo annotationBo1 = new AnnotationBo(AnnotationKey.HTTP_URL.getCode(), "http://navercorp.com");
         annotationBo1.setAuthorized(true);
-        annotationBo1.setValue("http://navercorp.com");
         annotationBoList.add(annotationBo1);
 
-        AnnotationBo annotationBo2 = new AnnotationBo();
-        annotationBo2.setKey(AnnotationKey.HTTP_PARAM.getCode());
+        AnnotationBo annotationBo2 = new AnnotationBo(AnnotationKey.HTTP_PARAM.getCode(), "annotation3");
         annotationBo2.setAuthorized(true);
-        annotationBo2.setValue("annotation3");
         annotationBoList.add(annotationBo2);
 
-        AnnotationBo annotationBo3 = new AnnotationBo();
-        annotationBo3.setKey(0);
+        AnnotationBo annotationBo3 = new AnnotationBo(0, "annotation3");
         annotationBo3.setAuthorized(true);
-        annotationBo3.setValue("annotation3");
         annotationBoList.add(annotationBo3);
 
         SpanBo spanBo = new SpanBo();

@@ -68,7 +68,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
             logger.info("User({}) don't have {} authorization for {}.",authentication.getPrincipal(), MetaData.SQL,  applicationId);
             return false;
         } else if (MetaData.API.equals(metaData)) {
-            for(AppUserGroupAuth auth : userGroupAuths) {
+            for (AppUserGroupAuth auth : userGroupAuths) {
                 if (auth.getConfiguration().getApiMetaData() == false) {
                     return true;
                 }
@@ -77,7 +77,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
             logger.info("User({}) don't have {} authorization for {}.",authentication.getPrincipal(), MetaData.API,  applicationId);
             return false;
         } else if (MetaData.PARAM.equals(metaData)) {
-            for(AppUserGroupAuth auth : userGroupAuths) {
+            for (AppUserGroupAuth auth : userGroupAuths) {
                 if (auth.getConfiguration().getParamMetaData() == false) {
                     return true;
                 }
@@ -93,11 +93,9 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
 
     @Override
     public AnnotationBo createAnnotationBo(Align align, MetaData metaData) {
-        AnnotationBo annotationBo = new AnnotationBo();
-        
         if (MetaData.SQL.equals(metaData)) {
-            annotationBo.setKey(AnnotationKey.SQL.getCode());
-            annotationBo.setValue("you don't have authorization for " + align.getApplicationId() + ".");
+            String errorMessage = "you don't have authorization for " + align.getApplicationId() + ".";
+            AnnotationBo annotationBo = new AnnotationBo(AnnotationKey.SQL.getCode(), errorMessage);
             annotationBo.setAuthorized(false);
             return annotationBo;
         }
@@ -110,8 +108,8 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
         final List<AnnotationBo> annotationBoList = align.getAnnotationBoList();
         
         if (MetaData.PARAM.equals(metaData)) {
-            for(AnnotationBo annotationBo : annotationBoList) {
-                if(AnnotationKey.HTTP_URL.getCode() == annotationBo.getKey()) {
+            for (AnnotationBo annotationBo : annotationBoList) {
+                if (AnnotationKey.HTTP_URL.getCode() == annotationBo.getKey()) {
                     String url = getHttpUrl(String.valueOf(annotationBo.getValue()), false);
                     annotationBo.setValue(url);
                 } else if(AnnotationKey.HTTP_PARAM.getCode() == annotationBo.getKey()) {
