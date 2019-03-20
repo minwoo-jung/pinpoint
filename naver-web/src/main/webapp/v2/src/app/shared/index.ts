@@ -1,5 +1,6 @@
 
 import { NgModule, ModuleWithProviders } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClipboardModule } from 'ngx-clipboard';
@@ -68,10 +69,12 @@ import { UserPermissionCheckService } from './services/user-permission-check.ser
     ],
     imports: [
         CommonModule,
+        RouterModule,
         ClickOutsideModule
     ],
     exports: [
         CommonModule,
+        RouterModule,
         FormsModule,
         ClipboardModule,
         ClickOutsideModule,

@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, Renderer2 } from '@angular/core';
+import { Router, RouterEvent, NavigationStart } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -8,28 +9,44 @@ import { WebAppSettingDataService, StoreHelperService } from 'app/shared/service
     selector: 'pp-side-bar-for-filtered-map-container',
     templateUrl: './side-bar-for-filtered-map-container.component.html',
     styleUrls: ['./side-bar-for-filtered-map-container.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestroy {
     private unsubscribe: Subject<null> = new Subject();
-    target: any;
-    sideBarWidth = 0;
+    target: ISelectedTarget;
     useDisable = true;
     showLoading = true;
     securityGuideUrl$: Observable<string>;
+
     constructor(
-        private changeDetectorRef: ChangeDetectorRef,
+        private router: Router,
         private storeHelperService: StoreHelperService,
-        private webAppSettingDataService: WebAppSettingDataService
+        private webAppSettingDataService: WebAppSettingDataService,
+        private el: ElementRef,
+        private renderer: Renderer2
     ) {}
+
     ngOnInit() {
         this.securityGuideUrl$ = this.webAppSettingDataService.getSecurityGuideUrl();
+        this.addPageLoadingHandler();
         this.connectStore();
     }
+
     ngOnDestroy() {
         this.unsubscribe.next();
         this.unsubscribe.complete();
     }
+
+    private addPageLoadingHandler(): void {
+        this.router.events.pipe(
+            filter((e: RouterEvent) => {
+                return e instanceof NavigationStart;
+            })
+        ).subscribe(() => {
+            this.showLoading = true;
+            this.useDisable = true;
+        });
+    }
+
     private connectStore(): void {
         this.storeHelperService.getServerMapLoadingState(this.unsubscribe).subscribe((state: string) => {
             switch (state) {
@@ -43,21 +60,21 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
                     this.useDisable = false;
                     break;
             }
-            this.changeDetectorRef.detectChanges();
         });
         this.storeHelperService.getServerMapTargetSelected(this.unsubscribe).pipe(
             filter((target: ISelectedTarget) => {
                 return target && (target.isNode === true || target.isNode === false) ? true : false;
             })
-        ).subscribe((target: any) => {
+        ).subscribe((target: ISelectedTarget) => {
             this.target = target;
-            this.sideBarWidth = 461;
-            this.changeDetectorRef.detectChanges();
+            this.renderer.setStyle(this.el.nativeElement, 'width', '461px');
         });
     }
+
     hasTopElement(): boolean {
         return this.target && (this.target.isNode || this.target.isMerged);
     }
+
     hasAuthrization(): boolean {
         return this.target && this.target.isAuthorized;
     }
