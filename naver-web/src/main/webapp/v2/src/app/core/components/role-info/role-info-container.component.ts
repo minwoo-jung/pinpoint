@@ -52,6 +52,8 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         editAuthorTitle: '',
         editAuthorForEverything: '',
         editAuthorOnlyManager: '',
+        obtainAllTitle: '',
+        obtainAllAuthorization: '',
         editAlarmTitle: '',
         editAlarmForEverything: '',
         editAlarmOnlyManager: '',
@@ -203,7 +205,8 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
                 permsGroupAppAuthorization: {
                     preoccupancy: data ? data.preoccupancy : false,
                     editAuthorForEverything: data ? data.editAuthorForEverything : false,
-                    editAuthorOnlyManager: data ? data.editAuthorOnlyManager : false
+                    editAuthorOnlyManager: data ? data.editAuthorOnlyManager : false,
+                    obtainAllAuthorization: data ? data.obtainAllAuthorization : false
                 },
                 permsGroupAlarm: {
                     editAlarmForEverything: data ? data.editAlarmForEverything : false,

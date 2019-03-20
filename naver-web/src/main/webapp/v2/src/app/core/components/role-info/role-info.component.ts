@@ -9,6 +9,7 @@ export interface IPermissionData {
     preoccupancy: boolean;
     editAuthorForEverything: boolean;
     editAuthorOnlyManager: boolean;
+    obtainAllAuthorization: boolean;
     editAlarmForEverything: boolean;
     editAlarmOnlyManager: boolean;
     editGroupForEverything: boolean;
@@ -31,6 +32,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
     preoccupancy: boolean;
     editAuthorForEverything: boolean;
     editAuthorOnlyManager: boolean;
+    obtainAllAuthorization: boolean;
     editAlarmForEverything: boolean;
     editAlarmOnlyManager: boolean;
     editGroupForEverything: boolean;
@@ -46,6 +48,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
             this.preoccupancy = this.roleInfo.permissionCollection.permsGroupAppAuthorization.preoccupancy;
             this.editAuthorForEverything = this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything;
             this.editAuthorOnlyManager = this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager;
+            this.obtainAllAuthorization = this.roleInfo.permissionCollection.permsGroupAppAuthorization.obtainAllAuthorization;
             this.editAlarmForEverything = this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmForEverything;
             this.editAlarmOnlyManager = this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmOnlyManager;
             this.editGroupForEverything = this.roleInfo.permissionCollection.permsGroupUserGroup.editGroupForEverything;
@@ -62,6 +65,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
             preoccupancy: this.preoccupancy,
             editAuthorForEverything: this.editAuthorForEverything,
             editAuthorOnlyManager: this.editAuthorOnlyManager,
+            obtainAllAuthorization: this.obtainAllAuthorization,
             editAlarmForEverything: this.editAlarmForEverything,
             editAlarmOnlyManager: this.editAlarmOnlyManager,
             editGroupForEverything: this.editGroupForEverything,
@@ -76,6 +80,7 @@ export class RoleInfoComponent implements OnInit, OnChanges {
             this.preoccupancy !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.preoccupancy ||
             this.editAuthorForEverything !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorForEverything ||
             this.editAuthorOnlyManager !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.editAuthorOnlyManager ||
+            this.obtainAllAuthorization !== this.roleInfo.permissionCollection.permsGroupAppAuthorization.obtainAllAuthorization ||
             this.editAlarmForEverything !== this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmForEverything ||
             this.editAlarmOnlyManager !== this.roleInfo.permissionCollection.permsGroupAlarm.editAlarmOnlyManager ||
             this.editGroupForEverything !== this.roleInfo.permissionCollection.permsGroupUserGroup.editGroupForEverything ||

@@ -29,6 +29,10 @@
             <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAuthorForEverything"> {{i18nText.editAuthorForEverything}}</mat-checkbox></dd>
             <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="editAuthorOnlyManager"> {{i18nText.editAuthorOnlyManager}}</mat-checkbox></dd>
         </dl>
+        <dl>
+            <dt>{{i18nText.obtainAllTitle}}</dt>
+            <dd><mat-checkbox class="example-margin" [disabled]="!hasRoleEditPerm" (change)="onChange()"  [(ngModel)]="obtainAllAuthorization"> {{i18nText.obtainAllAuthorization}}</mat-checkbox></dd>
+        </dl>
     </div>
     <div>Alarm</div>
     <div>

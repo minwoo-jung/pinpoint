@@ -1,21 +1,35 @@
-<div class="l-wrapper">
-    <div>
-        <pp-agent-statistic-chart
-            [title]="'JVM'"
-            [type]="'jvmVersion'"
-            [barColor]="'rgb(75, 192, 192)'"
-            [chartData]="chartData"></pp-agent-statistic-chart>
-    </div>
-    <div></div>
-    <div>
-    <pp-agent-statistic-chart
-        [title]="'Agent( ' + agentCount + ' )'"
-        [type]="'agentVersion'"
-        [barColor]="'rgb(54, 162, 235)'"
-        [chartData]="chartData"></pp-agent-statistic-chart>
-    </div>
+<div class="l-content-message" *ngIf="!hasData()">
+    <div>{{i18nText.loadGuide}}</div>
+    <button (click)="onLoadStart()" class="btn l-button" *ngIf="!loadingData">{{i18nText.loadButton}}</button>
+    <button class="btn l-button" [disabled]="loadingData" *ngIf="loadingData"><i class="fas fa-spinner fa-spin fa-2x fa-fw"></i></button>
 </div>
-<pp-agent-statistic-list
-    [gridData]="agentListData"
-    [agentCount]="agentCount"
-    (outCellClick)="onCellClick($event)"></pp-agent-statistic-list>
+<div class="l-wrapper" *ngIf="hasData()">
+    <div class="l-title-button">
+        <span>{{getLastRequestTime()}}</span>
+        <button (click)="onReload()" class="btn l-button">{{i18nText.reloadButton}}</button>
+    </div>
+    <div class="l-grid">
+        <div>
+            <pp-agent-statistic-chart
+                [title]="'JVM'"
+                [type]="'jvmVersion'"
+                [barColor]="'rgb(75, 192, 192)'"
+                [chartData]="chartData"></pp-agent-statistic-chart>
+        </div>
+        <div></div>
+        <div>
+        <pp-agent-statistic-chart
+            [title]="'Agent( ' + agentCount + ' )'"
+            [type]="'agentVersion'"
+            [barColor]="'rgb(54, 162, 235)'"
+            [chartData]="chartData"></pp-agent-statistic-chart>
+        </div>
+    </div>
+    <pp-agent-statistic-list
+        [gridData]="agentListData"
+        [agentCount]="agentCount"
+        (outCellClick)="onCellClick($event)"></pp-agent-statistic-list>
+    <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
+    <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
+</div>
+

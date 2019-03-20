@@ -386,6 +386,7 @@ interface IPermissions {
             preoccupancy: boolean;
             editAuthorForEverything: boolean;
             editAuthorOnlyManager: boolean;
+            obtainAllAuthorization: boolean;
         };
         permsGroupAlarm: {
             editAlarmForEverything: boolean;

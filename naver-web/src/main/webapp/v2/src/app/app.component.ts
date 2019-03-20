@@ -63,30 +63,37 @@ export class AppComponent implements OnInit {
                     WILL_REMOVE: '선택한 Role을 삭제합니다.',
                     INPUT_NAME: 'Role의 이름을 입력하세요.'
                 };
-                translate.CONFIGURATION.PERMISSION = {};
-                translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin 메뉴';
-                translate.CONFIGURATION.PERMISSION.VIEW_ADMIN_MENU = 'Admin menu 보기';
-                translate.CONFIGURATION.PERMISSION.EDIT_USER_TITLE = 'User 수정';
-                translate.CONFIGURATION.PERMISSION.EDIT_USER = 'User 추가 삭제, Role 할당';
-                translate.CONFIGURATION.PERMISSION.EDIT_ROLE_TITLE = 'Role 수정';
-                translate.CONFIGURATION.PERMISSION.EDIT_ROLE = 'Role 추가 삭제, Permission 수정';
-                translate.CONFIGURATION.PERMISSION.CALL_ADMIN_API_TITLE = 'Application, Agent 정보 관리 API';
-                translate.CONFIGURATION.PERMISSION.CALL_ADMIN_API = 'API 호출 가능';
-                translate.CONFIGURATION.PERMISSION.PREOCCUPANCY_TITLE = '최초 할당';
-                translate.CONFIGURATION.PERMISSION.PREOCCUPANCY = 'User Group 최초 할당 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_TITLE = 'Authentication 수정';
-                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_FOR_EVERYTHING = '모든 Authentication 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_ONLY_MANAGER = 'Position이 Manager인 User Group에 소속된 경우에만 Authentication 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_TITLE = 'Alarm 수정';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_FOR_EVERYTHING = '모든 Alarm 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_MANAGER = 'Position이 Manager인 User Group에 소속된 Member만 Alarm 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_TITLE = 'User Group 수정';
-                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_FOR_EVERYTHING = 'User Group 생성 및 수정 가능';
-                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'User Group의 Member 만 생성 및 수정 가능';
-
+                translate.CONFIGURATION.PERMISSION = {
+                    ADMIN_MENU_TITLE: 'Admin 메뉴',
+                    VIEW_ADMIN_MENU: 'Admin menu 보기',
+                    EDIT_USER_TITLE: 'User 수정',
+                    EDIT_USER: 'User 추가 삭제, Role 할당',
+                    EDIT_ROLE_TITLE: 'Role 수정',
+                    EDIT_ROLE: 'Role 추가 삭제, Permission 수정',
+                    CALL_ADMIN_API_TITLE: 'Application, Agent 정보 관리 API',
+                    CALL_ADMIN_API: 'API 호출 가능',
+                    PREOCCUPANCY_TITLE: '최초 할당',
+                    PREOCCUPANCY: 'User Group 최초 할당 가능',
+                    EDIT_AUTHOR_TITLE: 'Authentication 수정',
+                    EDIT_AUTHOR_FOR_EVERYTHING: '모든 Authentication 수정 가능',
+                    EDIT_AUTHOR_ONLY_MANAGER: 'Position이 Manager인 User Group에 소속된 경우에만 Authentication 수정 가능',
+                    OBTAIN_ALL_TITLE: 'Authentication 획득',
+                    OBTAIN_ALL_AUTHORIZATION: 'Application의 Authentication 설정 상관없이 모든 application의 권한 획득',
+                    EDIT_ALARM_TITLE: 'Alarm 수정',
+                    EDIT_ALARM_FOR_EVERYTHING: '모든 Alarm 수정 가능',
+                    EDIT_ALARM_ONLY_MANAGER: 'Position이 Manager인 User Group에 소속된 Member만 Alarm 수정 가능',
+                    EDIT_GROUP_TITLE: 'User Group 수정',
+                    EDIT_GROUP_FOR_EVERYTHING: 'User Group 생성 및 수정 가능',
+                    EDIT_GROUP_ONLY_GROUP_MEMBER: 'User Group의 Member 만 생성 및 수정 가능'
+                };
                 translate.CONFIGURATION.AGENT_MANAGEMENT = {
                     REMOVE_INACTIVE_AGENTS: '모든 비활성 Agent를 삭제 합니다.',
                     REMOVE_AGENT: '선택한 Agent를 삭제합니다.'
+                };
+                translate.CONFIGURATION.AGENT_STATISTIC = {
+                    LOAD_GUIDE: 'Agent의 통계 정보를 가져오는 작업은 시간이 걸립니다.',
+                    LOADING: '데이터 가져오기',
+                    RELOAD: '데이터 다시 가져오기'
                 };
             } else {
                 translate.CONFIGURATION.COMMON.ROLE = 'Role';
@@ -112,30 +119,37 @@ export class AppComponent implements OnInit {
                     WILL_REMOVE: 'Remove selected role.',
                     INPUT_NAME: 'Input role name'
                 };
-                translate.CONFIGURATION.PERMISSION = {};
-                translate.CONFIGURATION.PERMISSION.ADMIN_MENU_TITLE = 'Admin Menu';
-                translate.CONFIGURATION.PERMISSION.VIEW_ADMIN_MENU = 'View admin menu';
-                translate.CONFIGURATION.PERMISSION.EDIT_USER_TITLE = 'User Modification';
-                translate.CONFIGURATION.PERMISSION.EDIT_USER = 'Edit User Info';
-                translate.CONFIGURATION.PERMISSION.EDIT_ROLE_TITLE = 'Role Modification';
-                translate.CONFIGURATION.PERMISSION.EDIT_ROLE = 'Edit Role Info';
-                translate.CONFIGURATION.PERMISSION.CALL_ADMIN_API_TITLE = 'Application, Agent Management API';
-                translate.CONFIGURATION.PERMISSION.CALL_ADMIN_API = 'API access available';
-                translate.CONFIGURATION.PERMISSION.PREOCCUPANCY_TITLE = 'Preoccupancy';
-                translate.CONFIGURATION.PERMISSION.PREOCCUPANCY = 'Can have the authority first';
-                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_TITLE = 'Authentication Modification';
-                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_FOR_EVERYTHING = 'Edit author for everything';
-                translate.CONFIGURATION.PERMISSION.EDIT_AUTHOR_ONLY_MANAGER = 'Edit Author only manager';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_TITLE = 'Alarm Modification';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_FOR_EVERYTHING = 'Edit alarm for everything';
-                translate.CONFIGURATION.PERMISSION.EDIT_ALARM_ONLY_MANAGER = 'Edit alarm only group member';
-                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_TITLE = 'User Group Modification';
-                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_FOR_EVERYTHING = 'Edit group for everything';
-                translate.CONFIGURATION.PERMISSION.EDIT_GROUP_ONLY_GROUP_MEMBER = 'Edit Group only group member';
-
+                translate.CONFIGURATION.PERMISSION = {
+                    ADMIN_MENU_TITLE: 'Admin Menu',
+                    VIEW_ADMIN_MENU: 'View admin menu',
+                    EDIT_USER_TITLE: 'User Modification',
+                    EDIT_USER: 'Edit User Info',
+                    EDIT_ROLE_TITLE: 'Role Modification',
+                    EDIT_ROLE: 'Edit Role Info',
+                    CALL_ADMIN_API_TITLE: 'Application, Agent Management API',
+                    CALL_ADMIN_API: 'API access available',
+                    PREOCCUPANCY_TITLE: 'Preoccupancy',
+                    PREOCCUPANCY: 'Can have the authority first',
+                    EDIT_AUTHOR_TITLE: 'Authentication Modification',
+                    EDIT_AUTHOR_FOR_EVERYTHING: 'Edit author for everything',
+                    EDIT_AUTHOR_ONLY_MANAGER: 'Edit Author only manager',
+                    OBTAIN_ALL_TITLE: 'Authentication Obtain',
+                    OBTAIN_ALL_AUTHORIZATION: 'Obtain authorization for all applications regardless of the authentication setting',
+                    EDIT_ALARM_TITLE: 'Alarm Modification',
+                    EDIT_ALARM_FOR_EVERYTHING: 'Edit alarm for everything',
+                    EDIT_ALARM_ONLY_MANAGER: 'Edit alarm only group member',
+                    EDIT_GROUP_TITLE: 'User Group Modification',
+                    EDIT_GROUP_FOR_EVERYTHING: 'Edit group for everything',
+                    EDIT_GROUP_ONLY_GROUP_MEMBER: 'Edit Group only group member'
+                };
                 translate.CONFIGURATION.AGENT_MANAGEMENT = {
                     REMOVE_INACTIVE_AGENTS: 'It remove all inactive agents.',
-                    REMOVE_AGENT: 'Remove selected agent.',
+                    REMOVE_AGENT: 'Remove selected agent.'
+                };
+                translate.CONFIGURATION.AGENT_STATISTIC = {
+                    LOAD_GUIDE: 'It takes a long time to load the agent\'s statistical data.',
+                    LOADING: 'Load data',
+                    RELOAD: 'Reload'
                 };
             }
         });

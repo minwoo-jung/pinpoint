@@ -25,7 +25,7 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
     showLoading = false;
     errorMessage: string;
     agentList: any[];
-    currentApplication: IApplication;
+    currentApplication: IApplication = null;
     removeType: REMOVE_TYPE = REMOVE_TYPE.NONE;
     removeTarget: string[];
     i18nText: {[key: string]: string} = {
@@ -34,7 +34,6 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
         removeButton: '',
         removeAllAgents: '',
         removeAgent: ''
-
     };
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
@@ -105,7 +104,7 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
         }, (error: any) => {
             this.hideProcessing();
             this.changeDetectorRef.detectChanges();
-        })
+        });
     }
     onRemoveSelectAgent(agentInfo: string[]): void {
         this.removeTarget = agentInfo;
@@ -132,6 +131,7 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
         }
         result.subscribe((response: string) => {
             if (response === 'OK') {
+                this.currentApplication = null;
                 this.removeType = REMOVE_TYPE.NONE;
                 this.getRemovableAgentList();
             } else {
@@ -150,6 +150,9 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
     }
     isAllRemove(): boolean {
         return this.removeType === REMOVE_TYPE.ALL;
+    }
+    isNone(): boolean {
+        return this.currentApplication === null;
     }
     private showProcessing(): void {
         this.useDisable = true;

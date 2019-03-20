@@ -1,5 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
+import * as moment from 'moment-timezone';
+import { TranslateService } from '@ngx-translate/core';
+
 import { UrlPath } from 'app/shared/models';
 import { StoreHelperService, UrlRouteManagerService } from 'app/shared/services';
 import { Actions } from 'app/shared/store';
@@ -24,7 +27,11 @@ interface IGridData {
 })
 export class AgentStatisticContainerComponent implements OnInit, OnDestroy {
     private unsubscribe: Subject<void> = new Subject();
-    showLoading = true;
+    timezone: string;
+    dateFormat: string;
+    loadingData = false;
+    useDisable = false;
+    showLoading = false;
     agentCount = 0;
     agentListData: any;
     chartData: {
@@ -38,23 +45,46 @@ export class AgentStatisticContainerComponent implements OnInit, OnDestroy {
         jvmVersion: {},
         agentVersion: {}
     };
+    i18nText: {[key: string]: string} = {
+        loadGuide: '',
+        loadButton: '',
+        reloadButton: ''
+    };
     constructor(
+        private translateService: TranslateService,
         private storeHelperService: StoreHelperService,
         private agentStatisticDataService: AgentStatisticDataService,
         private urlRouteManagerService: UrlRouteManagerService
     ) {}
-
     ngOnInit() {
-        this.agentStatisticDataService.get().subscribe((agentList: { [key: string]: IAgent[] }) => {
-        //     this.storeHelperService.dispatch(new Actions.UpdateAdminAgentList(agentList));
-            this.extractChartData(agentList);
-            this.makeGridData(agentList);
-            this.showLoading = false;
-        });
+        this.getI18NText();
+        this.connectStore();
+        if (this.agentStatisticDataService.hasData()) {
+            this.onLoadStart();
+        }
     }
     ngOnDestroy() {
         this.unsubscribe.next();
         this.unsubscribe.complete();
+    }
+    private getI18NText(): void {
+        this.translateService.get([
+            'CONFIGURATION.AGENT_STATISTIC.LOAD_GUIDE',
+            'CONFIGURATION.AGENT_STATISTIC.LOADING',
+            'CONFIGURATION.AGENT_STATISTIC.RELOAD'
+        ]).subscribe((i18nText: {[key: string]: string}) => {
+            this.i18nText.loadGuide = i18nText['CONFIGURATION.AGENT_STATISTIC.LOAD_GUIDE'];
+            this.i18nText.loadButton = i18nText['CONFIGURATION.AGENT_STATISTIC.LOADING'];
+            this.i18nText.reloadButton = i18nText['CONFIGURATION.AGENT_STATISTIC.RELOAD'];
+        });
+    }
+    private connectStore(): void {
+        this.storeHelperService.getTimezone(this.unsubscribe).subscribe((timezone: string) => {
+            this.timezone = timezone;
+        });
+        this.storeHelperService.getDateFormat(this.unsubscribe, 0).subscribe((dateFormat: string) => {
+            this.dateFormat = dateFormat;
+        });
     }
     private extractChartData(agentList: IAgentList): void {
         this.chartData = {
@@ -125,5 +155,35 @@ export class AgentStatisticContainerComponent implements OnInit, OnDestroy {
             UrlPath.MAIN,
             params.application + '@' + params.serviceType
         ]);
+    }
+    onReload(): void {
+        this.onLoadStart(true);
+    }
+    onLoadStart(force = false): void {
+        this.loadingData = true;
+        this.showProcessing();
+        this.agentStatisticDataService.get(force).subscribe((agentList: IAgentList) => {
+        //     this.storeHelperService.dispatch(new Actions.UpdateAdminAgentList(agentList));
+            this.extractChartData(agentList);
+            this.makeGridData(agentList);
+            this.loadingData = false;
+            this.hideProcessing();
+        }, (error: any) => {
+            this.hideProcessing();
+        });
+    }
+    getLastRequestTime(): Date {
+        return moment(this.agentStatisticDataService.getLastRequestTime()).tz(this.timezone).format(this.dateFormat) ;
+    }
+    hasData(): boolean {
+        return this.agentStatisticDataService.hasData();
+    }
+    private showProcessing(): void {
+        this.useDisable = true;
+        this.showLoading = true;
+    }
+    private hideProcessing(): void {
+        this.useDisable = false;
+        this.showLoading = false;
     }
 }
