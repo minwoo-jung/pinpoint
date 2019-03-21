@@ -1,7 +1,7 @@
 (function($) {
 	"use strict";
 	pinpointApp.constant( "userGroupAuthDirectiveConfig", {
-		"roles": [{
+		"positions": [{
 			"view": "Manager",
 			"key": "manager"
 		},{
@@ -48,10 +48,10 @@
 					var currentApplicationId = "";
 					var bIsLoaded = false;
 					var userGroupAuthList = [];
-					var myRole = getGuest();
+					var myPosition = getGuest();
 					scope.prefix = "userGroupAuth_";
 					scope.userGroupList = [];
-					scope.roleList = $cfg.roles;
+					scope.positionList = $cfg.positions;
 					scope.authorityList = $cfg.authorityList;
 
 
@@ -63,10 +63,10 @@
 						UpdateAuth.cancelAction(AlarmUtilService, $workingNode, aEditNodes, hideEditArea);
 					}
 					function getManager() {
-						return $cfg.roles[0].key;
+						return $cfg.positions[0].key;
 					}
 					function getGuest() {
-						return $cfg.roles[$cfg.roles.length - 1].key
+						return $cfg.positions[$cfg.positions.length - 1].key
 					}
 					function isManager( auth ) {
 						return getManager() === auth;
@@ -76,14 +76,14 @@
 					}
 					function hasManagerGroup() {
 						for( var i = 0 ; i < scope.userGroupAuthList.length ; i++ ) {
-							if ( isManager( scope.userGroupAuthList[i].role ) ) {
+							if ( isManager( scope.userGroupAuthList[i].position ) ) {
 								return true;
 							}
 						}
 						return false;
 					}
 					function hasAuthority() {
-						if ( isManager( myRole ) ) {
+						if ( isManager( myPosition ) ) {
 							return true;
 						}
 						showAlert({
@@ -92,10 +92,10 @@
 						return false;
 					}
 					function hasAddAuthority() {
-						if ( isManager( myRole ) ) {
+						if ( isManager( myPosition ) ) {
 							return true;
 						}
-						if ( isGuest( myRole ) && hasManagerGroup() === false ) {
+						if ( isGuest( myPosition ) && hasManagerGroup() === false ) {
 							return true;
 						}
 						showAlert({
@@ -123,9 +123,9 @@
 								showAlert( oServerData );
 							} else {
 								bIsLoaded = true;
-								setMyRole( oServerData.myRole );
+								setMyPosition( oServerData.myPosition );
 								userGroupAuthList = oServerData.userGroupAuthList;
-								sortByRole( userGroupAuthList );
+								sortByPosition( userGroupAuthList );
 								scope.userGroupAuthList = userGroupAuthList;
 								AlarmUtilService.hide($elLoading);
 							}
@@ -136,12 +136,12 @@
 						"user": 20,
 						"guest": 10
 					};
-					function sortByRole( list ) {
+					function sortByPosition( list ) {
 						list.sort(function( a, b ) {
-							return oSortPoint[b.role] - oSortPoint[a.role];
+							return oSortPoint[b.position] - oSortPoint[a.position];
 						});
 						list.sort(function( a, b ) {
-							if ( a.role === b.role ) {
+							if ( a.position === b.position ) {
 								if ( a.userGroupId < b.userGroupId ) {
 									return -1;
 								} else if ( a.userGroupId > b.userGroupId ) {
@@ -152,9 +152,9 @@
 							return 0;
 						});
 					}
-					function setMyRole( newRole ) {
-						myRole = newRole;
-						scope.$emit( "changed.role", isManager( myRole ) );
+					function setMyPosition( newPosition ) {
+						myPosition = newPosition;
+						scope.$emit( "changed.position", isManager( myPosition ) );
 					}
 					function loadUserGroup() {
 						AlarmUtilService.sendCRUD( "getUserGroupList", {}, function( aServerData ) {
@@ -164,10 +164,10 @@
 					function showAddArea() {
 						aEditNodes[0].find("select[name=userGroup]").prop( "disabled", "" ).show();
 						aEditNodes[0].find("input").hide();
-						if ( isManager( myRole ) ) {
-							aEditNodes[0].find("select[name=role]").val( "" ).prop( "disabled", "" ).show();
+						if ( isManager( myPosition ) ) {
+							aEditNodes[0].find("select[name=position]").val( "" ).prop( "disabled", "" ).show();
 						} else {
-							aEditNodes[0].find("select[name=role]").val( getManager() ).prop( "disabled", "disabled" ).show();
+							aEditNodes[0].find("select[name=position]").val( getManager() ).prop( "disabled", "disabled" ).show();
 						}
 						aEditNodes[1].find("input[type=checkbox]").prop( "checked", false );
 						$elWrapper.find("tbody").prepend( aEditNodes[1] ).prepend( aEditNodes[0] );
@@ -180,14 +180,14 @@
 					function showEditArea( oAuth ) {
 						AlarmUtilService.hide( aEditNodes[0].find( CONSTS.DIV_ADD ) );
 						AlarmUtilService.show( aEditNodes[0].find( CONSTS.DIV_EDIT ) );
-						if ( isGuest( oAuth.role ) ) {
+						if ( isGuest( oAuth.position ) ) {
 							aEditNodes[0].find("select[name=userGroup]").hide();
-							aEditNodes[0].find("select[name=role]").hide();
+							aEditNodes[0].find("select[name=position]").hide();
 							aEditNodes[0].find("input").show();
 						} else {
 							aEditNodes[0].find("input").hide();
 							aEditNodes[0].find("select[name=userGroup]").show().val( oAuth.userGroupId ).prop( "disabled", "disabled" );
-							aEditNodes[0].find("select[name=role]").show().val( oAuth.role );
+							aEditNodes[0].find("select[name=position]").show().val( oAuth.position );
 						}
 						for( var p in oAuth.configuration ) {
 							aEditNodes[1].find("input[name=" + p + "]").prop("checked", oAuth.configuration[p] );
@@ -201,17 +201,17 @@
 							AlarmUtilService.hide( $el );
 						});
 						aEditNodes[0].find("select[name=userGroup]").val( "" );
-						aEditNodes[0].find("select[name=role]").val( "" );
+						aEditNodes[0].find("select[name=position]").val( "" );
 						aEditNodes[1].find("input[type=checkbox]").attr( "checked", false );
 					}
 					function getNewAuth( bIsUpdate ) {
 						var userGroupId = aEditNodes[0].find("select[name=userGroup]").val();
-						var roleId = aEditNodes[0].find("select[name=role]").val();
+						var positionId = aEditNodes[0].find("select[name=position]").val();
 
 						return {
 							"applicationId": currentApplicationId.split("@")[0],
 							"userGroupId": userGroupId === "" && bIsUpdate === true ? getGuest() : userGroupId,
-							"role": roleId === "" && bIsUpdate === true ? getGuest() : roleId,
+							"position": positionId === "" && bIsUpdate === true ? getGuest() : positionId,
 							"configuration": (function( list ) {
 								var o = {};
 								$.each( list, function( index, value ) {
@@ -224,13 +224,12 @@
 					function addOKRemove( $el, bView ) {
 						$el.removeClass( "glyphicon-unchecked glyphicon-check" ).addClass( bView ? "glyphicon-check" : "glyphicon-unchecked" );
 					}
-					scope.isGuest = function( role ) {
-						return isGuest( role );
+					scope.isGuest = function( position ) {
+						return isGuest( position );
 					};
 					scope.onViewAuth = function( $event, index ) {
 						var $node = AlarmUtilService.getNode( $event, "tr" );
 						if ( $workingNode !== null && isSameNode( $node ) === true && $elSubView.hasClass("hide-me") === false ) {
-							console.log( "null or same", $workingNode );
 							cancelPreviousWork();
 							$workingNode = null;
 							$elSubView.addClass( "hide-me" );
@@ -271,11 +270,11 @@
 								}
 							}
 							return false;
-						},function( oNewAuth, newMyRole ) {
+						},function( oNewAuth, newMyPosition ) {
 							// AnalyticsService.sendMain( AnalyticsService.CONST.CLK_ALARM_CREATE_RULE );
-							setMyRole( newMyRole );
+							setMyPosition( newMyPosition );
 							userGroupAuthList.push( oNewAuth );
-							sortByRole( userGroupAuthList );
+							sortByPosition( userGroupAuthList );
 							scope.userGroupAuthList = userGroupAuthList;
 							hideEditArea();
 						}, showAlert, $http );
@@ -297,7 +296,7 @@
 					}
 					function onApplyRemoveAuth( index ) {
 						var oAuth = userGroupAuthList[index];
-						RemoveAuth.applyAction( AlarmUtilService, $workingNode, $elLoading, oAuth, function( applicationId, userGroupId, newMyRole ) {
+						RemoveAuth.applyAction( AlarmUtilService, $workingNode, $elLoading, oAuth, function( applicationId, userGroupId, newMyPosition ) {
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
 								var oAuth = userGroupAuthList[i];
 								if ( oAuth.applicationId == applicationId && oAuth.userGroupId == userGroupId ) {
@@ -305,7 +304,7 @@
 									break;
 								}
 							}
-							setMyRole( newMyRole );
+							setMyPosition( newMyPosition );
 							scope.$apply(function() {
 								scope.userGroupAuthList = userGroupAuthList;
 							});
@@ -334,17 +333,17 @@
 								}
 							}
 							return false;
-						},function( oUpdateAuth, newMyRole ) {
+						},function( oUpdateAuth, newMyPosition ) {
 							hideEditArea();
 							for( var i = 0 ; i < userGroupAuthList.length ; i++ ) {
 								if ( userGroupAuthList[i].userGroupId == oUpdateAuth.userGroupId ) {
-									userGroupAuthList[i].role = oUpdateAuth.role;
+									userGroupAuthList[i].position = oUpdateAuth.position;
 									for( var p in oUpdateAuth.configuration ) {
 										userGroupAuthList[i].configuration[p] = oUpdateAuth.configuration[p];
 									}
 								}
 							}
-							setMyRole( newMyRole );
+							setMyPosition( newMyPosition );
 							scope.userGroupAuthList = userGroupAuthList;
 						}, showAlert, $http );
 					}
@@ -400,7 +399,7 @@
 		}
 	]);
 	var CONSTS = {
-		SELECT_USER_GROUP_AND_AUTHORITY: "Select user group and role.",
+		SELECT_USER_GROUP_AND_AUTHORITY: "Select user group and position.",
 		EXIST_A_SAME: "Exist a same user group in the list",
 		DIV_NORMAL: "div._normal",
 		DIV_REMOVE: "div._remove",
@@ -429,7 +428,7 @@
 		applyAction: function( AlarmUtilService, oNewAuth, aEditNodes, $elLoading, cbHasSameAuth, cbSuccess, cbFail, $http ) {
 			var self = this;
 			AlarmUtilService.show( $elLoading );
-			if ( oNewAuth.userGroupId === "" || oNewAuth.role === "" ) {
+			if ( oNewAuth.userGroupId === "" || oNewAuth.position === "" ) {
 				// $.each( aEditNodes, function( index, $el ) {
 				// 	$el.addClass("blink-blink");
 				// });
@@ -448,7 +447,7 @@
 					cbFail( oServerData );
 				} else {
 					oNewAuth.ruleId = oServerData.ruleId;
-					cbSuccess( oNewAuth, oServerData.myRole );
+					cbSuccess( oNewAuth, oServerData.myPosition );
 					self.cancelAction(aEditNodes, function () {});
 					AlarmUtilService.hide($elLoading);
 				}
@@ -482,7 +481,7 @@
 					cbFail(oServerData);
 				} else {
 					self.cancelAction(AlarmUtilService, $node);
-					cbSuccess( oAuth.applicationId, oAuth.userGroupId, oServerData.myRole );
+					cbSuccess( oAuth.applicationId, oAuth.userGroupId, oServerData.myPosition );
 					AlarmUtilService.hide($elLoading);
 				}
 			});
@@ -520,7 +519,7 @@
 					cbFail(oServerData);
 				} else {
 					self.cancelAction(AlarmUtilService, $node, aEditNodes, function () {});
-					cbSuccess( oUpdateAuth, oServerData.myRole );
+					cbSuccess( oUpdateAuth, oServerData.myPosition );
 					AlarmUtilService.hide($elLoading);
 				}
 			});

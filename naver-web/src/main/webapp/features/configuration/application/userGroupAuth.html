@@ -9,7 +9,7 @@
 				<thead>
 				<tr>
 					<th class="col-md-5">User Group</th>
-					<th class="col-md-5">Role</th>
+					<th class="col-md-5">Position</th>
 					<th class="col-md-2"></th>
 					<th class="col-md-2"></th>
 				</tr>
@@ -24,9 +24,9 @@
 						<input type="text" value="guest" class="form-control" disabled/>
 					</td>
 					<td class="col-md-5">
-						<select class="form-control" name="role" style="width:95%;height: 26px;padding:2px;">
-							<option value="">Select user Role</option>
-							<option ng-repeat="role in roleList | limitTo: 2" value="{{role.key}}">{{role.view.toUpperCase()}}</option>
+						<select class="form-control" name="position" style="width:95%;height: 26px;padding:2px;">
+							<option value="">Select user </option>
+							<option ng-repeat="position in positionList | limitTo: 2" value="{{position.key}}">{{position.view.toUpperCase()}}</option>
 						</select>
 						<input type="text" value="guest" class="form-control" disabled/>
 					</td>
@@ -60,12 +60,12 @@
 				</tr>
 				<tr ng-repeat="auth in userGroupAuthList" id="{{prefix + auth.userGroupId + $index}}">
 					<td class="col-md-4">{{auth.userGroupId}}</td>
-					<td class="col-md-3">{{auth.role.toUpperCase()}}</td>
+					<td class="col-md-3">{{auth.position.toUpperCase()}}</td>
 					<td class="col-md-2" style="text-align:center" ng-click="onViewAuth($event, $index)"><span class="glyphicon glyphicon-info-sign"></span></td>
 					<td class="col-md-2" data-index="{{$index}}">
 						<div class="_normal">
 							<span class="glyphicon glyphicon-pencil edit" aria-hidden="true"></span>
-							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" style="visibility:{{isGuest(auth.role) ? 'hidden': 'visible'}}"></span>
+							<span class="glyphicon glyphicon-remove remove" aria-hidden="true" style="visibility:{{isGuest(auth.position) ? 'hidden': 'visible'}}"></span>
 						</div>
 						<div class="_remove hide-me">
 							<span class="glyphicon glyphicon-arrow-left remove-cancel" aria-hidden="true"></span>
