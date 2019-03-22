@@ -120,6 +120,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         this.showProcessing();
         this.lastChangedData = null;
         this.dataChanged = false;
+        this.changeDetectorRef.detectChanges();
         this.roleInfoDataService.get(this.currentRoleId).pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((roleInfo: IPermissions) => {
@@ -131,7 +132,6 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             this.hideProcessing();
             this.changeDetectorRef.detectChanges();
         });
-        this.changeDetectorRef.detectChanges();
     }
     onCloseErrorMessage(): void {
         this.errorMessage = '';
