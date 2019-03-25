@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.web.security.internal;
 
+import com.navercorp.pinpoint.web.security.LoginStaticString;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.util.StringUtils;
@@ -30,11 +31,8 @@ import java.io.IOException;
  */
 public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
-    //TODO : (minwoo) 별도 설정을 빼야한다.
-    private static String DEFAULT_TARGET_URL = "/login.pinpoint?logout";
-
     public LogoutSuccessHandler() {
-        setDefaultTargetUrl(DEFAULT_TARGET_URL);
+        setDefaultTargetUrl(LoginStaticString.LOGOUT_SUCCESS_URL);
     }
 
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

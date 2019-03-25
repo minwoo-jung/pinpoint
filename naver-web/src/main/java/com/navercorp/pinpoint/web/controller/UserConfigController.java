@@ -15,7 +15,9 @@
  */
 package com.navercorp.pinpoint.web.controller;
 
+import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.web.service.UserConfigService;
+import com.navercorp.pinpoint.web.service.UserService;
 import com.navercorp.pinpoint.web.vo.UserConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +42,13 @@ public class UserConfigController {
     @Autowired
     private UserConfigService userConfigService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, String> insertUserConfiguration(@RequestBody UserConfiguration userConfiguration, @RequestHeader(SSO_USER) String userId) {
-        userConfiguration.setUserId(userId);
+    public Map<String, String> insertUserConfiguration(@RequestBody UserConfiguration userConfiguration) {
+        userConfiguration.setUserId(getUserId());
         userConfigService.insertUserConfiguration(userConfiguration);
 
         Map<String, String> result = new HashMap<>();
@@ -53,14 +58,14 @@ public class UserConfigController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public  UserConfiguration getUserConfiguration(@RequestHeader(SSO_USER) String userId) {
-        return userConfigService.selectUserConfiguration(userId);
+    public  UserConfiguration getUserConfiguration() {
+        return userConfigService.selectUserConfiguration(getUserId());
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
-    public Map<String, String> deleteUserConfiguration(@RequestHeader(SSO_USER) String userId) {
-        userConfigService.deleteUserConfiguration(userId);
+    public Map<String, String> deleteUserConfiguration() {
+        userConfigService.deleteUserConfiguration(getUserId());
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");
@@ -69,8 +74,8 @@ public class UserConfigController {
 
     @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
-    public Map<String, String> updateUserConfiguration(@RequestBody UserConfiguration userConfiguration, @RequestHeader(SSO_USER) String userId) {
-        userConfiguration.setUserId(userId);
+    public Map<String, String> updateUserConfiguration(@RequestBody UserConfiguration userConfiguration) {
+        userConfiguration.setUserId(getUserId());
         userConfigService.updateUserConfiguration(userConfiguration);
 
         Map<String, String> result = new HashMap<>();
@@ -86,5 +91,15 @@ public class UserConfigController {
         result.put("errorCode", "500");
         result.put("errorMessage", "Exception occurred while trying to CRUD User Configuration");
         return result;
+    }
+
+    private String getUserId() {
+        String userId = userService.getUserIdFromSecurity();
+
+        if (StringUtils.isEmpty(userId)) {
+            throw new RuntimeException("userId is empty.");
+        }
+
+        return userId;
     }
 }

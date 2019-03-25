@@ -17,15 +17,12 @@ package com.navercorp.pinpoint.web.security.internal;
 
 import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.common.util.StringUtils;
-import com.navercorp.pinpoint.web.security.AutoLoginAuthenticationFilter;
-import com.navercorp.pinpoint.web.security.UserInformationAcquirer;
+import com.navercorp.pinpoint.web.security.LoginStaticString;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -38,7 +35,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.Date;
 
@@ -47,28 +43,27 @@ import java.util.Date;
  */
 public class PreAuthenticationFilter extends OncePerRequestFilter {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final String EMPTY = "";
     private final static String ERROR_MESSAGE_AUTHENTICATION = "{\"error code\" : \"401\", \"error message\" : \"error occurred in Authentication process.\"}";
+    private final static String EMPTY = "";
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final String secretKey;
+
+    public PreAuthenticationFilter(String secretKey) {
+        if (StringUtils.isEmpty(secretKey)) {
+            new IllegalArgumentException("secretKey must is not empty.");
+        }
+        this.secretKey = secretKey;
+    }
 
     @Autowired
     private InternalAuthenticationProvider internalAuthenticationProvider;
 
-    @Value("#{pinpointWebProps['security.header.key.userId']}")
-    private String userIdHeaderName;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
-            //TODO : (minwoo) 쿠키확인 코드 제거 필요
-            Cookie[] cookies = request.getCookies();
-            for (Cookie cookie : cookies) {
-                logger.info("cookie name : " + cookie.getName() + "   cookie value : " + cookie.getValue());
-            }
-
-            //TODO : (minwoo) login url 체크 깔끔하게 처리해야함. property로 뺄수 있으면 빼자
             String url = request.getRequestURI();
-            if (url.contains("login.pinpoint") || url.contains("j_spring_security_check.pinpoint")) {
+            if (url.contains(LoginStaticString.LOGIN_URL) || url.contains(LoginStaticString.LOGIN_PROCESSING_URL)) {
                 chain.doFilter(request, response);
                 return;
             }
@@ -79,7 +74,7 @@ public class PreAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            Claims claims = Jwts.parser().setSigningKey(JwtCookieCreater.SECRET_KEY).parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
             String userId = (String) claims.get(JwtCookieCreater.USER_ID);
             String organizationName = (String) claims.get(JwtCookieCreater.ORGANIZATION_NAME);
             Date expirationTime = claims.getExpiration();
@@ -103,12 +98,8 @@ public class PreAuthenticationFilter extends OncePerRequestFilter {
             context.setAuthentication(internalAuthenticationProvider.createPinpointAuthentication(userId));
             SecurityContextHolder.setContext(context);
             updateExpiratimeTime(response, currentTimeMillis, expirationTime.getTime());
-            
-            // TODO : (minwoo) request 를 wrapper하는 로직을 빼야함.
-            // TODO : (minwoo) SecurityContext를 이용해서 userid를 가져오기, 또한 securitycontext를 갖어오는 오픈소스에서 부분은 감추자.
-            AutoLoginAuthenticationFilter.CustomHttpServletRequest customRequest = new AutoLoginAuthenticationFilter.CustomHttpServletRequest(request);
-            customRequest.putHeader(userIdHeaderName, userId);
-            chain.doFilter(customRequest, response);
+
+            chain.doFilter(request, response);
         } catch (AuthenticationException exception) {
             logger.error(exception.getMessage(), exception);
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -124,7 +115,7 @@ public class PreAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        Cookie cookie = JwtCookieCreater.createJwtCookie();
+        Cookie cookie = JwtCookieCreater.createJwtCookie(secretKey);
         response.addCookie(cookie);
     }
 

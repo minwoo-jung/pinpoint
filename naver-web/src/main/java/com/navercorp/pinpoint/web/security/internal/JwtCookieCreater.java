@@ -34,13 +34,10 @@ import java.util.Objects;
  */
 public final class JwtCookieCreater {
 
-    //TODO : (minwoo) 별도 설정을 빼야한다.
     public static final String JWT_COOKIE_NAME = "jwt";
     public static final String USER_ID = "userId";
     public static final String ORGANIZATION_NAME = "organizationName";
     public static final String JWT_COOKIE_PATH = "/";
-    //TODO : (minwoo) 시크릿키 생성
-    public static final String SECRET_KEY = "ThisIsASecret";
 
     public static final int UPDATE_INTERVAL_JWT_COOKIE_MILLIS = 43200; // 12 hours
     private static final int EXPIRATION_TIME_SECONDS = 86400; //1 day
@@ -49,14 +46,14 @@ public final class JwtCookieCreater {
 //    private static final int EXPIRATION_TIME_SECONDS = 300; //5 min
 //    private static final long EXPIRATION_TIME_MILLIS = 300_000; //5 min
 
-    public static Cookie createJwtCookie() {
+    public static Cookie createJwtCookie(final String key) {
         long expTime = System.currentTimeMillis() + EXPIRATION_TIME_MILLIS;
 
         String jwt = Jwts.builder()
             .setSubject("pinpointAuthentication")
             .setClaims(createPayload())
             .setExpiration(new Date(expTime))
-            .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+            .signWith(SignatureAlgorithm.HS512, key)
             .compact();
 
         Cookie cookie = new Cookie(JWT_COOKIE_NAME, jwt);

@@ -52,16 +52,16 @@ public class AutoLoginAuthenticationFilter extends NssAuthenticationFilter {
 
     public static class CustomHttpServletRequest extends HttpServletRequestWrapper {
         private final Map<String, String> headers;
-     
+
         public CustomHttpServletRequest(HttpServletRequest request){
             super(request);
             this.headers = new HashMap<String, String>();
         }
-        
+
         public void putHeader(String name, String value){
             this.headers.put(name, value);
         }
-     
+
         public String getHeader(String name) {
             String headerValue = headers.get(name);
             if (headerValue != null){
@@ -69,7 +69,7 @@ public class AutoLoginAuthenticationFilter extends NssAuthenticationFilter {
             }
             return ((HttpServletRequest) getRequest()).getHeader(name);
         }
-     
+
         public Enumeration<String> getHeaderNames() {
             Set<String> set = new HashSet<String>(headers.keySet());
             Enumeration<String> e = ((HttpServletRequest) getRequest()).getHeaderNames();
@@ -77,26 +77,26 @@ public class AutoLoginAuthenticationFilter extends NssAuthenticationFilter {
                 String n = e.nextElement();
                 set.add(n);
             }
-     
+
             return Collections.enumeration(set);
         }
-        
+
         public Enumeration<String> getHeaders(String name) {
             Set<String> set = new HashSet<String>();
             String headerValue = headers.get(name);
             if (headerValue != null){
                 set.add(headerValue);
             }
-            
+
             Enumeration<String> headers = super.getHeaders(name);
             while (headers.hasMoreElements()) {
                 String value = headers.nextElement();
                 set.add(value);
             }
-            
+
             return Collections.enumeration(set);
         };
-        
+
     }
 
 }

@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.web.security.internal;
 
+import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.web.namespace.NameSpaceInfoFactory;
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import io.jsonwebtoken.Jwts;
@@ -45,13 +46,21 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private static String DEFAULT_TARGET_URL = "/";
 
-    public LoginSuccessHandler() {
+    private final String secretKey;
+
+    public LoginSuccessHandler(String secretKey) {
         super(DEFAULT_TARGET_URL);
+
+        if (StringUtils.isEmpty(secretKey)) {
+            new IllegalArgumentException("secretKey must is not empty.");
+        }
+
+        this.secretKey = secretKey;
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        Cookie cookie = JwtCookieCreater.createJwtCookie();
+        Cookie cookie = JwtCookieCreater.createJwtCookie(secretKey);
         response.addCookie(cookie);
 
         super.onAuthenticationSuccess(request, response, authentication);

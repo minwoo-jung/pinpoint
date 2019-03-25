@@ -213,7 +213,8 @@ public class UserInformationController {
 
     @RequestMapping(value="user/permissionAndConfiguration", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> selectPermissionAndConfiguration(@RequestHeader(SSO_USER) String userId) {
+    public Map<String, Object> selectPermissionAndConfiguration() {
+        String userId = userService.getUserIdFromSecurity();
         UserConfiguration userConfiguration = userConfigService.selectUserConfiguration(userId);
         RoleInformation roleInformation = roleService.getUserPermission(userId);
 

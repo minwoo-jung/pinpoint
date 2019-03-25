@@ -53,7 +53,6 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private UserAccountService userAccountService;
 
-    //TODO : (minwoo) 암호화 확실하게 결정해야함. seed 값이라던지.
     @Autowired
     private PasswordEncoder passwordEncoder;
 

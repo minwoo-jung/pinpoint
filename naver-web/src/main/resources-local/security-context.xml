@@ -28,8 +28,12 @@
         </headers>
     </http>
 
-    <beans:bean id="preAuthenticationFilter" class="com.navercorp.pinpoint.web.security.internal.PreAuthenticationFilter"/>
-    <beans:bean id="loginSuccessHandler" class="com.navercorp.pinpoint.web.security.internal.LoginSuccessHandler"/>
+    <beans:bean id="preAuthenticationFilter" class="com.navercorp.pinpoint.web.security.internal.PreAuthenticationFilter">
+        <beans:constructor-arg index="0" value="#{pinpointWebProps['jwt.secret.key'] ?: ''}"/>
+    </beans:bean>
+    <beans:bean id="loginSuccessHandler" class="com.navercorp.pinpoint.web.security.internal.LoginSuccessHandler">
+        <beans:constructor-arg index="0" value="#{pinpointWebProps['jwt.secret.key'] ?: ''}"/>
+    </beans:bean>
     <beans:bean id="logoutSuccessHandler" class="com.navercorp.pinpoint.web.security.internal.LogoutSuccessHandler"/>
     <beans:bean id="customAuthenticationDetailsSource" class="com.navercorp.pinpoint.web.security.internal.CustomAuthenticationDetailsSource"/>
 
@@ -78,7 +82,6 @@
     <http pattern="/getApplicationHostInfo.pinpoint" security="none"/>
 
     <http auto-config="true">
-    <custom-filter position="PRE_AUTH_FILTER" ref="localAuthenticationFilter"/>
         <intercept-url pattern="/index.html" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/*.html" access="permitAll" /> 
         <intercept-url pattern="/login.pinpoint" access="permitAll" /> 
@@ -92,8 +95,6 @@
             <frame-options policy="SAMEORIGIN" />
         </headers>
     </http>
-
-    <beans:bean id="localAuthenticationFilter" class="com.navercorp.pinpoint.web.security.LocalAuthenticationFilter"/>
 
     <authentication-manager>
         <authentication-provider ref="localAuthenticationProvider"/>

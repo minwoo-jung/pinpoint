@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.navercorp.pinpoint.web.security.NaverPermissionEvaluator;
 import com.navercorp.pinpoint.web.security.PermissionChecker;
+import com.navercorp.pinpoint.web.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,13 +61,16 @@ public class ApplicationConfigController {
     @Autowired
     NaverPermissionEvaluator naverPermissionEvaluator;
 
+    @Autowired
+    UserService userService;
+
     /**
      * Check the permissions in the method.
      * Because this API supports both preoccupancy and insert actions, so you need to determine the two actions and check the permissions accordingly.
      */
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, String> insertUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth, @RequestHeader(SSO_USER) String userId) {
+    public Map<String, String> insertUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth) {
         Map<String, String> result = new HashMap<>();
         boolean isvalid = validationCheck(appUserGroupAuth);
         if (isvalid == false) {
@@ -82,7 +86,7 @@ public class ApplicationConfigController {
         }
 
         appConfigService.insertAppUserGroupAuth(appUserGroupAuth);
-        Position position = appConfigService.searchMyPosition(appUserGroupAuth.getApplicationId(), userId);
+        Position position = appConfigService.searchMyPosition(appUserGroupAuth.getApplicationId(), userService.getUserIdFromSecurity());
 
         result.put("result", "SUCCESS");
         result.put(MY_POSITION, position.toString());
@@ -109,8 +113,10 @@ public class ApplicationConfigController {
     @PreAuthorize("hasPermission(#appUserGroupAuth.getApplicationId(), null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER)")
     @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
-    public Map<String, String> deleteUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth, @RequestHeader(SSO_USER) String userId) {
+    public Map<String, String> deleteUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth) {
+        final String userId = userService.getUserIdFromSecurity();
         Map<String, String> result = new HashMap<>();
+
         if (StringUtils.isEmpty(appUserGroupAuth.getApplicationId()) || StringUtils.isEmpty(appUserGroupAuth.getUserGroupId()) || StringUtils.isEmpty(userId)) {
             result.put("errorCode", "500");
             result.put("errorMessage", "There is not applicationId/userGroupId/userId.");
@@ -133,7 +139,7 @@ public class ApplicationConfigController {
     @PreAuthorize("hasPermission(#appUserGroupAuth.getApplicationId(), null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_APPAUTHORIZATION_EDIT_AUTHOR_ONLY_MANAGER)")
     @RequestMapping(method = RequestMethod.PUT)
     @ResponseBody
-    public Map<String, String> updateUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth, @RequestHeader(SSO_USER) String userId) {
+    public Map<String, String> updateUserGroup(@RequestBody AppUserGroupAuth appUserGroupAuth) {
         Map<String, String> result = new HashMap<>();
         boolean isvalid = validationCheck(appUserGroupAuth);
         
@@ -144,7 +150,7 @@ public class ApplicationConfigController {
         }
         
         appConfigService.updateAppUserGroupAuth(appUserGroupAuth);
-        Position position = appConfigService.searchMyPosition(appUserGroupAuth.getApplicationId(), userId);
+        Position position = appConfigService.searchMyPosition(appUserGroupAuth.getApplicationId(), userService.getUserIdFromSecurity());
 
         result.put("result", "SUCCESS");
         result.put(MY_POSITION, position.toString());
@@ -153,7 +159,8 @@ public class ApplicationConfigController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId, @RequestHeader(SSO_USER) String userId) {
+    public Map<String, Object> getUserGroup(@RequestParam(APPLICATION_ID) String applicationId) {
+        final String userId = userService.getUserIdFromSecurity();
         Map<String, Object> result = new HashMap<String, Object>();
 
         if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(applicationId)) {
