@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.profiler.context.provider;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.navercorp.pinpoint.bootstrap.config.ThriftTransportConfig;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.profiler.context.module.TokenEnableConnectionFactoryProvider;
@@ -41,7 +42,8 @@ public class TokenEnableSpanStatClientFactoryProvider implements Provider<Pinpoi
     }
 
     public PinpointClientFactory get() {
-        if (!"TCP".equalsIgnoreCase(profilerConfig.getSpanDataSenderTransportType()) || !"TCP".equalsIgnoreCase(profilerConfig.getStatDataSenderTransportType())) {
+        final ThriftTransportConfig thriftTransportConfig = profilerConfig.getThriftTransportConfig();
+        if (!"TCP".equalsIgnoreCase(thriftTransportConfig.getSpanDataSenderTransportType()) || !"TCP".equalsIgnoreCase(thriftTransportConfig.getStatDataSenderTransportType())) {
             throw new IllegalArgumentException("Must have a tcp connection to enable token security.");
         }
 

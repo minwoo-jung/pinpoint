@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.profiler.context.provider;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.navercorp.pinpoint.bootstrap.config.ThriftTransportConfig;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.profiler.AgentInformation;
@@ -70,8 +71,9 @@ public class NaverTcpDataSenderProvider implements Provider<EnhancedDataSender> 
         Map<String, Object> properties = getProperties(licenseKey);
         clientFactory.setProperties(properties);
 
-        String collectorTcpServerIp = profilerConfig.getCollectorTcpServerIp();
-        int collectorTcpServerPort = profilerConfig.getCollectorTcpServerPort();
+        ThriftTransportConfig thriftTransportConfig = profilerConfig.getThriftTransportConfig();
+        String collectorTcpServerIp = thriftTransportConfig.getCollectorTcpServerIp();
+        int collectorTcpServerPort = thriftTransportConfig.getCollectorTcpServerPort();
         TBaseSerializer tBaseSerializer = tBaseSerializerProvider.get();
 
         TBaseSerializer licenseSupportSerializer = new LicenseSupportTBaseSerializer(tBaseSerializer, licenseKey);
@@ -89,7 +91,8 @@ public class NaverTcpDataSenderProvider implements Provider<EnhancedDataSender> 
         AgentInformation agentInformation = this.agentInformation.get();
         Map<String, Object> properties = toMap(agentInformation);
 
-        boolean isSupportServerMode = profilerConfig.isTcpDataSenderCommandAcceptEnable();
+        ThriftTransportConfig thriftTransportConfig = profilerConfig.getThriftTransportConfig();
+        boolean isSupportServerMode = thriftTransportConfig.isTcpDataSenderCommandAcceptEnable();
 
         if (isSupportServerMode) {
             properties.put(HandshakePropertyType.SUPPORT_SERVER.getName(), true);
