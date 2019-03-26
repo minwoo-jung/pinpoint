@@ -114,7 +114,9 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
         });
     }
     private connectAlarmComponent(): void {
-        this.alarmInteractionService.onComplete$.subscribe((formData: IAlarmCommandForm) => {
+        this.alarmInteractionService.onComplete$.pipe(
+            takeUntil(this.unsubscribe)
+        ).subscribe((formData: IAlarmCommandForm) => {
             switch (formData.type) {
                 case CMD_TYPE.CREATE:
                     this.onCreateAlarm(formData.data as Alarm);

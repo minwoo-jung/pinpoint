@@ -87,7 +87,9 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         });
     }
     private connectAuthenticationComponent(): void {
-        this.authenticationInteractionService.onComplete$.subscribe((formData: IAuthorityCommandForm) => {
+        this.authenticationInteractionService.onComplete$.pipe(
+            takeUntil(this.unsubscribe)
+        ).subscribe((formData: IAuthorityCommandForm) => {
             switch (formData.type) {
                 case CMD_TYPE.CREATE:
                     this.onCreateAuth(formData.data as IAuthorityData);
