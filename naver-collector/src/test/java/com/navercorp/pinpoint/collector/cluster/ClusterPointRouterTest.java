@@ -11,10 +11,11 @@ import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
 import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
-import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
+import com.navercorp.pinpoint.rpc.stream.ServerStreamChannelMessageHandler;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
 import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.util.Timer;
 import org.junit.AfterClass;
@@ -22,6 +23,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-test.xml")
@@ -180,7 +180,7 @@ public class ClusterPointRouterTest {
     private PinpointServerConfig createPinpointServerConfig() {
         PinpointServerConfig config = mock(PinpointServerConfig.class);
         when(config.getStateChangeEventHandlers()).thenReturn(Arrays.asList(DoNothingChannelStateEventHandler.INSTANCE));
-        when(config.getStreamMessageListener()).thenReturn(DisabledServerStreamChannelMessageListener.INSTANCE);
+        when(config.getServerStreamMessageHandler()).thenReturn(ServerStreamChannelMessageHandler.DISABLED_INSTANCE);
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
         TestServerMessageListenerFactory.TestServerMessageListener testServerMessageListener = TestServerMessageListenerFactory.create(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.ECHO);

@@ -26,7 +26,7 @@ import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
-import com.navercorp.pinpoint.rpc.stream.DisabledServerStreamChannelMessageListener;
+import com.navercorp.pinpoint.rpc.stream.ServerStreamChannelMessageHandler;
 import com.navercorp.pinpoint.rpc.util.ControlMessageEncodingUtils;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
@@ -282,7 +282,7 @@ public class ZookeeperProfilerClusterServiceTest {
     private PinpointServerConfig createPinpointServerConfig(ZookeeperClusterService service) {
         PinpointServerConfig config = mock(PinpointServerConfig.class);
         when(config.getStateChangeEventHandlers()).thenReturn(Arrays.asList(service.getChannelStateChangeEventHandler()));
-        when(config.getStreamMessageListener()).thenReturn(DisabledServerStreamChannelMessageListener.INSTANCE);
+        when(config.getServerStreamMessageHandler()).thenReturn(ServerStreamChannelMessageHandler.DISABLED_INSTANCE);
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
         TestServerMessageListenerFactory.TestServerMessageListener testServerMessageListener = TestServerMessageListenerFactory.create(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.ECHO);
