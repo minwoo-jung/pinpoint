@@ -155,7 +155,6 @@ export class AnalyticsService {
     private isAllowed(): Observable<boolean> {
         return this.webAppSettingDataService.isDataUsageAllowed().pipe(
             filter((result: boolean) => {
-                return true;
                 return result;
             })
         );
@@ -179,7 +178,6 @@ export class AnalyticsService {
     trackEvent(eventAction: string, eventLabel?: string, eventValue?: number): void {
         this.isAllowed().subscribe((result: boolean) => {
             if (this.windowRefService.nativeWindow.ga && typeof ga === 'function') {
-                console.log('ALLOWED');
                 ga('send', 'event', { eventCategory: this.currentPage, eventAction, eventLabel, eventValue });
             }
         });
