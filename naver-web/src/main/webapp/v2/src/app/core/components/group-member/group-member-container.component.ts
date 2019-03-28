@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { UserPermissionCheckService, UserConfigurationDataService, MessageQueueService, MESSAGE_TO } from 'app/shared/services';
+import { UserPermissionCheckService, UserConfigurationDataService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { GroupMemberDataService, IGroupMember, IGroupMemberResponse } from './group-member-data.service';
 import { isThatType } from 'app/core/utils/util';
 
@@ -26,7 +26,8 @@ export class GroupMemberContainerComponent implements OnInit, OnDestroy {
         private userConfigurationDataService: UserConfigurationDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private groupMemberDataService: GroupMemberDataService,
-        private messageQueueService: MessageQueueService
+        private messageQueueService: MessageQueueService,
+        private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
         this.userId = this.userConfigurationDataService.getUserId();
@@ -147,6 +148,7 @@ export class GroupMemberContainerComponent implements OnInit, OnDestroy {
         this.showProcessing();
         this.groupMemberDataService.remove(id, this.currentUserGroupId).subscribe((response: IGroupMemberResponse) => {
             this.doAfterAddAndRemoveAction(response);
+            this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_GROUP_MEMBER);
         }, (error: string) => {
             this.hideProcessing();
             this.errorMessage = error;
@@ -160,10 +162,12 @@ export class GroupMemberContainerComponent implements OnInit, OnDestroy {
         if (this.isValidUserGroupId()) {
             this.ascendSort = !this.ascendSort;
             this.sortGroupMemberList();
+            this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SORT_GROUP_MEMBER_LIST);
         }
     }
     onReload(): void {
         this.getGroupMemberList();
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.RELOAD_GROUP_MEMBER_LIST);
     }
     private showProcessing(): void {
         this.useDisable = true;

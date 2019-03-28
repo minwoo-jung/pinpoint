@@ -3,7 +3,7 @@ import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService } from 'app/shared/services';
+import { TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
 import { IParam } from './authentication-list.component';
@@ -45,7 +45,8 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         private userGroupDataSerivce: UserGroupDataService,
         private authenticationDataService: AuthenticationDataService,
         private authenticationInteractionService: AuthenticationInteractionService,
-        private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService
+        private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService,
+        private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
         this.hasUpdateAndRemoveAuthority = this.userPermissionCheckService.canUpdateAndRemoveAuth(false);
@@ -211,11 +212,13 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         if ((this.isApplicationSelected() === false || this.hasAddAuthority()) === false) {
             return;
         }
+
         this.authenticationInteractionService.showCreate({
             applicationId: this.currentApplication.getApplicationName(),
             userGroupList: this.getFilteredUserGroupList(),
             fixPosition: this.includeManagerPositionInList() ? '' : POSITION.MANAGER
         });
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_AUTH_CREATION_POPUP);
     }
     onCreateAuth(authInfo: IAuthorityData): void {
         this.showProcessing();
@@ -226,6 +229,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 this.changeDetectorRef.detectChanges();
             } else {
                 this.getAuthorityData();
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CREATE_AUTH);
             }
         }, (error: IServerErrorFormat) => {
             this.hideProcessing();
@@ -241,6 +245,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 this.changeDetectorRef.detectChanges();
             } else {
                 this.getAuthorityData();
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_AUTH);
             }
         }, (error: IServerErrorFormat) => {
             this.hideProcessing();
@@ -259,6 +264,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 this.hideProcessing();
             } else {
                 this.getAuthorityData();
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_AUTH);
             }
         }, (error: IServerErrorFormat) => {
             this.hideProcessing();
@@ -282,10 +288,12 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
                 sqlMeta: authInfo.configuration.sqlMetaData
             } as IAuthorityData
         });
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_AUTH_UPDATE_POPUP);
     }
     onShowAuthInfo(auth: IParam): void {
         this.selectedAuth = this.getAuth(auth.userGroupId, auth.position);
         this.showSelectedAuthInfo = true;
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_SELECTED_AUTH_INFO);
     }
     isApplicationSelected(): boolean {
         return this.currentApplication !== null;

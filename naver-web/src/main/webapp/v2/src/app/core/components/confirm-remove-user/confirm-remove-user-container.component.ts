@@ -4,6 +4,7 @@ import { ConfirmRemoveUserInteractionService } from './confirm-remove-user-inter
 import { ConfirmRemoveUserDataService } from './confirm-remove-user-data.service';
 import { IUserInfo } from 'app/core/components/configuration-users/configuration-users-data.service';
 import { isThatType } from 'app/core/utils/util';
+import { AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 
 @Component({
     selector: 'pp-confirm-remove-user-container',
@@ -18,6 +19,7 @@ export class ConfirmRemoveUserContainerComponent implements OnInit {
         @Inject('userInfo') public userInfo: IUserInfo,
         private confirmRemoveUserInteractionService: ConfirmRemoveUserInteractionService,
         private confirmRemoveUserDataService: ConfirmRemoveUserDataService,
+        private analyticsService: AnalyticsService,
     ) {}
 
     ngOnInit() {}
@@ -26,7 +28,11 @@ export class ConfirmRemoveUserContainerComponent implements OnInit {
             .subscribe((result: IUserRequestSuccessResponse | IServerErrorShortFormat) => {
                 isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
                     ? this.errorMessage = result.errorMessage
-                    : (this.isUserRemoved = true, this.confirmRemoveUserInteractionService.notifyUserRemove(userId));
+                    : (
+                        this.isUserRemoved = true,
+                        this.confirmRemoveUserInteractionService.notifyUserRemove(userId),
+                        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_USER_IN_USERS)
+                    );
             });
     }
 

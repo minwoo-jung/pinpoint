@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { RoleListInteractionService } from './role-list-interaction.service';
 import { IUserRole, RoleListDataService } from './role-list-data.service';
 import { isThatType } from 'app/core/utils/util';
+import { AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 
 @Component({
     selector: 'pp-role-list-container-for-users',
@@ -41,7 +42,8 @@ export class RoleListContainerForUsersComponent implements OnInit {
     constructor(
         private translateService: TranslateService,
         private roleListInteractionService: RoleListInteractionService,
-        private roleListDataService: RoleListDataService
+        private roleListDataService: RoleListDataService,
+        private analyticsService: AnalyticsService,
     ) {}
 
     ngOnInit() {
@@ -74,7 +76,8 @@ export class RoleListContainerForUsersComponent implements OnInit {
                     ? this.errorMessage = result.errorMessage
                     : (
                         this.isUpdated = true,
-                        this.roleListInteractionService.notifyUserRoleListUpdate(this.userId)
+                        this.roleListInteractionService.notifyUserRoleListUpdate(this.userId),
+                        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_USER_ROLE)
                     );
             });
     }

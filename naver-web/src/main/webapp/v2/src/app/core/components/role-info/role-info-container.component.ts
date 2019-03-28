@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { MessageQueueService, MESSAGE_TO, UserPermissionCheckService } from 'app/shared/services';
+import { MessageQueueService, MESSAGE_TO, UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { RoleInfoDataService } from './role-info-data.service';
 import { IPermissionData } from './role-info.component';
 import { isThatType } from 'app/core/utils/util';
@@ -66,7 +66,8 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         private messageQueueService: MessageQueueService,
         private translateService: TranslateService,
         private roleInfoDataService: RoleInfoDataService,
-        private userPermissionCheckService: UserPermissionCheckService
+        private userPermissionCheckService: UserPermissionCheckService,
+        private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
         this.hasRoleEditPerm = this.userPermissionCheckService.canEditRole();
@@ -160,6 +161,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     onChangedPermission(permission: IPermissionData): void {
         this.dataChanged = permission.isChanged;
         this.lastChangedData = permission;
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CHANGE_PERMISSION);
     }
     onCreate(): void {
         this.showProcessing();
@@ -171,6 +173,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
                     to: MESSAGE_TO.ROLE_INFO_CREATED,
                     param: [this.createRoleId]
                 });
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CREATE_ROLE);
             }
             this.hideProcessing();
             this.changeDetectorRef.detectChanges();
@@ -184,6 +187,8 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         this.roleInfoDataService.update(this.getPermissionForm(this.roleInfo.roleId, this.lastChangedData)).subscribe((response: IUserRequestSuccessResponse | any) => {
             if (isThatType<any>(response, 'exception')) {
                 this.errorMessage = (response as any).exception.message;
+            } else {
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_ROLE);
             }
             this.hideProcessing();
             this.changeDetectorRef.detectChanges();
@@ -237,6 +242,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
                 this.currentAction = CRUD_ACTION.NONE;
                 this.currentRoleId = '';
                 this.roleInfo = null;
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_ROLE);
                 this.hideProcessing();
             }
             this.changeDetectorRef.detectChanges();

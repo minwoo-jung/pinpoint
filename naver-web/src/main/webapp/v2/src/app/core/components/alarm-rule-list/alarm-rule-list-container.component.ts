@@ -3,7 +3,7 @@ import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TranslateReplaceService, UserConfigurationDataService, UserPermissionCheckService } from 'app/shared/services';
+import { TranslateReplaceService, UserConfigurationDataService, UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
 import { Alarm, IAlarmCommandForm, NOTIFICATION_TYPE } from './alarm-rule-create-and-update.component';
@@ -51,7 +51,8 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
         private userGroupDataSerivce: UserGroupDataService,
         private authenticationDataService: AuthenticationDataService,
         private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService,
-        private alarmInteractionService: AlarmInteractionService
+        private alarmInteractionService: AlarmInteractionService,
+        private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
         this.loadAlarmRule();
@@ -212,6 +213,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             userGroupList: this.getFilteredUserGroupList(),
             checkerList: this.checkerList
         });
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ALARM_CREATION_POPUP);
     }
     onCreateAlarm(alarm: Alarm): void {
         this.showProcessing();
@@ -231,6 +233,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
                 this.changeDetectorRef.detectChanges();
             } else {
                 this.getAlarmData();
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CREATE_ALARM);
             }
         }, (error: IServerErrorFormat) => {
             this.hideProcessing();
@@ -256,6 +259,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
                 this.changeDetectorRef.detectChanges();
             } else {
                 this.getAlarmData();
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_ALARM);
             }
         }, (error: IServerErrorFormat) => {
             this.hideProcessing();
@@ -275,6 +279,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
                 this.hideProcessing();
             } else {
                 this.getAlarmData();
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_ALARM);
             }
         }, (error: IServerErrorFormat) => {
             this.hideProcessing();
@@ -302,6 +307,7 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             checkerList: this.checkerList,
             data: alarmObj
         });
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ALARM_UPDATE_POPUP);
     }
     isApplicationSelected(): boolean {
         return this.currentApplication !== null;

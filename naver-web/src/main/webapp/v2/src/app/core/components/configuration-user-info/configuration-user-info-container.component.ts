@@ -8,7 +8,7 @@ import { UserPasswordInteractionService, IChangedPasswordState } from 'app/core/
 import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 import { IUserPassword } from 'app/core/components/user-password/user-password-data.service';
 import { IUserInfo } from 'app/core/components/configuration-users/configuration-users-data.service';
-import { UserPermissionCheckService } from 'app/shared/services';
+import { UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { RoleListInteractionService } from 'app/core/components/role-list/role-list-interaction.service';
 import { ConfigurationUserInfoInteractionService } from './configuration-user-info-interaction.service';
 import { ConfigurationUserInfoDataService } from './configuration-user-info-data.service';
@@ -46,6 +46,7 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
         private configurationUserInfoDataService: ConfigurationUserInfoDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private translateService: TranslateService,
+        private analyticsService: AnalyticsService,
     ) {}
 
     ngOnInit() {
@@ -109,7 +110,8 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
                     },
                     setTimeout(() => {
                         this.hideProcessing();
-                    }, 1000)
+                    }, 1000),
+                    this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CREATE_USER_IN_USERS)
                 );
         });
     }

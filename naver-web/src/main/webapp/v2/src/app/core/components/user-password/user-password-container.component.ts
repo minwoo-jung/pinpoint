@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 
 import { UserPasswordInteractionService, IChangedPasswordState } from './user-password-interaction.service';
 import { IUserPassword, UserPasswordDataService } from 'app/core/components/user-password/user-password-data.service';
-import { TranslateReplaceService } from 'app/shared/services';
+import { TranslateReplaceService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { isThatType } from 'app/core/utils/util';
 
 export enum UserType {
@@ -48,7 +48,8 @@ export class UserPasswordContainerComponent implements OnInit {
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
         private userPasswordInteractionService: UserPasswordInteractionService,
-        private userPasswordDataService: UserPasswordDataService
+        private userPasswordDataService: UserPasswordDataService,
+        private analyticsService: AnalyticsService,
     ) {}
 
     ngOnInit() {
@@ -107,7 +108,8 @@ export class UserPasswordContainerComponent implements OnInit {
                     : (
                         this.isUpdated = true,
                         this.userPassword = {} as IUserPassword,
-                        this.userPasswordInteractionService.notifyUserPasswordUpdate(this.userId)
+                        this.userPasswordInteractionService.notifyUserPasswordUpdate(this.userId),
+                        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_USER_PASSWORD)
                     );
             });
     }

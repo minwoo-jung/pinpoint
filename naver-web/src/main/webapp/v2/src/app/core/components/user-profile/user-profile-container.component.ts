@@ -4,7 +4,7 @@ import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { UserProfileInteractionService, IChangedProfileState } from './user-profile-interaction.service';
-import { TranslateReplaceService } from 'app/shared/services';
+import { TranslateReplaceService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { MinLength } from './user-profile.component';
 import { IUserProfile, UserProfileDataService } from 'app/core/components/user-profile/user-profile-data.service';
 import { isThatType } from 'app/core/utils/util';
@@ -31,7 +31,8 @@ export class UserProfileContainerComponent implements OnInit {
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
         private userProfileInteractionService: UserProfileInteractionService,
-        private userProfileDataService: UserProfileDataService
+        private userProfileDataService: UserProfileDataService,
+        private analyticsService: AnalyticsService,
     ) { }
 
     ngOnInit() {
@@ -90,7 +91,8 @@ export class UserProfileContainerComponent implements OnInit {
                     : (
                         this.isUpdated = true,
                         this.userProfile = this.tempUserProfile,
-                        this.userProfileInteractionService.notifyUserProfileUpdate()
+                        this.userProfileInteractionService.notifyUserProfileUpdate(),
+                        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_USER_PROFILE)
                     );
             });
     }

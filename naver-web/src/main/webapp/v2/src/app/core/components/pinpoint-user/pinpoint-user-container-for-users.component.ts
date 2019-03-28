@@ -3,7 +3,7 @@ import { Observable, iif, of, merge, Subject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 
-import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService } from 'app/shared/services';
+import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { PinpointUserForUsersDataService } from './pinpoint-user-for-users-data.service';
 import { UserProfileInteractionService } from 'app/core/components/user-profile/user-profile-interaction.service';
 import { ConfirmRemoveUserInteractionService } from 'app/core/components/confirm-remove-user/confirm-remove-user-interaction.service';
@@ -49,6 +49,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         private userProfileInteractionService: UserProfileInteractionService,
         private confirmRemoveUserInteractionService: ConfirmRemoveUserInteractionService,
         private configurationUserInfoInteractionService: ConfigurationUserInfoInteractionService,
+        private analyticsService: AnalyticsService,
     ) {}
 
     ngOnInit() {
@@ -107,23 +108,28 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
     onSearch(query: string): void {
         this.searchQuery = query;
         this.getPinpointUserList(this.searchQuery);
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SEARCH_USER_IN_USERS);
     }
 
     onReload(): void {
         this.getPinpointUserList(this.searchQuery);
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.RELOAD_USER_LIST_IN_USERS);
         this.outClear.emit();
     }
 
     onAddUser(): void {
         this.outAddUser.emit();
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_USER_CREATION_FORM);
     }
 
     onSelectUser(id: string): void {
         this.outSelectUser.emit(id);
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_USER_UPDATE_FORM);
     }
 
     onRemoveUser(id: string): void {
         this.outRemoveUser.emit(id);
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_USER_REMOVE_CONFIRM_VIEW);
     }
 
     private showProcessing(): void {

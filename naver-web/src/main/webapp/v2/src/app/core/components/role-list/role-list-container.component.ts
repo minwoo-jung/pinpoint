@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MessageQueueService, MESSAGE_TO, UserPermissionCheckService } from 'app/shared/services';
+import { MessageQueueService, MESSAGE_TO, UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { RoleListDataService } from './role-list-data.service';
 
 @Component({
@@ -23,7 +23,8 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
         private changeDetectorRef: ChangeDetectorRef,
         private roleListDataService: RoleListDataService,
         private messageQueueService: MessageQueueService,
-        private userPermissionCheckService: UserPermissionCheckService
+        private userPermissionCheckService: UserPermissionCheckService,
+        private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
         this.getRoleList();
@@ -61,18 +62,21 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
             to: MESSAGE_TO.ROLE_INFO_CREATE_ROLE,
             param: []
         });
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ROLE_CREATION_VIEW);
     }
     onSelectRole(selectedRole: string): void {
         this.messageQueueService.sendMessage({
             to: MESSAGE_TO.ROLE_INFO_SELECT_ROLE,
             param: [selectedRole]
         });
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ROLE_UPDATE_VIEW);
     }
     onRemoveRole(selectedRole: string): void {
         this.messageQueueService.sendMessage({
             to: MESSAGE_TO.ROLE_INFO_REMOVE_SELECT_ROLE,
             param: [selectedRole]
         });
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ROLE_REMOVE_CONFIRM_VIEW);
     }
     onCloseErrorMessage(): void {
         this.errorMessage = '';

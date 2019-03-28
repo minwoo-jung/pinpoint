@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, AfterViewInit, Input, ElementRef } from '@angular/core';
 
-import { DynamicPopup, WindowRefService, PopupConstant, UrlRouteManagerService, UserPermissionCheckService } from 'app/shared/services';
+import { DynamicPopup, WindowRefService, PopupConstant, UrlRouteManagerService, UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 
 @Component({
     selector: 'pp-configuration-popup-container',
@@ -20,6 +20,7 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
     constructor(
         private urlRouteManagerService: UrlRouteManagerService,
         private windowRefService: WindowRefService,
+        private analyticsService: AnalyticsService,
         private el: ElementRef,
         private userPermissionCheckService: UserPermissionCheckService,
     ) {}
@@ -47,11 +48,13 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
     }
 
     onMenuClick(type: string): void {
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_CONFIGURATION_MENU, type);
         this.urlRouteManagerService.moveToConfigPage(type);
         this.outClose.emit();
     }
 
     onOpenLink(): void {
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_YOBI_LINK);
         this.windowRefService.nativeWindow.open('https://yobi.navercorp.com/Labs-public_pinpoint-issues/posts');
         this.outClose.emit();
     }

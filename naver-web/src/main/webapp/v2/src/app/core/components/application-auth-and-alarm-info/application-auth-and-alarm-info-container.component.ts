@@ -3,7 +3,7 @@ import { Subject, Observable, of, combineLatest } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { UrlPath, UrlPathId } from 'app/shared/models';
-import { UrlRouteManagerService, DynamicPopupService, MessageQueueService, MESSAGE_TO } from 'app/shared/services';
+import { UrlRouteManagerService, DynamicPopupService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { ApplicationAuthAndAlarmDataService } from './application-auth-and-alarm-data.service';
 import { ApplicationAuthAndAlarmPopupComponent } from './application-auth-and-alarm-popup.component';
 
@@ -29,7 +29,8 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, On
         private messageQueueService: MessageQueueService,
         private applicationAuthAndAlarmDataService: ApplicationAuthAndAlarmDataService,
         private componentFactoryResolver: ComponentFactoryResolver,
-        private injector: Injector
+        private injector: Injector,
+        private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((param: any[]) => {
@@ -61,6 +62,7 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, On
         switch (value.type) {
             case 'configuration':
                 this.showConfiguration(value);
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_DETAIL_ON_APPLICATION_AUTH_AND_ALARM_INFO);
                 break;
             case 'edit':
                 this.urlRouteManagerService.moveOnPage({
@@ -73,6 +75,7 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, On
                         position: value.position
                     }
                 });
+                this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_MORE_ON_APPLICATION_AUTH_AND_ALARM_INFO);
                 break;
         }
     }

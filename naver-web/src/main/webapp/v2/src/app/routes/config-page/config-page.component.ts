@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
-import { UserPermissionCheckService, NewUrlStateNotificationService, UrlRouteManagerService } from 'app/shared/services';
+import { UserPermissionCheckService, NewUrlStateNotificationService, UrlRouteManagerService, TRACKED_EVENT_LIST, AnalyticsService } from 'app/shared/services';
 import { UrlPath } from 'app/shared/models';
 
 @Component({
@@ -42,6 +42,7 @@ export class ConfigPageComponent implements OnInit {
         private urlRouteManagerService: UrlRouteManagerService,
         private newUrlStateNotificationService: NewUrlStateNotificationService,
         private userPermissionCheckService: UserPermissionCheckService,
+        private analyticsService: AnalyticsService,
     ) {}
 
     ngOnInit() {
@@ -56,6 +57,7 @@ export class ConfigPageComponent implements OnInit {
         }, {});
 
         this.urlRouteManagerService.moveOnPage({ url, queryParam });
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_CONFIGURATION_PAGE_EXIT_BUTTON);
     }
 
     toggleMenu(): void {
@@ -72,5 +74,9 @@ export class ConfigPageComponent implements OnInit {
         return Array.from(listItem.nextElementSibling.querySelectorAll('.l-link')).some((element: HTMLElement) => {
             return element.classList.contains('active');
         });
+    }
+
+    onMenuClick(menu: string): void {
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_CONFIGURATION_MENU, menu);
     }
 }

@@ -3,7 +3,7 @@ import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TranslateReplaceService } from 'app/shared/services';
+import { TranslateReplaceService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
 import { RemovableAgentDataService } from './removable-agent-data.service';
 
@@ -40,7 +40,8 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
         private removableAgentDataService: RemovableAgentDataService,
-        private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService
+        private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService,
+        private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
         this.getI18NText();
@@ -109,10 +110,12 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
     onRemoveSelectAgent(agentInfo: string[]): void {
         this.removeTarget = agentInfo;
         this.removeType = REMOVE_TYPE.EACH;
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ONE_AGENT_REMOVE_CONFIRM_VIEW);
         this.changeDetectorRef.detectChanges();
     }
     onRemoveAllInactiveAgents(): void {
         this.removeType = REMOVE_TYPE.ALL;
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ALL_INACTIVE_AGENTS_REMOVE_CONFIRM_VIEW);
         this.changeDetectorRef.detectChanges();
     }
     onRemoveCancel(): void {
@@ -123,11 +126,13 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
         let result: Observable<string>;
         if (this.isAllRemove()) {
             result = this.removableAgentDataService.removeInactiveAgents();
+            this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_ALL_INACTIVE_AGENTS);
         } else {
             result = this.removableAgentDataService.removeAgentId({
                 applicationName: this.removeTarget[0],
                 agentId: this.removeTarget[1]
             });
+            this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_ONE_AGENT);
         }
         result.subscribe((response: string) => {
             if (response === 'OK') {

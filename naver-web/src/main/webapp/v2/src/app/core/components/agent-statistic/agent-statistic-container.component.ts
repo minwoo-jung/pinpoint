@@ -4,7 +4,7 @@ import * as moment from 'moment-timezone';
 import { TranslateService } from '@ngx-translate/core';
 
 import { UrlPath } from 'app/shared/models';
-import { StoreHelperService, UrlRouteManagerService } from 'app/shared/services';
+import { StoreHelperService, UrlRouteManagerService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { Actions } from 'app/shared/store';
 import { AgentStatisticDataService } from './agent-statistic-data.service';
 
@@ -54,7 +54,8 @@ export class AgentStatisticContainerComponent implements OnInit, OnDestroy {
         private translateService: TranslateService,
         private storeHelperService: StoreHelperService,
         private agentStatisticDataService: AgentStatisticDataService,
-        private urlRouteManagerService: UrlRouteManagerService
+        private urlRouteManagerService: UrlRouteManagerService,
+        private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
         this.getI18NText();
@@ -155,11 +156,17 @@ export class AgentStatisticContainerComponent implements OnInit, OnDestroy {
             UrlPath.MAIN,
             params.application + '@' + params.serviceType
         ]);
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_APPLICATION_IN_STATISTIC_LIST);
     }
     onReload(): void {
         this.onLoadStart(true);
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.RELOAD_AGENT_STATISTIC_DATA);
     }
     onLoadStart(force = false): void {
+        if (!force) {
+            this.analyticsService.trackEvent(TRACKED_EVENT_LIST.FETCH_AGENT_STATISTIC_DATA);
+        }
+
         this.loadingData = true;
         this.showProcessing();
         this.agentStatisticDataService.get(force).subscribe((agentList: IAgentList) => {
