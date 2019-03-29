@@ -105,7 +105,7 @@ public class ClusterPointRouterTest {
 
         ClusterPoint clusterPoint = new PinpointServerClusterPoint(pinpointServer);
 
-        clusterPointRepository.addClusterPoint(clusterPoint);
+        clusterPointRepository.addAndIsKeyCreated(clusterPoint);
         List<TargetClusterPoint> clusterPointList = clusterPointRepository.getClusterPointList();
 
         Assert.assertEquals(1, clusterPointList.size());
@@ -113,10 +113,10 @@ public class ClusterPointRouterTest {
         Assert.assertNull(findClusterPoint("application", "a", -1L, clusterPointList));
         Assert.assertEquals(clusterPoint, findClusterPoint("application", "agent", currentTime, clusterPointList));
 
-        boolean isAdd = clusterPointRepository.addClusterPoint(new PinpointServerClusterPoint(pinpointServer));
+        boolean isAdd = clusterPointRepository.addAndIsKeyCreated(new PinpointServerClusterPoint(pinpointServer));
         Assert.assertFalse(isAdd);
 
-        clusterPointRepository.removeClusterPoint(new PinpointServerClusterPoint(pinpointServer));
+        clusterPointRepository.removeAndGetIsKeyRemoved(new PinpointServerClusterPoint(pinpointServer));
         clusterPointList = clusterPointRepository.getClusterPointList();
 
         Assert.assertEquals(0, clusterPointList.size());
@@ -143,19 +143,9 @@ public class ClusterPointRouterTest {
         List<TargetClusterPoint> result = new ArrayList<>();
 
         for (TargetClusterPoint targetClusterPoint : targetClusterPointList) {
-            if (!targetClusterPoint.getApplicationName().equals(applicationName)) {
-                continue;
+            if (targetClusterPoint.getDestAgentInfo().equals(applicationName, agentId, startTimeStamp)) {
+                result.add(targetClusterPoint);
             }
-
-            if (!targetClusterPoint.getAgentId().equals(agentId)) {
-                continue;
-            }
-
-            if (!(targetClusterPoint.getStartTimeStamp() == startTimeStamp)) {
-                continue;
-            }
-
-            result.add(targetClusterPoint);
         }
 
         if (result.size() == 1) {

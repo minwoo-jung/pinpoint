@@ -74,7 +74,7 @@ public class ClusterPointRouterCommandTest {
         ClusterPointRepository<TargetClusterPoint> targetClusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
         List<TargetClusterPoint> clusterPointList = targetClusterPointRepository.getClusterPointList();
         for (TargetClusterPoint clusterPoint : clusterPointList) {
-            targetClusterPointRepository.removeClusterPoint(clusterPoint);
+            targetClusterPointRepository.removeAndGetIsKeyRemoved(clusterPoint);
         }
     }
 
@@ -109,7 +109,7 @@ public class ClusterPointRouterCommandTest {
                 ClusterPoint clusterPoint = new PinpointServerClusterPoint((DefaultPinpointServer)writablePinpointServer);
                 
                 ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
-                clusterPointRepository.addClusterPoint(clusterPoint);
+                clusterPointRepository.addAndIsKeyCreated(clusterPoint);
             }
 
             int webPort = testWebAcceptor.bind();
