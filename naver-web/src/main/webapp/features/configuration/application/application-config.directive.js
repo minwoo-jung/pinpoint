@@ -26,8 +26,8 @@
 						scope.$broadcast( "applicationGroup.sub.load", appId, invokeCountAfterOpen++ );
 						event.stopPropagation();
 					});
-					scope.$on( "changed.role", function( event, bIsManager ) {
-						scope.$broadcast( "change.your.role", scope.openSource ? true : bIsManager );
+					scope.$on( "changed.position", function( event, bIsManager ) {
+						scope.$broadcast( "change.your.position", scope.openSource ? true : bIsManager );
 						event.stopPropagation();
 					});
 				}

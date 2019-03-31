@@ -257,7 +257,7 @@
 						}
 						loadRuleSet();
 					});
-					scope.$on("change.your.role", function( event, bCanModify ) {
+					scope.$on("change.your.position", function( event, bCanModify ) {
 						bYouCanModify = bCanModify;
 					});
 					scope.onCloseAlert = function() {
