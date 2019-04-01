@@ -1,6 +1,7 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.ClusterPointStateChangedEventHandler;
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import com.navercorp.pinpoint.rpc.MessageListener;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
@@ -59,7 +60,7 @@ public class ZookeeperProfilerClusterStressTest {
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
             serverAcceptor = new PinpointServerAcceptor();
-            serverAcceptor.addStateChangeEventHandler(service.getChannelStateChangeEventHandler());
+	        serverAcceptor.addStateChangeEventHandler(new ClusterPointStateChangedEventHandler(profiler));
             serverAcceptor.setMessageListenerFactory(testServerMessageListenerFactory);
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
@@ -102,7 +103,7 @@ public class ZookeeperProfilerClusterStressTest {
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
             serverAcceptor = new PinpointServerAcceptor();
-            serverAcceptor.addStateChangeEventHandler(service.getChannelStateChangeEventHandler());
+	        serverAcceptor.addStateChangeEventHandler(new ClusterPointStateChangedEventHandler(profiler));
             serverAcceptor.setMessageListenerFactory(testServerMessageListenerFactory);
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 

@@ -10,7 +10,7 @@ import com.navercorp.pinpoint.collector.util.DefaultAddress;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
-import com.navercorp.pinpoint.rpc.server.handler.DoNothingChannelStateEventHandler;
+import com.navercorp.pinpoint.rpc.server.handler.ServerStateChangeEventHandler;
 import com.navercorp.pinpoint.rpc.stream.ServerStreamChannelMessageHandler;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
 import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
@@ -169,7 +169,7 @@ public class ClusterPointRouterTest {
 
     private PinpointServerConfig createPinpointServerConfig() {
         PinpointServerConfig config = mock(PinpointServerConfig.class);
-        when(config.getStateChangeEventHandlers()).thenReturn(Arrays.asList(DoNothingChannelStateEventHandler.INSTANCE));
+        when(config.getStateChangeEventHandlers()).thenReturn(Arrays.asList(ServerStateChangeEventHandler.DISABLED_INSTANCE));
         when(config.getServerStreamMessageHandler()).thenReturn(ServerStreamChannelMessageHandler.DISABLED_INSTANCE);
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);

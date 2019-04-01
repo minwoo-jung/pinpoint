@@ -1,6 +1,7 @@
 package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
+import com.navercorp.pinpoint.collector.cluster.ClusterPointStateChangedEventHandler;
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
 import com.navercorp.pinpoint.rpc.control.ProtocolException;
@@ -206,7 +207,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
     
     private PinpointServerConfig createPinpointServerConfig(ZookeeperClusterService service) {
         PinpointServerConfig config = mock(PinpointServerConfig.class);
-        when(config.getStateChangeEventHandlers()).thenReturn(Arrays.asList(service.getChannelStateChangeEventHandler()));
+        when(config.getStateChangeEventHandlers()).thenReturn(Arrays.asList(new ClusterPointStateChangedEventHandler(service.getProfilerClusterManager())));
         when(config.getServerStreamMessageHandler()).thenReturn(ServerStreamChannelMessageHandler.DISABLED_INSTANCE);
         when(config.getRequestManagerTimer()).thenReturn(testTimer);
         when(config.getDefaultRequestTimeout()).thenReturn((long) 1000);
