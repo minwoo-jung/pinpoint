@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/admin/nss")
-@PreAuthorize("hasPermission(null, null, 'admin')")
+@PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.controller.AdminController).CALL_API_FOR_APP_AGENT_MANAGEMENT)")
 public class NssAdminController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
