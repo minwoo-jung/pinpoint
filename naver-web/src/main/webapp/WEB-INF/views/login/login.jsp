@@ -130,6 +130,10 @@
             font-weight:400;
             padding-top:1px;
         }
+        input[type=submit]:disabled {
+            background-color: #AAA;
+            cursor: default;
+        }
         button:active,button:hover,button:link{
             text-decoration:none;
             color:#fff
@@ -157,26 +161,48 @@
 <body onload="document.loginForm.username.focus()">
     <div id="wrap">
         <div id="header">
-            <h1><img width="228px" height="36px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHIAAAASCAYAAACHKYonAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6RERGNjFCMjFBMENBMTFFNjgyN0JCMjUxRkQxOUExNkIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6RERGNjFCMjJBMENBMTFFNjgyN0JCMjUxRkQxOUExNkIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpEREY2MUIxRkEwQ0ExMUU2ODI3QkIyNTFGRDE5QTE2QiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpEREY2MUIyMEEwQ0ExMUU2ODI3QkIyNTFGRDE5QTE2QiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PmmABf0AAAO5SURBVHja3FlNaBQxFJ4Rf9ZikYqC6EFc8a8X0YXiwWMLItSDWK8W0RYEPboVvYm0RQ8e9LALYhU96IJHRXY910MXxYNYtS0iigp2EWmrrXb8ot/UdLqTSTOTrvrgIzuTZPLe+/KSvKzreV6zU10qQNlRi9+3pKgbJpwEvmWiY6i4ZSeFYjnw2cs405rdtGx2XTfSZt/3aFvicwOKjIEpZRedvYhGBSAforjf11XUCUe30OlKuzS+ZaJjkLwmFCfo9LV8PQ70A9eA2yD1e0w9f9kMgioRRHok0pWILRoQ2SIT2RWoFLOjDUjzuZPOMnF+nv3jEmmioxx9l4Ej0hjfgEmgXmo6ABwEma9jTrg8+OmcJ5Fp2lMt0ps5UUtVJ7L3R5wQ5Fg/KkI/UKfqK2SI/YS0KcbQ+ZapjqDGWwoUAQ8YBy4AjVL9auAYMMI274FthnrOsjmKyLAVMfDdLJtmw3yg4yRHQUaUUUWgQ3Jy2hKRKh0FURdJ0DtgZ6gzBrx64B7bPgNSBnrOsXkhiFyku5myTBus33lCLIM5x55U1RFLqng+CfwADmDJfBzq2IzzhUvbILAdOG6oy0LZPCO6RKYDztKVZmlvG+Zz1pItYTq2A0uAGyDqUeRJMuOMoTjFxw4DPebYLCLpbyDSP0zEOeqLvof4u0eRTpiKSse9LG8GInUl0AcUgV2BPvdFSgJsRd16o9Tm94l1xmZFmmeVyAY6Wzj9jjTDKjHGKkunzhzHiCO6Om5k+TTw/jRwmN+4FYjKKRQv+bjBOE913Vk2M0+0Ios1crVhKlNIYLxe6Sidk2asrpjoOMlymWISTyvGmopjMMjsZTSa2jxvIruq1Jfi3JyEiDBkiMthluTqiomOb4B1YpkE3krvzwNrALF0ngksu2JP3Sz1T8xmsV8KchNnUvNon3TK0CYdzzOB9ME0/QhLKc4xncjPo89+9nlhanMVP8+yme9GFzr9SFoKjET5eF62NNZ1Lo/tvJ6LusKrQ9Et7eWJCKLQqs21ItLfL8u8JO6xNQjm/isUl5iC3AVROxQkruAkawSeA1ds2YwoStTmWhJZ4d1ohXtlxuJYZ4GH3A/7QVg3sEUicBUg7mCfAPuAj0ArJsHXJJVgSmLF5loS6S8tvVI6YSsqxcm1FbgKpHhoGgR5Y8Aofn9i3SZA3PzsZiQnLkxJEre51kT6y03B9iAgZgI4ip97gD7gA1BHZ04AD5hXNqHdiE1deGpN1GY3+u/I/1cQG+JP5RSIq/zrtvwUYAA22ObjzGRVAgAAAABJRU5ErkJggg==" alt="" /></h1>
+            <svg xmlns="http://www.w3.org/2000/svg" style="width:100%; height: 100%;">
+                <style>
+                    .pinpoint-out { stroke: #05c9fe; stroke-width: 3px; fill: none; }
+                    .pinpoint-in { fill: #05c9fe; }
+                    .pinp { font: 52px sans-serif; fill: #FFF; }
+                    .int { font: 52px sans-serif; fill: #FFF; }
+                </style>
+
+                <text x="100" y="54" class="pinp">PINP</text>
+                <circle cx="230" cy="34" r="15" class="pinpoint-out"/>
+                <circle cx="230" cy="34" r="4" class="pinpoint-in"/>
+                <text x="256" y="54" class="int">INT</text>
+            </svg>
         </div>
         <div id="container">
             <div id="content">
-                <form name="loginForm" action="<c:url value='/j_spring_security_check.pinpoint' />" method="POST">
+                <form name="loginForm" action="<c:url value='/j_spring_security_check.pinpoint' />" method="POST" onsubmit="return submitForm()">
                     <fieldset>
                         <div class="input_row">
                             <span class="input_box">
-                                <input type="text" name="company" placeholder="Company" maxlength="16">
+                                <input type="text" name="organization" placeholder="Organization" maxlength="40">
                             </span>
+                        </div>
+                        <div class="error organization_msg" style="display:none">
+                            You can enter only numbers, alphabets, and "-_" characters.( 3 ~ 40 )
                         </div>
                         <div class="input_row">
                             <span class="input_box">
-                                <input type="text" name="username" placeholder="User Id" maxlength="41" value="">
+                                <input type="text" name="username" placeholder="User Id" maxlength="24" value="">
                             </span>
+                        </div>
+                        <div class="error username_msg" style="display:none">
+                            You can enter only numbers, alphabets, and "-_" characters.( 4 ~ 24 )
                         </div>
                         <div class="input_row">
                             <span class="input_box">
-                                <input type="password" name="password" placeholder="Password" maxlength="16">
+                                <input type="password" name="password" placeholder="Password" maxlength="24">
                             </span>
+                        </div>
+                        <div class="error password_msg" style="display:none">
+                            You can enter only numbers, alphabets, and "!@#$%^&*()" characters.(8 ~ 24)<br/>
+                            And you must enter at least one alphabet, one digit, and at least one special character.
                         </div>
                         <c:if test="${not empty error}">
                             <div class="error">${error}</div>
@@ -191,5 +217,73 @@
             </div>
         </div>
     </div>
+    <script>
+        var $ = document;
+		var STATUS = {
+			VALID: 'valid',
+			INVALID: 'invalid',
+			EMPTY: 'empty'
+		};
+		var oData = {
+			organization: {
+				status: STATUS.EMPTY,
+				el: $.querySelector("input[name='organization']"),
+				elMsg: $.querySelector("div.organization_msg"),
+                reg: /^[\w\-]{3, 40}$/
+            },
+            username: {
+				status: STATUS.EMPTY,
+				el: $.querySelector("input[name='username']"),
+				elMsg: $.querySelector("div.username_msg"),
+                reg: /^[\w\-]{4, 24}$/
+            },
+            password: {
+				status: STATUS.EMPTY,
+				el: $.querySelector("input[name='password']"),
+				elMsg: $.querySelector("div.password_msg"),
+		        reg: /^(?=.*[a-zA-Z])(?=.*[!@#$%^\&\*\(\)])(?=.*[0-9]).{8,24}/
+            }
+        };
+		var type = ['organization', 'username', 'password'];
+        (function() {
+        	Object.keys(oData).forEach(function(key) {
+				(function(target) {
+					target.el.addEventListener("change", function() {
+						checkValid(target);
+					});
+				})(oData[key]);
+            });
+		})();
+
+        function checkAllStatus() {
+			var allValid = true;
+			for (var key in oData) {
+				if (oData[key].status !== STATUS.VALID) {
+					allValid = false;
+					break;
+				}
+			}
+			return allValid;
+        }
+        function checkValid(target) {
+			var v = target.el.value.trim();
+			if (v === '') {
+				target.status = STATUS.EMPTY;
+				target.elMsg.style.display = "block";
+			} else if (target.reg.test(v)) {
+				target.status = STATUS.VALID;
+				target.elMsg.style.display = "none";
+			} else {
+				target.status = STATUS.INVALID;
+				target.elMsg.style.display = "block";
+			}
+        }
+        function submitForm() {
+        	type.forEach(function(key) {
+				checkValid(oData[key], key === "password");
+            });
+        	return checkAllStatus();
+        }
+    </script>
 </body>
 </html>
