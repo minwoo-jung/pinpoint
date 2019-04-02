@@ -209,10 +209,9 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         };
     }
     onShowCreateAuth(): void {
-        if ((this.isApplicationSelected() === false || this.hasAddAuthority()) === false) {
+        if (this.isApplicationSelected() === false || this.hasAddAuthority() === false) {
             return;
         }
-
         this.authenticationInteractionService.showCreate({
             applicationId: this.currentApplication.getApplicationName(),
             userGroupList: this.getFilteredUserGroupList(),

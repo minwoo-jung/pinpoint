@@ -25,7 +25,7 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
     private unsubscribe: Subject<null> = new Subject();
     private minLength = 3;
     private filterStr = '';
-    private applicationQuery: IApplication;
+    private applicationQuery: string;
     private applicationList: IApplication[];
     filteredApplicationList: IApplication[];
     selectedApplication: IApplication;
@@ -52,19 +52,20 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
         this.newUrlStateNotificationService.onUrlStateChange$.pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((urlService: NewUrlStateNotificationService) => {
-            const applicationId = urlService.getQueryValue(UrlQuery.APPLICATION_ID);
-            if (applicationId) {
-                this.applicationQuery = new Application(applicationId, '', 0);
+            if (urlService.getQueryValue(UrlQuery.APPLICATION_ID)) {
+                this.applicationQuery = urlService.getQueryValue(UrlQuery.APPLICATION_ID);
             }
         });
         this.storeHelperService.getApplicationList(this.unsubscribe).subscribe((applicationList: IApplication[]) => {
             this.applicationList = applicationList;
             this.filteredApplicationList = this.filterList(this.applicationList);
             if (this.applicationQuery) {
-                this.applicationQuery = this.filteredApplicationList.find((app: IApplication) => {
-                    return this.applicationQuery.getApplicationName() === app.getApplicationName();
+                const selectedApplication = this.filteredApplicationList.find((app: IApplication) => {
+                    return this.applicationQuery === app.getApplicationName();
                 });
-                this.onSelectApplication(this.applicationQuery);
+                if (selectedApplication) {
+                    this.onSelectApplication(selectedApplication);
+                }
             }
             this.changeDetector.detectChanges();
         });
