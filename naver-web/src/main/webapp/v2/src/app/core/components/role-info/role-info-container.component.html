@@ -2,11 +2,15 @@
     <ng-container *ngIf="!isNone();else elseBlock">
         <div class="l-role-info-title">
             <span>Permission</span>
-            <div *ngIf="isCreate()">
-                <input class="l-input-name" [(ngModel)]="createRoleId" type="text" placeholder="{{i18nText.inputGuide}}"/>
-            </div>
         </div>
         <div class="l-role-info-list">
+            <div *ngIf="isCreate()" class="l-input-wrapper">
+                <div class="l-input-title"><span>Role Id</span></div>
+                <div>
+                    <input class="l-input-name" [(ngModel)]="createRoleId" type="text" placeholder="{{i18nText.inputGuide}}"/>
+                    <div class="l-input-guide" *ngIf="roleIdValidationGuideMsg">{{i18nText.validationGuide}}</div>
+                </div>
+            </div>        
             <pp-role-info 
                 [roleInfo]="roleInfo"
                 [hasRoleEditPerm]="hasRoleEditPerm"

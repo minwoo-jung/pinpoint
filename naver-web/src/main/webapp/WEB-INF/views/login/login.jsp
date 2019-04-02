@@ -229,13 +229,13 @@
 				status: STATUS.EMPTY,
 				el: $.querySelector("input[name='organization']"),
 				elMsg: $.querySelector("div.organization_msg"),
-                reg: /^[\w\-]{3, 40}$/
+                reg: /^[\w\-]{3,40}$/
             },
             username: {
 				status: STATUS.EMPTY,
 				el: $.querySelector("input[name='username']"),
 				elMsg: $.querySelector("div.username_msg"),
-                reg: /^[\w\-]{4, 24}$/
+                reg: /^[\w\-]{4,24}$/
             },
             password: {
 				status: STATUS.EMPTY,

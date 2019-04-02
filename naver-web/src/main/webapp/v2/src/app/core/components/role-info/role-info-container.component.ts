@@ -32,12 +32,15 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     dataChanged = false;
     lastChangedData: IPermissionData;
     currentAction: CRUD_ACTION = CRUD_ACTION.NONE;
+    roleIdValidationGuideMsg = false;
+    roleIdValidationReg = /^[\w\-]{3,24}$/;
 
     i18nText: {[key: string]: string} = {
         saveButton: '',
         removeButton: '',
         removeGuide: '',
         inputGuide: '',
+        validationGuide: '',
         select: '',
         adminMenuTitle: '',
         viewAdminMenu: '',
@@ -99,6 +102,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             'CONFIGURATION.ROLE.WILL_REMOVE',
             'CONFIGURATION.ROLE.INPUT_NAME',
             'CONFIGURATION.ROLE.SELECT',
+            'CONFIGURATION.ROLE.VALIDATION_GUIDE',
             'CONFIGURATION.PERMISSION'
         ]).subscribe((i18nTexts: {[key: string]: any}) => {
             this.i18nText.saveButton = i18nTexts['COMMON.SUBMIT'];
@@ -107,6 +111,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             this.i18nText.select = i18nTexts['CONFIGURATION.ROLE.SELECT'];
             this.i18nText.removeGuide = i18nTexts['CONFIGURATION.ROLE.WILL_REMOVE'];
             this.i18nText.inputGuide = i18nTexts['CONFIGURATION.ROLE.INPUT_NAME'];
+            this.i18nText.validationGuide = i18nTexts['CONFIGURATION.ROLE.VALIDATION_GUIDE'];
 
             const permissionTexts = i18nTexts['CONFIGURATION.PERMISSION'];
             Object.keys(permissionTexts).map((key: string) => {
@@ -164,6 +169,11 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CHANGE_PERMISSION);
     }
     onCreate(): void {
+        if (this.roleIdValidationReg.test(this.createRoleId) === false) {
+            this.roleIdValidationGuideMsg = true;
+            return;
+        }
+        this.roleIdValidationGuideMsg = false;
         this.showProcessing();
         this.roleInfoDataService.create(this.getPermissionForm(this.createRoleId, this.lastChangedData)).subscribe((response: IUserRequestSuccessResponse | any) => {
             if (isThatType<any>(response, 'exception')) {

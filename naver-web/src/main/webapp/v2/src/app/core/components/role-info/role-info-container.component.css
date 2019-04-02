@@ -88,6 +88,18 @@
 .l-remove-message span {
     color: #f7a626;
 }
+.l-input-wrapper {
+    display: grid;
+    grid-template-rows: 90px;;
+    grid-template-columns: 25% 75%;
+    align-items: center;
+    background-color: #EAF2FF;
+    
+}
+.l-input-title {
+    font-size: 16px;
+    text-align: center;
+}
 .l-input-name {
     width: 400px;
     height: 30px;
@@ -96,6 +108,10 @@
     font-weight: 600;
     background-color: #FDFDDE;
     border: 1px solid #18E200;
+}
+.l-input-guide {
+    color: #F00;
+    font-size: 12px;
 }
 .btn-red {
     background-color: #F00;
