@@ -30,8 +30,7 @@ export class RoleListContainerForUsersComponent implements OnInit {
         return this._userRoleList;
     }
 
-    private roleList: string[];
-
+    roleList: string[];
     isValid: boolean;
     isUpdated = false;
     _userRoleList: string[];

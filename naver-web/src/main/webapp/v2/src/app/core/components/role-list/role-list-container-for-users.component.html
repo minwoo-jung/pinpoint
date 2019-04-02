@@ -1,22 +1,24 @@
 <h3 class="l-role-title">Role</h3>
 <section class="l-role-content-wrapper">
-    <section class="l-rest-role-list-wrapper">
-        <pp-role-list-for-users
-            [roleList]="restRoleList"
-            [emptyText]="emptyText$ | async"
-            [buttonTemplate]="selectButton"
-            (outSelectRole)="onAssignRole($event)">
-        </pp-role-list-for-users>
-    </section>
-    <hr width="2">
-    <section class="l-user-role-list-wrapper">
-        <pp-role-list-for-users
-            [roleList]="userRoleList"
-            [emptyText]="emptyText$ | async"
-            [buttonTemplate]="removeButton"
-            (outSelectRole)="onUnAssignRole($event)">
-        </pp-role-list-for-users>
-    </section>
+    <ng-container *ngIf="roleList">
+        <section class="l-rest-role-list-wrapper">
+            <pp-role-list-for-users
+                [roleList]="restRoleList"
+                [emptyText]="emptyText$ | async"
+                [buttonTemplate]="selectButton"
+                (outSelectRole)="onAssignRole($event)">
+            </pp-role-list-for-users>
+        </section>
+        <hr width="2">
+        <section class="l-user-role-list-wrapper">
+            <pp-role-list-for-users
+                [roleList]="userRoleList"
+                [emptyText]="emptyText$ | async"
+                [buttonTemplate]="removeButton"
+                (outSelectRole)="onUnAssignRole($event)">
+            </pp-role-list-for-users>
+        </section>
+    </ng-container>
 </section>
 <ng-container *ngIf="hasUserEditPerm && userId">
     <section class="l-submit-button-section">

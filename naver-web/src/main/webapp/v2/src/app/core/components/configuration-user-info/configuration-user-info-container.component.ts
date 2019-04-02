@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { tap, filter, pluck, takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,6 +21,8 @@ import { UserType } from 'app/core/components/user-password/user-password-contai
     styleUrls: ['./configuration-user-info-container.component.css']
 })
 export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestroy {
+    @Input() userInfo: IUserInfo;
+
     private unsubscribe = new Subject<void>();
     private userProfile: IUserProfile;
     private userPassword: IUserPassword;
@@ -38,7 +40,6 @@ export class ConfigurationUserInfoContainerComponent implements OnInit, OnDestro
     buttonText$: Observable<string>;
 
     constructor(
-        @Inject('userInfo') public userInfo: IUserInfo,
         private userProfileInteractionService: UserProfileInteractionService,
         private userPasswordInteractionService: UserPasswordInteractionService,
         private roleListInteractionService: RoleListInteractionService,

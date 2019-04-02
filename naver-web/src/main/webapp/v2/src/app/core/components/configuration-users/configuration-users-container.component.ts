@@ -1,4 +1,4 @@
-import { Component, OnInit, Injector, ReflectiveInjector } from '@angular/core';
+import { Component, OnInit, ViewContainerRef, ViewChild, ComponentRef, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -8,24 +8,17 @@ import { ConfigurationUsersDataService, IUserInfo } from './configuration-users-
 import { UserPermissionCheckService } from 'app/shared/services';
 import { isThatType } from 'app/core/utils/util';
 
-enum ViewType {
-    USER_INFO,
-    CONFIRM_REMOVE,
-    NOTHING
-}
-
 @Component({
     selector: 'pp-configuration-users-container',
     templateUrl: './configuration-users-container.component.html',
     styleUrls: ['./configuration-users-container.component.css'],
 })
-export class ConfigurationUsersContainerComponent implements OnInit {
-    viewType = ViewType;
-    activeView: ViewType = ViewType.NOTHING;
+export class ConfigurationUsersContainerComponent implements OnInit, OnDestroy {
+    @ViewChild('templateContainer', { read: ViewContainerRef }) templateContainer: ViewContainerRef;
 
-    userInfoComponent = ConfigurationUserInfoContainerComponent;
-    confirmRemoveUserComponent = ConfirmRemoveUserContainerComponent;
-    userInfoInjector: Injector;
+    private componentRef: ComponentRef<any>;
+
+    showTemplate = false;
     errorMessage: string;
     useDisable = false;
     showLoading = false;
@@ -33,7 +26,7 @@ export class ConfigurationUsersContainerComponent implements OnInit {
     guide$: Observable<string>;
 
     constructor(
-        private injector: Injector,
+        private resolver: ComponentFactoryResolver,
         private configurationUsersDataService: ConfigurationUsersDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private translateService: TranslateService,
@@ -44,10 +37,14 @@ export class ConfigurationUsersContainerComponent implements OnInit {
         this.guide$ = this.translateService.get('CONFIGURATION.USERS.GUIDE');
     }
 
+    ngOnDestroy() {
+        this.clearContainer();
+    }
+
     onAddUser(): void {
         this.setErrorMessageEmpty();
-        this.showUserInfoView();
-        this.setInjector();
+        this.showTemplate = true;
+        this.handleTemplate(ConfigurationUserInfoContainerComponent, null);
     }
 
     onSelectUser(userId: string): void {
@@ -57,7 +54,10 @@ export class ConfigurationUsersContainerComponent implements OnInit {
             this.hideProcessing();
             isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
                 ? this.errorMessage = data.errorMessage
-                : (this.showUserInfoView(), this.setInjector(data));
+                : (
+                    this.showTemplate = true,
+                    this.handleTemplate(ConfigurationUserInfoContainerComponent, data)
+                );
         });
     }
 
@@ -68,12 +68,16 @@ export class ConfigurationUsersContainerComponent implements OnInit {
             this.hideProcessing();
             isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
                 ? this.errorMessage = data.errorMessage
-                : (this.showConfirmRemoveUserView(), this.setInjector(data));
+                : (
+                    this.showTemplate = true,
+                    this.handleTemplate(ConfirmRemoveUserContainerComponent, data)
+                );
         });
     }
 
     onClear(): void {
-        this.activeView = ViewType.NOTHING;
+        this.showTemplate = false;
+        this.clearContainer();
     }
 
     onCloseErrorMessage(): void {
@@ -84,21 +88,34 @@ export class ConfigurationUsersContainerComponent implements OnInit {
         this.errorMessage = '';
     }
 
-    private setInjector(info?: IUserInfo): void {
-        this.userInfoInjector = ReflectiveInjector.resolveAndCreate([
-            {
-                provide: 'userInfo',
-                useValue: info
-            }
-        ], this.injector);
+    private initComponent(component: any, data: IUserInfo | null): void {
+        const componentFactory = this.resolver.resolveComponentFactory(component);
+            
+        this.componentRef = this.templateContainer.createComponent(componentFactory);
+        this.bindInputProps(this.componentRef.instance, data);
     }
 
-    private showConfirmRemoveUserView(): void {
-        this.activeView = ViewType.CONFIRM_REMOVE;
+    private bindInputProps(component: any, data: IUserInfo | null): void {
+        component.userInfo = data;
     }
 
-    private showUserInfoView(): void {
-        this.activeView = ViewType.USER_INFO;
+    private clearContainer(): void {
+        this.templateContainer.clear();
+        this.componentRef.destroy();
+        this.componentRef = null;
+    }
+
+    private handleTemplate(component: any, data: IUserInfo | null): void {
+        if (!this.componentRef) {
+            this.initComponent(component, data);
+        } else if (this.componentRef && this.componentRef.instance instanceof component) {
+            this.bindInputProps(this.componentRef.instance, data);
+        } else {
+            this.templateContainer.clear();
+            this.componentRef.destroy();
+            this.componentRef = null;
+            this.initComponent(component, data);
+        }
     }
 
     private showProcessing(): void {

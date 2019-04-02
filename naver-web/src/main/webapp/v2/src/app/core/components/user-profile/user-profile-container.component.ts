@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { isThatType } from 'app/core/utils/util';
     templateUrl: './user-profile-container.component.html',
     styleUrls: ['./user-profile-container.component.css']
 })
-export class UserProfileContainerComponent implements OnInit {
+export class UserProfileContainerComponent implements OnInit, OnChanges {
     @Input() userProfile: IUserProfile;
     @Input() hasUserEditPerm: boolean;
 
@@ -34,9 +34,19 @@ export class UserProfileContainerComponent implements OnInit {
         private userProfileDataService: UserProfileDataService,
         private analyticsService: AnalyticsService,
     ) { }
+    
+    ngOnChanges(changes: SimpleChanges) {
+        const userProfileChange = changes['userProfile'];
+
+        if (userProfileChange) {
+            const { currentValue }: { currentValue: IUserProfile } = userProfileChange;
+    
+            this.isValid = !!currentValue;
+            this.isUpdated = false;
+        }
+    }
 
     ngOnInit() {
-        this.isValid = !!this.userProfile;
         this.buttonText$ = this.translateService.get('COMMON.SUBMIT');
         this.tempUserProfile = this.userProfile;
         this.fieldErrorMessage$ = forkJoin(

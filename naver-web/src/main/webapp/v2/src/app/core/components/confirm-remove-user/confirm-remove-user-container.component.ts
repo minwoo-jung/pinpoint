@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { ConfirmRemoveUserInteractionService } from './confirm-remove-user-interaction.service';
 import { ConfirmRemoveUserDataService } from './confirm-remove-user-data.service';
@@ -12,11 +12,12 @@ import { AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
     styleUrls: ['./confirm-remove-user-container.component.css']
 })
 export class ConfirmRemoveUserContainerComponent implements OnInit {
+    @Input() userInfo: IUserInfo;
+
     errorMessage: string;
     isUserRemoved: boolean;
 
     constructor(
-        @Inject('userInfo') public userInfo: IUserInfo,
         private confirmRemoveUserInteractionService: ConfirmRemoveUserInteractionService,
         private confirmRemoveUserDataService: ConfirmRemoveUserDataService,
         private analyticsService: AnalyticsService,

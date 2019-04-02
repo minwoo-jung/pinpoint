@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, forkJoin, iif } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -18,17 +18,8 @@ export enum UserType {
     templateUrl: './user-password-container.component.html',
     styleUrls: ['./user-password-container.component.css']
 })
-export class UserPasswordContainerComponent implements OnInit {
-    @Input()
-    set userPassword(userPassword: IUserPassword) {
-        this._userPassword = userPassword;
-        this.isValid = false;
-    }
-
-    get userPassword(): IUserPassword {
-        return this._userPassword;
-    }
-
+export class UserPasswordContainerComponent implements OnInit, OnChanges {
+    @Input() userPassword: IUserPassword;
     @Input() hasUserEditPerm: boolean;
     @Input() userId: string;
     @Input() loggedInUserType: UserType
@@ -36,7 +27,6 @@ export class UserPasswordContainerComponent implements OnInit {
     private tempUserPassword: IUserPassword;
 
     userType = UserType;
-    _userPassword: IUserPassword;
     isValid: boolean;
     isUpdated = false;
     fieldErrorMessage$: Observable<{ [key: string]: IFormFieldErrorType }>;
@@ -52,8 +42,17 @@ export class UserPasswordContainerComponent implements OnInit {
         private analyticsService: AnalyticsService,
     ) {}
 
+    ngOnChanges(changes: SimpleChanges) {
+        const userIdChange = changes['userId'];
+
+        if (userIdChange) {
+            this.userPassword = {} as IUserPassword;
+            this.isValid = false;
+            this.isUpdated = false;
+        }
+    }
+
     ngOnInit() {
-        this.isValid = false;
         this.buttonText$ = this.translateService.get('COMMON.SUBMIT');
         this.fieldErrorMessage$ = forkJoin(
             this.translateService.get('COMMON.REQUIRED'),
