@@ -16,6 +16,7 @@
 package com.navercorp.pinpoint.web.controller;
 
 import com.navercorp.pinpoint.web.service.RoleService;
+import com.navercorp.pinpoint.web.util.AdditionValueValidator;
 import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +49,17 @@ public class RoleController {
         return roleService.selectRoleList();
     }
 
-    //TODO : (minwoo) parameter valid 체크
-    //TODO : (minwoo) 예외 처리
     @PreAuthorize("hasPermission(null, null, T(com.navercorp.pinpoint.web.security.PermissionChecker).PERMISSION_ADMINISTRATION_EDIT_ROLE)")
     @RequestMapping(value = "/role", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> insertRole(@RequestBody RoleInformation roleInformation) {
+        if (AdditionValueValidator.validateRoleId(roleInformation.getRoleId()) == false) {
+            Map<String, String> result = new HashMap<>();
+            result.put("errorCode", "500");
+            result.put("errorMessage", "roleId pattern is invalid");
+            return result;
+        }
+
         roleService.insertRoleInformation(roleInformation);
 
         Map<String, String> result = new HashMap<>();
@@ -83,6 +89,13 @@ public class RoleController {
     @RequestMapping(value = "/role", method = RequestMethod.PUT)
     @ResponseBody
     public Object updateRole(@RequestBody RoleInformation roleInformation) {
+        if (AdditionValueValidator.validateRoleId(roleInformation.getRoleId()) == false) {
+            Map<String, String> result = new HashMap<>();
+            result.put("errorCode", "500");
+            result.put("errorMessage", "roleId pattern is invalid");
+            return result;
+        }
+
         roleService.updateRoleInformation(roleInformation);
 
         Map<String, String> result = new HashMap<>();

@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.web.service.MetaDataService;
 import com.navercorp.pinpoint.web.service.SecurityService;
 import com.navercorp.pinpoint.web.service.UserAccountService;
 import com.navercorp.pinpoint.web.service.UserInformationService;
+import com.navercorp.pinpoint.web.util.AdditionValueValidator;
 import com.navercorp.pinpoint.web.vo.UserAccount;
 import com.navercorp.pinpoint.web.vo.exception.UserPrincipalNotFoundException;
 import org.slf4j.Logger;
@@ -108,8 +109,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
     }
 
     private void validateUser(String userId) {
-        //TODO : (minwoo) 특수문자등에 대한 validation 체크. 사용자가 존재하는지
-        if (StringUtils.isEmpty(userId)) {
+        if (AdditionValueValidator.validateUserId(userId) == false) {
             String message = String.format("UserId(%s) is invalid.", userId);
             logger.error(message);
             throw new BadCredentialsException(message);

@@ -19,12 +19,12 @@ import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.web.security.NaverPermissionEvaluator;
 import com.navercorp.pinpoint.web.security.PermissionChecker;
 import com.navercorp.pinpoint.web.service.*;
+import com.navercorp.pinpoint.web.util.AdditionValueValidator;
 import com.navercorp.pinpoint.web.vo.*;
 import com.navercorp.pinpoint.web.vo.role.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -42,12 +42,10 @@ import java.util.Map;
 @RequestMapping(value= "users")
 public class UserInformationController {
     private static final String EMPTY = "";
-    private static final String ERROR_USER_ID_NULL = "you must enter a user id.";
+    private static final String ERROR_USER_PROFILE_INVALID = "User profile validation failed to creating user infomation.";
     private static final String ERROR_USER_EXITST = "User with (%s) that name already exists";
-    private static final String ERROR_PASSWORD_NULL = "You must enter a password.";
-    private static final String ERROR_NAME_NULL = "You must enter a name.";
+    private static final String ERROR_PASSWORD_INVALID = "User password validation failed.";
     private static final String ERROR_PASSWORD_INCORRECT = "The current password is incorrect.";
-    private static final String SSO_USER = "SSO_USER";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -69,7 +67,6 @@ public class UserInformationController {
     @Autowired
     private NaverPermissionEvaluator naverPermissionEvaluator;
 
-    //TODO : (minwoo) 파라미터 validation 체크 필요함.
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public Object getUsers(@RequestParam(value="userId", required=false) String userId, @RequestParam(value="searchKey", required=false) String searchKey) {
@@ -134,20 +131,16 @@ public class UserInformationController {
     }
 
     private String checkUserInformation(UserInformation userInformation) {
-        User userProfile = userInformation.getProfile();
-        if (StringUtils.isEmpty(userProfile.getUserId())) {
-            return ERROR_USER_ID_NULL;
+        final User userProfile = userInformation.getProfile();
+        if (AdditionValueValidator.validateUser(userProfile) == false) {
+            return ERROR_USER_PROFILE_INVALID;
         }
         if (userInformationService.isExistUserId(userProfile.getUserId())) {
             return String.format(ERROR_USER_EXITST, userProfile.getUserId());
         }
-        if (StringUtils.isEmpty(userProfile.getName())) {
-            return ERROR_NAME_NULL;
-        }
-
-        UserAccount userAccount  = userInformation.getAccount();
-        if (StringUtils.isEmpty(userAccount.getPassword())) {
-            return ERROR_PASSWORD_NULL;
+        final UserAccount userAccount  = userInformation.getAccount();
+        if (AdditionValueValidator.validatePassword(userAccount.getPassword()) == false) {
+            return ERROR_PASSWORD_INVALID;
         }
 
         return EMPTY;
@@ -169,6 +162,13 @@ public class UserInformationController {
     @RequestMapping(value="user/profile", method = RequestMethod.PUT)
     @ResponseBody
     public Map<String, String> updateUserProfile(@RequestBody User user) {
+        if(AdditionValueValidator.validateUser(user) == false) {
+            Map<String, String> result = new HashMap<>();
+            result.put("errorCode", "500");
+            result.put("errorMessage", ERROR_USER_PROFILE_INVALID);
+            return result;
+        }
+
         userService.updateUser(user);
 
         Map<String, String> result = new HashMap<>();
@@ -180,7 +180,6 @@ public class UserInformationController {
     @RequestMapping(value="user/account", method = RequestMethod.PUT)
     @ResponseBody
     public Map<String, String> updateUserProfile(@RequestBody ChangedUserAccount changedUserAccount) {
-
         if (naverPermissionEvaluator.hasPermission(PermissionChecker.PERMISSION_ADMINISTRATION_EDIT_USER) == false) {
             boolean isCollectPassword = userAccountService.isCollectPassword(new UserAccount(changedUserAccount.getUserId(), changedUserAccount.getCurrentPassword()));
 
@@ -191,6 +190,14 @@ public class UserInformationController {
                 logger.error(ERROR_PASSWORD_INCORRECT);
                 return result;
             }
+        }
+
+        if (AdditionValueValidator.validatePassword(changedUserAccount.getNewPassword()) == false) {
+            Map<String, String> result = new HashMap<>();
+            result.put("errorCode", "500");
+            result.put("errorMessage", ERROR_PASSWORD_INVALID);
+            logger.error(ERROR_PASSWORD_INVALID);
+            return result;
         }
 
         userAccountService.updateUserAccount(new UserAccount(changedUserAccount.getUserId(), changedUserAccount.getNewPassword()));
