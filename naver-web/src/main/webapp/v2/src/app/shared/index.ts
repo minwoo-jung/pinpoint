@@ -48,6 +48,7 @@ import { ApplicationListDataService } from './services/application-list-data.ser
 import { UserConfigurationDataService } from './services/user-configuration-data.service';
 import { UserConfigurationResolverService } from './services/user-configuration-resolver.service';
 import { UserPermissionCheckService } from './services/user-permission-check.service';
+import { SafeStylePipe } from './pipes/safe-style.pipe';
 
 @NgModule({
     declarations: [
@@ -61,6 +62,7 @@ import { UserPermissionCheckService } from './services/user-permission-check.ser
         FormFieldErrorMessageComponent,
         ServerErrorMessageComponent,
         SafeHtmlPipe,
+        SafeStylePipe,
         JSONTextParserPipe,
         SettingHeightDirective,
         ContextPopupDirective,
@@ -87,6 +89,7 @@ import { UserPermissionCheckService } from './services/user-permission-check.ser
         FormFieldErrorMessageComponent,
         ServerErrorMessageComponent,
         SafeHtmlPipe,
+        SafeStylePipe,
         JSONTextParserPipe,
         SettingHeightDirective,
         ContextPopupDirective,

@@ -140,7 +140,8 @@ export enum TRACKED_EVENT_LIST {
     CREATE_AUTH = 'Create Auth',
     UPDATE_AUTH = 'Update Auth',
     SHOW_SELECTED_AUTH_INFO = 'Show Selected Auth Info',
-    REMOVE_AUTH = 'Remove Auth'
+    REMOVE_AUTH = 'Remove Auth',
+    CLICK_INSPECTOR_CHART_LAYOUT_OPTION = 'Click Inspector Chart Layout Option'
 }
 
 @Injectable()
