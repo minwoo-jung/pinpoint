@@ -103,20 +103,20 @@ public class ClusterPointRouterTest {
         DefaultPinpointServer pinpointServer = createPinpointServer();
         pinpointServer.setChannelProperties(getParams());
 
-        ClusterPoint clusterPoint = new PinpointServerClusterPoint(pinpointServer);
+        ClusterPoint clusterPoint = new ThriftAgentConnection(pinpointServer);
 
         clusterPointRepository.addAndIsKeyCreated(clusterPoint);
-        List<TargetClusterPoint> clusterPointList = clusterPointRepository.getClusterPointList();
+        List<ClusterPoint> clusterPointList = clusterPointRepository.getClusterPointList();
 
         Assert.assertEquals(1, clusterPointList.size());
         Assert.assertNull(findClusterPoint("a", "a", -1L, clusterPointList));
         Assert.assertNull(findClusterPoint("application", "a", -1L, clusterPointList));
         Assert.assertEquals(clusterPoint, findClusterPoint("application", "agent", currentTime, clusterPointList));
 
-        boolean isAdd = clusterPointRepository.addAndIsKeyCreated(new PinpointServerClusterPoint(pinpointServer));
+        boolean isAdd = clusterPointRepository.addAndIsKeyCreated(new ThriftAgentConnection(pinpointServer));
         Assert.assertFalse(isAdd);
 
-        clusterPointRepository.removeAndGetIsKeyRemoved(new PinpointServerClusterPoint(pinpointServer));
+        clusterPointRepository.removeAndGetIsKeyRemoved(new ThriftAgentConnection(pinpointServer));
         clusterPointList = clusterPointRepository.getClusterPointList();
 
         Assert.assertEquals(0, clusterPointList.size());
@@ -138,11 +138,11 @@ public class ClusterPointRouterTest {
         return properties;
     }
 
-    private TargetClusterPoint findClusterPoint(String applicationName, String agentId, long startTimeStamp, List<TargetClusterPoint> targetClusterPointList) {
+    private ClusterPoint findClusterPoint(String applicationName, String agentId, long startTimeStamp, List<ClusterPoint> targetClusterPointList) {
 
-        List<TargetClusterPoint> result = new ArrayList<>();
+        List<ClusterPoint> result = new ArrayList<>();
 
-        for (TargetClusterPoint targetClusterPoint : targetClusterPointList) {
+        for (ClusterPoint targetClusterPoint : targetClusterPointList) {
             if (targetClusterPoint.getDestAgentInfo().equals(applicationName, agentId, startTimeStamp)) {
                 result.add(targetClusterPoint);
             }

@@ -71,9 +71,9 @@ public class ClusterPointRouterCommandTest {
 
     @After
     public void cleanup() {
-        ClusterPointRepository<TargetClusterPoint> targetClusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
-        List<TargetClusterPoint> clusterPointList = targetClusterPointRepository.getClusterPointList();
-        for (TargetClusterPoint clusterPoint : clusterPointList) {
+        ClusterPointRepository<ClusterPoint> targetClusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
+        List<ClusterPoint> clusterPointList = targetClusterPointRepository.getClusterPointList();
+        for (ClusterPoint clusterPoint : clusterPointList) {
             targetClusterPointRepository.removeAndGetIsKeyRemoved(clusterPoint);
         }
     }
@@ -106,7 +106,7 @@ public class ClusterPointRouterCommandTest {
             
             List<PinpointSocket> writablePinpointServerList = testCollectorAcceptor.getConnectedPinpointSocketList();
             for (PinpointSocket writablePinpointServer : writablePinpointServerList) {
-                ClusterPoint clusterPoint = new PinpointServerClusterPoint((DefaultPinpointServer)writablePinpointServer);
+                ClusterPoint clusterPoint = new ThriftAgentConnection((DefaultPinpointServer)writablePinpointServer);
                 
                 ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
                 clusterPointRepository.addAndIsKeyCreated(clusterPoint);
