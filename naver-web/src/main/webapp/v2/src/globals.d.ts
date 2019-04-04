@@ -413,8 +413,10 @@ interface IApplicationAuthInfo {
 interface IFormFieldErrorType {
     required?: string;
     minlength?: string;
+    maxlength?: string;
     min?: string;
     max?: string;
+    valueRule?: string;
     pwMustMatch?: string;
 }
 

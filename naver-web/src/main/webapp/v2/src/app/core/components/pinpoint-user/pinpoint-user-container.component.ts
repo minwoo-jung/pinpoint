@@ -83,21 +83,36 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
             this.translateService.get('CONFIGURATION.COMMON.DEPARTMENT'),
             this.translateService.get('CONFIGURATION.COMMON.PHONE'),
             this.translateService.get('CONFIGURATION.COMMON.EMAIL'),
-            this.translateService.get('CONFIGURATION.USER_GROUP.USER_GROUP_REQUIRED')
-        ).subscribe(([minLengthMessage, requiredMessage, idLabel, nameLabel, departmentLabel, phoneLabel, emailLabel, userGroupRequiredMessage]: string[]) => {
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.USER_ID_VALIDATION'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.NAME_VALIDATION'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.DEPARTMENT_VALIDATION'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.PHONE_VALIDATION'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.EMAIL_VALIDATION'),
+        ).subscribe(([
+            minLengthMessage, requiredMessage, idLabel, nameLabel, departmentLabel, phoneLabel, emailLabel,
+            userIdValidation, nameValidation, departmentValidation, phoneValidation, emailValidation
+        ]: string[]) => {
             this.i18nGuide = {
                 userId: {
                     required: this.translateReplaceService.replace(requiredMessage, idLabel),
-                    minlength: this.translateReplaceService.replace(minLengthMessage, this.minLength.userId)
+                    valueRule: userIdValidation
                 },
                 name: {
                     required: this.translateReplaceService.replace(requiredMessage, nameLabel),
-                    minlength: this.translateReplaceService.replace(minLengthMessage, this.minLength.name)
+                    valueRule: nameValidation
                 },
-                phoneNumber: { required: this.translateReplaceService.replace(requiredMessage, phoneLabel) },
-                email: { required: this.translateReplaceService.replace(requiredMessage, emailLabel) }
+                department: {
+                    valueRule: departmentValidation
+                },
+                phoneNumber: {
+                    valueRule: phoneValidation
+                },
+                email: {
+                    minlength: emailValidation,
+                    maxlength: emailValidation,
+                    valueRule: emailValidation
+                }
             };
-
             this.i18nText.SEARCH_INPUT_GUIDE = this.translateReplaceService.replace(minLengthMessage, this.minLength.search);
 
             this.i18nLabel.USER_ID_LABEL = idLabel;
@@ -105,7 +120,6 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
             this.i18nLabel.DEPARTMENT_LABEL = departmentLabel;
             this.i18nLabel.PHONE_LABEL = phoneLabel;
             this.i18nLabel.EMAIL_LABEL = emailLabel;
-            // TODO: userGroupRequiredMessage 안쓰이는중
         });
     }
     private getPinpointUserList(query?: string): void  {
@@ -178,6 +192,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
         });
     }
     onUpdatePinpointUser(pinpointUser: PinpointUser): void {
+        this.showProcessing();
         const editPinpointUser = this.pinpointUserList[this.editPinpointUserIndex];
         this.pinpointUserDataService.update({
             userId: pinpointUser.userId,
@@ -191,14 +206,16 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
                 this.errorMessage = response.errorMessage;
             } else {
                 this.getPinpointUserList(this.searchQuery);
-                this.messageQueueService.sendMessage({
-                    to: MESSAGE_TO.PINPOINT_USER_UPDATE_USER,
-                    param: [{
-                        userId: pinpointUser.userId,
-                        department: pinpointUser.department,
-                        name: pinpointUser.name
-                    }]
-                });
+                if (this.isUserGroupSelected) {
+                    this.messageQueueService.sendMessage({
+                        to: MESSAGE_TO.PINPOINT_USER_UPDATE_USER,
+                        param: [{
+                            userId: pinpointUser.userId,
+                            department: pinpointUser.department,
+                            name: pinpointUser.name
+                        }]
+                    });
+                }
                 this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_USER_IN_USER_GROUP);
             }
 
@@ -215,10 +232,12 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
                 this.errorMessage = response.errorMessage;
             } else {
                 this.pinpointUserList.splice(this.getPinpointUserIndexByUserId(userId), 1);
-                this.messageQueueService.sendMessage({
-                    to: MESSAGE_TO.PINPOINT_USER_REMOVE_USER,
-                    param: [userId]
-                });
+                if (this.isUserGroupSelected) {
+                    this.messageQueueService.sendMessage({
+                        to: MESSAGE_TO.PINPOINT_USER_REMOVE_USER,
+                        param: [userId]
+                    });
+                }
                 this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_USER_IN_USER_GROUP);
             }
             this.hideProcessing();
