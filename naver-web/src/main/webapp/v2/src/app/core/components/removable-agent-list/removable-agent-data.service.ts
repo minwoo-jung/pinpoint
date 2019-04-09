@@ -8,8 +8,9 @@ import { retry } from 'rxjs/operators';
 @Injectable()
 export class RemovableAgentDataService {
     private listUrl = 'getAgentList.pinpoint';
-    private removeUrl = 'admin/removeAgentId.pinpoint';
-    private removeInactiveUrl = 'admin/removeInactiveAgents.pinpoint';
+    private removeApplicationUrl = 'admin/removeApplicationName.pinpoint';
+    private removeAgentUrl = 'admin/removeAgentId.pinpoint';
+    // private removeInactiveUrl = 'admin/removeInactiveAgents.pinpoint';
 
     constructor(private http: HttpClient) {}
     getAgentList(appName: string): Observable<IAgentList> {
@@ -19,16 +20,23 @@ export class RemovableAgentDataService {
             retry(3)
         );
     }
+    removeApplication(applicationName: string): Observable<string> {
+        return this.http.get<string>(this.removeApplicationUrl, {
+            params: new HttpParams().set('applicationName', applicationName)
+        }).pipe(
+            retry(3)
+        );
+    }
     removeAgentId({applicationName, agentId}: {applicationName: string, agentId: string}): Observable<string> {
-        return this.http.post<string>(this.removeUrl, {
+        return this.http.get<string>(this.removeAgentUrl, {
             params: new HttpParams().set('applicationName', applicationName).set('agentId', agentId)
         }).pipe(
             retry(3)
         );
     }
-    removeInactiveAgents(): Observable<string> {
-        return this.http.get<string>(this.removeInactiveUrl).pipe(
-            retry(3)
-        );
-    }
+    // removeInactiveAgents(): Observable<string> {
+    //     return this.http.get<string>(this.removeInactiveUrl).pipe(
+    //         retry(3)
+    //     );
+    // }
 }

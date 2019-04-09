@@ -1,19 +1,19 @@
 <div class="l-agent-wrapper">
-    <div class="l-agent-title">
-        <button class="btn btn-red" (click)="onRemoveAllInactiveAgents()">Remove Inactive Agents</button>
-    </div>
     <ng-container *ngIf="!isNone();else elseBlock">
+        <div class="l-agent-title">
+            <span>{{currentApplication.getApplicationName()}}</span> <button class="btn btn-red" (click)="onRemoveApplication()">Remove Application</button>
+        </div>
         <div class="l-agent-list">
             <pp-removable-agent-list
                 [rowData]="agentList"
                 (outSelectAgent)="onRemoveSelectAgent($event)"
             ></pp-removable-agent-list>
         </div>
-        <ng-container *ngIf="isRemove()">
+        <ng-container *ngIf="isAgentRemove()">
             <div class="l-remove-message">
                 <div class="l-band">
-                    <div *ngIf="isAllRemove()"><span>{{i18nText.removeAllAgents}}</span></div>
-                    <div *ngIf="!isAllRemove()">
+                    <div *ngIf="isApplicationRemove()"><span>{{i18nText.removeApplication}}</span></div>
+                    <div *ngIf="!isApplicationRemove()">
                         <span>{{removeTarget[0]}}</span>
                         <br/>
                         <span>{{removeTarget[1]}}</span>

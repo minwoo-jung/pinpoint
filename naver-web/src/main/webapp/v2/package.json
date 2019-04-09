@@ -42,7 +42,6 @@
         "blueimp-md5": "^2.10.0",
         "bowser": "^1.9.4",
         "chart.js": "git+https://github.com/chartjs/Chart.js.git#48fefd92b6dc61345021c6508b23698830ff392f",
-        "chartjs-plugin-streaming": "^1.6.0",
         "core-js": "^2.5.4",
         "gojs": "^2.0.4",
         "js-beautify": "^1.8.8",

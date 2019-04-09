@@ -17,9 +17,12 @@
     width: 100%;
     height: 52px;
     display: flex;
-    padding: 12px 0px;
     align-items: center;
     justify-content: flex-end;
+}
+.l-agent-title span {
+    font-size: 20px;
+    margin-right: 10px;
 }
 .l-agent-title button:last-child {
     margin-left: 2px;

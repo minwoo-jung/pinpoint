@@ -3,11 +3,12 @@ import { Subject, Observable } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TranslateReplaceService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
+import { TranslateReplaceService, AnalyticsService, TRACKED_EVENT_LIST, MessageQueueService, MESSAGE_TO } from 'app/shared/services';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
 import { RemovableAgentDataService } from './removable-agent-data.service';
 
 enum REMOVE_TYPE {
+    APP = 'APP',
     ALL = 'ALL',
     EACH = 'EACH',
     NONE = 'NONE'
@@ -39,6 +40,7 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
         private changeDetectorRef: ChangeDetectorRef,
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
+        private messageQueueService: MessageQueueService,
         private removableAgentDataService: RemovableAgentDataService,
         private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService,
         private analyticsService: AnalyticsService,
@@ -70,13 +72,13 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
             'COMMON.REQUIRED_SELECT',
             'COMMON.REMOVE',
             'COMMON.CANCEL',
-            'CONFIGURATION.AGENT_MANAGEMENT.REMOVE_INACTIVE_AGENTS',
+            'CONFIGURATION.AGENT_MANAGEMENT.REMOVE_APPLICATION',
             'CONFIGURATION.AGENT_MANAGEMENT.REMOVE_AGENT',
         ]).subscribe((i18nText: {[key: string]: string}) => {
             this.i18nText.select = this.translateReplaceService.replace(i18nText['COMMON.REQUIRED_SELECT'], 'Agent');
             this.i18nText.removeButton = i18nText['COMMON.REMOVE'];
             this.i18nText.cancelButton = i18nText['COMMON.CANCEL'];
-            this.i18nText.removeAllAgents = i18nText['CONFIGURATION.AGENT_MANAGEMENT.REMOVE_INACTIVE_AGENTS'];
+            this.i18nText.removeApplication = i18nText['CONFIGURATION.AGENT_MANAGEMENT.REMOVE_APPLICATION'];
             this.i18nText.removeAgent = i18nText['CONFIGURATION.AGENT_MANAGEMENT.REMOVE_AGENT'];
         });
     }
@@ -113,9 +115,9 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ONE_AGENT_REMOVE_CONFIRM_VIEW);
         this.changeDetectorRef.detectChanges();
     }
-    onRemoveAllInactiveAgents(): void {
-        this.removeType = REMOVE_TYPE.ALL;
-        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ALL_INACTIVE_AGENTS_REMOVE_CONFIRM_VIEW);
+    onRemoveApplication(): void {
+        this.removeType = REMOVE_TYPE.APP;
+        // this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ALL_INACTIVE_AGENTS_REMOVE_CONFIRM_VIEW);
         this.changeDetectorRef.detectChanges();
     }
     onRemoveCancel(): void {
@@ -124,9 +126,9 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
     onRemoveConfirm(): void {
         this.showProcessing();
         let result: Observable<string>;
-        if (this.isAllRemove()) {
-            result = this.removableAgentDataService.removeInactiveAgents();
-            this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_ALL_INACTIVE_AGENTS);
+        if (this.isApplicationRemove()) {
+            result = this.removableAgentDataService.removeApplication(this.currentApplication.getApplicationName());
+            // this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_ALL_INACTIVE_AGENTS);
         } else {
             result = this.removableAgentDataService.removeAgentId({
                 applicationName: this.removeTarget[0],
@@ -136,25 +138,34 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
         }
         result.subscribe((response: string) => {
             if (response === 'OK') {
-                this.currentApplication = null;
-                this.removeType = REMOVE_TYPE.NONE;
-                this.getRemovableAgentList();
-            } else {
-                this.hideProcessing();
+                if (this.removeType === REMOVE_TYPE.APP) {
+                    this.messageQueueService.sendMessage({
+                        to: MESSAGE_TO.APPLICATION_REMOVED,
+                        param: [this.currentApplication.getApplicationName(), this.currentApplication.getServiceType()]
+                    });
+                    this.currentApplication = null;
+                    this.removeType = REMOVE_TYPE.NONE;
+                    this.hideProcessing();
+                } else {
+                    this.removeType = REMOVE_TYPE.NONE;
+                    this.getRemovableAgentList();
+                }
             }
+            this.changeDetectorRef.detectChanges();
         }, (error: IServerErrorFormat) => {
             this.errorMessage = error.exception.message;
             this.hideProcessing();
+            this.changeDetectorRef.detectChanges();
         });
     }
     onCloseErrorMessage(): void {
         this.errorMessage = '';
     }
-    isRemove(): boolean {
+    isAgentRemove(): boolean {
         return this.removeType !== REMOVE_TYPE.NONE;
     }
-    isAllRemove(): boolean {
-        return this.removeType === REMOVE_TYPE.ALL;
+    isApplicationRemove(): boolean {
+        return this.removeType === REMOVE_TYPE.APP;
     }
     isNone(): boolean {
         return this.currentApplication === null;

@@ -4,8 +4,16 @@ import { Subject, combineLatest, fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, pluck, takeUntil } from 'rxjs/operators';
 
 import { UrlQuery } from 'app/shared/models';
-import { WebAppSettingDataService, StoreHelperService, NewUrlStateNotificationService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
-import { Application } from 'app/core/models';
+import {
+    WebAppSettingDataService,
+    StoreHelperService,
+    NewUrlStateNotificationService,
+    AnalyticsService,
+    TRACKED_EVENT_LIST,
+    MessageQueueService,
+    MESSAGE_TO,
+    ApplicationListDataService
+} from 'app/shared/services';
 import { ApplicationListInteractionForConfigurationService } from './application-list-interaction-for-configuration.service';
 import { FOCUS_TYPE } from './application-list-for-header.component';
 
@@ -42,6 +50,8 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
         private storeHelperService: StoreHelperService,
         private webAppSettingDataService: WebAppSettingDataService,
         private translateService: TranslateService,
+        private messageQueueService: MessageQueueService,
+        private applicationListDataService: ApplicationListDataService,
         private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService,
         private analyticsService: AnalyticsService,
     ) {}
@@ -68,6 +78,11 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
                 }
             }
             this.changeDetector.detectChanges();
+        });
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.APPLICATION_REMOVED).subscribe((params: any[]) => {
+            this.selectedApplication = null;
+            this.applicationListInteractionForConfigurationService.setSelectedApplication(null);
+            this.applicationListDataService.getApplicationList().subscribe((applicationList: IApplication[]) => {});
         });
     }
     ngAfterViewInit() {

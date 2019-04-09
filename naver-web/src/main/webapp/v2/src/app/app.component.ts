@@ -88,7 +88,7 @@ export class AppComponent implements OnInit {
                     EDIT_GROUP_ONLY_GROUP_MEMBER: 'User Group의 Member 만 생성 및 수정 가능'
                 };
                 translate.CONFIGURATION.AGENT_MANAGEMENT = {
-                    REMOVE_INACTIVE_AGENTS: '모든 비활성 Agent를 삭제 합니다.',
+                    REMOVE_APPLICATION: '선택한 Application을 삭제 합니다.',
                     REMOVE_AGENT: '선택한 Agent를 삭제합니다.'
                 };
                 translate.CONFIGURATION.AGENT_STATISTIC = {
@@ -145,7 +145,7 @@ export class AppComponent implements OnInit {
                     EDIT_GROUP_ONLY_GROUP_MEMBER: 'Edit Group only group member'
                 };
                 translate.CONFIGURATION.AGENT_MANAGEMENT = {
-                    REMOVE_INACTIVE_AGENTS: 'It remove all inactive agents.',
+                    REMOVE_APPLICATION: 'Remove selected application.',
                     REMOVE_AGENT: 'Remove selected agent.'
                 };
                 translate.CONFIGURATION.AGENT_STATISTIC = {
