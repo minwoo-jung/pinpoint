@@ -174,7 +174,7 @@ interface IFilter {
 }
 
 interface ISelectedTarget {
-    clickParam: string;
+    clickParam: any;
     endTime: string;
     period: string;
     isNode?: boolean;
