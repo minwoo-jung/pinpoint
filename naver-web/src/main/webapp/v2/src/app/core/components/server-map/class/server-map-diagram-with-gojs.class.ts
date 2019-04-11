@@ -24,7 +24,7 @@ export class ServerMapDiagramWithGojs extends ServerMapDiagram {
         this.setEvent();
     }
     private initLicense(): void {
-        (go as any).licenseKey = '73fd42eab51c28c702d95d76423d38f919a57863c6851fa30a0715f6e9086d1c259dea2a55d7d9c680f846ee0a7ac889dbc56879911b0039e130dbd543e584f0b63327b510084788f70172909dff7af5ff7f72f5c2bd76f7d36a9cf4bef8c59c0eb8f2c658c90fbb2067002e54';
+        (go as any).licenseKey = '73fd42eab51c28c702d90776423d6bf919a57863c6851fa30a0715f6e9086d1c259dea2a55d7d9c680f846ee0a7ac889dbc56879911b0039e130dbd543e584f0b63327b510084788f70172909dff7af5ff7f72f5c2bd76f7d36a9cf4bef8c59c0eb8f2c658c90fbb2167032e5e';
     }
     makeDiagram(): void {
         this.diagram = go.GraphObject.make(go.Diagram, this.option.container, {
