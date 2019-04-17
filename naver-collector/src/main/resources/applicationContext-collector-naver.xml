@@ -49,8 +49,12 @@
     </bean>
 
     <beans profile="tokenAuthentication">
-
         <bean id="tokenEnableTcpDispatchHandler" class="com.navercorp.pinpoint.collector.receiver.TokenEnableTcpDispatchHandler">
+            <constructor-arg ref="thriftAgentInfoHandler"/>
+            <constructor-arg ref="thriftSqlMetaDataHandler"/>
+            <constructor-arg ref="thriftApiMetaDataHandler"/>
+            <constructor-arg ref="thriftStringMetaDataHandler"/>
+            <constructor-arg ref="thriftCreateTokenHandler"/>
         </bean>
 
         <bean id="tcpDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandlerFactoryBean">

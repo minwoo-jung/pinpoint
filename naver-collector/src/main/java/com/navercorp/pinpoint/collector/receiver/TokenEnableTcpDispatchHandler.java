@@ -16,22 +16,23 @@
 
 package com.navercorp.pinpoint.collector.receiver;
 
-import com.navercorp.pinpoint.collector.handler.CreateTokenHandler;
 import com.navercorp.pinpoint.collector.handler.RequestResponseHandler;
+import com.navercorp.pinpoint.collector.handler.SimpleAndRequestResponseHandler;
 import com.navercorp.pinpoint.io.header.Header;
 import com.navercorp.pinpoint.io.request.ServerRequest;
 import com.navercorp.pinpoint.thrift.io.AuthenticationTBaseLocator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * @author Taejin Koo
  */
 public class TokenEnableTcpDispatchHandler extends TcpDispatchHandler {
 
-    @Autowired
-    @Qualifier("createTokenHandler")
-    private CreateTokenHandler createTokenHandler;
+    private RequestResponseHandler createTokenHandler;
+
+    public TokenEnableTcpDispatchHandler(SimpleAndRequestResponseHandler agentInfoHandler, RequestResponseHandler sqlMetaDataHandler, RequestResponseHandler apiMetaDataHandler, RequestResponseHandler stringMetaDataHandler, RequestResponseHandler createTokenHandler) {
+        super(agentInfoHandler, sqlMetaDataHandler, apiMetaDataHandler, stringMetaDataHandler);
+        this.createTokenHandler = createTokenHandler;
+    }
 
     @Override
     protected RequestResponseHandler getRequestResponseHandler(ServerRequest serverRequest) {
@@ -48,5 +49,4 @@ public class TokenEnableTcpDispatchHandler extends TcpDispatchHandler {
 
         return null;
     }
-
 }

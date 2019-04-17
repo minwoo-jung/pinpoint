@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 NAVER Corp.
+ * Copyright 2019 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.collector.handler;
+package com.navercorp.pinpoint.collector.handler.thrift;
 
 import com.navercorp.pinpoint.collector.dao.MetadataDao;
 import com.navercorp.pinpoint.collector.dao.memory.MemoryMetadataDao;
@@ -43,7 +43,7 @@ import java.util.UUID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-tokenauth-test.xml")
 @ActiveProfiles("tokenAuthentication")
-public class CreateTokenHandlerTest {
+public class ThriftCreateTokenHandlerTest {
 
     private static final String LICENSE_KEY = UUID.randomUUID().toString();
     private static final String ORGANIZATION = "org";
@@ -51,7 +51,7 @@ public class CreateTokenHandlerTest {
     private static final String REMOTE_ADDRESS = "127.0.0.1";
 
     @Autowired
-    private CreateTokenHandler createTokenHandler;
+    private ThriftCreateTokenHandler createTokenHandler;
 
     @Autowired
     private TokenConfig tokenConfig;
