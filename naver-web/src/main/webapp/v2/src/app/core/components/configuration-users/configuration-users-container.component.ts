@@ -101,7 +101,9 @@ export class ConfigurationUsersContainerComponent implements OnInit, OnDestroy {
 
     private clearContainer(): void {
         this.templateContainer.clear();
-        this.componentRef.destroy();
+        if (this.componentRef) {
+            this.componentRef.destroy();
+        }
         this.componentRef = null;
     }
 
