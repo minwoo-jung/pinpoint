@@ -1,6 +1,7 @@
 import { Injectable, Injector, ComponentFactoryResolver } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Store, select } from '@ngrx/store';
 import { LocalStorageService } from 'angular-2-local-storage';
 import 'moment-timezone';
 import * as moment from 'moment-timezone';
@@ -8,7 +9,7 @@ import * as moment from 'moment-timezone';
 // from 'app/shared/services';
 // 방식을 사용하지 말 것.
 // Circular dependency 발생함.
-import { AppState, Actions } from 'app/shared/store';
+import { AppState, Actions, STORE_KEY } from 'app/shared/store';
 import { ComponentDefaultSettingDataService } from 'app/shared/services/component-default-setting-data.service';
 import { Application, Period } from 'app/core/models';
 import { DynamicPopupService } from 'app/shared/services/dynamic-popup.service';
@@ -35,6 +36,7 @@ export class WebAppSettingDataService {
         TRANSACTION_LIST_GUTTER_POSITION: 'transactionListGutterPosition',
         CHART_NUM_PER_ROW: 'chartNumPerRow'
     };
+    private unsubscribe: Subject<null> = new Subject();
     private favoriteApplicationList: IFavoriteApplication[] = [];
     private IMAGE_PATH = './assets/img/';
     private IMAGE_EXT = '.png';
@@ -53,6 +55,12 @@ export class WebAppSettingDataService {
     ) {
         this.store.dispatch(new Actions.ChangeTimezone(this.getTimezone()));
         this.store.dispatch(new Actions.ChangeDateFormat(this.getDateFormat()));
+        this.store.pipe(
+            select(STORE_KEY.FAVORITE_APPLICATION_LIST),
+            takeUntil(this.unsubscribe)
+        ).subscribe((list: IApplication[]) => {
+            this.favoriteApplicationList = list;
+        });
     }
     getSecurityGuideUrl(): Observable<string> {
         return this.newUrlStateNotificationService.getConfiguration('securityGuideUrl');
@@ -132,7 +140,6 @@ export class WebAppSettingDataService {
                         new Application(application.applicationName, application.serviceType, application.code)
                     ]));
                 }
-                this.favoriteApplicationList = newFavoriateApplicationList;
             }
         }, (error: IServerErrorFormat) => {
             this.dynamicPopupService.openPopup({
@@ -153,7 +160,11 @@ export class WebAppSettingDataService {
             code: application.getCode(),
             serviceType: application.getServiceType()
         };
-        this.saveFavoriteList([...this.favoriteApplicationList, newApplication], newApplication);
+        this.saveFavoriteList([...this.favoriteApplicationList, newApplication].sort((a, b) => {
+            const aName = a.applicationName.toUpperCase();
+            const bName = b.applicationName.toUpperCase();
+            return aName < bName ? -1 : aName > bName ? 1 : 0;
+        }), newApplication);
     }
     removeFavoriteApplication(application: IApplication): void {
         const removeApplication = {

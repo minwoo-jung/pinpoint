@@ -10,6 +10,7 @@ import { Application } from 'app/core/models';
 @Injectable()
 export class UserConfigurationDataService {
     private url = 'users/user/permissionAndConfiguration.pinpoint';
+    private cudUrl = 'userConfiguration.pinpoint';
     private userId: string;
     constructor(
         private http: HttpClient,
@@ -30,8 +31,11 @@ export class UserConfigurationDataService {
             })
         );
     }
+    getFavoriteList(): Observable<any> {
+        return this.http.get<{favoriteApplications: IFavoriteApplication[]}>(this.cudUrl);
+    }
     saveFavoriteList(newFavoriateApplicationList: IFavoriteApplication[]): Observable<any> {
-        return this.http.put<{ favoriteApplications: IFavoriteApplication[] }>(this.url, {
+        return this.http.put<{ favoriteApplications: IFavoriteApplication[] }>(this.cudUrl, {
             favoriteApplications: newFavoriateApplicationList
         });
     }
