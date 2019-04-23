@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators, ValidationErrors } from '@angular/f
 
 import { IChangedPasswordState } from './user-password-interaction.service';
 import { IUserPassword } from 'app/core/components/user-password/user-password-data.service';
+import { CustomFormValidatorService } from 'app/shared/services/custom-form-validator.service';
 
 @Component({
     selector: 'pp-user-password-for-general',
@@ -24,8 +25,8 @@ export class UserPasswordForGeneralComponent implements OnInit {
             Validators.required
         ]),
         password: new FormControl('', [
-            // TODO: password 규칙?
-            Validators.required
+            Validators.required,
+            CustomFormValidatorService.validate(/^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[!@#$%^&*()])[A-Za-z0-9!@#$%^&*()]{8,24}$/)
         ]),
         confirmPassword: new FormControl('', [
             Validators.required

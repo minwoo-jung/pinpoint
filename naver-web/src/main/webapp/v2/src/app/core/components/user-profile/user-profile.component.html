@@ -18,13 +18,25 @@
     <div class="l-field-wrapper">
         <label for="department">{{fieldLabel.department}}</label>
         <input type="text" formControlName="department" id="department" [readonly]="!hasUserEditPerm">
+        <pp-form-field-error-message
+            [control]="userProfileForm.get('department')"
+            [errorMessage]="fieldErrorMessage['department']">
+        </pp-form-field-error-message>
     </div>
     <div class="l-field-wrapper">
-        <label for="phone">{{fieldLabel.phone}}</label>
-        <input type="tel" formControlName="phoneNumber" id="phone" [readonly]="!hasUserEditPerm">
+        <label for="phoneNumber">{{fieldLabel.phoneNumber}}</label>
+        <input type="tel" formControlName="phoneNumber" id="phoneNumber" [readonly]="!hasUserEditPerm">
+        <pp-form-field-error-message
+            [control]="userProfileForm.get('phoneNumber')"
+            [errorMessage]="fieldErrorMessage['phoneNumber']">
+        </pp-form-field-error-message>
     </div>
     <div class="l-field-wrapper">
         <label for="email">{{fieldLabel.email}}</label>
         <input type="email" formControlName="email" id="email" [readonly]="!hasUserEditPerm">
+        <pp-form-field-error-message
+            [control]="userProfileForm.get('email')"
+            [errorMessage]="fieldErrorMessage['email']">
+        </pp-form-field-error-message>
     </div>
 </section>

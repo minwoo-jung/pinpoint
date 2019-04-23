@@ -57,12 +57,14 @@ export class UserPasswordContainerComponent implements OnInit, OnChanges {
         this.fieldErrorMessage$ = forkJoin(
             this.translateService.get('COMMON.REQUIRED'),
             this.translateService.get('CONFIGURATION.COMMON.PASSWORD'),
-            this.translateService.get('CONFIGURATION.COMMON.PASSWORD_MISMATCH')
+            this.translateService.get('CONFIGURATION.COMMON.PASSWORD_MISMATCH'),
+            this.translateService.get('CONFIGURATION.COMMON.PASSWORD_VALIDATION')
         ).pipe(
-            map(([requiredMessage, passwordLabel, mismatchMessage]: string[]) => {
+            map(([requiredMessage, passwordLabel, mismatchMessage, passwordValidation]: string[]) => {
                 return {
                     password: {
                         required: this.translateReplaceService.replace(requiredMessage, passwordLabel),
+                        valueRule: passwordValidation
                     },
                     confirmPassword: {
                         required: this.translateReplaceService.replace(requiredMessage, passwordLabel),

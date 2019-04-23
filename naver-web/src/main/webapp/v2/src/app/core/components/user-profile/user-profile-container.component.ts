@@ -5,7 +5,6 @@ import { map } from 'rxjs/operators';
 
 import { UserProfileInteractionService, IChangedProfileState } from './user-profile-interaction.service';
 import { TranslateReplaceService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
-import { MinLength } from './user-profile.component';
 import { IUserProfile, UserProfileDataService } from 'app/core/components/user-profile/user-profile-data.service';
 import { isThatType } from 'app/core/utils/util';
 
@@ -51,20 +50,38 @@ export class UserProfileContainerComponent implements OnInit, OnChanges {
         this.tempUserProfile = this.userProfile;
         this.fieldErrorMessage$ = forkJoin(
             this.translateService.get('COMMON.REQUIRED'),
-            this.translateService.get('COMMON.MIN_LENGTH'),
             this.translateService.get('CONFIGURATION.COMMON.USER_ID'),
             this.translateService.get('CONFIGURATION.COMMON.NAME'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.USER_ID_VALIDATION'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.NAME_VALIDATION'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.DEPARTMENT_VALIDATION'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.PHONE_VALIDATION'),
+            this.translateService.get('CONFIGURATION.PINPOINT_USER.EMAIL_VALIDATION'),
         ).pipe(
-            map(([requiredMessage, minLengthMessage, idLabel, nameLabel]: string[]) => {
+            map(([
+                requiredMessage, idLabel, nameLabel,
+                userIdValidation, nameValidation, departmentValidation, phoneValidation, emailValidation
+            ]: string[]) => {
                 return {
                     userId: {
                         required: this.translateReplaceService.replace(requiredMessage, idLabel),
-                        minlength: this.translateReplaceService.replace(minLengthMessage, MinLength.USER_ID)
+                        valueRule: userIdValidation
                     },
                     name: {
                         required: this.translateReplaceService.replace(requiredMessage, nameLabel),
-                        minlength: this.translateReplaceService.replace(minLengthMessage, MinLength.NAME)
+                        valueRule: nameValidation
                     },
+                    department: {
+                        valueRule: departmentValidation
+                    },
+                    phoneNumber: {
+                        valueRule: phoneValidation
+                    },
+                    email: {
+                        minlength: emailValidation,
+                        maxlength: emailValidation,
+                        valueRule: emailValidation
+                    }
                 };
             })
         );
@@ -75,8 +92,8 @@ export class UserProfileContainerComponent implements OnInit, OnChanges {
             this.translateService.get('CONFIGURATION.COMMON.PHONE'),
             this.translateService.get('CONFIGURATION.COMMON.EMAIL'),
         ).pipe(
-            map(([userId, name, department, phone, email]: string[]) => {
-                return { userId, name, department, phone, email }
+            map(([userId, name, department, phoneNumber, email]: string[]) => {
+                return { userId, name, department, phoneNumber, email }
             })
         )
     }
