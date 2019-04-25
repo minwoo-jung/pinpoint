@@ -46,6 +46,17 @@
         <appender-ref ref="nelo-async"/>
     </logger>
 
+    <logger name="com.navercorp.pinpoint.collector.handler.thrift.ThriftSpanChunkHandler" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
+    </logger>
+
+    <logger name="com.navercorp.pinpoint.collector.receiver.NameSpaceDispatchHandlerWrapper" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="console"/>
+        <appender-ref ref="nelo-async"/>
+    </logger>
 
     <logger name="org.apache.zookeeper" additivity="false">
         <level value="INFO"/>
