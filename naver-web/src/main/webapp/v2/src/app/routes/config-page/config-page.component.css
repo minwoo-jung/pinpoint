@@ -57,6 +57,7 @@
 }
 
 .l-depth-1 .l-link {
+    padding: 10px 15px 10px 27px;
     margin-left: 15px;
     font-size: 90%;
     color: rgba(0,0,0,.65);

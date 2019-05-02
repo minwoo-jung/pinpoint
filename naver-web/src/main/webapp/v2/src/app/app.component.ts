@@ -93,7 +93,7 @@ export class AppComponent implements OnInit {
                     REMOVE_AGENT: '선택한 Agent를 삭제합니다.'
                 };
                 translate.CONFIGURATION.AGENT_STATISTIC = {
-                    LOAD_GUIDE: 'Agent의 통계 정보를 가져오는 작업은 시간이 걸립니다.',
+                    LOAD_GUIDE: 'Agent의 통계 정보를 가져오는 작업은 많은 시간을 소요합니다.',
                     LOADING: '데이터 가져오기',
                     RELOAD: '데이터 다시 가져오기'
                 };

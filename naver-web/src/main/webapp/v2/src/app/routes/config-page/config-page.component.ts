@@ -36,7 +36,8 @@ import { UrlPath } from 'app/shared/models';
 })
 export class ConfigPageComponent implements OnInit {
     canViewAdminMenu: boolean;
-    isCollapsed = false;
+    isSettingCollapsed = false;
+    isAdminCollapsed = false;
 
     constructor(
         private urlRouteManagerService: UrlRouteManagerService,
@@ -60,12 +61,19 @@ export class ConfigPageComponent implements OnInit {
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_CONFIGURATION_PAGE_EXIT_BUTTON);
     }
 
-    toggleMenu(): void {
-        this.isCollapsed = !this.isCollapsed;
+    toggleAdminMenu(): void {
+        this.isAdminCollapsed = !this.isAdminCollapsed;
     }
 
-    getCollapsedState(): string {
-        return this.isCollapsed ? 'collapsed' : 'spreaded';
+    getAdminCollapsedState(): string {
+        return this.isAdminCollapsed ? 'collapsed' : 'spreaded';
+    }
+    toggleSettingMenu(): void {
+        this.isSettingCollapsed = !this.isSettingCollapsed;
+    }
+
+    getSettingCollapsedState(): string {
+        return this.isSettingCollapsed ? 'collapsed' : 'spreaded';
     }
 
     isActive(linkElement: HTMLAnchorElement): boolean {

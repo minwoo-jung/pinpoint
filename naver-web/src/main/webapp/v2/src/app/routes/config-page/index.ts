@@ -4,6 +4,8 @@ import { SharedModule } from 'app/shared';
 import { ConfigPageComponent } from './config-page.component';
 import { ConfigPageRoutingModule } from './config-page.routing';
 import { ConfigurationGeneralModule } from 'app/core/components/configuration-general';
+import { ConfigurationFavoriteModule } from 'app/core/components/configuration-favorite';
+import { ConfigurationUserProfileModule } from 'app/core/components/configuration-user-profile';
 import { ConfigurationUserGroupModule } from 'app/core/components/configuration-user-group';
 import { ConfigurationInstallationModule } from 'app/core/components/configuration-installation';
 import { ConfigurationHelpModule } from 'app/core/components/configuration-help';
@@ -21,6 +23,8 @@ import { ConfigurationAgentStatisticModule } from 'app/core/components/configura
         SharedModule,
         ConfigPageRoutingModule,
         ConfigurationGeneralModule,
+        ConfigurationFavoriteModule,
+        ConfigurationUserProfileModule,
         ConfigurationUserGroupModule,
         ConfigurationAlarmModule,
         ConfigurationInstallationModule,

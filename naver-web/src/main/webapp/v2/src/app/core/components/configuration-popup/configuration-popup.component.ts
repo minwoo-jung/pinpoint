@@ -15,7 +15,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
                 maxHeight: '300px'
             })),
             transition('collapsed <=> spreaded', [
-                animate('0.5s')
+                animate('0.3s')
             ])
         ]),
         trigger('rightDown', [
@@ -26,7 +26,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
                 transform: 'rotate(90deg)'
             })),
             transition('collapsed <=> spreaded', [
-                animate('0.3s')
+                animate('0.1s')
             ])
         ])
     ]
@@ -36,7 +36,8 @@ export class ConfigurationPopupComponent implements OnInit {
     @Output() outMenuClick = new EventEmitter<string>();
     @Output() outOpenLink = new EventEmitter<void>();
     @Input() canViewAdminMenu = false;
-    isCollapsed = false;
+    isAdminCollapsed = false;
+    isSettingCollapsed = false;
 
     constructor() {}
     ngOnInit() {}
@@ -48,12 +49,18 @@ export class ConfigurationPopupComponent implements OnInit {
         this.outOpenLink.emit();
     }
 
-    toggleMenu(): void {
-        this.isCollapsed = !this.isCollapsed;
+    toggleAdminMenu(): void {
+        this.isAdminCollapsed = !this.isAdminCollapsed;
+    }
+    toggleSettingMenu(): void {
+        this.isSettingCollapsed = !this.isSettingCollapsed;
     }
 
-    getCollapsedState(): string {
-        return this.isCollapsed ? 'collapsed' : 'spreaded';
+    getAdminCollapsedState(): string {
+        return this.isAdminCollapsed ? 'collapsed' : 'spreaded';
+    }
+    getSettingCollapsedState(): string {
+        return this.isSettingCollapsed ? 'collapsed' : 'spreaded';
     }
 
     isActive(linkElement: HTMLAnchorElement): boolean {
