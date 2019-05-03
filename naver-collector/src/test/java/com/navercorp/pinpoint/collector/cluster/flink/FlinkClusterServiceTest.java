@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.collector.cluster.flink;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.collector.config.FlinkConfiguration;
 import com.navercorp.pinpoint.collector.sender.FlinkRequestFactory;
 import com.navercorp.pinpoint.collector.service.SendAgentStatService;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.CuratorZookeeperClient;
@@ -55,17 +56,14 @@ public class FlinkClusterServiceTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private CollectorConfiguration config;
+    private FlinkConfiguration config;
 
     private final TestServerMessageListenerFactory testServerMessageListenerFactory =
             new TestServerMessageListenerFactory(TestServerMessageListenerFactory.HandshakeType.DUPLEX, TestServerMessageListenerFactory.ResponseType.NO_RESPONSE);
 
     @Before
     public void setUp() {
-        config = new CollectorConfiguration();
-        config.setFlinkClusterEnable(true);
-        config.setFlinkClusterZookeeperAddress("127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT);
-        config.setFlinkClusterSessionTimeout(30000);
+        config = new FlinkConfiguration(true, "127.0.0.1:" + DEFAULT_ZOOKEEPER_PORT, 30000);
     }
 
     @Test
@@ -86,7 +84,7 @@ public class FlinkClusterServiceTest {
             FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(flinkTBaseLocator.getTypeLocator());
             FlinkRequestFactory flinkRequestFactory = new FlinkRequestFactory();
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory, flinkRequestFactory);
-            flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
+            flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager, PINPOINT_FLINK_CLUSTER_PATH);
             flinkClusterService.setUp();
 
             testPinpointServerAcceptor.assertAwaitClientConnected(1, 5000);
@@ -124,7 +122,7 @@ public class FlinkClusterServiceTest {
             FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(flinkTBaseLocator.getTypeLocator());
             FlinkRequestFactory flinkRequestFactory = new FlinkRequestFactory();
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory, flinkRequestFactory);
-            flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
+            flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager, PINPOINT_FLINK_CLUSTER_PATH);
             flinkClusterService.setUp();
 
             testPinpointServerAcceptor1.assertAwaitClientConnected(1, 5000);
@@ -166,7 +164,7 @@ public class FlinkClusterServiceTest {
             FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(flinkTBaseLocator.getTypeLocator());
             FlinkRequestFactory flinkRequestFactory = new FlinkRequestFactory();
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory, flinkRequestFactory);
-            flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
+            flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager, PINPOINT_FLINK_CLUSTER_PATH);
             flinkClusterService.setUp();
 
             testPinpointServerAcceptor1.assertAwaitClientConnected(1, 5000);
@@ -220,7 +218,7 @@ public class FlinkClusterServiceTest {
             FlinkHeaderTBaseSerializerFactory flinkHeaderTBaseSerializerFactory = new FlinkHeaderTBaseSerializerFactory(flinkTBaseLocator.getTypeLocator());
             FlinkRequestFactory flinkRequestFactory = new FlinkRequestFactory();
             FlinkClusterConnectionManager flinkClusterConnectionManager = new FlinkClusterConnectionManager(tcpDataSenderRepository, flinkHeaderTBaseSerializerFactory, flinkRequestFactory);
-            flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager);
+            flinkClusterService = new FlinkClusterService(config, flinkClusterConnectionManager, PINPOINT_FLINK_CLUSTER_PATH);
             flinkClusterService.setUp();
 
             testPinpointServerAcceptor1.assertAwaitClientConnected(1, 5000);

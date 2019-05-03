@@ -17,8 +17,6 @@
         <property name="dataSource" ref="dataSource"/>
         <!-- mybatis basic config -->
         <property name="configLocation" value="classpath:/mybatis-config.xml"/>
-        <!-- typeAliases -->
-        <property name="typeAliasesPackage" value="com.navercorp.pinpoint.manager.vo"/>
         <!-- setting the location of mapper -->
         <property name="mapperLocations" value="classpath*:mapper/*Mapper.xml"/>
         <!-- set "true" in order to catch the errors of declaration of statement more quickly -->

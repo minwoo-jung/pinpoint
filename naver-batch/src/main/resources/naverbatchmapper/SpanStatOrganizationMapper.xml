@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.batch.dao.SpanStatOrganizationDao">
+
+    <select id="existSpanStatOrganization" parameterType="TimeRange" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM span_stat_organization
+            WHERE timestamp = #{fromDateTime}
+        )
+    </select>
+
+    <insert id="insertSpanStatOrganization" parameterType="TimeRange">
+        INSERT INTO span_stat_organization ( organization, count, timestamp)
+        SELECT organization, SUM(count) , #{fromDateTime}
+        FROM  span_stat_application
+        WHERE timestamp BETWEEN #{fromDateTime} AND #{toDateTime}
+        GROUP BY organization
+    </insert>
+
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.flink.job.span.stat.dao.SpanStatAgentDao">
+
+    <insert id="insertSpanStatAgentVo" parameterType="SpanStatAgentVo">
+        INSERT INTO span_stat_agent (organization, applicationId, agentId, count, timestamp)
+        VALUES (#{organization}, #{applicationId}, #{agentId}, #{count}, #{dateTime})
+        ON DUPLICATE KEY UPDATE organization = #{organization}, applicationId = #{applicationId}, agentId = #{agentId}, timestamp = #{dateTime}
+    </insert>
+
+</mapper>

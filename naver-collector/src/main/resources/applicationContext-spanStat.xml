@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:task="http://www.springframework.org/schema/task" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <bean id="spanStatConfiguration" class="com.navercorp.pinpoint.collector.config.SpanStatConfiguration">
+        <property name="properties" ref="pinpoint_collector_properties"/>
+    </bean>
+
+    <bean id="flinkClusterServiceForSpanStat" class="com.navercorp.pinpoint.collector.cluster.flink.FlinkClusterService">
+        <constructor-arg index="0" ref="spanStatConfiguration"/>
+        <constructor-arg index="1" ref="flinkClusterConnectionManagerForSpanStat"/>
+        <constructor-arg index="2" value="/pinpoint-cluster/flink-span"/>
+    </bean>
+
+    <bean id="flinkClusterConnectionManagerForSpanStat" class="com.navercorp.pinpoint.collector.cluster.flink.FlinkClusterConnectionManager">
+        <constructor-arg index="0" ref="tcpDataSenderRepositoryForSpanStat"/>
+        <constructor-arg index="1" ref="flinkHeaderTBaseSerializerFactoryForSpanStat"/>
+        <constructor-arg index="2" ref="flinkRequestFactory"/>
+    </bean>
+
+    <bean id="tcpDataSenderRepositoryForSpanStat" class="com.navercorp.pinpoint.collector.cluster.flink.TcpDataSenderRepository">
+        <constructor-arg index="0" ref="sendSpanStatService"/>
+    </bean>
+    <bean id="flinkHeaderTBaseSerializerFactoryForSpanStat" class="com.navercorp.pinpoint.thrift.io.FlinkHeaderTBaseSerializerFactory">
+        <constructor-arg index="0" value="#{flinkSpanStatTBaseLocator.typeLocator}"/>
+    </bean>
+    <bean id="flinkSpanStatTBaseLocator" class="com.navercorp.pinpoint.thrift.io.FlinkSpanStatTBaseLocator"/>
+
+    <bean id="sendSpanStatService" class="com.navercorp.pinpoint.collector.service.SendSpanStatService">
+        <constructor-arg index="0" ref="spanStatConfiguration"/>
+        <constructor-arg index="1" ref="hbaseTraceDaoV2Interceptor"/>
+    </bean>
+
+
+    <bean id="spanStatisticsScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="poolSize" value="3"/>
+        <property name="threadNamePrefix" value="Pinpoint-SendSpanStat-"/>
+        <property name="daemon" value="true"/>
+        <property name="waitForTasksToCompleteOnShutdown" value="true"/>
+        <property name="awaitTerminationSeconds" value="10"/>
+    </bean>
+    <task:scheduled-tasks scheduler="spanStatisticsScheduler">
+        <task:scheduled ref="sendSpanStatService" method="send" fixed-rate="60000"/>
+    </task:scheduled-tasks>
+
+    <aop:config>
+        <aop:aspect id="hbaseTraceDaoV2InterceptorAop" ref="hbaseTraceDaoV2Interceptor">
+            <aop:pointcut id="hbaseTraceDaoV2PointCut" expression="execution(public boolean com.navercorp.pinpoint.collector.dao.hbase.HbaseTraceDaoV2.insert(com.navercorp.pinpoint.common.server.bo.SpanBo)) and args(spanBo))"/>
+            <aop:around pointcut-ref="hbaseTraceDaoV2PointCut" method="aroundIntercept"/>
+        </aop:aspect>
+    </aop:config>
+    <bean id="hbaseTraceDaoV2Interceptor" class="com.navercorp.pinpoint.collector.interceptor.HbaseTraceDaoV2Interceptor">
+        <constructor-arg index="0" ref="spanStatConfiguration"/>
+    </bean>
+
+</beans>

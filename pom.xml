@@ -91,6 +91,7 @@
         <module>naver-web-oss</module>
         <module>test-vertx</module>
         <module>naver-cloud-manager</module>
+        <module>naver-batch</module>
         <!--<module>spark</module>-->
     </modules>
 
@@ -125,6 +126,12 @@
             <dependency>
                 <groupId>com.navercorp.pinpoint</groupId>
                 <artifactId>pinpoint-naver-thrift</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.navercorp.pinpoint</groupId>
+                <artifactId>pinpoint-naver-web</artifactId>
+                <classifier>classes</classifier>
                 <version>${project.version}</version>
             </dependency>
 
