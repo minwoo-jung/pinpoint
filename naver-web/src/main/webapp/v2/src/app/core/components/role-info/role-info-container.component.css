@@ -40,11 +40,12 @@
     background-color: #FFF;
 }
 .l-role-do-not-selected {
-    color: #CCC;
     width: 100%;
     height: 100%;
     display: flex;
+    font-size: 16px;
     text-align: center;
+    font-weight: 600;
     align-items: center;
     justify-content: center;
 }
