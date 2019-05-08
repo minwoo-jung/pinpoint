@@ -19,6 +19,8 @@ package com.navercorp.pinpoint.collector.namespace;
 import com.navercorp.pinpoint.collector.service.MetadataService;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.rpc.server.ChannelProperties;
+import com.navercorp.pinpoint.rpc.server.DefaultChannelProperties;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.security.SecurityConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -55,8 +57,8 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
         metadataService.register(licenseKey, nameSpaceInfo);
         PinpointServer pinpointServer = mockPinpointServerWithLicenseKey(licenseKey);
         ProceedingJoinPoint proceedingJoinPoint = mockJoinPointForNameSpaceInfo(nameSpaceInfo);
-
-        interceptor.aroundAdvice(proceedingJoinPoint, pinpointServer.getChannelProperties());
+        ChannelProperties channelProperties = DefaultChannelProperties.newChannelProperties(pinpointServer.getChannelProperties());
+        interceptor.aroundAdvice(proceedingJoinPoint, channelProperties);
     }
 
     @Test
@@ -98,7 +100,8 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
         public void run() {
             Assert.assertNull(RequestContextHolder.getAttributes());
             try {
-                interceptor.aroundAdvice(proceedingJoinPoint, pinpointServer.getChannelProperties());
+                ChannelProperties channelProperties = DefaultChannelProperties.newChannelProperties(pinpointServer.getChannelProperties());
+                interceptor.aroundAdvice(proceedingJoinPoint, channelProperties);
             } catch (AssertionError e) {
                 throw e;
             } catch (Throwable t) {

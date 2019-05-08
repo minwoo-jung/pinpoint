@@ -20,7 +20,7 @@ import com.navercorp.pinpoint.collector.service.MetadataService;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.common.util.StringUtils;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
+import com.navercorp.pinpoint.rpc.server.ChannelProperties;
 import com.navercorp.pinpoint.security.SecurityConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class PinpointServerNameSpaceInfoPropagateInterceptor {
         this.useDefaultNameSpaceInfo = useDefaultNameSpaceInfo;
     }
 
-    public void aroundAdvice(ProceedingJoinPoint joinPoint, Map<Object, Object> channelProperties) throws Throwable {
+    public void aroundAdvice(ProceedingJoinPoint joinPoint, ChannelProperties channelProperties) throws Throwable {
         NameSpaceInfo nameSpaceInfo = getNameSpaceInfo(channelProperties);
         if (nameSpaceInfo == null) {
             if (useDefaultNameSpaceInfo) {
@@ -102,7 +102,7 @@ public class PinpointServerNameSpaceInfoPropagateInterceptor {
         RequestContextHolder.resetAttributes();
     }
 
-    private NameSpaceInfo getNameSpaceInfo(Map<Object, Object> channelProperties) {
+    private NameSpaceInfo getNameSpaceInfo(ChannelProperties channelProperties) {
         String licenseKey = (String) channelProperties.get(SecurityConstants.KEY_LICENSE_KEY);
         if (licenseKey == null) {
             return null;
