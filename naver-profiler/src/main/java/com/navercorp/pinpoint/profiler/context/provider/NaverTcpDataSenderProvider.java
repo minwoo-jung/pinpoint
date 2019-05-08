@@ -85,7 +85,7 @@ public class NaverTcpDataSenderProvider implements Provider<EnhancedDataSender> 
         return new TcpDataSender("Naver-Default", collectorTcpServerIp, collectorTcpServerPort, clientFactory, messageSerializer);
     }
 
-    // com.navercorp.pinpoint.profiler.context.provider.PinpointClientFactoryProvider 의 Handshake 데이터를 포함하는 것과 같은 로직입니다.
+    // com.navercorp.pinpoint.profiler.context.provider.thrift.PinpointClientFactoryProvider 의 Handshake 데이터를 포함하는 것과 같은 로직입니다.
     // 이후에 Handshake 데이터가 추가되면 이곳에도 함께 추가되어야 합니다.
     private Map<String, Object> getProperties(String licenseKey) {
         AgentInformation agentInformation = this.agentInformation.get();
