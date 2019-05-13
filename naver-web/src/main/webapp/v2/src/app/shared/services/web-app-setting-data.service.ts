@@ -34,7 +34,8 @@ export class WebAppSettingDataService {
         USER_DEFAULT_OUTBOUND: 'userDefaultOutbound',
         USER_DEFAULT_PERIOD: 'userDefaultPeriod',
         TRANSACTION_LIST_GUTTER_POSITION: 'transactionListGutterPosition',
-        CHART_NUM_PER_ROW: 'chartNumPerRow'
+        CHART_NUM_PER_ROW: 'chartNumPerRow',
+        CHART_ORDER_LIST: 'chartOrderList'
     };
     private unsubscribe: Subject<null> = new Subject();
     private favoriteApplicationList: IFavoriteApplication[] = [];
@@ -262,5 +263,25 @@ export class WebAppSettingDataService {
     }
     getSystemDefaultChartRefreshInterval(key: string): number {
         return this.componentDefaultSettingDataService.getSystemDefaultChartRefreshInterval(key);
+    }
+    getChartOrderList(): string[] {
+        return JSON.parse(this.localStorageService.get(WebAppSettingDataService.KEYS.CHART_ORDER_LIST)) || [
+            'Heap Usage',
+            'Non Heap Usage',
+            'JVM CPU Usage',
+            'System CPU Usage',
+            'Transactions Per Second',
+            'Active Thread',
+            'Response Time',
+            'Open File Descriptor',
+            'Direct Buffer Count',
+            'Direct Buffer Memory',
+            'Mapped Buffer Count',
+            'Mapped Buffer Memory',
+            'Data Source'
+        ];
+    }
+    setChartOrderList(orderList: string[]): void {
+        this.localStorageService.set(WebAppSettingDataService.KEYS.CHART_ORDER_LIST, JSON.stringify(orderList));
     }
 }
