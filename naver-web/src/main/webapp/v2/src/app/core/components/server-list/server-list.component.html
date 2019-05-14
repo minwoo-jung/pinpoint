@@ -1,8 +1,7 @@
 <ul class="l-servers-list">
     <li *ngFor="let serverName of getServerKeys(); let outerIndex = index">
-        <div class="l-server-name" [matTooltip]="serverName">
-                <a *ngFor="let linkInfo of getLinkList(serverName);" href="{{linkInfo.linkURL}}" target="_blank" class="l-green">{{linkInfo.linkName}}</a>
-                {{ serverName }}</div>
+        <a *ngFor="let linkInfo of getLinkList(serverName);" href="{{linkInfo.linkURL}}" target="_blank" class="l-green">{{linkInfo.linkName}}</a>
+        <div class="l-server-name" [matTooltip]="serverName">{{serverName}}</div>
         <ul>
             <li *ngFor="let agentName of getAgentKeys(serverName); let innerIndex = index">
                 <div>

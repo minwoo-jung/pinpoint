@@ -5,18 +5,18 @@
 			<form>
 				<ul class="server-collection _node" ng-show="bIsNode" ng-repeat="(key, server) in serverList | orderBy:'key'">
 					<li>
-						<div class="server-name">
-							<button style="margin-left:4px;float:right;padding:0px 5px;" type="button" class="btn btn-success btn-xs" ng-if="server.linkList" ng-repeat="link in server.linkList" ng-click="openSite($event, link.linkType, link.linkName, link.linkURL)">{{link.linkName}}</button>
+						<button style="margin-left:4px;float:right;padding:0px 5px;line-height: 1.2;" type="button" class="btn btn-success btn-xs" ng-if="server.linkList" ng-repeat="link in server.linkList" ng-click="openSite($event, link.linkType, link.linkName, link.linkURL)">{{link.linkName}}</button>
+						<div class="server-name" style="height: 26px; display: block;width: auto;">
 							<span class="glyphicon glyphicon-home"></span> {{server.name.split(':')[0]}}
 						</div>
 						<ul>
 							<li ng-repeat="instance in server.instanceList | orderBy:'instance.name'">
-								<label>
+								<button style="float:right" type="button" class="btn btn-success btn-xs" ng-click="openInspector($event, instance.name)" ng-if="isWasNode()"><i class="xi-chart-line"></i></button>
+								<label style="display: block">
 									<input type="radio" name="selectedServer" value="{{instance.name}}" name="selectedServer" ng-click="selectServer(instance.name)" ng-checked="$parent.$first && $first">
 									<span class="glyphicon glyphicon-hdd" style="color:{{hasError(node.agentHistogram[instance.name])}}"></span>
 									<span>{{instance.name}}</span>
 								</label>
-								<button style="float:right" type="button" class="btn btn-success btn-xs" ng-click="openInspector($event, instance.name)" ng-if="isWasNode()"><i class="xi-chart-line"></i></button>
 							</li>
 						</ul>
 					</li>
