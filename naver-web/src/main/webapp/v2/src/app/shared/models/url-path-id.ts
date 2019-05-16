@@ -92,6 +92,7 @@ export class UrlPathId {
     static ALARM = 'alarm';
     static INSTALLATION = 'installation';
     static HELP = 'help';
+    static CHART_MANAGER = 'chartManager';
     static USERS = 'users';
     static ROLE = 'role';
     static AGENT_STATISTIC = 'agentStatistic';

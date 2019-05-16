@@ -5,6 +5,7 @@ import { ConfigPageComponent } from './config-page.component';
 import { ConfigPageRoutingModule } from './config-page.routing';
 import { ConfigurationGeneralModule } from 'app/core/components/configuration-general';
 import { ConfigurationFavoriteModule } from 'app/core/components/configuration-favorite';
+import { ConfigurationInspectorChartManagerModule } from 'app/core/components/configuration-inspector-chart-manager';
 import { ConfigurationUserProfileModule } from 'app/core/components/configuration-user-profile';
 import { ConfigurationUserGroupModule } from 'app/core/components/configuration-user-group';
 import { ConfigurationInstallationModule } from 'app/core/components/configuration-installation';
@@ -24,6 +25,7 @@ import { ConfigurationAgentStatisticModule } from 'app/core/components/configura
         ConfigPageRoutingModule,
         ConfigurationGeneralModule,
         ConfigurationFavoriteModule,
+        ConfigurationInspectorChartManagerModule,
         ConfigurationUserProfileModule,
         ConfigurationUserGroupModule,
         ConfigurationAlarmModule,

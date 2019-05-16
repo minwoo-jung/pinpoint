@@ -5,6 +5,7 @@ import { ConfigPageComponent } from './config-page.component';
 import { UrlPath, UrlPathId } from 'app/shared/models';
 import { ConfigurationGeneralContainerComponent } from 'app/core/components/configuration-general/configuration-general-container.component';
 import { ConfigurationFavoriteContainerComponent } from 'app/core/components/configuration-favorite/configuration-favorite-container.component';
+import { ConfigurationInspectorChartManagerContainerComponent } from 'app/core/components/configuration-inspector-chart-manager/configuration-inspector-chart-manager-container.component';
 import { ConfigurationUserProfileContainerComponent } from 'app/core/components/configuration-user-profile/configuration-user-profile-container.component';
 import { ConfigurationUserGroupContainerComponent } from 'app/core/components/configuration-user-group/configuration-user-group-container.component';
 import { ConfigurationAlarmContainerComponent } from 'app/core/components/configuration-alarm/configuration-alarm-container.component';
@@ -43,6 +44,10 @@ const routes: Routes = [
             {
                 path: UrlPathId.FAVORITE,
                 component: ConfigurationFavoriteContainerComponent
+            },
+            {
+                path: UrlPathId.CHART_MANAGER,
+                component: ConfigurationInspectorChartManagerContainerComponent
             },
             {
                 path: UrlPathId.USER_PROFILE,
