@@ -69,27 +69,7 @@
 
     <bean id="commandHeaderTBaseSerializerFactory" class="com.navercorp.pinpoint.thrift.io.CommandHeaderTBaseSerializerFactory">
     </bean>
-    <bean id="agentEventHeaderTBaseSerializerFactory" class="com.navercorp.pinpoint.thrift.io.AgentEventHeaderTBaseSerializerFactory">
-    </bean>
-
     <bean id="commandHeaderTBaseDeserializerFactory" class="com.navercorp.pinpoint.thrift.io.CommandHeaderTBaseDeserializerFactory">
-    </bean>
-
-    <!-- Agent Event/Lifecycle related Beans -->
-    <bean id="agentEventWorker" class="com.navercorp.pinpoint.common.util.ExecutorFactory" factory-method="newFixedThreadPool">
-        <constructor-arg index="0" value="#{collectorConfiguration.agentEventWorkerThreadSize}"/>
-        <constructor-arg index="1" value="#{collectorConfiguration.agentEventWorkerQueueSize}"/>
-        <constructor-arg index="2" value="Pinpoint-AgentEvent-Worker"/>
-        <constructor-arg index="3" value="true"/>
-    </bean>
-
-    <bean id="agentEventMessageSerializer" class="com.navercorp.pinpoint.common.server.util.AgentEventMessageSerializer">
-        <constructor-arg>
-            <list value-type="com.navercorp.pinpoint.thrift.io.SerializerFactory">
-                <ref bean="commandHeaderTBaseSerializerFactory"/>
-                <ref bean="agentEventHeaderTBaseSerializerFactory"/>
-            </list>
-        </constructor-arg>
     </bean>
 
     <bean id="agentEventMessageSerializerV1" class="com.navercorp.pinpoint.common.server.util.AgentEventMessageSerializerV1"/>
