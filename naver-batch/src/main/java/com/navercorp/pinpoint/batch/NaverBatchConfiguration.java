@@ -43,9 +43,6 @@ public class NaverBatchConfiguration implements InitializingBean {
     @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['sms.cellphone.number'] ?: ''), ',')}")
     private List<String> cellPhoneNumberList;
 
-    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['admin.user.list'] ?: ''), ',')}")
-    private List<String> adminUserList = Collections.emptyList();
-
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("NaverBatchConfiguration:{}", this.toString());
@@ -57,10 +54,6 @@ public class NaverBatchConfiguration implements InitializingBean {
             logger.info("{}={}", propertyName, result);
         }
         return result ;
-    }
-
-    public List<String> getAdminUserList() {
-        return adminUserList;
     }
 
     public String getMexServerUrl() {
@@ -85,7 +78,6 @@ public class NaverBatchConfiguration implements InitializingBean {
         sb.append("mexServerUrl='").append(mexServerUrl).append('\'');
         sb.append(", serviceID='").append(serviceID).append('\'');
         sb.append(", cellPhoneNumberList=").append(cellPhoneNumberList);
-        sb.append(", adminUserList=").append(adminUserList);
         sb.append('}');
         return sb.toString();
     }
