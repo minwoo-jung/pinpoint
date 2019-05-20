@@ -56,6 +56,11 @@
         <property name="properties" ref="pinpoint_collector_properties"/>
     </bean>
 
+    <bean id="flinkConfiguration" class="com.navercorp.pinpoint.collector.config.FlinkConfiguration">
+        <property name="properties" ref="pinpoint_collector_properties"/>
+    </bean>
+
+
     <import resource="classpath:applicationContext-hbase.xml"/>
     <import resource="classpath:applicationContext-collector-namespace.xml"/>
 
