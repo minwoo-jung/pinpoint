@@ -13,7 +13,8 @@
 
     <context:component-scan
             base-package="com.navercorp.pinpoint.collector.dao.memory,
-                        com.navercorp.pinpoint.collector.dao.mysql"/>
+                        com.navercorp.pinpoint.collector.dao.mysql
+                        com.navercorp.pinpoint.collector.handler.thrift"/>
 
     <bean id="propertyConfigurerNaver" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
