@@ -50,7 +50,7 @@ import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = {"classpath:servlet-context-naver.xml", "classpath:applicationContext-web-naver.xml"})
+@ContextConfiguration(locations = {"classpath:servlet-context-naver.xml", "classpath:applicationContext-web-naver.xml", "classpath:security-context.xml"})
 public class UserConfigControllerTest {
 
 
@@ -71,38 +71,64 @@ public class UserConfigControllerTest {
 
     @Test
     public void selectTest() throws Exception {
-//        this.mockMvc.perform(post("/userConfiguration.pinpoint").header("SSO_USER", "naver00000").contentType(MediaType.APPLICATION_JSON)
-//                                            .content("{\"favoriteApplications\" :" +
-//                                                                        "[" +
-//                                                                                "{\"applicationName\":\"A2D-EDC\",\"serviceType\":\"TOMCAT\",\"code\":1010},{\"applicationName\":\"A2D_EDC\",\"serviceType\":\"TOMCAT\",\"code\":1010}"
-//                                                                            + "]"
-//                                                    +"}"))
-//                    .andExpect(status().isOk())
-//                    .andExpect(content().contentType("application/json;charset=UTF-8"))
-//                    .andReturn();
-
-        this.mockMvc.perform(put("/userConfiguration.pinpoint").header("SSO_USER", "naver00000").contentType(MediaType.APPLICATION_JSON)
+        this.mockMvc.perform(put("/userConfiguration/favoriteApplications.pinpoint").header("SSO_USER", "naver00000").contentType(MediaType.APPLICATION_JSON)
             .content("{\"favoriteApplications\" :" +
                 "[" +
-                "{\"applicationName\":\"A2D-EDC123\",\"serviceType\":\"TOMCAT\",\"code\":1010},{\"applicationName\":\"A2D_EDC22\",\"serviceType\":\"TOMCAT\",\"code\":1010}"
+                "{\"applicationName\":\"A2D-EDC123123123123\",\"serviceType\":\"TOMCAT\",\"code\":1010},{\"applicationName\":\"A2D_EDC22\",\"serviceType\":\"TOMCAT\",\"code\":1010}"
                 + "]"
                 +"}"))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andReturn();
 
-        MvcResult mvcResult = this.mockMvc.perform(get("/userConfiguration.pinpoint").header("SSO_USER", "naver00000").contentType(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = this.mockMvc.perform(get("/userConfiguration/favoriteApplications.pinpoint").header("SSO_USER", "naver00000").contentType(MediaType.APPLICATION_JSON))
                                             .andExpect(status().isOk()).andExpect(content()
                                             .contentType("application/json;charset=UTF-8"))
                                             .andReturn();
 
         System.out.println("result : " + mvcResult.getResponse().getContentAsString());
-
-
-//        this.mockMvc.perform(delete("/userConfiguration.pinpoint").header("SSO_USER", "naver00000").contentType(MediaType.APPLICATION_JSON))
-//            .andExpect(status().isOk())
-//            .andExpect(content().contentType("application/json;charset=UTF-8"))
-//            .andExpect(jsonPath("$", hasKey("result")))
-//            .andReturn();
     }
+
+    @Test
+    public void applicationInspectorChartTest() throws Exception {
+        this.mockMvc.perform(put("/userConfiguration/inspectorChart/application.pinpoint").contentType(MediaType.APPLICATION_JSON)
+            .content("{\"applicationInspectorCharts\" :" +
+                "[" +
+                "{\"chartName\":\"Heap Usage\",\"index\":1,\"visible\":true},{\"chartName\":\"Non Heap Usage\",\"index\":12,\"visible\":false},{\"chartName\":\"System CPU Usage\",\"index\":5,\"visible\":true}"
+                + "]"
+                +"}"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andReturn();
+
+        MvcResult mvcResult = this.mockMvc.perform(get("/userConfiguration/inspectorChart/application.pinpoint").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content()
+                .contentType("application/json;charset=UTF-8"))
+            .andReturn();
+
+        System.out.println("result : " + mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void agentInspectorChartTest() throws Exception {
+        this.mockMvc.perform(put("/userConfiguration/inspectorChart/agent.pinpoint").contentType(MediaType.APPLICATION_JSON)
+            .content("{\"agentInspectorCharts\" :" +
+                "[" +
+                "{\"chartName\":\"Heap Usage\",\"index\":1,\"visible\":true},{\"chartName\":\"Non Heap Usage\",\"index\":111,\"visible\":false},{\"chartName\":\"System CPU Usage\",\"index\":5,\"visible\":true}"
+                + "]"
+                +"}"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andReturn();
+
+        MvcResult mvcResult = this.mockMvc.perform(get("/userConfiguration/inspectorChart/agent.pinpoint").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andExpect(content()
+                .contentType("application/json;charset=UTF-8"))
+            .andReturn();
+
+        System.out.println("result : " + mvcResult.getResponse().getContentAsString());
+    }
+
+
+
 }

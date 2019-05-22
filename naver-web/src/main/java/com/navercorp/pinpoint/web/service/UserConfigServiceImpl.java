@@ -16,17 +16,21 @@
 package com.navercorp.pinpoint.web.service;
 
 import com.navercorp.pinpoint.web.dao.UserConfigDao;
+import com.navercorp.pinpoint.web.vo.ApplicationModel;
+import com.navercorp.pinpoint.web.vo.InspectorChart;
 import com.navercorp.pinpoint.web.vo.UserConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
  */
 @Service
 @Transactional(rollbackFor = {Exception.class})
-public class UserConfigServiceImpl implements com.navercorp.pinpoint.web.service.UserConfigService {
+public class UserConfigServiceImpl implements UserConfigService {
 
     @Autowired
     private UserConfigDao userConfigDao;
@@ -44,11 +48,51 @@ public class UserConfigServiceImpl implements com.navercorp.pinpoint.web.service
     @Override
     @Transactional(readOnly = true)
     public UserConfiguration selectUserConfiguration(String userId) {
-        return userConfigDao.selectUserConfiguration(userId);
+        UserConfiguration userConfiguration = userConfigDao.selectUserConfiguration(userId);
+
+        if (UserConfiguration.EMPTY_USERID.equals(userConfiguration.getUserId())) {
+            userConfiguration.setUserId(userId);
+        }
+
+        return userConfiguration;
     }
 
     @Override
-    public void updateUserConfiguration(UserConfiguration userConfiguration) {
-        userConfigDao.updateUserConfiguration(userConfiguration);
+    public void updateFavoriteApplications(UserConfiguration userConfiguration) {
+        UserConfiguration currentUserConfiguration = selectUserConfiguration(userConfiguration.getUserId());
+        currentUserConfiguration.setFavoriteApplications(userConfiguration.getFavoriteApplications());
+        userConfigDao.updateUserConfiguration(currentUserConfiguration);
+    }
+
+    @Override
+    public List<ApplicationModel> selectFavoriteApplications(String userId) {
+        UserConfiguration userConfiguration = userConfigDao.selectUserConfiguration(userId);
+        return userConfiguration.getFavoriteApplications();
+    }
+
+    @Override
+    public List<InspectorChart> selectApplicationInspectorCharts(String userId) {
+        UserConfiguration userConfiguration = selectUserConfiguration(userId);
+        return userConfiguration.getApplicationInspectorCharts();
+    }
+
+    @Override
+    public void updateApplicationInspectorCharts(UserConfiguration userConfiguration) {
+        UserConfiguration currentUserConfiguration = selectUserConfiguration(userConfiguration.getUserId());
+        currentUserConfiguration.setApplicationInspectorCharts(userConfiguration.getApplicationInspectorCharts());
+        userConfigDao.updateUserConfiguration(currentUserConfiguration);
+    }
+
+    @Override
+    public List<InspectorChart> selectAgentInspectorCharts(String userId) {
+        UserConfiguration userConfiguration = selectUserConfiguration(userId);
+        return userConfiguration.getAgentInspectorCharts();
+    }
+
+    @Override
+    public void updateAgentInspectorCharts(UserConfiguration userConfiguration) {
+        UserConfiguration currentUserConfiguration = selectUserConfiguration(userConfiguration.getUserId());
+        currentUserConfiguration.setAgentInspectorCharts(userConfiguration.getAgentInspectorCharts());
+        userConfigDao.updateUserConfiguration(currentUserConfiguration);
     }
 }

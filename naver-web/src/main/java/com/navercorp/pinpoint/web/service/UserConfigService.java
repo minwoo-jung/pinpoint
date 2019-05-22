@@ -15,17 +15,33 @@
  */
 package com.navercorp.pinpoint.web.service;
 
+import com.navercorp.pinpoint.web.vo.ApplicationModel;
+import com.navercorp.pinpoint.web.vo.InspectorChart;
 import com.navercorp.pinpoint.web.vo.UserConfiguration;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
  */
 public interface UserConfigService {
+
+    UserConfiguration selectUserConfiguration(String userId);
+
     void insertUserConfiguration(UserConfiguration userConfiguration);
 
     void deleteUserConfiguration(String userId);
 
-    UserConfiguration selectUserConfiguration(String userId);
+    List<ApplicationModel> selectFavoriteApplications(String userId);
 
-    void updateUserConfiguration(UserConfiguration userConfiguration);
+    void updateFavoriteApplications(UserConfiguration userConfiguration);
+
+    List<InspectorChart> selectApplicationInspectorCharts(String userId);
+
+    void updateApplicationInspectorCharts(UserConfiguration userConfiguration);
+
+    List<InspectorChart> selectAgentInspectorCharts(String userId);
+
+    void updateAgentInspectorCharts(UserConfiguration userConfiguration);
+
 }

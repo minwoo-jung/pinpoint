@@ -15,11 +15,6 @@
  */
 package com.navercorp.pinpoint.web.vo;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +22,15 @@ import java.util.List;
  * @author minwoo.jung
  */
 public class UserConfiguration {
-    private final static List<ApplicationModel> EMPTY_LIST = new ArrayList<>(0);
-    private String userId = "";
-    private List<ApplicationModel> favoriteApplications = EMPTY_LIST;
+    public final static String EMPTY_USERID = "";
+    private final static List<ApplicationModel> EMPTY_APPLICATION_MODEL_LIST = new ArrayList<>(0);
+    private final static List<InspectorChart> EMPTY_INSPECTION_CHART_LIST = new ArrayList<>(0);
+    private String userId = EMPTY_USERID;
+    private List<ApplicationModel> favoriteApplications = EMPTY_APPLICATION_MODEL_LIST;
+    private List<InspectorChart> applicationInspectorCharts = EMPTY_INSPECTION_CHART_LIST;
+
+
+    private List<InspectorChart> agentInspectorCharts = EMPTY_INSPECTION_CHART_LIST;
 
     public String getUserId() {
         return userId;
@@ -47,11 +48,30 @@ public class UserConfiguration {
         return favoriteApplications;
     }
 
+    public List<InspectorChart> getApplicationInspectorCharts() {
+        return applicationInspectorCharts;
+    }
+
+    public void setApplicationInspectorCharts(List<InspectorChart> applicationInspectorCharts) {
+        this.applicationInspectorCharts = applicationInspectorCharts;
+    }
+
+    public List<InspectorChart> getAgentInspectorCharts() {
+        return agentInspectorCharts;
+    }
+
+    public void setAgentInspectorCharts(List<InspectorChart> agentInspectorCharts) {
+        this.agentInspectorCharts = agentInspectorCharts;
+    }
+
     @Override
     public String toString() {
-        return "UserConfiguration{" +
-            "userId='" + userId + '\'' +
-            ", favoriteApplications=" + favoriteApplications +
-            '}';
+        final StringBuilder sb = new StringBuilder("UserConfiguration{");
+        sb.append("userId='").append(userId).append('\'');
+        sb.append(", favoriteApplications=").append(favoriteApplications);
+        sb.append(", applicationInspectorCharts=").append(applicationInspectorCharts);
+        sb.append(", agentInspectorCharts=").append(agentInspectorCharts);
+        sb.append('}');
+        return sb.toString();
     }
 }

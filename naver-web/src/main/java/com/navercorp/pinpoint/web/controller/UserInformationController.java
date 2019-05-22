@@ -222,8 +222,13 @@ public class UserInformationController {
     @ResponseBody
     public Map<String, Object> selectPermissionAndConfiguration() {
         String userId = userService.getUserIdFromSecurity();
-        UserConfiguration userConfiguration = userConfigService.selectUserConfiguration(userId);
+
         RoleInformation roleInformation = roleService.getUserPermission(userId);
+
+        List<ApplicationModel> favoriteApplicationList = userConfigService.selectFavoriteApplications(userId);
+        Map<String, Object> userConfiguration = new HashMap<>();
+        userConfiguration.put(UserConfigController.FAVORITE_APPLICATIONS, favoriteApplicationList);
+
 
         Map<String, Object> result = new HashMap<>();
         result.put("configuration", userConfiguration);

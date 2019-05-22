@@ -18,6 +18,8 @@ package com.navercorp.pinpoint.web.controller;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.web.service.UserConfigService;
 import com.navercorp.pinpoint.web.service.UserService;
+import com.navercorp.pinpoint.web.vo.ApplicationModel;
+import com.navercorp.pinpoint.web.vo.InspectorChart;
 import com.navercorp.pinpoint.web.vo.UserConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +40,9 @@ public class UserConfigController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static final String SSO_USER = "SSO_USER";
+    public static final String FAVORITE_APPLICATIONS = "favoriteApplications";
+    private static final String APPLICATION_INSPECTOR_CHARTS = "applicationInspectorCharts";
+    private static final String AGENT_INSPECTOR_CHARTS = "agentInspectorCharts";
 
     @Autowired
     private UserConfigService userConfigService;
@@ -45,38 +50,86 @@ public class UserConfigController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(method = RequestMethod.POST)
+//    @Deprecated //this api is only used form version 1 UI
+//    @RequestMapping(method = RequestMethod.GET)
+//    @ResponseBody
+//    public  Map<String, List<ApplicationModel>> getUserConfiguration() {
+//        List<ApplicationModel> favoriteApplications = userConfigService.selectFavoriteApplications(getUserId());
+//
+//        Map<String, List<ApplicationModel>> result = new HashMap<>();
+//        result.put(FAVORITE_APPLICATIONS, favoriteApplications);
+//        return result;
+//    }
+//
+//    @Deprecated //this api is only used form version 1 UI
+//    @RequestMapping(method = RequestMethod.PUT)
+//    @ResponseBody
+//    public Map<String, String> updateUserConfiguration(@RequestBody UserConfiguration userConfiguration) {
+//        userConfiguration.setUserId(getUserId());
+//        userConfigService.updateFavoriteApplications(userConfiguration);
+//
+//        Map<String, String> result = new HashMap<>();
+//        result.put("result", "SUCCESS");
+//        return result;
+//    }
+
+    @RequestMapping(value = "/favoriteApplications", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, String> insertUserConfiguration(@RequestBody UserConfiguration userConfiguration) {
+    public  Map<String, List<ApplicationModel>> getFavoriteApplications() {
+        List<ApplicationModel> favoriteApplications = userConfigService.selectFavoriteApplications(getUserId());
+
+        Map<String, List<ApplicationModel>> result = new HashMap<>();
+        result.put(FAVORITE_APPLICATIONS, favoriteApplications);
+        return result;
+    }
+
+    @RequestMapping(value = "/favoriteApplications", method = RequestMethod.PUT)
+    @ResponseBody
+    public Map<String, String> updateFavoriteApplications(@RequestBody UserConfiguration userConfiguration) {
         userConfiguration.setUserId(getUserId());
-        userConfigService.insertUserConfiguration(userConfiguration);
+        userConfigService.updateFavoriteApplications(userConfiguration);
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/inspectorChart/application", method = RequestMethod.GET)
     @ResponseBody
-    public  UserConfiguration getUserConfiguration() {
-        return userConfigService.selectUserConfiguration(getUserId());
+    public Map<String, List<InspectorChart>> getApplicationInspectorCharts() {
+        List<InspectorChart> applicationInspectorChartList = userConfigService.selectApplicationInspectorCharts(getUserId());
+
+        Map<String, List<InspectorChart>> result = new HashMap<>();
+        result.put(APPLICATION_INSPECTOR_CHARTS, applicationInspectorChartList);
+        return result;
     }
 
-    @RequestMapping(method = RequestMethod.DELETE)
+    @RequestMapping(value = "/inspectorChart/application", method = RequestMethod.PUT)
     @ResponseBody
-    public Map<String, String> deleteUserConfiguration() {
-        userConfigService.deleteUserConfiguration(getUserId());
+    public Map<String, String> updateApplicationInspectorCharts(@RequestBody UserConfiguration userConfiguration) {
+        userConfiguration.setUserId(getUserId());
+        userConfigService.updateApplicationInspectorCharts(userConfiguration);
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");
         return result;
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(value = "/inspectorChart/agent", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, String> updateUserConfiguration(@RequestBody UserConfiguration userConfiguration) {
+    public Map<String, List<InspectorChart>> getAgentInspectorChart() {
+        List<InspectorChart> agentInspectorChartList = userConfigService.selectAgentInspectorCharts(getUserId());
+
+        Map<String, List<InspectorChart>> result = new HashMap<>();
+        result.put(AGENT_INSPECTOR_CHARTS, agentInspectorChartList);
+        return result;
+    }
+
+    @RequestMapping(value = "/inspectorChart/agent", method = RequestMethod.PUT)
+    @ResponseBody
+    public Map<String, String> updateAgentInspectorChart(@RequestBody UserConfiguration userConfiguration) {
         userConfiguration.setUserId(getUserId());
-        userConfigService.updateUserConfiguration(userConfiguration);
+        userConfigService.updateAgentInspectorCharts(userConfiguration);
 
         Map<String, String> result = new HashMap<>();
         result.put("result", "SUCCESS");

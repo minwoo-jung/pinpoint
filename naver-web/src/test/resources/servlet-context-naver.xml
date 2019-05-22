@@ -20,4 +20,7 @@
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <import resource="classpath:servlet-context.xml" />
+
+    <bean id="naverPermissionEvaluator" class="com.navercorp.pinpoint.web.security.NaverPermissionEvaluator"/>
+    <bean id="permissionChecker" class="com.navercorp.pinpoint.web.security.PermissionChecker"/>
 </beans>
