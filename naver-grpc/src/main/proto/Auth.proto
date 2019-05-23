@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+option java_multiple_files = true;
+option java_package = "com.navercorp.pinpoint.grpc.auth";
+option java_outer_classname = "AuthProto";
+
+package v1;
+
+service Auth {
+    rpc GetToken (PCmdGetTokenRequest) returns (PCmdGetTokenResponse) {
+    }
+}
+
+enum PTokenType {
+    UNKNOWN = 0;
+
+    SPAN = 1;
+    STAT = 2;
+}
+
+message PCmdGetTokenRequest {
+    google.protobuf.BytesValue licenseKey = 1;
+    PTokenType tokenType = 2;
+}
+
+enum PTokenResponseCode {
+    OK = 0;
+    BAD_REQUEST = 400;
+    UNAUTHORIZED = 401;
+    INTERNAL_SERVER_ERROR = 500;
+}
+
+message PCmdGetTokenResponse {
+    PTokenResponseCode code = 1;
+    google.protobuf.StringValue message = 2;
+    google.protobuf.BytesValue token = 3;
+}
