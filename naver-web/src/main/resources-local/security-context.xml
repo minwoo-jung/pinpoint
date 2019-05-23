@@ -15,7 +15,7 @@
         <intercept-url pattern="/*.html" access="permitAll" />
         <intercept-url pattern="/login.pinpoint" access="permitAll" />
         <intercept-url pattern="/j_spring_security_logout.pinpoint" access="permitAll" />
-        <intercept-url pattern="/**.pinpoint" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/**/**.pinpoint" access="hasRole('ROLE_USER')" />
         <form-login login-page="/login.pinpoint" login-processing-url="/j_spring_security_check.pinpoint"
                     authentication-success-handler-ref="loginSuccessHandler"
                     authentication-failure-url="/login.pinpoint?error"
@@ -56,7 +56,7 @@
         <intercept-url pattern="/*.html" access="permitAll" />
         <intercept-url pattern="/login.pinpoint" access="permitAll" />
         <intercept-url pattern="/adminAPI???.pinpoint" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/**.pinpoint" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/**/**.pinpoint" access="hasRole('ROLE_USER')" />
         <form-login login-page="/login.pinpoint" login-processing-url="/j_spring_security_check.pinpoint"
                     default-target-url="/" authentication-failure-url="/login.pinpoint?error"
                     username-parameter="username" password-parameter="password" />
@@ -84,8 +84,8 @@
     <http auto-config="true">
         <intercept-url pattern="/index.html" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/*.html" access="permitAll" /> 
-        <intercept-url pattern="/login.pinpoint" access="permitAll" /> 
-        <intercept-url pattern="/**.pinpoint" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/login.pinpoint" access="permitAll" />
+        <intercept-url pattern="/**/**.pinpoint" access="hasRole('ROLE_USER')" />
         <form-login login-page="/login.pinpoint" login-processing-url="/j_spring_security_check.pinpoint"
                     default-target-url="/" authentication-failure-url="/login.pinpoint?error"
                     username-parameter="username" password-parameter="password" />
@@ -121,14 +121,14 @@
     <http auto-config="true">
         <session-management session-fixation-protection="none"/>
         <custom-filter position="PRE_AUTH_FILTER" ref="autoLoginAuthenticationFilter"/>
-        <intercept-url pattern="/**.pinpoint" access="permitAll" />
+        <intercept-url pattern="/**/**.pinpoint" access="permitAll" />
         <csrf disabled="true"/>
         <access-denied-handler ref="accessDeniedHandler"/>
         <headers>
             <frame-options policy="SAMEORIGIN" />
         </headers>
     </http>
-    
+
     <beans:bean id="accessDeniedHandler" class="com.navercorp.pinpoint.web.security.AccessDeniedhandlerImpl"/>
     <beans:bean id="autoLoginAuthenticationFilter" class="com.navercorp.pinpoint.web.security.AutoLoginAuthenticationFilter">
         <beans:constructor-arg index="0" value="KR14966"/>
