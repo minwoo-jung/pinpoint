@@ -8,6 +8,8 @@ import com.navercorp.pinpoint.collector.util.Address;
 import com.navercorp.pinpoint.collector.util.CollectorUtils;
 import com.navercorp.pinpoint.collector.util.DefaultAddress;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
+import com.navercorp.pinpoint.rpc.server.ChannelProperties;
+import com.navercorp.pinpoint.rpc.server.ChannelPropertiesFactory;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
 import com.navercorp.pinpoint.rpc.server.handler.ServerStateChangeEventHandler;
@@ -103,7 +105,10 @@ public class ClusterPointRouterTest {
         DefaultPinpointServer pinpointServer = createPinpointServer();
         pinpointServer.setChannelProperties(getParams());
 
-        ClusterPoint clusterPoint = new ThriftAgentConnection(pinpointServer);
+        ChannelPropertiesFactory factory = new ChannelPropertiesFactory();
+        ChannelProperties channelProperties = factory.newChannelProperties(getParams());
+
+        ClusterPoint clusterPoint = ThriftAgentConnection.newClusterPoint(pinpointServer, channelProperties);
 
         clusterPointRepository.addAndIsKeyCreated(clusterPoint);
         List<ClusterPoint> clusterPointList = clusterPointRepository.getClusterPointList();
@@ -113,10 +118,10 @@ public class ClusterPointRouterTest {
         Assert.assertNull(findClusterPoint("application", "a", -1L, clusterPointList));
         Assert.assertEquals(clusterPoint, findClusterPoint("application", "agent", currentTime, clusterPointList));
 
-        boolean isAdd = clusterPointRepository.addAndIsKeyCreated(new ThriftAgentConnection(pinpointServer));
+        boolean isAdd = clusterPointRepository.addAndIsKeyCreated(ThriftAgentConnection.newClusterPoint(pinpointServer, channelProperties));
         Assert.assertFalse(isAdd);
 
-        clusterPointRepository.removeAndGetIsKeyRemoved(new ThriftAgentConnection(pinpointServer));
+        clusterPointRepository.removeAndGetIsKeyRemoved(ThriftAgentConnection.newClusterPoint(pinpointServer, channelProperties));
         clusterPointList = clusterPointRepository.getClusterPointList();
 
         Assert.assertEquals(0, clusterPointList.size());

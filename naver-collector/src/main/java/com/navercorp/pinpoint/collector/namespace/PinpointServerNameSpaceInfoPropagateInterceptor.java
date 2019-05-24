@@ -17,10 +17,10 @@
 package com.navercorp.pinpoint.collector.namespace;
 
 import com.navercorp.pinpoint.collector.service.MetadataService;
+import com.navercorp.pinpoint.collector.service.async.AgentProperty;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.common.util.StringUtils;
-import com.navercorp.pinpoint.rpc.server.ChannelProperties;
 import com.navercorp.pinpoint.security.SecurityConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class PinpointServerNameSpaceInfoPropagateInterceptor {
         this.useDefaultNameSpaceInfo = useDefaultNameSpaceInfo;
     }
 
-    public void aroundAdvice(ProceedingJoinPoint joinPoint, ChannelProperties channelProperties) throws Throwable {
+    public void aroundAdvice(ProceedingJoinPoint joinPoint, AgentProperty channelProperties) throws Throwable {
         NameSpaceInfo nameSpaceInfo = getNameSpaceInfo(channelProperties);
         if (nameSpaceInfo == null) {
             if (useDefaultNameSpaceInfo) {
@@ -102,21 +102,24 @@ public class PinpointServerNameSpaceInfoPropagateInterceptor {
         RequestContextHolder.resetAttributes();
     }
 
-    private NameSpaceInfo getNameSpaceInfo(ChannelProperties channelProperties) {
-        String licenseKey = (String) channelProperties.get(SecurityConstants.KEY_LICENSE_KEY);
+    private NameSpaceInfo getNameSpaceInfo(AgentProperty channelProperties) {
+        if (channelProperties == null) {
+            return null;
+        }
+        final String licenseKey = (String) channelProperties.get(SecurityConstants.KEY_LICENSE_KEY);
         if (licenseKey == null) {
             return null;
         }
-        NameSpaceInfo nameSpaceInfo = nameSpaceInfoCache.get(licenseKey);
+        final NameSpaceInfo nameSpaceInfo = nameSpaceInfoCache.get(licenseKey);
         if (nameSpaceInfo != null) {
             return nameSpaceInfo;
         }
 
-        NameSpaceInfo newNameSpaceInfo = getNameSpaceInfoFromService(licenseKey);
+        final NameSpaceInfo newNameSpaceInfo = getNameSpaceInfoFromService(licenseKey);
         if (newNameSpaceInfo == null) {
             return null;
         }
-        NameSpaceInfo previous = nameSpaceInfoCache.putIfAbsent(licenseKey, newNameSpaceInfo);
+        final NameSpaceInfo previous = nameSpaceInfoCache.putIfAbsent(licenseKey, newNameSpaceInfo);
         if (previous != null) {
             return previous;
         }
@@ -124,13 +127,13 @@ public class PinpointServerNameSpaceInfoPropagateInterceptor {
     }
 
     private NameSpaceInfo getNameSpaceInfoFromService(String licenseKey) {
-        PaaSOrganizationKey organizationKey = metadataService.selectPaaSOrganizationkey(licenseKey);
+        final PaaSOrganizationKey organizationKey = metadataService.selectPaaSOrganizationkey(licenseKey);
         if (organizationKey == null) {
             logger.debug("PaaSOrganizationKey does not exist for licenseKey : {}", licenseKey);
             return null;
         }
 
-        PaaSOrganizationInfo paaSOrganizationInfo = metadataService.selectPaaSOrganizationInfo(organizationKey.getOrganization());
+        final PaaSOrganizationInfo paaSOrganizationInfo = metadataService.selectPaaSOrganizationInfo(organizationKey.getOrganization());
         if (paaSOrganizationInfo == null) {
             logger.debug("PaaSOrganizationInfo does not exist for organization : {}", organizationKey.getOrganization());
             return null;

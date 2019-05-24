@@ -30,7 +30,10 @@ import com.navercorp.pinpoint.rpc.ResponseMessage;
 import com.navercorp.pinpoint.rpc.client.DefaultPinpointClientFactory;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
+import com.navercorp.pinpoint.rpc.server.ChannelProperties;
+import com.navercorp.pinpoint.rpc.server.ChannelPropertiesFactory;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
+import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import com.navercorp.pinpoint.thrift.dto.command.TCommandEcho;
@@ -69,6 +72,8 @@ public class ClusterPointRouterCommandTest {
     @Autowired
     private DeserializerFactory commandDeserializerFactory;
 
+    private ChannelPropertiesFactory channelPropertiesFactory = new ChannelPropertiesFactory();
+
     @After
     public void cleanup() {
         ClusterPointRepository<ClusterPoint> targetClusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
@@ -106,7 +111,9 @@ public class ClusterPointRouterCommandTest {
             
             List<PinpointSocket> writablePinpointServerList = testCollectorAcceptor.getConnectedPinpointSocketList();
             for (PinpointSocket writablePinpointServer : writablePinpointServerList) {
-                ClusterPoint clusterPoint = new ThriftAgentConnection((DefaultPinpointServer)writablePinpointServer);
+                PinpointServer pinpointServer = (PinpointServer) writablePinpointServer;
+                ChannelProperties channelProperties = channelPropertiesFactory.newChannelProperties(pinpointServer.getChannelProperties());
+                ClusterPoint<byte[]> clusterPoint = ThriftAgentConnection.newClusterPoint(pinpointServer, channelProperties);
                 
                 ClusterPointRepository clusterPointRepository = clusterPointRouter.getTargetClusterPointRepository();
                 clusterPointRepository.addAndIsKeyCreated(clusterPoint);

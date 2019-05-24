@@ -22,12 +22,12 @@
 
         <aop:aspect id="agentEventServiceInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
             <aop:pointcut id="agentEventServicePointCut"
-                          expression="execution(public void com.navercorp.pinpoint.collector.service.async.AgentEventAsyncTaskService.handleEvent(com.navercorp.pinpoint.rpc.server.ChannelProperties,..)) and args(channelProperties,..)"/>
+                          expression="execution(public void com.navercorp.pinpoint.collector.service.async.AgentEventAsyncTaskService.handleEvent(com.navercorp.pinpoint.collector.service.async.AgentProperty,..)) and args(channelProperties,..)"/>
             <aop:around pointcut-ref="agentEventServicePointCut" method="aroundAdvice"/>
         </aop:aspect>
         <aop:aspect id="agentLifeCycleHandlerInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
             <aop:pointcut id="agentLifeCycleHandlerPointCut"
-                          expression="execution(public void com.navercorp.pinpoint.collector.service.async.AgentLifeCycleAsyncTaskService.handleLifeCycleEvent(com.navercorp.pinpoint.rpc.server.ChannelProperties,..)) and args(channelProperties,..)"/>
+                          expression="execution(public void com.navercorp.pinpoint.collector.service.async.AgentLifeCycleAsyncTaskService.handleLifeCycleEvent(com.navercorp.pinpoint.collector.service.async.AgentProperty,..)) and args(channelProperties,..)"/>
             <aop:around pointcut-ref="agentLifeCycleHandlerPointCut" method="aroundAdvice"/>
         </aop:aspect>
     </aop:config>

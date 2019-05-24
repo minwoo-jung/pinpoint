@@ -4,7 +4,9 @@ import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.cluster.ClusterPointStateChangedEventHandler;
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
 import com.navercorp.pinpoint.rpc.MessageListener;
+import com.navercorp.pinpoint.rpc.server.ChannelPropertiesFactory;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
+import com.navercorp.pinpoint.rpc.server.handler.ServerStateChangeEventHandler;
 import com.navercorp.pinpoint.test.client.TestPinpointClient;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
 import org.apache.curator.test.TestingServer;
@@ -60,7 +62,9 @@ public class ZookeeperProfilerClusterStressTest {
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
             serverAcceptor = new PinpointServerAcceptor();
-	        serverAcceptor.addStateChangeEventHandler(new ClusterPointStateChangedEventHandler(profiler));
+            ChannelPropertiesFactory propertiesFactory = new ChannelPropertiesFactory();
+            ServerStateChangeEventHandler eventHandler = new ClusterPointStateChangedEventHandler(propertiesFactory, profiler);
+	        serverAcceptor.addStateChangeEventHandler(eventHandler);
             serverAcceptor.setMessageListenerFactory(testServerMessageListenerFactory);
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 
@@ -103,7 +107,9 @@ public class ZookeeperProfilerClusterStressTest {
             ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
 
             serverAcceptor = new PinpointServerAcceptor();
-	        serverAcceptor.addStateChangeEventHandler(new ClusterPointStateChangedEventHandler(profiler));
+            ChannelPropertiesFactory propertiesFactory = new ChannelPropertiesFactory();
+            ServerStateChangeEventHandler eventHandler = new ClusterPointStateChangedEventHandler(propertiesFactory, profiler);
+	        serverAcceptor.addStateChangeEventHandler(eventHandler);
             serverAcceptor.setMessageListenerFactory(testServerMessageListenerFactory);
             serverAcceptor.bind("127.0.0.1", DEFAULT_ACCEPTOR_SOCKET_PORT);
 

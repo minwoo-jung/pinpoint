@@ -17,9 +17,13 @@
 package com.navercorp.pinpoint.collector.namespace;
 
 import com.navercorp.pinpoint.collector.service.MetadataService;
+import com.navercorp.pinpoint.collector.service.async.AgentProperty;
+import com.navercorp.pinpoint.collector.service.async.AgentPropertyChannelAdaptor;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.ChannelProperties;
+import com.navercorp.pinpoint.rpc.server.ChannelPropertiesFactory;
 import com.navercorp.pinpoint.rpc.server.DefaultChannelProperties;
 import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.security.SecurityConstants;
@@ -48,6 +52,8 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
 
     private final TestMetadataService metadataService = new TestMetadataService();
 
+    private final ChannelPropertiesFactory channelPropertiesFactory = new ChannelPropertiesFactory(SecurityConstants.KEY_LICENSE_KEY);
+
     private final PinpointServerNameSpaceInfoPropagateInterceptor interceptor = new PinpointServerNameSpaceInfoPropagateInterceptor(metadataService, false);
 
     @Test
@@ -55,10 +61,11 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
         final String licenseKey = "TEST";
         final NameSpaceInfo nameSpaceInfo = new NameSpaceInfo("test", "pinpoint", "default");
         metadataService.register(licenseKey, nameSpaceInfo);
-        PinpointServer pinpointServer = mockPinpointServerWithLicenseKey(licenseKey);
+        Map<Object, Object> properties =  mockPinpointServerWithLicenseKey(licenseKey);
         ProceedingJoinPoint proceedingJoinPoint = mockJoinPointForNameSpaceInfo(nameSpaceInfo);
-        ChannelProperties channelProperties = DefaultChannelProperties.newChannelProperties(pinpointServer.getChannelProperties());
-        interceptor.aroundAdvice(proceedingJoinPoint, channelProperties);
+        ChannelProperties channelProperties = channelPropertiesFactory.newChannelProperties(properties);
+        AgentProperty agentProperty = new AgentPropertyChannelAdaptor(channelProperties);
+        interceptor.aroundAdvice(proceedingJoinPoint, agentProperty);
     }
 
     @Test
@@ -73,9 +80,9 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
             final NameSpaceInfo nameSpaceInfo = new NameSpaceInfo("test_" + i, "pinpoint_" + i, "ns_" + i);
             metadataService.register(licenseKey, nameSpaceInfo);
             for (int j = 0; j < numTestsPerOrganization; j++) {
-                PinpointServer pinpointServer = mockPinpointServerWithLicenseKey(licenseKey);
+                Map<Object, Object> properties =  mockPinpointServerWithLicenseKey(licenseKey);
                 ProceedingJoinPoint proceedingJoinPoint = mockJoinPointForNameSpaceInfo(nameSpaceInfo);
-                testRunnables.add(new TestRunnable(pinpointServer, proceedingJoinPoint));
+                testRunnables.add(new TestRunnable(properties, proceedingJoinPoint));
             }
         }
         Collections.shuffle(testRunnables);
@@ -88,11 +95,11 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
     }
 
     private class TestRunnable implements Runnable {
-        private final PinpointServer pinpointServer;
+        private final Map<Object, Object> properties;
         private final ProceedingJoinPoint proceedingJoinPoint;
 
-        private TestRunnable(PinpointServer pinpointServer, ProceedingJoinPoint proceedingJoinPoint) {
-            this.pinpointServer = pinpointServer;
+        private TestRunnable(Map<Object, Object> properties, ProceedingJoinPoint proceedingJoinPoint) {
+            this.properties = properties;
             this.proceedingJoinPoint = proceedingJoinPoint;
         }
 
@@ -100,8 +107,9 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
         public void run() {
             Assert.assertNull(RequestContextHolder.getAttributes());
             try {
-                ChannelProperties channelProperties = DefaultChannelProperties.newChannelProperties(pinpointServer.getChannelProperties());
-                interceptor.aroundAdvice(proceedingJoinPoint, channelProperties);
+                ChannelProperties channelProperties = channelPropertiesFactory.newChannelProperties(properties);
+                AgentProperty agentProperty = new AgentPropertyChannelAdaptor(channelProperties);
+                interceptor.aroundAdvice(proceedingJoinPoint, agentProperty);
             } catch (AssertionError e) {
                 throw e;
             } catch (Throwable t) {
@@ -154,11 +162,13 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
         return proceedingJoinPoint;
     }
 
-    private static PinpointServer mockPinpointServerWithLicenseKey(String licenseKey) {
-        Map<Object, Object> channelProperties = Collections.singletonMap(SecurityConstants.KEY_LICENSE_KEY, licenseKey);
-        PinpointServer pinpointServer = mock(PinpointServer.class);
-        when(pinpointServer.getChannelProperties()).thenReturn(channelProperties);
-        return pinpointServer;
+    private static Map<Object, Object> mockPinpointServerWithLicenseKey(String licenseKey) {
+        Map<Object, Object> channelProperties = new HashMap<>();
+        channelProperties.put(HandshakePropertyType.AGENT_ID.getName(), "agentId");
+        channelProperties.put(HandshakePropertyType.APPLICATION_NAME.getName(), "appName");
+        channelProperties.put(SecurityConstants.KEY_LICENSE_KEY, licenseKey);
+
+        return channelProperties;
     }
 
     private static void verifyNameSpaceInfo(NameSpaceInfo expected, NameSpaceInfo actual) {
