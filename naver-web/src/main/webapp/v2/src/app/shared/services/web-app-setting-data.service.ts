@@ -35,8 +35,12 @@ export class WebAppSettingDataService {
         USER_DEFAULT_PERIOD: 'userDefaultPeriod',
         TRANSACTION_LIST_GUTTER_POSITION: 'transactionListGutterPosition',
         CHART_NUM_PER_ROW: 'chartNumPerRow',
-        CHART_ORDER_LIST: 'chartOrderList',
-        CHART_VISIBLE_STATE: 'chartVisibleState'
+        // APPLICATION_CHART_ORDER_LIST: 'applicationChartOrderList',
+        // APPLICATION_CHART_VISIBLE_STATE: 'applicationChartVisibleState',
+        // AGENT_CHART_ORDER_LIST: 'agentChartOrderList',
+        // AGENT_CHART_VISIBLE_STATE: 'agentChartVisibleState',
+        APPLICATION_CHART_LAYOUT_INFO: 'applicationChartLayoutInfo',
+        AGENT_CHART_LAYOUT_INFO: 'agentChartLayoutInfo',
     };
     private unsubscribe: Subject<null> = new Subject();
     private favoriteApplicationList: IFavoriteApplication[] = [];
@@ -265,24 +269,10 @@ export class WebAppSettingDataService {
     getSystemDefaultChartRefreshInterval(key: string): number {
         return this.componentDefaultSettingDataService.getSystemDefaultChartRefreshInterval(key);
     }
-    getChartDefaultOrderList(): string[] {
-        return this.componentDefaultSettingDataService.getSystemDefaultChartOrderList();
+    getApplicationInspectorDefaultChartList(): string[] {
+        return this.componentDefaultSettingDataService.getApplicationInspectorDefaultChartOrderList();
     }
-    getChartOrderList(): string[] {
-        return this.localStorageService.get(WebAppSettingDataService.KEYS.CHART_ORDER_LIST) ||
-            this.componentDefaultSettingDataService.getSystemDefaultChartOrderList().concat([]);
-    }
-    setChartOrderList(orderList: string[]): void {
-        this.localStorageService.set(WebAppSettingDataService.KEYS.CHART_ORDER_LIST, orderList);
-    }
-    getChartVisibleState(): {[key: string]: boolean} {
-        return this.localStorageService.get(WebAppSettingDataService.KEYS.CHART_VISIBLE_STATE) ||
-            this.componentDefaultSettingDataService.getSystemDefaultChartOrderList().reduce((accu: any, currentChart: string) => {
-                accu[currentChart] = true;
-                return accu;
-            }, {});
-    }
-    setChartVisibleState(chartState: {[key: string]: boolean}): void {
-        this.localStorageService.set(WebAppSettingDataService.KEYS.CHART_VISIBLE_STATE, chartState);
+    getAgentInspectorDefaultChartList(): string[] {
+        return this.componentDefaultSettingDataService.getAgentInspectorDefaultChartOrderList();
     }
 }
