@@ -28,6 +28,7 @@ import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenRequest;
 import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenResponse;
 import com.navercorp.pinpoint.grpc.auth.PTokenResponseCode;
 import com.navercorp.pinpoint.grpc.auth.PTokenType;
+import com.navercorp.pinpoint.grpc.server.DefaultTransportMetadata;
 import com.navercorp.pinpoint.grpc.server.ServerContext;
 import com.navercorp.pinpoint.grpc.server.TransportMetadata;
 import io.grpc.Context;
@@ -128,17 +129,7 @@ public class AuthTokenServiceTest {
     }
 
     private TransportMetadata createTransportMetaData(InetSocketAddress remoteAddress, long transportId) {
-        return new TransportMetadata() {
-            @Override
-            public InetSocketAddress getRemoteAddress() {
-                return remoteAddress;
-            }
-
-            @Override
-            public long getTransportId() {
-                return transportId;
-            }
-        };
+        return new DefaultTransportMetadata(remoteAddress, transportId, System.currentTimeMillis());
     }
 
     private void attachContext(TransportMetadata transportMetadata) {
