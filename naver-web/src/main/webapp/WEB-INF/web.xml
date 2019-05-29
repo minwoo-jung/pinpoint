@@ -104,6 +104,7 @@
          <filter-name>springSecurityFilterChain</filter-name>
          <url-pattern>*.pinpoint</url-pattern>
          <url-pattern>/index.html</url-pattern>
+         <url-pattern>/v2/index.html</url-pattern>
          <url-pattern>*.pinpointws</url-pattern>
      </filter-mapping>
 

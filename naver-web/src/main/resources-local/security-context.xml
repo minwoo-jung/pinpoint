@@ -11,6 +11,7 @@
 
     <http auto-config="true">
         <custom-filter position="PRE_AUTH_FILTER" ref="preAuthenticationFilter"/>
+        <intercept-url pattern="/v2/index.html" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/index.html" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/*.html" access="permitAll" />
         <intercept-url pattern="/login.pinpoint" access="permitAll" />
@@ -52,6 +53,7 @@
     <!-- #############오픈소스용 간단 인증 시스템 ####9##########-->
     <!--
     <http auto-config="true">
+        <intercept-url pattern="/v2/index.html" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/index.html" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/*.html" access="permitAll" />
         <intercept-url pattern="/login.pinpoint" access="permitAll" />
@@ -82,8 +84,9 @@
     <http pattern="/getApplicationHostInfo.pinpoint" security="none"/>
 
     <http auto-config="true">
+        <intercept-url pattern="/v2/index.html" access="hasRole('ROLE_USER')" />
         <intercept-url pattern="/index.html" access="hasRole('ROLE_USER')" />
-        <intercept-url pattern="/*.html" access="permitAll" /> 
+        <intercept-url pattern="/*.html" access="permitAll" />
         <intercept-url pattern="/login.pinpoint" access="permitAll" />
         <intercept-url pattern="/**/**.pinpoint" access="hasRole('ROLE_USER')" />
         <form-login login-page="/login.pinpoint" login-processing-url="/j_spring_security_check.pinpoint"
@@ -103,7 +106,7 @@
 
     <beans:bean id="webSocketSecurityConfig" class="com.navercorp.pinpoint.web.security.WebSocketSecurityConfig"/>
     <beans:bean id="handshakeInterceptor" class="com.navercorp.pinpoint.web.security.WebSocketSecurityInterceptor"/>
-    
+
     <beans:bean id="MetaDataFilter" class="com.navercorp.pinpoint.web.security.MetaDataFilterImpl"/>
     <beans:bean id="serverMapDataFilter" class="com.navercorp.pinpoint.web.security.ServerMapDataFilterImpl"/>
     -->
