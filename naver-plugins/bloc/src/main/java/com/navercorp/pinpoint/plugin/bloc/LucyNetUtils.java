@@ -88,7 +88,7 @@ public class LucyNetUtils {
             String namespace = npcMessage.getNamespace();
             String objectName = ((Call) call).getObjectName();
             String methodName = ((Call) call).getMethodName();
-            if (namespace.equals(NAMESPACE_URA)) {
+            if (NAMESPACE_URA.equals(namespace)) {
                 rpcNameBuilder.append(methodName);
             } else {
                 rpcNameBuilder.append(objectName);
