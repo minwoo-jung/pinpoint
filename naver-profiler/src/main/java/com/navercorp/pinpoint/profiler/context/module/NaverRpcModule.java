@@ -23,18 +23,22 @@ import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.profiler.NaverProfilerConfigConstants;
 import com.navercorp.pinpoint.profiler.context.provider.CommandDispatcherProvider;
-import com.navercorp.pinpoint.profiler.context.provider.thrift.HeaderTBaseSerializerProvider;
 import com.navercorp.pinpoint.profiler.context.provider.NaverConnectionFactoryProviderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.NaverTcpDataSenderProvider;
-import com.navercorp.pinpoint.profiler.context.provider.thrift.PinpointClientFactoryProvider;
-import com.navercorp.pinpoint.profiler.context.provider.thrift.SpanDataSenderProvider;
-import com.navercorp.pinpoint.profiler.context.provider.thrift.SpanStatClientFactoryProvider;
-import com.navercorp.pinpoint.profiler.context.provider.thrift.StatDataSenderProvider;
-import com.navercorp.pinpoint.profiler.context.provider.thrift.TcpDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenEnableConnectionFactoryProviderProvider;
-import com.navercorp.pinpoint.profiler.context.provider.TokenEnableSpanStatClientFactoryProvider;
+import com.navercorp.pinpoint.profiler.context.provider.TokenEnableSpanClientFactoryProvider;
+import com.navercorp.pinpoint.profiler.context.provider.TokenEnableStatClientFactoryProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenHeaderTBaseSerializerProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenServiceProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.HeaderTBaseSerializerProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.PinpointClientFactoryProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.SpanClientFactoryProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.SpanDataSenderProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.SpanStatChannelFactoryProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.SpanStatConnectTimerProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.StatClientFactoryProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.StatDataSenderProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.TcpDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.service.TokenService;
 import com.navercorp.pinpoint.profiler.receiver.CommandDispatcher;
 import com.navercorp.pinpoint.profiler.sender.DataSender;
@@ -42,6 +46,8 @@ import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.rpc.client.ConnectionFactoryProvider;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializer;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.util.Timer;
 
 /**
  * @author Taejin Koo
@@ -69,6 +75,11 @@ public class NaverRpcModule extends PrivateModule {
         bind(pinpointClientFactory).toProvider(PinpointClientFactoryProvider.class).in(Scopes.SINGLETON);
         expose(pinpointClientFactory);
 
+        Key<Timer> spanStatConnectTimer = Key.get(Timer.class, SpanStatConnectTimer.class);
+        bind(spanStatConnectTimer).toProvider(SpanStatConnectTimerProvider.class).in(Scopes.SINGLETON);
+
+        Key<ChannelFactory> spanStatChannelFactory = Key.get(ChannelFactory.class, SpanStatChannelFactory.class);
+        bind(spanStatChannelFactory).toProvider(SpanStatChannelFactoryProvider.class).in(Scopes.SINGLETON);
 
         if (securityType == SECURITY_TYPE.TOKEN) {
             bind(EnhancedDataSender.class).toProvider(NaverTcpDataSenderProvider.class).in(Scopes.SINGLETON);
@@ -80,19 +91,26 @@ public class NaverRpcModule extends PrivateModule {
 
             bind(ConnectionFactoryProvider.class).annotatedWith(TokenEnableConnectionFactoryProvider.class).toProvider(TokenEnableConnectionFactoryProviderProvider.class);
 
-            Key<PinpointClientFactory> pinpointStatClientFactory = Key.get(PinpointClientFactory.class, SpanStatClientFactory.class);
-            bind(pinpointStatClientFactory).toProvider(TokenEnableSpanStatClientFactoryProvider.class).in(Scopes.SINGLETON);
+            Key<PinpointClientFactory> spanClientFactory = Key.get(PinpointClientFactory.class, SpanClientFactory.class);
+            bind(spanClientFactory).toProvider(TokenEnableSpanClientFactoryProvider.class).in(Scopes.SINGLETON);
+            expose(spanClientFactory);
 
-            expose(pinpointStatClientFactory);
+            Key<PinpointClientFactory> statClientFactory = Key.get(PinpointClientFactory.class, StatClientFactory.class);
+            bind(statClientFactory).toProvider(TokenEnableStatClientFactoryProvider.class).in(Scopes.SINGLETON);
+            expose(statClientFactory);
         } else {
             bind(EnhancedDataSender.class).toProvider(TcpDataSenderProvider.class).in(Scopes.SINGLETON);
             expose(EnhancedDataSender.class);
 
             bind(HeaderTBaseSerializer.class).toProvider(HeaderTBaseSerializerProvider.class).in(Scopes.SINGLETON);
 
-            Key<PinpointClientFactory> pinpointStatClientFactory = Key.get(PinpointClientFactory.class, SpanStatClientFactory.class);
-            bind(pinpointStatClientFactory).toProvider(SpanStatClientFactoryProvider.class).in(Scopes.SINGLETON);
-            expose(pinpointStatClientFactory);
+            Key<PinpointClientFactory> spanClientFactory = Key.get(PinpointClientFactory.class, SpanClientFactory.class);
+            bind(spanClientFactory).toProvider(SpanClientFactoryProvider.class).in(Scopes.SINGLETON);
+            expose(spanClientFactory);
+
+            Key<PinpointClientFactory> statClientFactory = Key.get(PinpointClientFactory.class, StatClientFactory.class);
+            bind(statClientFactory).toProvider(StatClientFactoryProvider.class).in(Scopes.SINGLETON);
+            expose(statClientFactory);
         }
 
         Key<DataSender> spanDataSender = Key.get(DataSender.class, SpanDataSender.class);
