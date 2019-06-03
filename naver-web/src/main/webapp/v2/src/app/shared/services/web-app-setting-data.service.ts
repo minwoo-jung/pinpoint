@@ -15,7 +15,7 @@ import { Application, Period } from 'app/core/models';
 import { DynamicPopupService } from 'app/shared/services/dynamic-popup.service';
 import { ServerErrorPopupContainerComponent } from 'app/core/components/server-error-popup';
 import { NewUrlStateNotificationService } from 'app/shared/services/new-url-state-notification.service';
-import { UserConfigurationDataService } from 'app/shared/services/user-configuration-data.service';
+import { FavoriteApplicationListDataService } from 'app/shared/services/favorite-application-list-data.service';
 
 interface IMinMax {
     min: number;
@@ -35,10 +35,6 @@ export class WebAppSettingDataService {
         USER_DEFAULT_PERIOD: 'userDefaultPeriod',
         TRANSACTION_LIST_GUTTER_POSITION: 'transactionListGutterPosition',
         CHART_NUM_PER_ROW: 'chartNumPerRow',
-        // APPLICATION_CHART_ORDER_LIST: 'applicationChartOrderList',
-        // APPLICATION_CHART_VISIBLE_STATE: 'applicationChartVisibleState',
-        // AGENT_CHART_ORDER_LIST: 'agentChartOrderList',
-        // AGENT_CHART_VISIBLE_STATE: 'agentChartVisibleState',
         APPLICATION_CHART_LAYOUT_INFO: 'applicationChartLayoutInfo',
         AGENT_CHART_LAYOUT_INFO: 'agentChartLayoutInfo',
     };
@@ -55,7 +51,7 @@ export class WebAppSettingDataService {
         private componentDefaultSettingDataService: ComponentDefaultSettingDataService,
         private dynamicPopupService: DynamicPopupService,
         private newUrlStateNotificationService: NewUrlStateNotificationService,
-        private userConfigurationDataService: UserConfigurationDataService,
+        private favoriteApplicationListDataService: FavoriteApplicationListDataService,
         private componentFactoryResolver: ComponentFactoryResolver,
         private injector: Injector
     ) {
@@ -135,7 +131,7 @@ export class WebAppSettingDataService {
         return this.componentDefaultSettingDataService.getColorByRequest();
     }
     private saveFavoriteList(newFavoriateApplicationList: IFavoriteApplication[], application: IFavoriteApplication): void {
-        this.userConfigurationDataService.saveFavoriteList(newFavoriateApplicationList).subscribe((result: any) => {
+        this.favoriteApplicationListDataService.saveFavoriteList(newFavoriateApplicationList).subscribe((result: any) => {
             if (result.result === 'SUCCESS') {
                 if (this.favoriteApplicationList.length > newFavoriateApplicationList.length) {
                     this.store.dispatch(new Actions.RemoveFavoriteApplication([

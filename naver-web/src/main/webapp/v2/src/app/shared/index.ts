@@ -48,6 +48,7 @@ import { ApplicationListDataService } from './services/application-list-data.ser
 import { UserConfigurationDataService } from './services/user-configuration-data.service';
 import { UserConfigurationResolverService } from './services/user-configuration-resolver.service';
 import { UserPermissionCheckService } from './services/user-permission-check.service';
+import { FavoriteApplicationListDataService } from './services/favorite-application-list-data.service';
 import { SafeStylePipe } from './pipes/safe-style.pipe';
 
 @NgModule({
@@ -129,7 +130,8 @@ export class SharedModule {
                 WindowRefService,
                 UserConfigurationDataService,
                 UserConfigurationResolverService,
-                UserPermissionCheckService
+                UserPermissionCheckService,
+                FavoriteApplicationListDataService
             ]
         }
     }
