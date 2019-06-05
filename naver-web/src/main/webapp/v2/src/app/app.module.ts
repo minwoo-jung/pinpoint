@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { APP_BASE_HREF } from '@angular/common';
 import { COMPOSITION_BUFFER_MODE } from '@angular/forms';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateCustomHttpLoader } from 'app/core/utils/translate-custom-http-loader';
 
 import { httpInterceptorProviders } from 'app/core/httpInterceptor';
 import { AppComponent } from 'app/app.component';
@@ -17,8 +17,10 @@ import { reducers } from 'app/shared/store';
 import { AppRoutingModule } from 'app/app.routing';
 import { SERVER_MAP_TYPE, ServerMapType } from 'app/core/components/server-map/class/server-map-factory';
 
+
+
 export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
+    return new TranslateCustomHttpLoader(http, 'assets/i18n/', '.json');
 }
 
 @NgModule({
