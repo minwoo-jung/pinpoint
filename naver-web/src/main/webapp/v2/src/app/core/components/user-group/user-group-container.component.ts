@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { combineLatest } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
+import { TranslateReplaceService, UserPermissionCheckService, WebAppSettingDataService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { UserGroupDataService, IUserGroup, IUserGroupCreated, IUserGroupDeleted } from './user-group-data.service';
 import { isThatType } from 'app/core/utils/util';
 
@@ -32,7 +32,7 @@ export class UserGroupContainerComponent implements OnInit {
     errorMessage: string;
     selectedUserGroupId = '';
     constructor(
-        private userConfigurationDataService: UserConfigurationDataService,
+        private webAppSettingDataService: WebAppSettingDataService,
         private userGroupDataService: UserGroupDataService,
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
@@ -42,12 +42,14 @@ export class UserGroupContainerComponent implements OnInit {
     ) {}
     ngOnInit() {
         this.getI18NText();
-        this.userId = this.userConfigurationDataService.getUserId();
-        if (this.userPermissionCheckService.canEditAllUserGroup()) {
-            this.getUserGroupList();
-        } else {
-            this.getUserGroupList({userId: this.userId});
-        }
+        this.webAppSettingDataService.getUserId().subscribe((userId: string) => {
+            this.userId = userId;
+            if (this.userPermissionCheckService.canEditAllUserGroup()) {
+                this.getUserGroupList();
+            } else {
+                this.getUserGroupList({userId: this.userId});
+            }
+        });
         this.canAddUserGroup = this.userPermissionCheckService.canAddUserGroup();
     }
     private getI18NText(): void {

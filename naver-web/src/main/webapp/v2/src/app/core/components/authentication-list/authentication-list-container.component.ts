@@ -3,7 +3,7 @@ import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TranslateReplaceService, UserPermissionCheckService, UserConfigurationDataService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
+import { WebAppSettingDataService, TranslateReplaceService, UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
 import { IParam } from './authentication-list.component';
@@ -32,6 +32,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     userGroupList: string[] = [];
     filteredUserGroupList: string[];
 
+    userId: string;
     noPermMessage: string;
     i18nLabel: ILabel;
     i18nGuide: { [key: string]: IFormFieldErrorType };
@@ -40,7 +41,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         private changeDetectorRef: ChangeDetectorRef,
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
-        private userConfigurationDataService: UserConfigurationDataService,
+        private webAppSettingDataService: WebAppSettingDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private userGroupDataSerivce: UserGroupDataService,
         private authenticationDataService: AuthenticationDataService,
@@ -53,6 +54,9 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         if (this.hasUpdateAndRemoveAuthority) {
             this.loadUserData();
         }
+        this.webAppSettingDataService.getUserId().subscribe((userId: string) => {
+            this.userId = userId;
+        });
         this.connectApplicationList();
         this.connectAuthenticationComponent();
         this.getI18NText();
@@ -64,7 +68,7 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
     private loadUserData(): void {
         this.userGroupDataSerivce.retrieve(
             this.userPermissionCheckService.canUpdateAndRemoveAuth(this.isManager())
-            ? {} : { userId: this.userConfigurationDataService.getUserId() }
+            ? {} : { userId: this.userId }
         ).pipe(
             takeUntil(this.unsubscribe)
         ).subscribe((userGroupList: IUserGroup[]) => {

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { UserPermissionCheckService, UserConfigurationDataService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
+import { WebAppSettingDataService, UserPermissionCheckService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { GroupMemberDataService, IGroupMember, IGroupMemberResponse } from './group-member-data.service';
 import { isThatType } from 'app/core/utils/util';
 
@@ -23,14 +23,16 @@ export class GroupMemberContainerComponent implements OnInit, OnDestroy {
     errorMessage: string;
 
     constructor(
-        private userConfigurationDataService: UserConfigurationDataService,
+        private webAppSettingDataService: WebAppSettingDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private groupMemberDataService: GroupMemberDataService,
         private messageQueueService: MessageQueueService,
         private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
-        this.userId = this.userConfigurationDataService.getUserId();
+        this.webAppSettingDataService.getUserId().subscribe((userId: string) => {
+            this.userId = userId;
+        });
         this.canRemoveAllGroupMember = this.userPermissionCheckService.canRemoveAllGroupMember();
         this.canRemoveAllGroupMemberExceptMe = this.userPermissionCheckService.canRemoveAllGroupMemberExceptMe();
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((param: any[]) => {

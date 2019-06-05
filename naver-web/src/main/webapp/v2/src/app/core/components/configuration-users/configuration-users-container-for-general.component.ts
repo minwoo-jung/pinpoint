@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap, filter } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 
-import { UserConfigurationDataService } from 'app/shared/services';
+import { WebAppSettingDataService } from 'app/shared/services';
 import { ConfigurationUsersDataService, IUserInfo } from './configuration-users-data.service';
 import { isThatType } from 'app/core/utils/util';
 
@@ -16,20 +16,21 @@ export class ConfigurationUsersContainerForGeneralComponent implements OnInit {
     errorMessage: string;
 
     constructor(
-        private userConfigurationDataService: UserConfigurationDataService,
+        private webAppSettingDataService: WebAppSettingDataService,
         private configurationUsersDataService: ConfigurationUsersDataService
     ) {}
 
     ngOnInit() {
-        const userId = this.userConfigurationDataService.getUserId();
+        this.webAppSettingDataService.getUserId().subscribe((userId: string) => {
+            this.userInfo$ = this.configurationUsersDataService.selectUser(userId).pipe(
+                filter((data: IUserInfo | IServerErrorShortFormat) => {
+                    return isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
+                        ? (this.errorMessage = data.errorMessage, false)
+                        : true;
+                })
+            );
+        });
 
-        this.userInfo$ = this.configurationUsersDataService.selectUser(userId).pipe(
-            filter((data: IUserInfo | IServerErrorShortFormat) => {
-                return isThatType<IServerErrorShortFormat>(data, 'errorCode', 'errorMessage')
-                    ? (this.errorMessage = data.errorMessage, false)
-                    : true
-            })
-        )
     }
 
     onCloseErrorMessage(): void {
