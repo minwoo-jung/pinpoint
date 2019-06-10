@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.collector.namespace;
 
-import com.navercorp.pinpoint.collector.service.MetadataService;
+import com.navercorp.pinpoint.collector.service.NamespaceService;
 import com.navercorp.pinpoint.collector.service.async.AgentProperty;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
@@ -34,18 +34,18 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author HyunGil Jeong
  */
-public class PinpointServerNameSpaceInfoPropagateInterceptor {
+public class NameSpaceInfoPropagateInterceptor {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Map<String, NameSpaceInfo> nameSpaceInfoCache = new ConcurrentHashMap<>();
 
-    private final MetadataService metadataService;
+    private final NamespaceService namespaceService;
 
     private final boolean useDefaultNameSpaceInfo;
 
-    public PinpointServerNameSpaceInfoPropagateInterceptor(boolean useDefaultNameSpaceInfo) {
-        this(new MetadataService() {
+    public NameSpaceInfoPropagateInterceptor(boolean useDefaultNameSpaceInfo) {
+        this(new NamespaceService() {
             @Override
             public PaaSOrganizationKey selectPaaSOrganizationkey(String licenseKey) {
                 return null;
@@ -58,8 +58,8 @@ public class PinpointServerNameSpaceInfoPropagateInterceptor {
         }, useDefaultNameSpaceInfo);
     }
 
-    public PinpointServerNameSpaceInfoPropagateInterceptor(MetadataService metadataService, boolean useDefaultNameSpaceInfo) {
-        this.metadataService = Objects.requireNonNull(metadataService, "metadataService must not be null");
+    public NameSpaceInfoPropagateInterceptor(NamespaceService namespaceService, boolean useDefaultNameSpaceInfo) {
+        this.namespaceService = Objects.requireNonNull(namespaceService, "namespaceService must not be null");
         this.useDefaultNameSpaceInfo = useDefaultNameSpaceInfo;
     }
 
@@ -127,13 +127,13 @@ public class PinpointServerNameSpaceInfoPropagateInterceptor {
     }
 
     private NameSpaceInfo getNameSpaceInfoFromService(String licenseKey) {
-        final PaaSOrganizationKey organizationKey = metadataService.selectPaaSOrganizationkey(licenseKey);
+        final PaaSOrganizationKey organizationKey = namespaceService.selectPaaSOrganizationkey(licenseKey);
         if (organizationKey == null) {
             logger.debug("PaaSOrganizationKey does not exist for licenseKey : {}", licenseKey);
             return null;
         }
 
-        final PaaSOrganizationInfo paaSOrganizationInfo = metadataService.selectPaaSOrganizationInfo(organizationKey.getOrganization());
+        final PaaSOrganizationInfo paaSOrganizationInfo = namespaceService.selectPaaSOrganizationInfo(organizationKey.getOrganization());
         if (paaSOrganizationInfo == null) {
             logger.debug("PaaSOrganizationInfo does not exist for organization : {}", organizationKey.getOrganization());
             return null;

@@ -35,20 +35,20 @@ import static org.junit.Assert.assertNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-metadata-test.xml")
 @ActiveProfiles("tokenAuthentication")
-public class MetadataCacheImplTest {
+public class NamespaceCacheImplTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    MetadataCache metadatacache;
+    NamespaceCache metadatacache;
 
     @Test
     public void selectPaaSOrganizationkeyTest() {
         String organizationId = metadatacache.selectPaaSOrganizationkey("key");
-        assertEquals(organizationId, MetadataCache.NOT_EXIST_ORGANIZATION);
+        assertEquals(organizationId, NamespaceCache.NOT_EXIST_ORGANIZATION);
 
         String organizationId2 = metadatacache.selectPaaSOrganizationkey("key");
-        assertEquals(organizationId2, MetadataCache.NOT_EXIST_ORGANIZATION);
+        assertEquals(organizationId2, NamespaceCache.NOT_EXIST_ORGANIZATION);
 
         String organizationId3 = metadatacache.selectPaaSOrganizationkey("navertestkey");
         assertEquals(organizationId3, "navertest");

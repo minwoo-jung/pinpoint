@@ -19,7 +19,7 @@ package com.navercorp.pinpoint.collector.receiver.grpc.service;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.BytesValue;
 import com.google.protobuf.StringValue;
-import com.navercorp.pinpoint.collector.service.MetadataService;
+import com.navercorp.pinpoint.collector.service.NamespaceService;
 import com.navercorp.pinpoint.collector.service.TokenService;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
@@ -55,7 +55,7 @@ public class AuthTokenService extends AuthGrpc.AuthImplBase {
     private TokenService tokenService;
 
     @Autowired
-    private MetadataService metadataService;
+    private NamespaceService namespaceService;
 
     @Override
     public void getToken(PCmdGetTokenRequest request, StreamObserver<PCmdGetTokenResponse> responseObserver) {
@@ -69,14 +69,14 @@ public class AuthTokenService extends AuthGrpc.AuthImplBase {
             }
 
             String licenseKey = request.getLicenseKey().getValue().toStringUtf8();
-            PaaSOrganizationKey paasKey = metadataService.selectPaaSOrganizationkey(licenseKey);
+            PaaSOrganizationKey paasKey = namespaceService.selectPaaSOrganizationkey(licenseKey);
             if (paasKey == null) {
                 doResponse(responseObserver, PTokenResponseCode.UNAUTHORIZED);
                 return;
             }
 
             String organization = paasKey.getOrganization();
-            PaaSOrganizationInfo organizationInfo = metadataService.selectPaaSOrganizationInfo(organization);
+            PaaSOrganizationInfo organizationInfo = namespaceService.selectPaaSOrganizationInfo(organization);
             if (organizationInfo == null || !verifyPaaSOrganizationInfo(organizationInfo)) {
                 doResponse(responseObserver, PTokenResponseCode.INTERNAL_SERVER_ERROR);
                 return;

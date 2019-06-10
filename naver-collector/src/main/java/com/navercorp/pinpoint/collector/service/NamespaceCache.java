@@ -16,14 +16,15 @@
 package com.navercorp.pinpoint.collector.service;
 
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
-import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 
 /**
  * @author minwoo.jung
  */
-public interface MetadataService {
+public interface NamespaceCache {
 
-    PaaSOrganizationKey selectPaaSOrganizationkey(String licenseKey);
+    public static final String NOT_EXIST_ORGANIZATION = "NOT_EXIST_ORGANIZATION";
 
-    PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
+    String selectPaaSOrganizationkey(String key);
+
+    PaaSOrganizationInfo selectPaaSOrganizationInfo(String key);
 }

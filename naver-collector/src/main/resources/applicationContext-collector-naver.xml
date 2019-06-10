@@ -58,8 +58,9 @@
         </bean>
 
         <bean id="authenticationTCPPacketHandlerFactory" class="com.navercorp.pinpoint.collector.receiver.thrift.tcp.security.token.TokenEnableTCPPacketHandlerFactory">
-            <property name="serializerFactory" ref="authenticationTBaseSerializerFactory"/>
-            <property name="deserializerFactory" ref="authenticationTBaseDeserializerFactory"/>
+            <constructor-arg ref="authenticationTBaseSerializerFactory"/>
+            <constructor-arg ref="authenticationTBaseDeserializerFactory"/>
+            <constructor-arg ref="namespaceService"/>
         </bean>
 
         <bean id="tcpReceiver" class="com.navercorp.pinpoint.collector.receiver.thrift.tcp.AgentBaseDataReceiver" >

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -39,11 +40,14 @@ public class TokenServiceImpl implements TokenService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
 
-    @Autowired
-    private TokenConfig tokenConfig;
+    private final TokenConfig tokenConfig;
+    private final TokenDao tokenDao;
 
     @Autowired
-    private TokenDao tokenDao;
+    public TokenServiceImpl(TokenConfig tokenConfig, TokenDao tokenDao) {
+        this.tokenConfig = Objects.requireNonNull(tokenConfig, "tokenConfig must not be null");
+        this.tokenDao = Objects.requireNonNull(tokenDao, "tokenDao must not be null");
+    }
 
     @Override
     public Token create(TokenCreateRequest request) {

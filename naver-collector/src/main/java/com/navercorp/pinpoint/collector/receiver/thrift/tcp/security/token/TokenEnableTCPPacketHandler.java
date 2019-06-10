@@ -20,7 +20,7 @@ import com.navercorp.pinpoint.collector.namespace.NameSpaceInfo;
 import com.navercorp.pinpoint.collector.receiver.DispatchHandler;
 import com.navercorp.pinpoint.collector.receiver.thrift.tcp.TCPPacketHandler;
 import com.navercorp.pinpoint.collector.receiver.thrift.tcp.TCPServerResponse;
-import com.navercorp.pinpoint.collector.service.MetadataService;
+import com.navercorp.pinpoint.collector.service.NamespaceService;
 import com.navercorp.pinpoint.collector.util.PacketUtils;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
@@ -50,6 +50,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Taejin Koo
@@ -64,15 +65,15 @@ public class TokenEnableTCPPacketHandler implements TCPPacketHandler {
     private final SerializerFactory<HeaderTBaseSerializer> serializerFactory;
     private final DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory;
 
-    private final MetadataService metadataService;
+    private final NamespaceService namespaceService;
 
-    private ConcurrentHashMap<String, NameSpaceInfo> namespaceMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, NameSpaceInfo> namespaceMap = new ConcurrentHashMap<>();
 
-    public TokenEnableTCPPacketHandler(DispatchHandler dispatchHandler, SerializerFactory<HeaderTBaseSerializer> serializerFactory, DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory, MetadataService metadataService) {
+    public TokenEnableTCPPacketHandler(DispatchHandler dispatchHandler, SerializerFactory<HeaderTBaseSerializer> serializerFactory, DeserializerFactory<HeaderTBaseDeserializer> deserializerFactory, NamespaceService namespaceService) {
         this.dispatchHandler = Objects.requireNonNull(dispatchHandler, "dispatchHandler must not be null");
         this.serializerFactory = Objects.requireNonNull(serializerFactory, "serializerFactory must not be null");
         this.deserializerFactory = Objects.requireNonNull(deserializerFactory, "deserializerFactory must not be null");
-        this.metadataService = Assert.requireNonNull(metadataService, "metadataService must not be null");
+        this.namespaceService = Assert.requireNonNull(namespaceService, "namespaceService must not be null");
     }
 
     @Override
@@ -160,17 +161,17 @@ public class TokenEnableTCPPacketHandler implements TCPPacketHandler {
         if (headerEntity == null) {
             return null;
         }
-        String licenseKey = headerEntity.getEntity(SecurityConstants.KEY_LICENSE_KEY);
+        final String licenseKey = headerEntity.getEntity(SecurityConstants.KEY_LICENSE_KEY);
         if (!StringUtils.hasText(licenseKey)) {
             return null;
         }
 
-        NameSpaceInfo nameSpaceInfo = namespaceMap.get(licenseKey);
+        final NameSpaceInfo nameSpaceInfo = namespaceMap.get(licenseKey);
         if (nameSpaceInfo != null) {
             return nameSpaceInfo;
         }
 
-        NameSpaceInfo newNameSpaceInfo = getNameSpaceInfoFromDao(licenseKey);
+        final NameSpaceInfo newNameSpaceInfo = getNameSpaceInfoFromDao(licenseKey);
         if (newNameSpaceInfo != null) {
             namespaceMap.putIfAbsent(licenseKey, newNameSpaceInfo);
         }
@@ -179,19 +180,19 @@ public class TokenEnableTCPPacketHandler implements TCPPacketHandler {
     }
 
     private NameSpaceInfo getNameSpaceInfoFromDao(String licenseKey) {
-        PaaSOrganizationKey organizationKey = metadataService.selectPaaSOrganizationkey(licenseKey);
+        final PaaSOrganizationKey organizationKey = namespaceService.selectPaaSOrganizationkey(licenseKey);
         if (organizationKey == null) {
             return null;
         }
 
-        PaaSOrganizationInfo paaSOrganizationInfo = metadataService.selectPaaSOrganizationInfo(organizationKey.getOrganization());
+        final PaaSOrganizationInfo paaSOrganizationInfo = namespaceService.selectPaaSOrganizationInfo(organizationKey.getOrganization());
         if (paaSOrganizationInfo == null) {
             return null;
         }
 
-        String organization = paaSOrganizationInfo.getOrganization();
-        String databaseName = paaSOrganizationInfo.getDatabaseName();
-        String hbaseNameSpace = paaSOrganizationInfo.getHbaseNameSpace();
+        final String organization = paaSOrganizationInfo.getOrganization();
+        final String databaseName = paaSOrganizationInfo.getDatabaseName();
+        final String hbaseNameSpace = paaSOrganizationInfo.getHbaseNameSpace();
 
         if (StringUtils.hasText(organization) && StringUtils.hasText(databaseName) && StringUtils.hasText(hbaseNameSpace)) {
             return new NameSpaceInfo(organization, databaseName, hbaseNameSpace);

@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.collector.namespace;
 
-import com.navercorp.pinpoint.collector.service.MetadataService;
+import com.navercorp.pinpoint.collector.service.NamespaceService;
 import com.navercorp.pinpoint.collector.service.async.AgentProperty;
 import com.navercorp.pinpoint.collector.service.async.AgentPropertyChannelAdaptor;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
@@ -24,8 +24,6 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.ChannelProperties;
 import com.navercorp.pinpoint.rpc.server.ChannelPropertiesFactory;
-import com.navercorp.pinpoint.rpc.server.DefaultChannelProperties;
-import com.navercorp.pinpoint.rpc.server.PinpointServer;
 import com.navercorp.pinpoint.security.SecurityConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Assert;
@@ -43,18 +41,17 @@ import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author HyunGil Jeong
  */
-public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
+public class NameSpaceInfoPropagateInterceptorTest {
 
     private final TestMetadataService metadataService = new TestMetadataService();
 
     private final ChannelPropertiesFactory channelPropertiesFactory = new ChannelPropertiesFactory(SecurityConstants.KEY_LICENSE_KEY);
 
-    private final PinpointServerNameSpaceInfoPropagateInterceptor interceptor = new PinpointServerNameSpaceInfoPropagateInterceptor(metadataService, false);
+    private final NameSpaceInfoPropagateInterceptor interceptor = new NameSpaceInfoPropagateInterceptor(metadataService, false);
 
     @Test
     public void nameSpaceInfoShouldBePropagated() throws Throwable {
@@ -120,7 +117,7 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
         }
     }
 
-    private static class TestMetadataService implements MetadataService {
+    private static class TestMetadataService implements NamespaceService {
 
         private final Map<String, PaaSOrganizationKey> keyMap = new HashMap<>();
         private final Map<String, PaaSOrganizationInfo> infoMap = new HashMap<>();
@@ -131,10 +128,7 @@ public class PinpointServerNameSpaceInfoPropagateInterceptorTest {
             if (keyMap.putIfAbsent(licenseKey, key) != null) {
                 throw new IllegalStateException("[" + licenseKey + "] licenseKey already registered");
             }
-            PaaSOrganizationInfo info = new PaaSOrganizationInfo();
-            info.setOrganization(organization);
-            info.setDatabaseName(nameSpaceInfo.getMysqlDatabaseName());
-            info.setHbaseNameSpace(nameSpaceInfo.getHbaseNamespace());
+            PaaSOrganizationInfo info = new PaaSOrganizationInfo(organization, nameSpaceInfo.getMysqlDatabaseName(), nameSpaceInfo.getHbaseNamespace());
             if (infoMap.putIfAbsent(organization, info) != null) {
                 throw new IllegalStateException("[" + organization + "] organization already registered");
             }

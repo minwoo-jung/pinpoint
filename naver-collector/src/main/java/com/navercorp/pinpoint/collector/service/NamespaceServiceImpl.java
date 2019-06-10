@@ -21,23 +21,28 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 /**
  * @author minwoo.jung
  */
-@Service("metadataService")
+@Service("namespaceService")
 @Transactional(rollbackFor = {Exception.class})
 @Profile("tokenAuthentication")
-public class MetadataServiceImpl implements MetadataService {
+public class NamespaceServiceImpl implements NamespaceService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private final MetadataDao metadataDao;
+
     @Autowired
-    MetadataDao metadataDao;
+    public NamespaceServiceImpl(MetadataDao metadataDao) {
+        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao must not be null");
+    }
 
     @Override
     @Transactional(readOnly = true)

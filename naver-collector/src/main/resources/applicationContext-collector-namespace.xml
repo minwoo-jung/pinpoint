@@ -20,24 +20,24 @@
             <aop:before pointcut-ref="flinkHeaderTBaseSerializerFactoryPointCut" method="beforeIntercept"/>
         </aop:aspect>
 
-        <aop:aspect id="agentEventServiceInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
+        <aop:aspect id="agentEventServiceInterceptorAop" ref="nameSpaceInfoPropagateInterceptor">
             <aop:pointcut id="agentEventServicePointCut"
                           expression="execution(public void com.navercorp.pinpoint.collector.service.async.AgentEventAsyncTaskService.handleEvent(com.navercorp.pinpoint.collector.service.async.AgentProperty,..)) and args(channelProperties,..)"/>
             <aop:around pointcut-ref="agentEventServicePointCut" method="aroundAdvice"/>
         </aop:aspect>
-        <aop:aspect id="agentLifeCycleHandlerInterceptorAop" ref="pinpointServerNameSpaceInfoPropagateInterceptor">
+        <aop:aspect id="agentLifeCycleHandlerInterceptorAop" ref="nameSpaceInfoPropagateInterceptor">
             <aop:pointcut id="agentLifeCycleHandlerPointCut"
                           expression="execution(public void com.navercorp.pinpoint.collector.service.async.AgentLifeCycleAsyncTaskService.handleLifeCycleEvent(com.navercorp.pinpoint.collector.service.async.AgentProperty,..)) and args(channelProperties,..)"/>
             <aop:around pointcut-ref="agentLifeCycleHandlerPointCut" method="aroundAdvice"/>
         </aop:aspect>
     </aop:config>
 
-    <bean id="pinpointServerNameSpaceInfoPropagateInterceptor" class="com.navercorp.pinpoint.collector.namespace.PinpointServerNameSpaceInfoPropagateInterceptor">
+    <bean id="nameSpaceInfoPropagateInterceptor" class="com.navercorp.pinpoint.collector.namespace.NameSpaceInfoPropagateInterceptor">
         <constructor-arg index="0" value="${namespaceInfo.use.defaultValue}"/>
     </bean>
     <beans profile="tokenAuthentication">
-        <bean id="pinpointServerNameSpaceInfoPropagateInterceptor" class="com.navercorp.pinpoint.collector.namespace.PinpointServerNameSpaceInfoPropagateInterceptor">
-            <constructor-arg index="0" ref="metadataService"/>
+        <bean id="nameSpaceInfoPropagateInterceptor" class="com.navercorp.pinpoint.collector.namespace.NameSpaceInfoPropagateInterceptor">
+            <constructor-arg index="0" ref="namespaceService"/>
             <constructor-arg index="1" value="${namespaceInfo.use.defaultValue}"/>
         </bean>
     </beans>

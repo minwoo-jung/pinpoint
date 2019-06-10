@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.collector.handler.thrift;
 
 import com.navercorp.pinpoint.collector.handler.RequestResponseHandler;
-import com.navercorp.pinpoint.collector.service.MetadataService;
+import com.navercorp.pinpoint.collector.service.NamespaceService;
 import com.navercorp.pinpoint.collector.service.TokenService;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
@@ -52,7 +52,7 @@ public class ThriftCreateTokenHandler implements RequestResponseHandler {
     private TokenService tokenService;
 
     @Autowired
-    private MetadataService metadataService;
+    private NamespaceService namespaceService;
 
     @Override
     public void handleRequest(ServerRequest serverRequest, ServerResponse serverResponse) {
@@ -79,13 +79,13 @@ public class ThriftCreateTokenHandler implements RequestResponseHandler {
             }
 
             String licenseKey = getTokenCommand.getLicenseKey();
-            PaaSOrganizationKey paasKey = metadataService.selectPaaSOrganizationkey(licenseKey);
+            PaaSOrganizationKey paasKey = namespaceService.selectPaaSOrganizationkey(licenseKey);
             if (paasKey == null) {
                 return createResponse(TTokenResponseCode.UNAUTHORIZED);
             }
 
             String organization = paasKey.getOrganization();
-            PaaSOrganizationInfo organizationInfo = metadataService.selectPaaSOrganizationInfo(organization);
+            PaaSOrganizationInfo organizationInfo = namespaceService.selectPaaSOrganizationInfo(organization);
             if (organizationInfo == null || !verifyPaaSOrganizationInfo(organizationInfo)) {
                 return createResponse(TTokenResponseCode.INTERNAL_SERVER_ERROR);
             }

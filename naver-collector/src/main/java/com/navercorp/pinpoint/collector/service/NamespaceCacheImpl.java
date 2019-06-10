@@ -22,20 +22,27 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 /**
  * @author minwoo.jung
  */
 @Service
 @Profile("tokenAuthentication")
-public class MetadataCacheImpl implements MetadataCache {
+public class NamespaceCacheImpl implements NamespaceCache {
+
+    private final NamespaceService namespaceService;
 
     @Autowired
-    MetadataService metadataService;
+    public NamespaceCacheImpl(NamespaceService namespaceService) {
+        this.namespaceService = Objects.requireNonNull(namespaceService, "namespaceService must not be null");
+
+    }
 
     @Cacheable(value = "organizationName", key = "#key")
     @Override
     public String selectPaaSOrganizationkey(String key) {
-        PaaSOrganizationKey paaSOrganizationKey = metadataService.selectPaaSOrganizationkey(key);
+        PaaSOrganizationKey paaSOrganizationKey = namespaceService.selectPaaSOrganizationkey(key);
 
         if (paaSOrganizationKey == null) {
             return NOT_EXIST_ORGANIZATION;
@@ -47,6 +54,6 @@ public class MetadataCacheImpl implements MetadataCache {
     @Cacheable(value = "paaSOrganizationInfo", key = "#organizationName")
     @Override
     public PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName) {
-        return metadataService.selectPaaSOrganizationInfo(organizationName);
+        return namespaceService.selectPaaSOrganizationInfo(organizationName);
     }
 }
