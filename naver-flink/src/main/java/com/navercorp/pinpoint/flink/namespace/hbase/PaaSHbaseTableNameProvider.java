@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.flink.namespace.hbase;
 
+import com.navercorp.pinpoint.common.hbase.HbaseTable;
 import com.navercorp.pinpoint.common.hbase.TableNameProvider;
 import com.navercorp.pinpoint.common.hbase.util.HbaseTableNameCache;
 import com.navercorp.pinpoint.flink.namespace.FlinkAttributes;
@@ -32,6 +33,11 @@ public class PaaSHbaseTableNameProvider implements TableNameProvider {
     private static final HbaseTableNameCache CACHE = new HbaseTableNameCache();
 
     @Override
+    public TableName getTableName(HbaseTable hBaseTable) {
+        return getTableName(hBaseTable.getName());
+    }
+
+    @Override
     public TableName getTableName(String tableName) {
         FlinkAttributes flinkAttributes = FlinkContextHolder.currentAttributes();
         Object paaSOrganizationInfo = flinkAttributes.getAttribute(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO);
@@ -44,4 +50,10 @@ public class PaaSHbaseTableNameProvider implements TableNameProvider {
         }
         return CACHE.get(namespace, tableName);
     }
+
+    @Override
+    public boolean hasDefaultNameSpace() {
+        return false;
+    }
+
 }

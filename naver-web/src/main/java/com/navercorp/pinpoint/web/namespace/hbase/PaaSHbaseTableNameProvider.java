@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.web.namespace.hbase;
 
+import com.navercorp.pinpoint.common.hbase.HbaseTable;
 import com.navercorp.pinpoint.common.hbase.TableNameProvider;
 import com.navercorp.pinpoint.common.hbase.util.HbaseTableNameCache;
 import com.navercorp.pinpoint.web.namespace.NameSpaceInfo;
@@ -39,6 +40,11 @@ public class PaaSHbaseTableNameProvider implements TableNameProvider {
     }
 
     @Override
+    public TableName getTableName(HbaseTable hBaseTable) {
+        return getTableName(hBaseTable.getName());
+    }
+
+    @Override
     public TableName getTableName(String tableName) {
         NameSpaceInfo nameSpaceInfo = nameSpaceInfoFactory.getNameSpaceInfo();
         if (nameSpaceInfo == null) {
@@ -50,4 +56,10 @@ public class PaaSHbaseTableNameProvider implements TableNameProvider {
         }
         return CACHE.get(namespace, tableName);
     }
+
+    @Override
+    public boolean hasDefaultNameSpace() {
+        return false;
+    }
+
 }

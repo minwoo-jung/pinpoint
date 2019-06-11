@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.collector.namespace.hbase;
 import com.navercorp.pinpoint.collector.namespace.NameSpaceInfo;
 import com.navercorp.pinpoint.collector.namespace.RequestAttributes;
 import com.navercorp.pinpoint.collector.namespace.RequestContextHolder;
+import com.navercorp.pinpoint.common.hbase.HbaseTable;
 import com.navercorp.pinpoint.common.hbase.TableNameProvider;
 import com.navercorp.pinpoint.common.hbase.util.HbaseTableNameCache;
 import org.apache.hadoop.hbase.TableName;
@@ -30,6 +31,11 @@ import org.springframework.util.StringUtils;
 public class ThreadLocalHbaseTableNameProvider implements TableNameProvider {
 
     private static final HbaseTableNameCache CACHE = new HbaseTableNameCache();
+
+    @Override
+    public TableName getTableName(HbaseTable hBaseTable) {
+        return getTableName(hBaseTable.getName());
+    }
 
     @Override
     public TableName getTableName(String tableName) {
@@ -44,4 +50,10 @@ public class ThreadLocalHbaseTableNameProvider implements TableNameProvider {
         }
         return CACHE.get(hbaseNamespace, tableName);
     }
+
+    @Override
+    public boolean hasDefaultNameSpace() {
+        return false;
+    }
+
 }
