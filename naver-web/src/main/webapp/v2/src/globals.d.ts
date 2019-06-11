@@ -436,3 +436,9 @@ interface IChartLayoutInfo {
 interface IChartLayoutInfoResponse {
     [key: string]: IChartLayoutInfo[];
 }
+
+interface ISelectedRowInfo {
+    time: number;
+    applicationId?: string;
+    agentId?: string;
+}

@@ -27,6 +27,7 @@
                             "./node_modules/ag-grid/dist/styles/ag-grid.css",
                             "./node_modules/ag-grid/dist/styles/ag-theme-balham.css",
                             "./node_modules/nouislider/distribute/nouislider.css",
+                            "./node_modules/billboard.js/dist/billboard.css",
                             "src/assets/lib/prettify/prettify.css",
                             "src/assets/lib/prettify/sunburst.css",
                             "src/styles.css"
@@ -130,9 +131,14 @@
                             "./node_modules/ag-grid/dist/styles/ag-grid.css",
                             "./node_modules/ag-grid/dist/styles/ag-theme-balham.css",
                             "./node_modules/nouislider/distribute/nouislider.css",
+                            "./node_modules/billboard.js/dist/billboard.css",
+                            "src/assets/lib/prettify/prettify.css",
+                            "src/assets/lib/prettify/sunburst.css",
                             "src/styles.css"
                         ],
                         "scripts": [
+                            "src/assets/lib/prettify/prettify.js",
+                            "src/assets/lib/prettify/lang-sql.js",
                             "./node_modules/snapsvg/dist/snap.svg-min.js"
                         ]
                     },

@@ -179,8 +179,8 @@ export class AgentStatisticContainerComponent implements OnInit, OnDestroy {
             this.hideProcessing();
         });
     }
-    getLastRequestTime(): Date {
-        return moment(this.agentStatisticDataService.getLastRequestTime()).tz(this.timezone).format(this.dateFormat) ;
+    getLastRequestTime(): string {
+        return moment(this.agentStatisticDataService.getLastRequestTime()).tz(this.timezone).format(this.dateFormat);
     }
     hasData(): boolean {
         return this.agentStatisticDataService.hasData();
