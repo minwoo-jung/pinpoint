@@ -32,6 +32,16 @@ public class ThreadLocalHbaseTableNameProvider implements TableNameProvider {
 
     private static final HbaseTableNameCache CACHE = new HbaseTableNameCache();
 
+    private final boolean useDefault;
+
+    public ThreadLocalHbaseTableNameProvider() {
+        this(false);
+    }
+
+    public ThreadLocalHbaseTableNameProvider(boolean useDefault) {
+        this.useDefault = useDefault;
+    }
+
     @Override
     public TableName getTableName(HbaseTable hBaseTable) {
         return getTableName(hBaseTable.getName());
@@ -42,7 +52,10 @@ public class ThreadLocalHbaseTableNameProvider implements TableNameProvider {
         RequestAttributes requestAttributes = RequestContextHolder.currentAttributes();
         NameSpaceInfo nameSpaceInfo = (NameSpaceInfo) requestAttributes.getAttribute(NameSpaceInfo.NAMESPACE_INFO);
         if (nameSpaceInfo == null) {
-            throw new IllegalStateException("NameSpaceInfo should not be null");
+            if (!useDefault) {
+                throw new IllegalStateException("NameSpaceInfo should not be null");
+            }
+            nameSpaceInfo = NameSpaceInfo.DEFAULT;
         }
         String hbaseNamespace = nameSpaceInfo.getHbaseNamespace();
         if (StringUtils.isEmpty(hbaseNamespace)) {
@@ -53,7 +66,7 @@ public class ThreadLocalHbaseTableNameProvider implements TableNameProvider {
 
     @Override
     public boolean hasDefaultNameSpace() {
-        return false;
+        return useDefault;
     }
 
 }

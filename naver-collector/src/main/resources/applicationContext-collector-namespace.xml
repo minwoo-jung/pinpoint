@@ -3,7 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <bean id="tableNameProvider" class="com.navercorp.pinpoint.collector.namespace.hbase.ThreadLocalHbaseTableNameProvider"/>
+    <bean id="tableNameProvider" class="com.navercorp.pinpoint.collector.namespace.hbase.ThreadLocalHbaseTableNameProvider">
+        <constructor-arg index="0" value="${namespaceInfo.use.defaultValue}"/>
+    </bean>
 
     <bean id="dispatchHandlerFactoryBeanInterceptor" class="com.navercorp.pinpoint.collector.receiver.DispatchHandlerFactoryBeanInterceptor">
         <constructor-arg value="${namespaceInfo.use.defaultValue}"/>
