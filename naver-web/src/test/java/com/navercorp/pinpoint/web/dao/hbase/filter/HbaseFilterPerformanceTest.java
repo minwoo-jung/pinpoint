@@ -1,12 +1,22 @@
 package com.navercorp.pinpoint.web.dao.hbase.filter;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.navercorp.pinpoint.common.buffer.AutomaticBuffer;
+import com.navercorp.pinpoint.common.buffer.Buffer;
+import com.navercorp.pinpoint.common.hbase.HbaseSystemException;
+import com.navercorp.pinpoint.common.hbase.HbaseTableFactory;
 import com.navercorp.pinpoint.common.hbase.HbaseTableNameProvider;
+import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
 import com.navercorp.pinpoint.common.hbase.TableNameProvider;
 import com.navercorp.pinpoint.common.server.util.SpanUtils;
 import com.navercorp.pinpoint.common.util.TransactionId;
+import com.navercorp.pinpoint.web.mapper.TraceIndexScatterMapper;
+import com.navercorp.pinpoint.web.vo.Range;
+import com.navercorp.pinpoint.web.vo.ResponseTimeRange;
+import com.navercorp.pinpoint.web.vo.SelectedScatterArea;
+import com.navercorp.pinpoint.web.vo.scatter.Dot;
+
+import com.sematext.hbase.wd.AbstractRowKeyDistributor;
+import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
@@ -28,20 +38,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.navercorp.pinpoint.common.buffer.AutomaticBuffer;
-import com.navercorp.pinpoint.common.buffer.Buffer;
-import com.navercorp.pinpoint.common.hbase.HBaseTables;
-import com.navercorp.pinpoint.common.hbase.HbaseSystemException;
-import com.navercorp.pinpoint.common.hbase.HbaseTemplate2;
-import com.navercorp.pinpoint.common.hbase.HbaseTableFactory;
-import com.navercorp.pinpoint.web.mapper.TraceIndexScatterMapper;
-import com.navercorp.pinpoint.web.vo.Range;
-import com.navercorp.pinpoint.web.vo.ResponseTimeRange;
-import com.navercorp.pinpoint.web.vo.SelectedScatterArea;
+import java.io.IOException;
+import java.util.List;
 
-import com.navercorp.pinpoint.web.vo.scatter.Dot;
-import com.sematext.hbase.wd.AbstractRowKeyDistributor;
-import com.sematext.hbase.wd.RowKeyDistributorByHashPrefix.OneByteSimpleHash;
+import static com.navercorp.pinpoint.common.hbase.HbaseColumnFamily.APPLICATION_TRACE_INDEX_TRACE;
 
 public class HbaseFilterPerformanceTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -90,7 +90,7 @@ public class HbaseFilterPerformanceTest {
         scan.setStartRow(traceIndexEndKey);
         scan.setStopRow(traceIndexStartKey);
 
-        scan.addFamily(HBaseTables.APPLICATION_TRACE_INDEX_CF_TRACE);
+        scan.addFamily(APPLICATION_TRACE_INDEX_TRACE.getName());
         scan.setId("ApplicationTraceIndexScan");
 
         return scan;
@@ -137,7 +137,7 @@ public class HbaseFilterPerformanceTest {
             scan.setFilter(makePrefixFilter(area, null, -1));
 
             long startTime = System.currentTimeMillis();
-            TableName applicationTraceIndexTableName = tableNameProvider.getTableName(HBaseTables.APPLICATION_TRACE_INDEX_STR);
+            TableName applicationTraceIndexTableName = tableNameProvider.getTableName(APPLICATION_TRACE_INDEX_TRACE.getTable());
             List<List<Dot>> dotListList = hbaseTemplate2.find(applicationTraceIndexTableName, scan, traceIdRowKeyDistributor, fetchLimit, new TraceIndexScatterMapper());
             logger.debug("elapsed : {}ms", (System.currentTimeMillis() - startTime));
             logger.debug("fetched size : {}", dotListList.size());
