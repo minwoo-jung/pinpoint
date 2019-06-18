@@ -6,8 +6,8 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <import resource="classpath:job/span/applicationContext-dao-config.xml"/>
     <import resource="classpath:job/span/applicationContext-datasource.xml"/>
+    <import resource="classpath:job/span/applicationContext-dao-config.xml"/>
 
     <context:annotation-config/>
 
