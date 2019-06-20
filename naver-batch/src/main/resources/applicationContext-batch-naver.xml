@@ -2,9 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:task="http://www.springframework.org/schema/task"
-       xmlns:util="http://www.springframework.org/schema/util" xmlns:batch="http://www.springframework.org/schema/batch" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+
+">
 
     <context:annotation-config/>
     <context:component-scan base-package="com.navercorp.pinpoint.batch.dao,
@@ -18,9 +25,6 @@
         </property>
     </bean>
 
-    <bean id="batchJobLauncher" class="com.navercorp.pinpoint.web.batch.BatchJobLauncher"/>
-
-
     <task:scheduled-tasks scheduler="naverScheduler">
         <task:scheduled ref="naverBatchJobLauncher" method="aggreagteSpanStatHourJob" cron="0 30 * * * *"/>
         <task:scheduled ref="naverBatchJobLauncher" method="aggreagteSpanStatDayJob" cron="0 0 5 * * *"/>
@@ -29,8 +33,6 @@
     <task:scheduler id="naverScheduler" pool-size="1"/>
 
     <bean id="naverBatchJobLauncher" class="com.navercorp.pinpoint.batch.NaverBatchJobLauncher"/>
-
-    <batch:job-repository id="jobRepository" data-source="dataSource" transaction-manager="transactionManager"/>
 
     <bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
 
@@ -52,5 +54,15 @@
     </bean>
 
     <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.batch.NaverBatchConfiguration"/>
-    <util:properties id="naverBatchProps" location="classpath:batch.properties"/>
+    <util:properties id="naverBatchProps" location="classpath:pinpoint-batch.properties"/>
+
+    <bean id="jobLauncher"
+          class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository" />
+    </bean>
+
+    <batch:job-repository id="jobRepository" data-source="dataSource" transaction-manager="transactionManager"/>
+
+    <bean id="jsonObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean"/>
+
 </beans>

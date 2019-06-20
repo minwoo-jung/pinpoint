@@ -16,7 +16,6 @@
 
 package com.navercorp.pinpoint.batch;
 
-import com.navercorp.pinpoint.web.batch.JobLaunchSupport;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 

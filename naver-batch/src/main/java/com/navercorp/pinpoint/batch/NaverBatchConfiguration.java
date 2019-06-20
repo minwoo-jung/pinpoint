@@ -40,7 +40,7 @@ public class NaverBatchConfiguration implements InitializingBean {
     @Value("#{naverBatchProps['batch.server.env']}")
     private String batchEnv;
 
-    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['sms.cellphone.number'] ?: ''), ',')}")
+    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((naverBatchProps['sms.cellphone.number'] ?: ''), ',')}")
     private List<String> cellPhoneNumberList;
 
     @Override

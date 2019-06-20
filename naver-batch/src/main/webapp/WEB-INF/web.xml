@@ -40,7 +40,6 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:applicationContext-batch-naver.xml
-            classpath:security-context.xml
         </param-value>
     </context-param>
 
@@ -61,11 +60,6 @@
         <url-pattern>*.pinpoint</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>pinpoint-batch</servlet-name>
-        <url-pattern>*.pinpointws</url-pattern>
-    </servlet-mapping>
-
     <filter>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -74,54 +68,13 @@
             <param-value>UTF-8</param-value>
         </init-param>
     </filter>
-    
-    <filter>
-	    <description>NoCacheFilter</description>
-    	<filter-name>NoCacheFilter</filter-name>
-    	<filter-class>com.navercorp.pinpoint.web.servlet.NoCacheFilter</filter-class>
-	</filter>
-    <filter>
-        <description>NssFilter</description>
-        <filter-name>nssFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
-    
-     <filter>
-         <filter-name>springSecurityFilterChain</filter-name>
-         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-     </filter>
 
-    <filter>
-        <filter-name>rewriteFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>rewriteFilter</filter-name>
-        <url-pattern>/v2/*</url-pattern>
-    </filter-mapping>
 
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <filter-mapping>
-        <filter-name>NoCacheFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>nssFilter</filter-name>
-        <url-pattern>*.pinpoint</url-pattern>
-    </filter-mapping>
-    
-     <filter-mapping>
-         <filter-name>springSecurityFilterChain</filter-name>
-         <url-pattern>*.pinpoint</url-pattern>
-         <url-pattern>/index.html</url-pattern>
-         <url-pattern>*.pinpointws</url-pattern>
-     </filter-mapping>
 
     <servlet-mapping>
         <servlet-name>default</servlet-name>
