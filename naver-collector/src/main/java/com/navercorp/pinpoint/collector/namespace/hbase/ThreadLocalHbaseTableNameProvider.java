@@ -49,19 +49,25 @@ public class ThreadLocalHbaseTableNameProvider implements TableNameProvider {
 
     @Override
     public TableName getTableName(String tableName) {
-        RequestAttributes requestAttributes = RequestContextHolder.currentAttributes();
-        NameSpaceInfo nameSpaceInfo = (NameSpaceInfo) requestAttributes.getAttribute(NameSpaceInfo.NAMESPACE_INFO);
-        if (nameSpaceInfo == null) {
-            if (!useDefault) {
-                throw new IllegalStateException("NameSpaceInfo should not be null");
-            }
-            nameSpaceInfo = NameSpaceInfo.DEFAULT;
-        }
+        NameSpaceInfo nameSpaceInfo = getNameSpaceInfo();
         String hbaseNamespace = nameSpaceInfo.getHbaseNamespace();
         if (StringUtils.isEmpty(hbaseNamespace)) {
             throw new IllegalStateException("hbaseNamespace must not be empty");
         }
         return CACHE.get(hbaseNamespace, tableName);
+    }
+
+    private NameSpaceInfo getNameSpaceInfo() {
+        try {
+            RequestAttributes requestAttributes = RequestContextHolder.currentAttributes();
+            NameSpaceInfo nameSpaceInfo = (NameSpaceInfo) requestAttributes.getAttribute(NameSpaceInfo.NAMESPACE_INFO);
+            return nameSpaceInfo;
+        } catch (IllegalStateException e) {
+            if (!hasDefaultNameSpace()) {
+                throw e;
+            }
+        }
+        return NameSpaceInfo.DEFAULT;
     }
 
     @Override
