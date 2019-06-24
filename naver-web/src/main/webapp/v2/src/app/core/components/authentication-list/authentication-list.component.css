@@ -44,3 +44,25 @@
     color: #F00;
     margin-left: 10px;
 }
+.l-authentication-info {
+    width: 100%;
+    color: #FFF;
+    bottom: 0px;
+    padding: 4px 14px;
+    display: flex;
+    font-size: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(80, 73, 73, 0.8);
+}
+.l-authentication-info span {
+    width: 50%;
+    padding: 6px 0px;
+}
+.l-authentication-info i {
+    color: #ff8c00;
+}
+.l-info-on {
+    color: #ff8c00;
+}

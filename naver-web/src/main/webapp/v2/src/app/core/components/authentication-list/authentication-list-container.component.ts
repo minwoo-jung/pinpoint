@@ -294,15 +294,10 @@ export class AuthenticationListContainerComponent implements OnInit, OnDestroy {
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_AUTH_UPDATE_POPUP);
     }
     onShowAuthInfo(auth: IParam): void {
-        this.selectedAuth = this.getAuth(auth.userGroupId, auth.position);
-        this.showSelectedAuthInfo = true;
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_SELECTED_AUTH_INFO);
     }
     isApplicationSelected(): boolean {
         return this.currentApplication !== null;
-    }
-    hideSelectedAuthInfo(): void {
-        this.showSelectedAuthInfo = false;
     }
     getAddButtonClass(): object {
         return {

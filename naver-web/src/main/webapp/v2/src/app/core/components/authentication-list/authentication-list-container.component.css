@@ -63,18 +63,3 @@
 .l-threshold { 
     text-align: center;
 }
-.l-authentication-info {
-    width: 100%;
-    bottom: 0px;
-    z-index: 15;
-    display: flex;
-    position: absolute;
-    align-items: center;
-    justify-content: space-between;
-    background-color: rgba(226, 226, 226, 0.8);
-    font-size: 12px;
-    padding: 4px 4px;
-}
-.l-authentication-info i {
-    color: #ff8c00;
-}
