@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, EventEmitter, Input, Output } from '@angular/core';
-import { GridOptions } from 'ag-grid';
+import { GridOptions } from 'ag-grid-community';
 
 @Component({
     selector: 'pp-application-auth-and-alarm-info',
@@ -8,7 +8,6 @@ import { GridOptions } from 'ag-grid';
     encapsulation: ViewEncapsulation.None
 })
 export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
-
     @Input() rowData: IApplicationAuthInfo[];
     @Output() outCellSelected: EventEmitter<any> = new EventEmitter();
     gridOptions: GridOptions;
@@ -19,10 +18,12 @@ export class ApplicationAuthAndAlarmInfoComponent implements OnInit {
     }
     private initGridOptions() {
         this.gridOptions = <GridOptions>{
+            defaultColDef: {
+                resizable: true,
+                sortable: false
+            },
             columnDefs : this.makeColumnDefs(),
             headerHeight: 32,
-            enableColResize: true,
-            enableSorting: false,
             animateRows: true,
             rowHeight: 30,
             suppressRowClickSelection: false,

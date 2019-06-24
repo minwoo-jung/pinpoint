@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
-import { GridOptions } from 'ag-grid';
+import { GridOptions } from 'ag-grid-community';
 
 @Component({
     selector: 'pp-agent-statistic-list',
@@ -19,12 +19,14 @@ export class AgentStatisticListComponent implements OnInit, OnDestroy  {
     ngOnDestroy() {}
     private initGridOptions() {
         this.gridOptions = <GridOptions>{
+            defaultColDef: {
+                resizable: true,
+                sortable: false,
+                filter: true
+            },
             columnDefs : this.makeColumnDefs(),
             headerHeight: 34,
-            enableFilter: true,
             floatingFilter: true,
-            enableColResize: true,
-            enableSorting: false,
             animateRows: true,
             rowHeight: 30,
             getNodeChildDetails: (file) => {
@@ -54,7 +56,7 @@ export class AgentStatisticListComponent implements OnInit, OnDestroy  {
                 headerName: `Application`,
                 field: 'application',
                 width: 550,
-                cellRenderer: 'group',
+                cellRenderer: 'agGroupCellRenderer',
                 cellRendererParams: {
                     innerRenderer: (params: any) => {
                         return '&nbsp;' + params.data.application;

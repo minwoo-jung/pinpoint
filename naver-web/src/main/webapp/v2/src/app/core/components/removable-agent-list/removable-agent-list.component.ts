@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, EventEmitter, Input, Output } from '@angular/core';
-import { GridOptions } from 'ag-grid';
+import { GridOptions } from 'ag-grid-community';
 
 @Component({
     selector: 'pp-removable-agent-list',
@@ -18,10 +18,12 @@ export class RemovableAgentListComponent implements OnInit {
     }
     private initGridOptions() {
         this.gridOptions = <GridOptions>{
+            defaultColDef: {
+                resizable: true,
+                sortable: false
+            },
             columnDefs : this.makeColumnDefs(),
             headerHeight: 32,
-            enableColResize: true,
-            enableSorting: false,
             animateRows: true,
             rowHeight: 30,
             suppressRowClickSelection: false,
