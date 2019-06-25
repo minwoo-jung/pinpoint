@@ -50,7 +50,7 @@ export class AgentStatisticListComponent implements OnInit, OnDestroy  {
                 headerName: '#',
                 field: 'index',
                 width: 60,
-                suppressFilter: true
+                filter: false
             },
             {
                 headerName: `Application`,
@@ -100,5 +100,8 @@ export class AgentStatisticListComponent implements OnInit, OnDestroy  {
                 serviceType: params.data.serviceType
             });
         }
+    }
+    onRendered(): void {
+        this.gridOptions.api.sizeColumnsToFit();
     }
 }

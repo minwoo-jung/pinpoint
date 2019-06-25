@@ -4,5 +4,6 @@
     style="width:100%; height: calc(100vh - 501px);"
     [gridOptions]="gridOptions"
     [rowData]="gridData"
+    (firstDataRendered)="onRendered()"
     (cellClicked)="onCellClick($event)">
 </ag-grid-angular>

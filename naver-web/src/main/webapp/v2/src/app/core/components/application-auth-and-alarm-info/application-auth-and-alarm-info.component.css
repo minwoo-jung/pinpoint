@@ -62,6 +62,7 @@
 }
 #applicationConfiguration .ag-header-cell-label {
     padding: 4px;
+    justify-content: center;
 }
 #applicationConfiguration .ag-group-expanded span {
     margin-right: 4px;
