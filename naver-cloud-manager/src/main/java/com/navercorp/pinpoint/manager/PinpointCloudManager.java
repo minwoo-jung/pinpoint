@@ -61,43 +61,43 @@ public class PinpointCloudManager {
     //static resource는 Defaultservlet 자체를 통하지 않고 handler 레벨에서 반환을 해주는게 가장 좋을듯함.
     //그래야 인증 로직 자체를 거치지 않게 된다.
     //web-inf와 meta-inf 경로를 다루는 로직은 아직 미완성이고, 현재 resources 폴더에 static 파일이 있는것도 개선이 필요함.
-//    @Bean
-//    public UndertowEmbeddedServletContainerFactory embeddedServletContainerFactory() {
-//        UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
-//
-//        UndertowDeploymentInfoCustomizer customizer = new UndertowDeploymentInfoCustomizer() {
-//            @Override
-//            public void customize(DeploymentInfo deploymentInfo) {
-//                deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
-//                    @Override
-//                    public HttpHandler wrap(HttpHandler baseHandler) {
-//                        final ResourceManager resourceManager = new ClassPathResourceManager(this.getClass().getClassLoader(), "webapp/static/");
-//                        final ResourceHandler resourceHandler = new ResourceHandler(resourceManager);
-//                        resourceHandler.setDirectoryListingEnabled(false).setAllowed((not(path("META-INF"))));
-//                        Predicate predicate = new Predicate() {
-//                            @Override
-//                            public boolean resolve(HttpServerExchange value) {
-//                                try {
-//                                    Resource resource = resourceManager.getResource(value.getRelativePath());
-//                                    if (resource == null) {
-//                                        return false;
-//                                    }
-//                                    return true;
-//                                } catch (IOException ex) {
-//                                    return false;
-//                                }
-//                            }
-//                        };
-//
-//                        return new PredicateHandler(predicate, resourceHandler, baseHandler);
-//                    }
-//                });
-//            }
-//        };
-//
-//        factory.addDeploymentInfoCustomizers(customizer);
-//
-//        return factory;
-//    }
+    @Bean
+    public UndertowEmbeddedServletContainerFactory embeddedServletContainerFactory() {
+        UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
+
+        UndertowDeploymentInfoCustomizer customizer = new UndertowDeploymentInfoCustomizer() {
+            @Override
+            public void customize(DeploymentInfo deploymentInfo) {
+                deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+                    @Override
+                    public HttpHandler wrap(HttpHandler baseHandler) {
+                        final ResourceManager resourceManager = new ClassPathResourceManager(this.getClass().getClassLoader(), "webapp/static/");
+                        final ResourceHandler resourceHandler = new ResourceHandler(resourceManager);
+                        resourceHandler.setDirectoryListingEnabled(false).setAllowed((not(path("META-INF"))));
+                        Predicate predicate = new Predicate() {
+                            @Override
+                            public boolean resolve(HttpServerExchange value) {
+                                try {
+                                    Resource resource = resourceManager.getResource(value.getRelativePath());
+                                    if (resource == null) {
+                                        return false;
+                                    }
+                                    return true;
+                                } catch (IOException ex) {
+                                    return false;
+                                }
+                            }
+                        };
+
+                        return new PredicateHandler(predicate, resourceHandler, baseHandler);
+                    }
+                });
+            }
+        };
+
+        factory.addDeploymentInfoCustomizers(customizer);
+
+        return factory;
+    }
 
 }
