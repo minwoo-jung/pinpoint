@@ -9,8 +9,9 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
 
     <bean id="smsSender" class="com.navercorp.pinpoint.web.alarm.NaverSmsSender">
-        <constructor-arg ref="naverBatchConfiguration"/>
-        <constructor-arg ref="userGroupServiceImpl"/>
+        <constructor-arg index="0" ref="naverBatchConfiguration"/>
+        <constructor-arg index="1" ref="userGroupServiceImpl"/>
+        <constructor-arg index="2" ref="restTemplate"/>
     </bean>
 
     <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration"/>
@@ -20,6 +21,7 @@
     <bean id="naverJobFailMessageSender" class="com.navercorp.pinpoint.web.batch.NaverJobFailMessageSender">
         <constructor-arg index="0" ref="naverBatchConfiguration"/>
         <constructor-arg index="1" ref="batchConfiguration"/>
+        <constructor-arg index="2" ref="restTemplate"/>
     </bean>
 
     <task:scheduled-tasks scheduler="naverScheduler">

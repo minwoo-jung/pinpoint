@@ -38,6 +38,12 @@ public class NaverBatchConfiguration implements InitializingBean {
     @Value("#{naverBatchProps['alarm.sms.serviceId']}")
     private String serviceID;
 
+    @Value("#{naverBatchProps['alarm.sms.api.key']}")
+    private String apiKey;
+
+    @Value("#{naverBatchProps['alarm.sms.sender.number']}")
+    private String senderNumber;
+
     @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['alarm.sms.cellphone.number'] ?: ''), ',')}")
     private List<String> cellPhoneNumberList;
 
@@ -69,12 +75,16 @@ public class NaverBatchConfiguration implements InitializingBean {
         return mexServerUrl;
     }
 
-    public String getServiceID() {
-        return serviceID;
-    }
-
     public List<String> getCellPhoneNumberList() {
         return cellPhoneNumberList;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public String getSenderNumber() {
+        return senderNumber;
     }
 
     @Override

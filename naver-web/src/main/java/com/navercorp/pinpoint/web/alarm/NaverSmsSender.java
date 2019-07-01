@@ -18,44 +18,41 @@ package com.navercorp.pinpoint.web.alarm;
 import com.navercorp.pinpoint.web.alarm.checker.AlarmChecker;
 import com.navercorp.pinpoint.web.batch.NaverBatchConfiguration;
 import com.navercorp.pinpoint.web.service.UserGroupService;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.*;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author minwoo.jung
  */
 public class NaverSmsSender implements SmsSender {
 
-    private static final String QUOTATATION = "\"";
-    private static final String SENDER_NUMBER = "0317844499";
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final HttpHeaders headers;
+    private final String smsServerUrl;
+    private final UserGroupService userGroupService;
+    private final RestTemplate restTemplate;
+    private final String senderNumber;
 
-    private String smsServerUrl;
-    private String smsServiceID;
-    private UserGroupService userGroupService;
-
-    public NaverSmsSender(NaverBatchConfiguration batchConfiguration, UserGroupService userGroupService) {
+    public NaverSmsSender(NaverBatchConfiguration batchConfiguration, UserGroupService userGroupService, RestTemplate restTemplate) {
         Assert.notNull(batchConfiguration, "batchConfiguration must not be null.");
         Assert.notNull(userGroupService, "userGroupService must not be null.");
 
         this.smsServerUrl = batchConfiguration.getMexServerUrl();
-        this.smsServiceID = batchConfiguration.getServiceID();
+        this.senderNumber = batchConfiguration.getSenderNumber();
         this.userGroupService = userGroupService;
+        this.restTemplate = restTemplate;
+
+        this.headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("api-key", batchConfiguration.getApiKey());
     }
 
     public void sendSms(AlarmChecker checker, int sequenceCount) {
@@ -65,41 +62,30 @@ public class NaverSmsSender implements SmsSender {
             return;
         }
 
-        CloseableHttpClient client = HttpClients.createDefault();
+        List<String> smsMessageList = checker.getSmsMessage();
 
-        try {
-            List<String> smsMessageList = checker.getSmsMessage();
-            for(String message : smsMessageList) {
-                logger.info("send SMS : {}", message);
-                List<NameValuePair> nvps = new ArrayList<>();
-                nvps.add(new BasicNameValuePair("serviceId", smsServiceID));
-                nvps.add(new BasicNameValuePair("sendMdn", QUOTATATION + SENDER_NUMBER + QUOTATATION));
-                nvps.add(new BasicNameValuePair("receiveMdnList",convertToReceiverFormat(receivers)));
-                nvps.add(new BasicNameValuePair("content", QUOTATATION + message + " #" + sequenceCount + QUOTATATION));
+        for(String message : smsMessageList) {
+            for (String receiver : receivers) {
+                try {
+                    Map<String, String> parameters = new HashMap<String, String>();
+                    parameters.put("sender", senderNumber);
+                    parameters.put("receiver", receiver);
+                    parameters.put("text", message);
+                    parameters.put("countryCode", "82");
+                    parameters.put("type", "sms");
 
-                HttpGet get = new HttpGet(smsServerUrl + "?" + URLEncodedUtils.format(nvps, StandardCharsets.UTF_8));
-                logger.debug("SMSServer url : {}", get.getURI());
-                HttpResponse response = client.execute(get);
-                logger.debug("SMSServer call result ={}", EntityUtils.toString(response.getEntity()));
-            }
-        } catch (Exception e) {
-            logger.warn(e.getMessage(), e);
-        } finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                logger.error("Error while HttpClient closed", e);
+                    HttpEntity httpEntity = new HttpEntity(parameters, headers);
+                    ResponseEntity<Map> response = this.restTemplate.exchange(smsServerUrl, HttpMethod.POST, httpEntity, Map.class);
+
+                    if (response.getStatusCode() != HttpStatus.OK) {
+                        logger.error("fail send sms message for alarm. response message : {}", response.getBody().toString());
+                    }
+                } catch (HttpStatusCodeException ex ) {
+                    logger.error("fail send sms message for alarm. reponseBody message: {}", ex.getResponseBodyAsString(), ex);
+                } catch (Exception ex) {
+                    logger.error("fail send sms message for alarm. Caused: {}", ex.getMessage(), ex);
+                }
             }
         }
-    }
-
-    private String convertToReceiverFormat(List<String> receivers) {
-        List<String> result = new ArrayList<>();
-
-        for (String receiver : receivers) {
-            result.add(QUOTATATION + receiver + QUOTATATION);
-        }
-
-        return result.toString();
     }
 }
