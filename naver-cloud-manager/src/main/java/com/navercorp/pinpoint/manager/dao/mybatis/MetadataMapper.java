@@ -17,15 +17,19 @@ package com.navercorp.pinpoint.manager.dao.mybatis;
 
 import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
+import org.apache.ibatis.annotations.SelectProvider;
 
 /**
  * @author minwoo.jung
  */
 public interface MetadataMapper {
 
-    @InsertProvider(type=MetadataProvider.class, method="createDatabase")
+    @SelectProvider(type = MetadataProvider.class, method = "selectDatabaseName")
+    String selectDatabaseName(String databaseName);
+
+    @InsertProvider(type = MetadataProvider.class, method = "createDatabase")
     int createDatabase(String databaseName);
 
-    @DeleteProvider(type=MetadataProvider.class, method="dropDatabase")
+    @DeleteProvider(type = MetadataProvider.class, method = "dropDatabase")
     int dropDatabase(String databaseName);
 }

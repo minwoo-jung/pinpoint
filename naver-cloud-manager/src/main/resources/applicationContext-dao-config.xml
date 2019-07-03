@@ -6,26 +6,33 @@
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
            http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 
+    <import resource="classpath:applicationContext-datasource.xml"/>
+
     <!-- Transaction manager for a single JDBC DataSource -->
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" primary="true">
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <qualifier value="transactionManager"/>
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
     <bean id="metaDataTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <qualifier value="metaDataTransactionManager"/>
         <property name="dataSource" ref="metaDataDataSource"/>
     </bean>
 
-    <tx:annotation-driven/>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <tx:annotation-driven transaction-manager="metaDataTransactionManager"/>
 
     <!-- SqlsessionFactory setup for MyBatis Database Layer -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <!-- mybatis basic config -->
-        <property name="configLocation" value="classpath:/mybatis-config.xml"/>
-        <!-- typeAliases -->
-        <property name="typeAliasesPackage" value="com.navercorp.pinpoint.manager.vo"/>
+        <property name="configLocation" value="classpath:/mybatis/repository-config.xml"/>
         <!-- setting the location of mapper -->
-        <property name="mapperLocations" value="classpath*:mapper/*Mapper.xml"/>
+        <property name="mapperLocations">
+            <array>
+                <value>classpath*:mapper/RepositoryMapper.xml</value>
+            </array>
+        </property>
         <!-- set "true" in order to catch the errors of declaration of statement more quickly -->
         <property name="failFast" value="true"/>
     </bean>
@@ -33,11 +40,13 @@
     <bean id="metaDataSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="metaDataDataSource"/>
         <!-- mybatis basic config -->
-        <property name="configLocation" value="classpath:/mybatis-config.xml"/>
-        <!-- typeAliases -->
-        <property name="typeAliasesPackage" value="com.navercorp.pinpoint.manager.vo"/>
+        <property name="configLocation" value="classpath:/mybatis/metadata-config.xml"/>
         <!-- setting the location of mapper -->
-        <property name="mapperLocations" value="classpath*:mapper/*Mapper.xml"/>
+        <property name="mapperLocations">
+            <array>
+                <value>classpath*:mapper/MetadataMapper.xml</value>
+            </array>
+        </property>
         <!-- set "true" in order to catch the errors of declaration of statement more quickly -->
         <property name="failFast" value="true"/>
     </bean>

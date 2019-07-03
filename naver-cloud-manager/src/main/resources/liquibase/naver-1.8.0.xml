@@ -48,4 +48,46 @@
     <changeSet author="naver" id="naver-1.8.0_4">
         <addUniqueConstraint columnNames="application_id, user_group_id" constraintName="application_id_user_group_id_idx" tableName="app_auth_user_group"/>
     </changeSet>
+
+    <!-- for test -->
+    <changeSet author="naver" id="naver-1.9.0_1">
+        <createTable tableName="user_account">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="VARCHAR(90)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="naver" id="naver-1.9.0_2">
+        <createTable tableName="role_definition">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="role_id" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="permission_collection" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="naver" id="naver-1.9.0_3">
+        <createTable tableName="user_role">
+            <column autoIncrement="true" name="number" type="INT UNSIGNED">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="VARCHAR(90)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="role_id" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <!-- end for test-->
 </databaseChangeLog>

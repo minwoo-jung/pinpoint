@@ -7,7 +7,6 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <import resource="classpath:applicationContext-hbase.xml" />
-    <import resource="classpath:applicationContext-datasource.xml"/>
     <import resource="classpath:applicationContext-dao-config.xml"/>
     <import resource="classpath:applicationContext-security.xml"/>
 
@@ -33,6 +32,39 @@
     <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
         <!-- another filter caches -->
         <property name="disableCaching" value="false"/>
+    </bean>
+
+    <bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <bean id="storageManagementTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="threadNamePrefix" value="Pinpoint-Storage-Management-Worker"/>
+        <property name="corePoolSize" value="#{pinpointManagerProps['storage.management.worker.size']}"/>
+        <property name="maxPoolSize" value="#{pinpointManagerProps['storage.management.worker.size']}"/>
+        <property name="queueCapacity" value="#{pinpointManagerProps['storage.management.queue.size']}"/>
+        <property name="allowCoreThreadTimeOut" value="false"/>
+        <property name="daemon" value="true"/>
+    </bean>
+
+    <bean id="hbaseSchemaReader" class="com.navercorp.pinpoint.hbase.schema.reader.xml.XmlHbaseSchemaReader"/>
+
+    <bean id="schemaChangeLogCodec" class="com.navercorp.pinpoint.hbase.schema.dao.hbase.codec.SchemaChangeLogCodec"/>
+
+    <bean id="schemaChangeLogDao" class="com.navercorp.pinpoint.hbase.schema.dao.hbase.HbaseSchemaChangeLogDao">
+        <constructor-arg index="0" ref="hbaseManagerAdminTemplate"/>
+        <constructor-arg index="1" ref="hbaseTemplate"/>
+        <constructor-arg index="2" ref="schemaChangeLogCodec"/>
+    </bean>
+
+    <bean id="schemaChangeLogService" class="com.navercorp.pinpoint.hbase.schema.service.SchemaChangeLogServiceImpl">
+        <constructor-arg index="0" ref="schemaChangeLogDao"/>
+    </bean>
+
+    <bean id="hbaseSchemaVerifier" class="com.navercorp.pinpoint.hbase.schema.core.HtdHbaseSchemaVerifier"/>
+
+    <bean id="hbaseSchemaService" class="com.navercorp.pinpoint.hbase.schema.service.HbaseSchemaServiceImpl">
+        <constructor-arg index="0" ref="hbaseManagerAdminTemplate"/>
+        <constructor-arg index="1" ref="schemaChangeLogService"/>
+        <constructor-arg index="2" ref="hbaseSchemaVerifier"/>
     </bean>
 
 </beans>

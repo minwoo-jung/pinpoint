@@ -15,9 +15,19 @@
  */
 package com.navercorp.pinpoint.manager.service;
 
+import com.navercorp.pinpoint.manager.core.SchemaStatus;
+import liquibase.exception.LiquibaseException;
+
+import java.sql.SQLException;
+
 /**
  * @author minwoo.jung
  */
 public interface LiquibaseService {
-    void createRepository(String organizationName, String userId) throws Exception;
+
+    SchemaStatus getDatabaseSchemaStatus(String databaseName) throws SQLException, LiquibaseException;
+
+    void createRepository(String databaseName) throws SQLException, LiquibaseException;
+
+    void updateSchema(String databaseName) throws SQLException, LiquibaseException;
 }

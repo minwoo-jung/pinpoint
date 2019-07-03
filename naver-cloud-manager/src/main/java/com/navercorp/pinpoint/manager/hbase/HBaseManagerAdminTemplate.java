@@ -19,31 +19,53 @@ package com.navercorp.pinpoint.manager.hbase;
 import com.navercorp.pinpoint.common.hbase.AdminFactory;
 import com.navercorp.pinpoint.common.hbase.HBaseAdminTemplate;
 import com.navercorp.pinpoint.common.util.ArrayUtils;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * @author HyunGil Jeong
  */
 public class HBaseManagerAdminTemplate extends HBaseAdminTemplate {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public HBaseManagerAdminTemplate(AdminFactory adminFactory) {
         super(adminFactory);
     }
 
-    public List<String> getTableNames(String namespace) {
+    public NamespaceDescriptor getNamespaceDescriptor(String namespace) {
+        Objects.requireNonNull(namespace, "namespace must not be null");
+        return execute(admin -> admin.getNamespaceDescriptor(namespace));
+    }
+
+    public List<TableName> getTableNames(String namespace) {
         return execute(admin -> {
             TableName[] tableNames = admin.listTableNamesByNamespace(namespace);
-            if (!ArrayUtils.isEmpty(tableNames)) {
-                return Arrays.stream(tableNames)
-                        .map(TableName::getQualifierAsString)
-                        .collect(Collectors.toList());
+            if (ArrayUtils.isEmpty(tableNames)) {
+                return Collections.emptyList();
             }
-            return Collections.emptyList();
+            return Arrays.asList(tableNames);
+        });
+    }
+
+    public HTableDescriptor getTableDescriptor(TableName tableName) {
+        Objects.requireNonNull(tableName, "tableName must not be null");
+        return execute(admin -> admin.getTableDescriptor(tableName));
+    }
+
+    public void dropNamespace(String namespace) {
+        execute(admin -> {
+            admin.deleteNamespace(namespace);
+            logger.info("{} namespace deleted.", namespace);
+            return null;
         });
     }
 }

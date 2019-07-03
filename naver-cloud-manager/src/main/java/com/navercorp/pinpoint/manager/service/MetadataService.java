@@ -15,13 +15,40 @@
  */
 package com.navercorp.pinpoint.manager.service;
 
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationKey;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.RepositoryInfo;
+
+import java.util.List;
+
 /**
  * @author minwoo.jung
+ * @author HyunGil Jeong
  */
 public interface MetadataService {
+
+    List<RepositoryInfo> getAllRepositoryInfo();
+
+    RepositoryInfo getRepositoryInfo(String organizationName);
+
     boolean existOrganization(String organizationName);
 
-    void createOrganizationInfo(String organizationName);
+    PaaSOrganizationInfo getOrganizationInfo(String organizationName);
 
-    void dropDatabaseAndDeleteOrganizationInfo(String organizationName);
+    boolean updateOrganizationInfo(PaaSOrganizationInfo paaSOrganizationInfo);
+
+    void createOrganization(PaaSOrganizationInfo paaSOrganizationInfo);
+
+    void deleteOrganization(PaaSOrganizationInfo paaSOrganizationInfo);
+
+    PaaSOrganizationKey getOrganizationKey(String organizationName);
+
+    void initDatabaseStatus(String databaseName);
+
+    boolean deleteDatabaseStatus(String databaseName);
+
+    void initHbaseStatus(String hbaseNamespace);
+
+    boolean deleteHbaseStatus(String hbaseNamespace);
+
 }

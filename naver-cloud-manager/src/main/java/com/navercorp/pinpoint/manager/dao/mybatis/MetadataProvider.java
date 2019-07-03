@@ -20,8 +20,13 @@ package com.navercorp.pinpoint.manager.dao.mybatis;
  */
 public class MetadataProvider {
 
-    private static  String CREATE_DATABASE_STATEMENT = "CREATE DATABASE `%s`";
-    private static  String DROP_DATABASE_STATEMENT = "DROP DATABASE `%s`";
+    private static final String SELECT_DATABASE_NAME_STATEMENT = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s'";
+    private static final String CREATE_DATABASE_STATEMENT = "CREATE DATABASE `%s`";
+    private static final String DROP_DATABASE_STATEMENT = "DROP DATABASE `%s`";
+
+    public static String selectDatabaseName(final String name) {
+        return String.format(SELECT_DATABASE_NAME_STATEMENT, name);
+    }
 
     public static String createDatabase(final String name) {
         return String.format(CREATE_DATABASE_STATEMENT, name);

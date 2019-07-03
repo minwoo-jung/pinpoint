@@ -58,7 +58,7 @@ public class HBaseManagerAdminTemplateTest {
         when(admin.listTableNamesByNamespace(anyString())).thenReturn(new TableName[0]);
         HBaseManagerAdminTemplate adminTemplate = new HBaseManagerAdminTemplate(adminFactory);
         // When
-        List<String> tableNames = adminTemplate.getTableNames("namespace");
+        List<TableName> tableNames = adminTemplate.getTableNames("namespace");
         // Then
         Assert.assertEquals(Collections.emptyList(), tableNames);
     }

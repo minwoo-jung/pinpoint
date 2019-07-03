@@ -17,8 +17,8 @@
 package com.navercorp.pinpoint.manager.dao.mysql;
 
 import com.navercorp.pinpoint.manager.dao.MetadataDao;
-import com.navercorp.pinpoint.manager.vo.PaaSOrganizationInfo;
-import com.navercorp.pinpoint.manager.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +46,19 @@ public class MysqlMetadataDaoTest {
     @Test
     public void organizationInfoTest() {
         String organizationName = "testtest";
-        metadataDao.insertPaaSOrganizationInfo(organizationName);
+        String databaseName = "databaseName";
+        String hbaseNamespace = "hbaseNamespace";
+        boolean isEnabled = true;
+        boolean isDeleted = false;
+        PaaSOrganizationInfo organizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace, isEnabled, isDeleted);
+        metadataDao.insertPaaSOrganizationInfo(organizationInfo);
         PaaSOrganizationInfo paaSOrganizationInfo = metadataDao.selectPaaSOrganizationInfo(organizationName);
 
-        assertEquals(paaSOrganizationInfo.getOrganization(), organizationName);
-        assertEquals(paaSOrganizationInfo.getDatabaseName(), organizationName);
-        assertEquals(paaSOrganizationInfo.getHbaseNameSpace(), organizationName);
+        assertEquals(organizationName, paaSOrganizationInfo.getOrganization());
+        assertEquals(databaseName, paaSOrganizationInfo.getDatabaseName());
+        assertEquals(hbaseNamespace, paaSOrganizationInfo.getHbaseNamespace());
+        assertEquals(isEnabled, paaSOrganizationInfo.isEnabled());
+        assertEquals(isDeleted, paaSOrganizationInfo.isDeleted());
 
         metadataDao.deletePaaSOrganizationInfo(organizationName);
     }
@@ -61,7 +68,7 @@ public class MysqlMetadataDaoTest {
         String organizationName = "testtest";
         String uuid = UUID.nameUUIDFromBytes((organizationName).getBytes()).toString().replace("-", "");
         metadataDao.insertPaaSOrganizationKey(new PaaSOrganizationKey(uuid, organizationName));
-        PaaSOrganizationKey paaSOrganizationKey = metadataDao.selectPaaSOrganizationkey(uuid);
+        PaaSOrganizationKey paaSOrganizationKey = metadataDao.selectPaaSOrganizationKey(uuid);
 
         assertEquals(paaSOrganizationKey.getOrganization(), organizationName);
         assertEquals(paaSOrganizationKey.getUuKey(), uuid);

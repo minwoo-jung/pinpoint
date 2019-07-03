@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.manager.dao.RepositoryDao">
+
+    <select id="selectUsersByRole" resultType="User">
+        SELECT puser.user_id AS userId,
+               puser.name AS NAME,
+               puser.department AS department,
+               puser.phonenumber AS phoneNumber,
+               puser.email AS email
+        FROM puser AS puser
+        INNER JOIN user_role AS role ON puser.user_id = role.user_id
+        WHERE role.role_id = #{roleId}
+    </select>
+
+    <select id="existUser" parameterType="string" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+           SELECT 1
+           FROM puser
+           WHERE user_id = #{userId}
+        )
+    </select>
+
+    <insert id="insertUser" parameterType="User">
+        INSERT INTO puser (user_id, NAME, department, phonenumber, email)
+        VALUES (#{userId}, #{name}, #{department}, #{phoneNumber}, #{email})
+    </insert>
+
+    <insert id="insertUserAccount" parameterType="UserAccount">
+        INSERT INTO user_account (user_id, password)
+        VALUES (#{userId}, #{password})
+    </insert>
+
+    <insert id="insertUserRole" parameterType="UserRole">
+        INSERT INTO user_role (user_id, role_id)
+        VALUES
+        <foreach item="roleId" collection="roleList" separator=",">
+            (#{userId}, #{roleId})
+        </foreach>
+    </insert>
+
+    <insert id="insertRoleDefinition" parameterType="RoleInformation">
+        INSERT INTO role_definition (role_id, permission_collection)
+        VALUES (#{roleId}, #{permissionCollection})
+    </insert>
+
+</mapper>

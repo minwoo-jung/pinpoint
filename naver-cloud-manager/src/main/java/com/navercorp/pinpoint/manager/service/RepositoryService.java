@@ -15,9 +15,46 @@
  */
 package com.navercorp.pinpoint.manager.service;
 
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
+import com.navercorp.pinpoint.manager.vo.hbase.HbaseInfo;
+import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoDetail;
+import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoBasic;
+
+import java.util.List;
+
 /**
  * @author minwoo.jung
+ * @author HyunGil Jeong
  */
 public interface RepositoryService {
-    void createRepository(String organizationName, String userId) throws Exception;
+
+    RepositoryInfoBasic getBasicRepositoryInfo(String organizationName);
+
+    RepositoryInfoDetail getDetailedRepositoryInfo(String organizationName);
+
+    List<RepositoryInfoDetail> getDetailedRepositoryInfos();
+
+    void createRepository(String organizationName);
+
+    void updateRepository(String organizationName, Boolean isEnabled, Boolean isDeleted);
+
+    void deleteRepository(String organizationName);
+
+    DatabaseInfo getDatabaseInfo(String organizationName);
+
+    void createDatabase(String organizationName);
+
+    void updateDatabase(String organizationName);
+
+    void deleteDatabase(String organizationName);
+
+    HbaseInfo getHbaseInfo(String organizationName);
+
+    void createHbase(String organizationName);
+
+    void updateHbase(String organizationName);
+
+    void deleteHbase(String organizationName);
+
 }

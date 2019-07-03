@@ -15,30 +15,68 @@
  */
 package com.navercorp.pinpoint.manager.dao;
 
-import com.navercorp.pinpoint.manager.vo.PaaSOrganizationInfo;
-import com.navercorp.pinpoint.manager.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.DatabaseManagement;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.HbaseManagement;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationKey;
+import com.navercorp.pinpoint.manager.core.StorageStatus;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.RepositoryInfo;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
+ * @author HyunGil Jeong
  */
 public interface MetadataDao {
+
+    boolean existDatabase(String databaseName);
+
+    boolean createDatabase(String databaseName);
+
+    boolean dropDatabase(String databaseName);
+
     boolean existOrganization(String organizationName);
 
-    boolean insertPaaSOrganizationInfo(String organizationName);
+    boolean insertPaaSOrganizationInfo(PaaSOrganizationInfo paaSOrganizationInfo);
 
-    void deletePaaSOrganizationInfo(String organizationName);
+    boolean deletePaaSOrganizationInfo(String organizationName);
 
     PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
 
-    boolean createDatabase(String organizationName);
+    boolean updatePaaSOrganizationInfo(PaaSOrganizationInfo paaSOrganizationInfo);
 
-    void dropDatabase(String organizationName);
+    List<RepositoryInfo> selectAllRepositoryInfo();
 
-    boolean insertPaaSOrganizationKey(PaaSOrganizationKey paaSOrganizationKey);
+    RepositoryInfo selectRepositoryInfo(String organizationName);
 
     boolean existPaaSOrganizationKey(String organizationKey);
 
-    void deletePaaSOrganizationKey(String organizationName);
+    boolean insertPaaSOrganizationKey(PaaSOrganizationKey paaSOrganizationKey);
 
-    PaaSOrganizationKey selectPaaSOrganizationkey(String key);
+    boolean deletePaaSOrganizationKey(String organizationName);
+
+    PaaSOrganizationKey selectPaaSOrganizationKey(String key);
+
+
+    DatabaseManagement selectDatabaseManagement(String databaseName);
+
+    DatabaseManagement selectDatabaseManagementForUpdate(String databaseName);
+
+    boolean insertDatabaseManagement(DatabaseManagement databaseManagement);
+
+    boolean updateDatabaseStatus(String databaseName, StorageStatus databaseStatus);
+
+    boolean deleteDatabaseManagement(String databaseName);
+
+
+    HbaseManagement selectHbaseManagement(String hbaseNamespace);
+
+    HbaseManagement selectHbaseManagementForUpdate(String hbaseNamespace);
+
+    boolean insertHbaseManagement(HbaseManagement hbaseManagement);
+
+    boolean updateHbaseStatus(String hbaseNamespace, StorageStatus hbaseStatus);
+
+    boolean deleteHbaseManagement(String hbaseNamespace);
 }

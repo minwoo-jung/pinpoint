@@ -15,13 +15,34 @@
  */
 package com.navercorp.pinpoint.manager.service;
 
+import com.navercorp.pinpoint.common.util.CollectionUtils;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.RepositoryInfo;
+import com.navercorp.pinpoint.manager.exception.database.DatabaseManagementException;
+import com.navercorp.pinpoint.manager.exception.database.UnknownDatabaseException;
+import com.navercorp.pinpoint.manager.exception.hbase.HbaseManagementException;
+import com.navercorp.pinpoint.manager.exception.hbase.UnknownHbaseException;
+import com.navercorp.pinpoint.manager.exception.repository.InvalidRepositoryStateException;
+import com.navercorp.pinpoint.manager.exception.repository.RepositoryException;
+import com.navercorp.pinpoint.manager.exception.repository.UnknownRepositoryException;
+import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
+import com.navercorp.pinpoint.manager.vo.hbase.HbaseInfo;
+import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoDetail;
+import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoBasic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author minwoo.jung
+ * @author HyunGil Jeong
  */
 
 @Service
@@ -29,33 +50,220 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    MetadataService metadataService;
+    private final MetadataService metadataService;
+
+    private final DatabaseManagementService databaseManagementService;
+
+    private final HbaseManagementService hbaseManagementService;
+
+    private final NamespaceGenerationService namespaceGenerationService;
 
     @Autowired
-    LiquibaseService liquibaseService;
-
-    @Autowired
-    HbaseRepositoryService hbaseRepositoryService;
+    public RepositoryServiceImpl(MetadataService metadataService,
+                                 DatabaseManagementService databaseManagementService,
+                                 HbaseManagementService hbaseManagementService,
+                                 NamespaceGenerationService namespaceGenerationService) {
+        this.metadataService = Objects.requireNonNull(metadataService, "metadataService must not be null");
+        this.databaseManagementService = Objects.requireNonNull(databaseManagementService, "databaseManagementService must not be null");
+        this.hbaseManagementService = Objects.requireNonNull(hbaseManagementService, "hbaseManagementService must not be null");
+        this.namespaceGenerationService = Objects.requireNonNull(namespaceGenerationService, "namespaceGenerationService must not be null");
+    }
 
     @Override
-    public void createRepository(String organizationName, String userId) throws Exception {
-        metadataService.createOrganizationInfo(organizationName);
-
-        try {
-            liquibaseService.createRepository(organizationName, userId);
-        } catch (Exception e) {
-            logger.error("can not create repository", e);
-            metadataService.dropDatabaseAndDeleteOrganizationInfo(organizationName);
-            throw e;
+    public RepositoryInfoBasic getBasicRepositoryInfo(String organizationName) {
+        RepositoryInfo repositoryInfo = metadataService.getRepositoryInfo(organizationName);
+        if (repositoryInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
         }
+        return RepositoryInfoBasic.fromRepositoryInfo(repositoryInfo);
+    }
 
+    @Override
+    public RepositoryInfoDetail getDetailedRepositoryInfo(String organizationName) {
+        RepositoryInfo repositoryInfo = metadataService.getRepositoryInfo(organizationName);
+        if (repositoryInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        return RepositoryInfoDetail.fromRepositoryInfo(repositoryInfo);
+    }
+
+    @Override
+    public List<RepositoryInfoDetail> getDetailedRepositoryInfos() {
+        List<RepositoryInfo> repositoryInfos = metadataService.getAllRepositoryInfo();
+        if (CollectionUtils.isEmpty(repositoryInfos)) {
+            return Collections.emptyList();
+        }
+        return repositoryInfos.stream()
+                .map(RepositoryInfoDetail::fromRepositoryInfo)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void createRepository(String organizationName) {
+        logger.info("Creating repository for organization : {}", organizationName);
+        String databaseName = namespaceGenerationService.generateDatabaseName(organizationName);
+        String hbaseNamespace = namespaceGenerationService.generateHbaseNamespace(organizationName);
+
+        PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace);
         try {
-            hbaseRepositoryService.createRepository(organizationName, userId);
+            metadataService.createOrganization(paaSOrganizationInfo);
         } catch (Exception e) {
-            metadataService.dropDatabaseAndDeleteOrganizationInfo(organizationName);
-            hbaseRepositoryService.dropTable(organizationName);
-            throw e;
+            logger.error("Failed to create repository for organization : {}", organizationName, e);
+            if (e instanceof RepositoryException) {
+                throw e;
+            }
+            throw new RepositoryException(organizationName, "Failed to create repository", e);
+        }
+        databaseManagementService.createDatabase(databaseName);
+        hbaseManagementService.createRepository(hbaseNamespace);
+    }
+
+    @Override
+    @Transactional(transactionManager="metaDataTransactionManager", readOnly = false)
+    public void updateRepository(String organizationName, Boolean isEnabled, Boolean isDeleted) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        if (isEnabled != null) {
+            organizationInfo.setEnabled(isEnabled);
+        }
+        if (isDeleted != null) {
+            organizationInfo.setDeleted(isDeleted);
+        }
+        metadataService.updateOrganizationInfo(organizationInfo);
+    }
+
+    @Override
+    public void deleteRepository(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        String databaseName = organizationInfo.getDatabaseName();
+        String hbaseNamespace = organizationInfo.getHbaseNamespace();
+        boolean databaseExists = databaseManagementService.databaseExists(databaseName);
+        boolean hbaseExists = hbaseManagementService.namespaceExists(hbaseNamespace);
+        if (databaseExists || hbaseExists) {
+            throw new InvalidRepositoryStateException(organizationName, "database and hbase must not exist to delete repository");
+        }
+        metadataService.deleteOrganization(organizationInfo);
+    }
+
+    @Override
+    public DatabaseInfo getDatabaseInfo(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String databaseName = organizationInfo.getDatabaseName();
+        return databaseManagementService.getDatabaseInfo(databaseName);
+    }
+
+    @Override
+    public void createDatabase(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String databaseName = organizationInfo.getDatabaseName();
+        try {
+            if (!databaseManagementService.createDatabase(databaseName)) {
+                throw new InvalidRepositoryStateException(organizationName, "Invalid state for creating database");
+            }
+        } catch (DatabaseManagementException e) {
+            throw new InvalidRepositoryStateException(organizationName, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateDatabase(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String databaseName = organizationInfo.getDatabaseName();
+        try {
+            if (!databaseManagementService.updateDatabase(databaseName)) {
+                throw new InvalidRepositoryStateException(organizationName, "Invalid state for updating database");
+            }
+        } catch (DatabaseManagementException e) {
+            throw new InvalidRepositoryStateException(organizationName, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deleteDatabase(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String databaseName = organizationInfo.getDatabaseName();
+        try {
+            if (!databaseManagementService.dropDatabase(databaseName)) {
+                throw new InvalidRepositoryStateException(organizationName, "Invalid state for deleting database");
+            }
+        } catch (DatabaseManagementException e) {
+            throw new InvalidRepositoryStateException(organizationName, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public HbaseInfo getHbaseInfo(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String hbaseNamespace = organizationInfo.getHbaseNamespace();
+        return hbaseManagementService.getHbaseInfo(hbaseNamespace);
+    }
+
+    @Override
+    public void createHbase(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String hbaseNamespace = organizationInfo.getHbaseNamespace();
+        try {
+            if (!hbaseManagementService.createRepository(hbaseNamespace)) {
+                throw new InvalidRepositoryStateException(organizationName, "Invalid state for creating hbase");
+            }
+        } catch (HbaseManagementException e) {
+            throw new InvalidRepositoryStateException(organizationName, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateHbase(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String hbaseNamespace = organizationInfo.getHbaseNamespace();
+        try {
+            if (!hbaseManagementService.updateRepository(hbaseNamespace)) {
+                throw new InvalidRepositoryStateException(organizationName, "Invalid state for updating hbase");
+            }
+        } catch (HbaseManagementException e) {
+            throw new InvalidRepositoryStateException(organizationName, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void deleteHbase(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String hbaseNamespace = organizationInfo.getHbaseNamespace();
+        try {
+            if (!hbaseManagementService.deleteRepository(hbaseNamespace)) {
+                throw new InvalidRepositoryStateException(organizationName, "Invalid state for deleting hbase");
+            }
+        } catch (HbaseManagementException e) {
+            throw new InvalidRepositoryStateException(organizationName, e.getMessage(), e);
         }
     }
 }

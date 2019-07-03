@@ -39,4 +39,16 @@
         <constructor-arg ref="hbaseAdminFactory"/>
     </bean>
 
+    <bean id="hbaseTableFactory" class="com.navercorp.pinpoint.common.hbase.HbaseTableFactory">
+        <constructor-arg ref="connectionFactory"/>
+    </bean>
+
+    <bean id="hbaseTemplate" class="com.navercorp.pinpoint.common.hbase.HbaseTemplate2">
+        <property name="configuration" ref="hbaseConfiguration"/>
+        <property name="tableFactory" ref="hbaseTableFactory"/>
+        <property name="enableParallelScan" value="${hbase.client.parallel.scan.enable:false}"/>
+        <property name="maxThreads" value="${hbase.client.parallel.scan.maxthreads:16}"/>
+        <property name="maxThreadsPerParallelScan" value="${hbase.client.parallel.scan.maxthreadsperscan:4}"/>
+    </bean>
+
 </beans>
