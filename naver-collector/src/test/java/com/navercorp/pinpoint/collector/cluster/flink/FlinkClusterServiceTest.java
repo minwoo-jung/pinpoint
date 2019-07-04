@@ -17,10 +17,10 @@
 package com.navercorp.pinpoint.collector.cluster.flink;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
-import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.collector.config.FlinkConfiguration;
 import com.navercorp.pinpoint.collector.sender.FlinkRequestFactory;
 import com.navercorp.pinpoint.collector.service.SendAgentStatService;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.CreateNodeMessage;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.CuratorZookeeperClient;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperClient;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperConstants;
@@ -33,6 +33,7 @@ import com.navercorp.pinpoint.test.utils.TestAwaitTaskUtils;
 import com.navercorp.pinpoint.test.utils.TestAwaitUtils;
 import com.navercorp.pinpoint.thrift.io.FlinkHeaderTBaseSerializerFactory;
 import com.navercorp.pinpoint.thrift.io.FlinkTBaseLocator;
+
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.WatchedEvent;
 import org.junit.Assert;
@@ -259,8 +260,9 @@ public class FlinkClusterServiceTest {
     }
 
     private void createZnode(ZookeeperClient client, int acceptorSocketPort) throws Exception {
-        client.createPath(PINPOINT_FLINK_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR);
-        client.createNode(PINPOINT_FLINK_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR + "127.0.0.1:" + acceptorSocketPort, "127.0.0.1".getBytes());
+        CreateNodeMessage createNodeMessage
+                = new CreateNodeMessage(PINPOINT_FLINK_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR + "127.0.0.1:" + acceptorSocketPort, "127.0.0.1".getBytes(), true);
+        client.createNode(createNodeMessage);
     }
 
     private void closeZookeeperServer(TestingServer zookeeperServer) {

@@ -2,12 +2,14 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.CreateNodeMessage;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.CuratorZookeeperClient;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperClient;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperConstants;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperEventWatcher;
 import com.navercorp.pinpoint.test.server.TestPinpointServerAcceptor;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
+
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.WatchedEvent;
 import org.junit.Test;
@@ -63,8 +65,9 @@ public class ZookeeperWebClusterServiceTest {
             });
 
             client.connect();
-            client.createPath(PINPOINT_WEB_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR);
-            client.createNode(PINPOINT_WEB_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR + "127.0.0.1:" + bindPort, "127.0.0.1".getBytes());
+            CreateNodeMessage createNodeMessage
+                    = new CreateNodeMessage(PINPOINT_WEB_CLUSTER_PATH + ZookeeperConstants.PATH_SEPARATOR + "127.0.0.1:" + bindPort, "127.0.0.1".getBytes(), true);
+            client.createNode(createNodeMessage);
             testPinpointServerAcceptor.assertAwaitClientConnected(1, 5000);
 
             client.close();

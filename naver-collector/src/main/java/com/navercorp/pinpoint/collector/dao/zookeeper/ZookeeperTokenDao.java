@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.collector.dao.TokenDao;
 import com.navercorp.pinpoint.collector.service.TokenConfig;
 import com.navercorp.pinpoint.collector.vo.Token;
+import com.navercorp.pinpoint.common.server.cluster.zookeeper.CreateNodeMessage;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.CuratorZookeeperClient;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperClient;
 import com.navercorp.pinpoint.common.server.cluster.zookeeper.ZookeeperConstants;
@@ -139,8 +140,8 @@ public class ZookeeperTokenDao implements TokenDao {
         } else {
             try {
                 byte[] payload = OBJECT_MAPPER.writeValueAsBytes(token);
-
-                client.createNode(fullPath, payload);
+                CreateNodeMessage createNodeMessage = new CreateNodeMessage(fullPath, payload);
+                client.createNode(createNodeMessage);
 
                 tokenLifeCycleManager.reserve(tokenKey, expiredTime, new FutureListener<Boolean>() {
 
