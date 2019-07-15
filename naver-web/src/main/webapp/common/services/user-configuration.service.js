@@ -1,7 +1,7 @@
 (function( $ ) {
 	"use strict";
 	pinpointApp.constant("UserConfigurationServiceConfig", {
-		"URL": "userConfiguration.pinpoint",
+		"URL": "userConfiguration/favoriteApplications.pinpoint",
 		"FAVORITE_LIST_LOCAL_KEY": "preference.favorite",
 		"MAX_FAVORITE": 5000,
 		"TIME_ZONE_LOCAL_KEY": "pinpoint-timezone",
