@@ -35,9 +35,6 @@ public class NaverBatchConfiguration implements InitializingBean {
     @Value("#{naverBatchProps['alarm.sms.url']}")
     private String mexServerUrl;
 
-    @Value("#{naverBatchProps['alarm.sms.serviceId']}")
-    private String serviceID;
-
     @Value("#{naverBatchProps['alarm.sms.api.key']}")
     private String apiKey;
 
@@ -89,10 +86,13 @@ public class NaverBatchConfiguration implements InitializingBean {
 
     @Override
     public String toString() {
-        return "NaverBatchConfiguration{" +
-                " mexServerUrl='" + mexServerUrl + '\'' +
-                ", serviceID='" + serviceID + '\'' +
-                ", cellPhoneNumberList=" + cellPhoneNumberList +
-                '}';
+        final StringBuilder sb = new StringBuilder("NaverBatchConfiguration{");
+        sb.append("mexServerUrl='").append(mexServerUrl).append('\'');
+        sb.append(", apiKey='").append(apiKey).append('\'');
+        sb.append(", senderNumber='").append(senderNumber).append('\'');
+        sb.append(", cellPhoneNumberList=").append(cellPhoneNumberList);
+        sb.append(", adminUserList=").append(adminUserList);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -9,6 +9,9 @@
         <batch:step id="aggreagteSpanStatDayStop">
             <batch:tasklet ref="aggregateSpanStatDayTasklet"/>
         </batch:step>
+        <batch:listeners>
+            <batch:listener ref="jobFailListener"/>
+        </batch:listeners>
     </batch:job>
 
     <bean id="aggregateSpanStatDayTasklet" class="com.navercorp.pinpoint.batch.AggregateSpanStatDayTasklet"/>

@@ -28,20 +28,27 @@ import java.util.Properties;
 /**
  * @author minwoo.jung
  */
-public class NaverBatchConfiguration implements InitializingBean {
+public class NaverBatchConfiguration  implements InitializingBean {
     private static final Logger logger = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    @Value("#{naverBatchProps['sms.url']}")
+    @Value("#{naverBatchProps['alarm.sms.url']}")
     private String mexServerUrl;
 
-    @Value("#{naverBatchProps['sms.serviceId']}")
-    private String serviceID;
+    @Value("#{naverBatchProps['alarm.sms.api.key']}")
+    private String apiKey;
+
+    @Value("#{naverBatchProps['alarm.sms.sender.number']}")
+    private String senderNumber;
 
     @Value("#{naverBatchProps['batch.server.env']}")
     private String batchEnv;
 
-    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((naverBatchProps['sms.cellphone.number'] ?: ''), ',')}")
+    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((naverBatchProps['alarm.sms.cellphone.number'] ?: ''), ',')}")
     private List<String> cellPhoneNumberList;
+
+    public NaverBatchConfiguration() {
+    }
+
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -60,23 +67,29 @@ public class NaverBatchConfiguration implements InitializingBean {
         return mexServerUrl;
     }
 
-    public String getBatchEnv() {
-        return batchEnv;
-    }
-
-    public String getServiceID() {
-        return serviceID;
-    }
-
     public List<String> getCellPhoneNumberList() {
         return cellPhoneNumberList;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public String getSenderNumber() {
+        return senderNumber;
+    }
+
+    public String getBatchEnv() {
+        return batchEnv;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NaverBatchConfiguration{");
         sb.append("mexServerUrl='").append(mexServerUrl).append('\'');
-        sb.append(", serviceID='").append(serviceID).append('\'');
+        sb.append(", apiKey='").append(apiKey).append('\'');
+        sb.append(", senderNumber='").append(senderNumber).append('\'');
+        sb.append(", batchEnv='").append(batchEnv).append('\'');
         sb.append(", cellPhoneNumberList=").append(cellPhoneNumberList);
         sb.append('}');
         return sb.toString();

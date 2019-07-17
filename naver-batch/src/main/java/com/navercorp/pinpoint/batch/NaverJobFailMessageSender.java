@@ -15,20 +15,19 @@
  */
 package com.navercorp.pinpoint.batch;
 
+import com.navercorp.pinpoint.web.batch.BatchConfiguration;
 import com.navercorp.pinpoint.web.batch.JobFailMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.http.*;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author minwoo.jung
@@ -36,77 +35,56 @@ import java.util.List;
 public class NaverJobFailMessageSender implements JobFailMessageSender {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String SENDER_NUMBER = "0317844499";
 
     private final String mexServerUrl;
     private final List<String> cellPhoneNumbers;
-    private final String serviceID;
     private final String batchEnv;
+    private final RestTemplate restTemplate;
+    private final HttpHeaders headers;
+    private final String senderNumber;
 
-    public NaverJobFailMessageSender(NaverBatchConfiguration naverBatchConfiguration) {
+    public NaverJobFailMessageSender(NaverBatchConfiguration naverBatchConfiguration, RestTemplate restTemplate) {
         this.mexServerUrl = naverBatchConfiguration.getMexServerUrl();
-        this.serviceID = naverBatchConfiguration.getServiceID();
         this.cellPhoneNumbers = naverBatchConfiguration.getCellPhoneNumberList();
+        this.senderNumber = naverBatchConfiguration.getSenderNumber();
+        this.restTemplate = restTemplate;
         this.batchEnv = naverBatchConfiguration.getBatchEnv();
+        this.headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("api-key", naverBatchConfiguration.getApiKey());
     }
 
     @Override
     public void sendSMS(JobExecution jobExecution) {
-        String jobName = jobExecution.getJobInstance().getJobName();
-        Date startTime = jobExecution.getStartTime();
-
-        String encodeMsg = encodeMessage("[PINPOINT-" + batchEnv + "]batch job fail\n jobName : " + jobName + "\n start : " + startTime + "\n end : NOW");
+        final String jobName = jobExecution.getJobInstance().getJobName();
+        final Date startTime = jobExecution.getStartTime();
+        final String message = "[PINPOINT-" + batchEnv + "]batch job fail\n jobName : " + jobName + "\n start : " + startTime + "\n end : NOW";
 
         for (String number : cellPhoneNumbers) {
-            String url = mexServerUrl + "?serviceId=\"" + serviceID + "\"" + "&sendMdn=\"" + SENDER_NUMBER + "\"" + "&receiveMdnList=[\"" + number + "\"]" + "&content=\"" + encodeMsg + "\"";
-
-            HttpURLConnection connection = null;
             try {
-                connection = openHttpURLConnection(url);
-                connection.setRequestMethod("GET");
-                connection.connect();
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    logger.error("fail send sms message for batch fail.");
+                Map<String, String> parameters = new HashMap<String, String>();
+                parameters.put("sender", senderNumber);
+                parameters.put("receiver", number);
+                parameters.put("text", message);
+                parameters.put("countryCode", "82");
+                parameters.put("type", "sms");
+
+                HttpEntity httpEntity = new HttpEntity(parameters, headers);
+                ResponseEntity<Map> response = this.restTemplate.exchange(mexServerUrl, HttpMethod.POST, httpEntity, Map.class);
+
+                if (response.getStatusCode() != HttpStatus.OK) {
+                    logger.error("fail send sms message for batch fail. response message : {}", response.getBody().toString());
                 }
-            } catch (IOException ex) {
-                logger.error("fail send sms message for batch fail. Caused:" + ex.getMessage(), ex);
-            } finally {
-                close(connection);
+            } catch (HttpStatusCodeException ex ) {
+                logger.error("fail send sms message for batch fail. reponseBody message: {}", ex.getResponseBodyAsString(), ex);
+            } catch (Exception ex) {
+                logger.error("fail send sms message for batch fail. Caused: {}", ex.getMessage(), ex);
             }
-        }
-    }
-
-    private HttpURLConnection openHttpURLConnection(String url) throws IOException {
-        URL submitURL = new URL(url);
-        HttpURLConnection httpURLConnection = (HttpURLConnection) submitURL.openConnection();
-        httpURLConnection.setConnectTimeout(3000);
-        httpURLConnection.setReadTimeout(3000);
-        httpURLConnection.setRequestProperty("Content-Language", "utf-8");
-        return httpURLConnection;
-    }
-
-    private void close(HttpURLConnection connection) {
-        if (connection != null) {
-            try {
-                final InputStream is = connection.getInputStream();
-                is.close();
-            } catch (IOException ignore) {
-                // skip
-            }
-        }
-    }
-
-    private String encodeMessage(String message) {
-        message = message.replace("\\", "\\\\").replace("\"", "\\\"").replace("\r\n", "\\n").replace("\r", "\\n").replace("\n", "\\n");
-        try {
-            return URLEncoder.encode(message, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Can't encoding sms message.");
-            return "batch job fail";
         }
     }
 
     @Override
     public void sendEmail(JobExecution jobExecution) {
     }
+
 }
