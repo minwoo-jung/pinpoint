@@ -23,6 +23,7 @@ import * as uiState from './ui-state.reducer';
 import * as range from './range.reducer';
 import * as userPermissions from './user-permissions.reducer';
 import * as chartLayout from './inspector-chart-layout-info.reducer';
+import * as transactionViewType from './transaction-view-type.reducer';
 
 export interface AppState {
     timeline: ITimelineInfo;
@@ -49,6 +50,7 @@ export interface AppState {
     roldSelection: string;
     applicationInspectorChartLayout: IChartLayoutInfoResponse;
     agentInspectorChartLayout: IChartLayoutInfoResponse;
+    transactionViewType: string;
 }
 
 export const STORE_KEY = {
@@ -77,6 +79,7 @@ export const STORE_KEY = {
     USER_PERMISSIONS: 'userPermissions',
     APPLICATION_INSPECTOR_CHART_LAYOUT: 'applicationInspectorChartLayout',
     AGENT_INSPECTOR_CHART_LAYOUT: 'agentInspectorChartLayout',
+    TRANSACTION_VIEW_TYPE: 'transactionViewType'
 };
 
 
@@ -105,7 +108,8 @@ export const reducers: ActionReducerMap<any> = {
     range: range.Reducer,
     userPermissions: userPermissions.Reducer,
     applicationInspectorChartLayout: chartLayout.ApplicationInspectorChartLayoutReducer,
-    agentInspectorChartLayout: chartLayout.AgentInspectorChartLayoutReducer
+    agentInspectorChartLayout: chartLayout.AgentInspectorChartLayoutReducer,
+    transactionViewType: transactionViewType.Reducer
 };
 
 export const Actions = {
@@ -134,7 +138,8 @@ export const Actions = {
     'UpdateRange': range.UpdateRange,
     'UpdatePermissions': userPermissions.UpdateUserPermissions,
     'UpdateApplicationInspectorChartLayout': chartLayout.UpdateApplicationInspectorChartLayoutInfo,
-    'UpdateAgentInspectorChartLayout': chartLayout.UpdateAgentInspectorChartLayoutInfo
+    'UpdateAgentInspectorChartLayout': chartLayout.UpdateAgentInspectorChartLayoutInfo,
+    'ChangeTransactionViewType': transactionViewType.ChangeTransactionViewType
 };
 
 const getUI = createFeatureSelector('uiState');

@@ -23,7 +23,6 @@ import { AnalyticsService } from './services/analytics.service';
 import { BrowserSupportCheckService } from './services/browser-support-check.service';
 import { AgentHistogramDataService } from './services/agent-histogram-data.service';
 import { TransactionDetailDataService } from './services/transaction-detail-data.service';
-import { TransactionViewTypeService } from './services/transaction-view-type.service';
 import { StoreHelperService } from './services/store-helper.service';
 import { UrlValidateGuard } from './services/url-validate.guard';
 
@@ -118,7 +117,6 @@ export class SharedModule {
                 BrowserSupportCheckService,
                 AgentHistogramDataService,
                 TransactionDetailDataService,
-                TransactionViewTypeService,
                 StoreHelperService,
                 UrlValidateGuard,
                 DynamicPopupService,
