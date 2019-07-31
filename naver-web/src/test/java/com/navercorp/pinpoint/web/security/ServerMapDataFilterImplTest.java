@@ -63,7 +63,7 @@ public class ServerMapDataFilterImplTest {
     public void filter2Test() {
         PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(false, false, false, true);
         RoleInformation roleInformation = new RoleInformation("roleId", new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT));
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, roleInformation);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, roleInformation);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -74,8 +74,8 @@ public class ServerMapDataFilterImplTest {
 
     @Test
     public void filter3Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
-        ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration("applicationId", Collections.EMPTY_LIST);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
+        ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration("applicationId", Collections.emptyList());
         authentication.addApplicationConfiguration(applicationConfiguration);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
@@ -93,7 +93,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId = "applicationId";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -120,8 +120,7 @@ public class ServerMapDataFilterImplTest {
         userGroupList.add(new UserGroup("0", userGroupId));
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList.add(appUserGroupAuth1);
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration("applicationId", appUserGroupAuthList);
@@ -139,6 +138,10 @@ public class ServerMapDataFilterImplTest {
         ReflectionTestUtils.setField(serverMapDataFilter, "applicationConfigService", applicationConfigService);
 
         assertTrue(serverMapDataFilter.filter(new Application("applicationId", ServiceType.STAND_ALONE)));
+    }
+
+    private AppAuthConfiguration newServerMapAppAuthConfiguration() {
+        return new AppAuthConfiguration(false, false, false, true);
     }
 
     @Test
@@ -182,7 +185,7 @@ public class ServerMapDataFilterImplTest {
 
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         StandardWebSocketSession standardWebSocketSession = new StandardWebSocketSession(null, null, null, null, authentication);
-        Map<String, String> param = new HashMap<String, String>();
+        Map<String, String> param = new HashMap<>();
         param.put(ActiveThreadCountHandler.APPLICATION_NAME_KEY, applicationId);
         RequestMessage requestMessage = new RequestMessage("command", param);
 
@@ -196,7 +199,7 @@ public class ServerMapDataFilterImplTest {
 
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         StandardWebSocketSession standardWebSocketSession = new StandardWebSocketSession(null, null, null, null, null);
-        Map<String, String> param = new HashMap<String, String>();
+        Map<String, String> param = new HashMap<>();
         param.put(ActiveThreadCountHandler.APPLICATION_NAME_KEY, applicationId);
         RequestMessage requestMessage = new RequestMessage("command", param);
 
@@ -207,7 +210,7 @@ public class ServerMapDataFilterImplTest {
     public void dataFilteringTest() {
         PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(false, false, false, true);
         RoleInformation roleInformation = new RoleInformation("roleId", new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT));
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, roleInformation);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, roleInformation);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -231,7 +234,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -282,7 +285,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -291,8 +294,7 @@ public class ServerMapDataFilterImplTest {
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
@@ -329,7 +331,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -338,8 +340,7 @@ public class ServerMapDataFilterImplTest {
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
@@ -362,7 +363,7 @@ public class ServerMapDataFilterImplTest {
         LinkList linkList = new LinkList();
         linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
         ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
-        ApplicationMapWithScatterData appMapWithScatterData = new ApplicationMapWithScatterData(map, Collections.EMPTY_MAP);
+        ApplicationMapWithScatterData appMapWithScatterData = new ApplicationMapWithScatterData(map, Collections.emptyMap());
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(appMapWithScatterData);
 
         ApplicationMapWithScatterData applicationMapWithScatterData = (ApplicationMapWithScatterData)applicationMap;
@@ -386,7 +387,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -395,8 +396,7 @@ public class ServerMapDataFilterImplTest {
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
@@ -419,7 +419,7 @@ public class ServerMapDataFilterImplTest {
         LinkList linkList = new LinkList();
         linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
         ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
-        ApplicationMapWithScatterScanResult appMapWithScatterScanResult = new ApplicationMapWithScatterScanResult(map, Collections.EMPTY_LIST);
+        ApplicationMapWithScatterScanResult appMapWithScatterScanResult = new ApplicationMapWithScatterScanResult(map, Collections.emptyList());
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(appMapWithScatterScanResult);
 
         ApplicationMapWithScatterScanResult applicationMapWithScatterScanResult = (ApplicationMapWithScatterScanResult)applicationMap;
@@ -441,7 +441,7 @@ public class ServerMapDataFilterImplTest {
 
     @Test(expected = AuthorityException.class)
     public void dataFiltering6Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
@@ -467,7 +467,7 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), new AppAuthConfiguration());
@@ -476,8 +476,7 @@ public class ServerMapDataFilterImplTest {
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
@@ -500,7 +499,7 @@ public class ServerMapDataFilterImplTest {
         LinkList linkList = new LinkList();
         linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
         ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
-        ApplicationMapWithScatterScanResult appMapWithScatterScanResult = new ApplicationMapWithScatterScanResult(map, Collections.EMPTY_LIST);
+        ApplicationMapWithScatterScanResult appMapWithScatterScanResult = new ApplicationMapWithScatterScanResult(map, Collections.emptyList());
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(appMapWithScatterScanResult);
 
         ApplicationMapWithScatterScanResult applicationMapWithScatterScanResult = (ApplicationMapWithScatterScanResult)applicationMap;
@@ -525,10 +524,9 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
-        appAuthConfiguration1.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration1 = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         appUserGroupAuthList.add(appUserGroupAuth1);
@@ -536,8 +534,7 @@ public class ServerMapDataFilterImplTest {
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration2 = new AppAuthConfiguration();
-        appAuthConfiguration2.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration2 = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
@@ -587,10 +584,9 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
-        appAuthConfiguration1.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration1 = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         appUserGroupAuthList.add(appUserGroupAuth1);
@@ -598,8 +594,7 @@ public class ServerMapDataFilterImplTest {
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration2 = new AppAuthConfiguration();
-        appAuthConfiguration2.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration2 = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
@@ -644,10 +639,10 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
-        appAuthConfiguration1.setServerMapData(false);
+
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         appUserGroupAuthList.add(appUserGroupAuth1);
@@ -655,8 +650,7 @@ public class ServerMapDataFilterImplTest {
         ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration(applicationId, appUserGroupAuthList);
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration2 = new AppAuthConfiguration();
-        appAuthConfiguration2.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration2 = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
@@ -679,7 +673,7 @@ public class ServerMapDataFilterImplTest {
         LinkList linkList = new LinkList();
         Link link = new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L));
         LinkCallDataMap source = new LinkCallDataMap();
-        source.addCallData("sourceAgentId", TomcatConstants.TOMCAT, "targetId", ServiceType.STAND_ALONE, Collections.EMPTY_LIST);
+        source.addCallData("sourceAgentId", TomcatConstants.TOMCAT, "targetId", ServiceType.STAND_ALONE, Collections.emptyList());
         link.addSource(source);
         linkList.addLink(link);
         ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
@@ -707,10 +701,9 @@ public class ServerMapDataFilterImplTest {
         final String applicationId2 = "applicationId2";
         final String userGroupId = "userGroupId";
 
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>();
-        AppAuthConfiguration appAuthConfiguration1 = new AppAuthConfiguration();
-        appAuthConfiguration1.setServerMapData(true);
+        AppAuthConfiguration appAuthConfiguration1 = newServerMapAppAuthConfiguration();
         AppUserGroupAuth appUserGroupAuth1 = new AppUserGroupAuth(applicationId, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         AppUserGroupAuth appUserGroupAuth2 = new AppUserGroupAuth(applicationId, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration1);
         appUserGroupAuthList.add(appUserGroupAuth1);
@@ -719,7 +712,7 @@ public class ServerMapDataFilterImplTest {
         authentication.addApplicationConfiguration(applicationConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList2 = new ArrayList<>();
         AppAuthConfiguration appAuthConfiguration2 = new AppAuthConfiguration();
-        appAuthConfiguration2.setServerMapData(false);
+
         AppUserGroupAuth appUserGroupAuth2_1 = new AppUserGroupAuth(applicationId2, userGroupId, AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         AppUserGroupAuth appUserGroupAuth2_2 = new AppUserGroupAuth(applicationId2, "guest", AppUserGroupAuth.Position.MANAGER.getName(), appAuthConfiguration2);
         appUserGroupAuthList2.add(appUserGroupAuth2_1);
@@ -742,7 +735,7 @@ public class ServerMapDataFilterImplTest {
         LinkList linkList = new LinkList();
         Link link = new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L));
         LinkCallDataMap source = new LinkCallDataMap();
-        source.addCallData("sourceAgentId", TomcatConstants.TOMCAT, "targetId", ServiceType.STAND_ALONE, Collections.EMPTY_LIST);
+        source.addCallData("sourceAgentId", TomcatConstants.TOMCAT, "targetId", ServiceType.STAND_ALONE, Collections.emptyList());
         link.addSource(source);
         linkList.addLink(link);
         ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
@@ -766,7 +759,7 @@ public class ServerMapDataFilterImplTest {
 
     @Test
     public void getCloseStatusTest() {
-        Map<String, String> param = new HashMap<String, String>();
+        Map<String, String> param = new HashMap<>();
         param.put("key", "value");
         param.put("key2", "value2");
         RequestMessage requestMessage = new RequestMessage("command", param);

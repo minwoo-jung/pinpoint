@@ -90,15 +90,11 @@ public class UserGroupAdditionControllerTest {
     }
 
     private void insertAppUserGroupAuth() {
-        AppAuthConfiguration AppAuthConfiguration01 = new AppAuthConfiguration();
-        AppAuthConfiguration01.setServerMapData(true);
-        AppAuthConfiguration01.setParamMetaData(true);
+        AppAuthConfiguration AppAuthConfiguration01 = newParamServerMapAppAuthConfiguration();
         AppUserGroupAuth appAuth01 = new AppUserGroupAuth(TEST_APPLICATION_ID_01, TEST_USER_GROUP, AppUserGroupAuth.Position.MANAGER.toString(), AppAuthConfiguration01);
         appConfigDao.insertAppUserGroupAuth(appAuth01);
 
-        AppAuthConfiguration AppAuthConfiguration02 = new AppAuthConfiguration();
-        AppAuthConfiguration02.setApiMetaData(true);
-        AppAuthConfiguration02.setSqlMetaData(true);
+        AppAuthConfiguration AppAuthConfiguration02 = newApiSqlAppAuthConfiguration();
         AppUserGroupAuth appAuth02 = new AppUserGroupAuth(TEST_APPLICATION_ID_02, TEST_USER_GROUP, AppUserGroupAuth.Position.USER.toString(), AppAuthConfiguration02);
         appConfigDao.insertAppUserGroupAuth(appAuth02);
 
@@ -108,21 +104,25 @@ public class UserGroupAdditionControllerTest {
     }
 
     private void deleteAppUserGroupAuth() {
-        AppAuthConfiguration AppAuthConfiguration01 = new AppAuthConfiguration();
-        AppAuthConfiguration01.setServerMapData(true);
-        AppAuthConfiguration01.setParamMetaData(true);
+        AppAuthConfiguration AppAuthConfiguration01 = newParamServerMapAppAuthConfiguration();
         AppUserGroupAuth appAuth01 = new AppUserGroupAuth(TEST_APPLICATION_ID_01, TEST_USER_GROUP, AppUserGroupAuth.Position.MANAGER.toString(), AppAuthConfiguration01);
         appConfigDao.deleteAppUserGroupAuth(appAuth01);
 
-        AppAuthConfiguration AppAuthConfiguration02 = new AppAuthConfiguration();
-        AppAuthConfiguration02.setApiMetaData(true);
-        AppAuthConfiguration02.setSqlMetaData(true);
+        AppAuthConfiguration AppAuthConfiguration02 = newApiSqlAppAuthConfiguration();
         AppUserGroupAuth appAuth02 = new AppUserGroupAuth(TEST_APPLICATION_ID_02, TEST_USER_GROUP, AppUserGroupAuth.Position.USER.toString(), AppAuthConfiguration02);
         appConfigDao.deleteAppUserGroupAuth(appAuth02);
 
         AppAuthConfiguration AppAuthConfiguration03 = new AppAuthConfiguration();
         AppUserGroupAuth appAuth03 = new AppUserGroupAuth(TEST_APPLICATION_ID_03, TEST_USER_GROUP, AppUserGroupAuth.Position.MANAGER.toString(), AppAuthConfiguration03);
         appConfigDao.deleteAppUserGroupAuth(appAuth03);
+    }
+
+    private AppAuthConfiguration newApiSqlAppAuthConfiguration() {
+        return new AppAuthConfiguration(true, true, false, false);
+    }
+
+    private AppAuthConfiguration newParamServerMapAppAuthConfiguration() {
+        return new AppAuthConfiguration(false, false, true, true);
     }
 
 }

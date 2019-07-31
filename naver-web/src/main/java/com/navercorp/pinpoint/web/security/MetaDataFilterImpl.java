@@ -35,15 +35,15 @@ import com.navercorp.pinpoint.web.vo.callstacks.RecordFactory;
 public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFilter {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
+
     @Override
     public boolean filter(Align align, MetaData metaData) {
         return isAuthorized(align, metaData) ? false : true;
     }
 
     private boolean isAuthorized(Align align, MetaData metaData) {
-        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
-        
+        final PinpointAuthentication authentication = (PinpointAuthentication) SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication == null) {
             logger.info("Authorization is fail. Because authentication is null.");
             return false;
@@ -51,21 +51,22 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
         if (authentication.isObtainAllAuthorization()) {
             return true;
         }
-        
-        String applicationId = align.getApplicationId();
-        if(isEmptyUserGroup(authentication, applicationId)) {
+
+        final String applicationId = align.getApplicationId();
+        if (isEmptyUserGroup(authentication, applicationId)) {
             return true;
         }
 
-        List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
+        final List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
+
         if (MetaData.SQL.equals(metaData)) {
-            for(AppUserGroupAuth auth : userGroupAuths) {
+            for (AppUserGroupAuth auth : userGroupAuths) {
                 if (auth.getConfiguration().getSqlMetaData() == false) {
                     return true;
                 }
             }
 
-            logger.info("User({}) don't have {} authorization for {}.",authentication.getPrincipal(), MetaData.SQL,  applicationId);
+            logger.info("User({}) don't have {} authorization for {}.", authentication.getPrincipal(), MetaData.SQL, applicationId);
             return false;
         } else if (MetaData.API.equals(metaData)) {
             for (AppUserGroupAuth auth : userGroupAuths) {
@@ -74,7 +75,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
                 }
             }
 
-            logger.info("User({}) don't have {} authorization for {}.",authentication.getPrincipal(), MetaData.API,  applicationId);
+            logger.info("User({}) don't have {} authorization for {}.", authentication.getPrincipal(), MetaData.API, applicationId);
             return false;
         } else if (MetaData.PARAM.equals(metaData)) {
             for (AppUserGroupAuth auth : userGroupAuths) {
@@ -83,7 +84,7 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
                 }
             }
 
-            logger.info("User({}) don't have {} authorization for {}.",authentication.getPrincipal(), MetaData.PARAM,  applicationId);
+            logger.info("User({}) don't have {} authorization for {}.", authentication.getPrincipal(), MetaData.PARAM, applicationId);
             return false;
         }
 
@@ -99,27 +100,27 @@ public class MetaDataFilterImpl extends AppConfigOrganizer implements MetaDataFi
             annotationBo.setAuthorized(false);
             return annotationBo;
         }
-        
+
         return null;
     }
 
     @Override
     public void replaceAnnotationBo(Align align, MetaData metaData) {
         final List<AnnotationBo> annotationBoList = align.getAnnotationBoList();
-        
+
         if (MetaData.PARAM.equals(metaData)) {
             for (AnnotationBo annotationBo : annotationBoList) {
                 if (AnnotationKey.HTTP_URL.getCode() == annotationBo.getKey()) {
                     String url = getHttpUrl(String.valueOf(annotationBo.getValue()), false);
                     annotationBo.setValue(url);
-                } else if(AnnotationKey.HTTP_PARAM.getCode() == annotationBo.getKey()) {
+                } else if (AnnotationKey.HTTP_PARAM.getCode() == annotationBo.getKey()) {
                     annotationBo.setValue("you don't have authorization for " + align.getApplicationId() + ".");
                 }
                 annotationBo.setAuthorized(false);
             }
         }
-        
-        
+
+
     }
 
     @Override

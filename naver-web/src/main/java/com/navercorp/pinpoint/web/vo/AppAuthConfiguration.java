@@ -21,42 +21,42 @@ package com.navercorp.pinpoint.web.vo;
  */
 public class AppAuthConfiguration {
     
-    private boolean apiMetaData = false;
-    private boolean sqlMetaData = false;
-    private boolean paramMetaData = false;
-    private boolean serverMapData = false;
+    private final boolean apiMetaData;
+    private final boolean sqlMetaData;
+    private final boolean paramMetaData;
+    private final boolean serverMapData;
+
+    public AppAuthConfiguration() {
+        this(false, false, false, false);
+    }
+
+    public AppAuthConfiguration(boolean apiMetaData, boolean sqlMetaData, boolean paramMetaData, boolean serverMapData) {
+        this.apiMetaData = apiMetaData;
+        this.sqlMetaData = sqlMetaData;
+        this.paramMetaData = paramMetaData;
+        this.serverMapData = serverMapData;
+    }
 
     public boolean getSqlMetaData() {
         return sqlMetaData;
     }
-    
-    public void setSqlMetaData(boolean sqlMetaData) {
-        this.sqlMetaData = sqlMetaData;
-    }
+
 
     public boolean getServerMapData() {
         return serverMapData;
     }
 
-    public void setServerMapData(boolean serverMapData) {
-        this.serverMapData = serverMapData;
-    }
 
     public boolean getApiMetaData() {
         return apiMetaData;
     }
 
-    public void setApiMetaData(boolean apiMetaData) {
-        this.apiMetaData = apiMetaData;
-    }
 
     public boolean getParamMetaData() {
         return paramMetaData;
     }
 
-    public void setParamMetaData(boolean paramMetaData) {
-        this.paramMetaData = paramMetaData;
-    }
+
 
     @Override
     public String toString() {

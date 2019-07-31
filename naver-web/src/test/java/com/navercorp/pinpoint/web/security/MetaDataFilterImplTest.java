@@ -63,7 +63,7 @@ public class MetaDataFilterImplTest {
     public void filterPinpointManagerTest() {
         PermsGroupAppAuthorization permsGroupAppAuthorization = new PermsGroupAppAuthorization(false, false, false, true);
         RoleInformation roleInformation = new RoleInformation("roleId", new PermissionCollection(PermsGroupAdministration.DEFAULT, permsGroupAppAuthorization, PermsGroupAlarm.DEFAULT, PermsGroupUserGroup.DEFAULT));
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, roleInformation);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, roleInformation);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -82,9 +82,9 @@ public class MetaDataFilterImplTest {
     @Test
     public void filterEmptyUserGroupTest() {
         final String applicationId =  "applicationId";
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, "testGroupId", "manager", new AppAuthConfiguration());
-        authentication.addApplicationConfiguration(new ApplicationConfiguration(applicationId, Collections.EMPTY_LIST));
+        authentication.addApplicationConfiguration(new ApplicationConfiguration(applicationId, Collections.emptyList()));
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
@@ -143,8 +143,7 @@ public class MetaDataFilterImplTest {
         userGroupList.add(new UserGroup("1", userGroupId));
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, RoleInformation.UNASSIGNED_ROLE);
 
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setSqlMetaData(true);
+        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration(false, true, false, false);
         AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, userGroupId, "manager", appAuthConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>(1);
         appUserGroupAuthList.add(appUserGroupAuth);
@@ -207,8 +206,8 @@ public class MetaDataFilterImplTest {
         userGroupList.add(new UserGroup("1", userGroupId));
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, RoleInformation.UNASSIGNED_ROLE);
 
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setApiMetaData(true);
+        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration(true, false, false, false);
+
         AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, userGroupId, "manager", appAuthConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>(1);
         appUserGroupAuthList.add(appUserGroupAuth);
@@ -271,8 +270,8 @@ public class MetaDataFilterImplTest {
         userGroupList.add(new UserGroup("1", userGroupId));
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, RoleInformation.UNASSIGNED_ROLE);
 
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setParamMetaData(true);
+        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration(false, false, true, false);
+
         AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, userGroupId, "manager", appAuthConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>(1);
         appUserGroupAuthList.add(appUserGroupAuth);
@@ -304,8 +303,8 @@ public class MetaDataFilterImplTest {
         userGroupList.add(new UserGroup("1", userGroupId));
         PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", userGroupList, false, RoleInformation.UNASSIGNED_ROLE);
 
-        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration();
-        appAuthConfiguration.setApiMetaData(true);
+        AppAuthConfiguration appAuthConfiguration = new AppAuthConfiguration(true, false, false, false);
+
         AppUserGroupAuth appUserGroupAuth = new AppUserGroupAuth(applicationId, userGroupId, "manager", appAuthConfiguration);
         List<AppUserGroupAuth> appUserGroupAuthList = new ArrayList<>(1);
         appUserGroupAuthList.add(appUserGroupAuth);
@@ -329,7 +328,7 @@ public class MetaDataFilterImplTest {
 
     @Test
     public void createAnnotationBoTest() {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -343,7 +342,7 @@ public class MetaDataFilterImplTest {
 
     @Test
     public void createAnnotationBo2Test() {
-        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.EMPTY_LIST, false, RoleInformation.UNASSIGNED_ROLE);
+        PinpointAuthentication authentication = new PinpointAuthentication("KR0000", "name", Collections.emptyList(), false, RoleInformation.UNASSIGNED_ROLE);
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
