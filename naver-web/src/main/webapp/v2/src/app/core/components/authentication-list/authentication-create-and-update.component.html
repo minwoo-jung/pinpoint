@@ -1,52 +1,56 @@
-<div [hidden]="!showForm" class="l-wrapper">
-        <button class="btn btn-black l-close" (click)="onClose(); formDir.resetForm();"><i class="fas fa-times"></i></button>
-        <h1>{{title}}</h1> 
-        <form [formGroup]="authForm" #formDir="ngForm" (ngSubmit)="onCreateOrUpdate()">
-            <div class="l-form-grid">
-                <div>
-                    <div>{{ i18nLabel.USER_GROUP }}</div>
-                    <select formControlName="userGroupId">
-                        <option value="">{{i18nGuide.userGroupId.required}}</option>
-                        <option value="guest" [hidden]="!isFixPositionGuest()">Guest</option>
-                        <option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup}}</option>
-                    </select>
-                    <span class="fas fa-angle-down"></span>
-                    <pp-form-field-error-message
-                        [control]="authForm.get('userGroupId')"
-                        [errorMessage]="i18nGuide['userGroupId']">
-                    </pp-form-field-error-message>
-                </div>
-                <div>
-                    <div>{{ i18nLabel.POSITION }}</div>
-                    <select formControlName="position">
-                        <option value=""> {{i18nGuide.position.required}}</option>
-                        <option value="guest" [hidden]="!isFixPositionGuest()">Guest</option>
-                        <option *ngFor="let position of positionList" [value]="position">{{position.toUpperCase()}}</option>
-                    </select>
-                    <span class="fas fa-angle-down"></span>
-                    <pp-form-field-error-message
-                        [control]="authForm.get('position')"
-                        [errorMessage]="i18nGuide['position']">
-                    </pp-form-field-error-message>
-                </div>
-                <div class="l-checkbox">
-                    <input type="checkbox" id="serverMap" formControlName="serverMap">
-                    <label for="serverMap"> {{ i18nLabel.SERVER_MAP }}</label>
-                </div>
-                <div class="l-checkbox">
-                    <input type="checkbox" id="apiMeta" formControlName="apiMeta">
-                    <label for="apiMeta"> {{ i18nLabel.API_META }}</label>
-                </div>
-                <div class="l-checkbox">
-                    <input type="checkbox" id="paramMeta" formControlName="paramMeta">
-                    <label for="paramMeta"> {{ i18nLabel.PARAM_META }}</label>
-                </div>
-                <div class="l-checkbox">
-                    <input type="checkbox" id="sqlMeta" formControlName="sqlMeta">
-                    <label for="sqlMeta"> {{ i18nLabel.SQL_META }}</label>
-                </div>                
+<div class="l-wrapper">
+    <button class="btn btn-black l-close" (click)="onClose(); formDir.resetForm();"><i class="fas fa-times"></i></button>
+    <h1>Authority</h1> 
+    <form [formGroup]="authForm" #formDir="ngForm" (ngSubmit)="onCreateOrUpdate()">
+        <div class="l-form-grid">
+            <div>
+                <div class="l-form-label">{{i18nLabel.USER_GROUP}}</div>
+                <select formControlName="userGroupId">
+                    <option value="">{{i18nFormGuide.userGroupId.required}}</option>
+                    <ng-container *ngIf="isEdittingGuest()">
+                        <option value="guest">Guest</option>
+                    </ng-container>
+                    <option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup}}</option>
+                </select>
+                <span class="fas fa-angle-down"></span>
+                <pp-form-field-error-message
+                    [control]="authForm.get('userGroupId')"
+                    [errorMessage]="i18nFormGuide['userGroupId']">
+                </pp-form-field-error-message>
             </div>
-            <button type="submit" class="btn btn-blue l-create" [class.btn-gray]="authForm.invalid" [disabled]="authForm.invalid">OK</button>
-        </form>
-    </div>
+            <div>
+                <div class="l-form-label">{{i18nLabel.POSITION}}</div>
+                <select formControlName="position">
+                    <option value=""> {{i18nFormGuide.position.required}}</option>
+                    <ng-container *ngIf="isEdittingGuest()">
+                        <option value="guest">Guest</option>
+                    </ng-container>
+                    <option *ngFor="let position of positionList" [value]="position">{{position.toUpperCase()}}</option>
+                </select>
+                <span class="fas fa-angle-down"></span>
+                <pp-form-field-error-message
+                    [control]="authForm.get('position')"
+                    [errorMessage]="i18nFormGuide['position']">
+                </pp-form-field-error-message>
+            </div>
+            <div class="l-checkbox">
+                <input type="checkbox" id="serverMapData" formControlName="serverMapData">
+                <label for="serverMapData"> {{i18nLabel.SERVER_MAP}}</label>
+            </div>
+            <div class="l-checkbox">
+                <input type="checkbox" id="apiMetaData" formControlName="apiMetaData">
+                <label for="apiMetaData"> {{i18nLabel.API_META}}</label>
+            </div>
+            <div class="l-checkbox">
+                <input type="checkbox" id="paramMetaData" formControlName="paramMetaData">
+                <label for="paramMetaData"> {{i18nLabel.PARAM_META}}</label>
+            </div>
+            <div class="l-checkbox">
+                <input type="checkbox" id="sqlMetaData" formControlName="sqlMetaData">
+                <label for="sqlMetaData"> {{i18nLabel.SQL_META}}</label>
+            </div>                
+        </div>
+        <button type="submit" class="btn btn-blue l-create" [disabled]="authForm.invalid">OK</button>
+    </form>
+</div>
     

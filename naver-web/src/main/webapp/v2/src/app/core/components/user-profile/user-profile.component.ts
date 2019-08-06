@@ -17,7 +17,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
     @Input() fieldErrorMessage: { [key: string]: IFormFieldErrorType };
     @Input() fieldLabel: { [key: string]: string };
     @Output() outUserProfileChange = new EventEmitter<IChangedProfileState>();
-    
+
     userProfileForm = new FormGroup({
         userId: new FormControl('', [
             Validators.required,

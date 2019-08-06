@@ -50,7 +50,7 @@ export class RoleListContainerForUsersComponent implements OnInit {
         this.roleListDataService.getRoleList().subscribe((roleList: string[]) => {
             this.roleList = roleList;
         });
-        this.emptyText$ = this.translateService.get('CONFIGURATION.GENERAL.EMPTY');
+        this.emptyText$ = this.translateService.get('COMMON.EMPTY');
         this.isValid = true;
     }
 

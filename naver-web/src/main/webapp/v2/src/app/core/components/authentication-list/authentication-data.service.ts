@@ -23,7 +23,7 @@ export interface IApplicationAuthData {
 }
 
 export interface IAuthentication {
-    myPosition: string;
+    myPosition: POSITION;
     userGroupAuthList: IApplicationAuthData[];
 }
 export interface IAuthenticationCreated {

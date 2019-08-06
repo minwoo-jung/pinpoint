@@ -13,7 +13,3 @@
     display: grid;
     grid-template-rows: 48% 4% 48%;
 }
-
-.l-divider {
-    height: 20px;
-}

@@ -62,20 +62,14 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
 
         merge(
             this.configurationUserInfoInteractionService.onUserCreate$,
-            this.userProfileInteractionService.onUserProfileUpdate$
+            this.userProfileInteractionService.onUserProfileUpdate$,
+            this.confirmRemoveUserInteractionService.onUserRemove$
         ).pipe(
             takeUntil(this.unsubscribe)
         ).subscribe(() => {
             this.getPinpointUserList(this.searchQuery);
         });
 
-        this.confirmRemoveUserInteractionService.onUserRemove$.pipe(
-            takeUntil(this.unsubscribe)
-        ).subscribe((id: string) => {
-            this.pinpointUserList = this.pinpointUserList.filter(({userId}: {userId: string}) => {
-                return id !== userId;
-            });
-        });
         this.getPinpointUserList();
     }
 

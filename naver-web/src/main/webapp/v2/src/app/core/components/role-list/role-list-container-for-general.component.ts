@@ -16,7 +16,7 @@ export class RoleListContainerForGeneralComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.emptyText$ = this.translateService.get('CONFIGURATION.GENERAL.EMPTY');
+        this.emptyText$ = this.translateService.get('COMMON.EMPTY');
     }
 
 }

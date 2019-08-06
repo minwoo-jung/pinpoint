@@ -1,50 +1,61 @@
-<div class="l-wrapper">
-    <table class="table l-authentication-table">
-        <colgroup>
-            <col width="100%">
-        </colgroup>
-        <thead>
-            <tr>
-                <th>
-                    <div class="l-table-title">
-                        Authentication
-                        <button class="btn btn-sm" [ngClass]="getAddButtonClass()" (click)="onShowCreateAuth()"><i class="fas fa-plus"></i></button>
-                    </div>
-                    <div class="l-authentication-th">                        
-                        <div>User Group</div>
-                        <div>Position</div>
-                    </div>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="padding: 0;">
-                    <div class="l-authentication-tr-wrap">
+<table class="table l-authentication-table">
+    <colgroup>
+        <col width="100%">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>
+                <div class="l-table-title">
+                    Authentication
+                    <button class="btn btn-blue btn-sm l-add-button" (click)="onClickAddBtn()" [disabled]="shouldDisabled()"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="l-authentication-th">                        
+                    <div>User Group</div>
+                    <div>Position</div>
+                    <div></div>
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="padding: 0;">
+                <div class="l-authentication-tr-wrap">
+                    <ng-container *ngIf="showGuide(); else list">
+                        <p class="l-guide">{{guideMessage}}</p>
+                    </ng-container>
+                    <ng-template #list>
                         <pp-authentication-list
                             [i18nLabel]="i18nLabel"
                             [authorityList]="authorityList"
                             [hasUpdateAndRemoveAuthority]="hasUpdateAndRemoveAuthority"
                             (outRemove)="onRemoveAuth($event)"
                             (outEdit)="onShowUpdateAuth($event)"
-                            (outInfo)="onShowAuthInfo($event)">
+                            (outInfo)="onShowAuthInfo()">
                         </pp-authentication-list>
-                        <div class="l-not-selected" *ngIf="!isApplicationSelected()">Select Application</div>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                    </ng-template>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<ng-container *ngIf="showPopup">
     <pp-authentication-create-and-update
+        [isFirstAuth]="!alreadyHasManager()"
+        [userGroupList]="userGroupList"
+        [selectedAuth]="selectedAuth"
         [i18nLabel]="i18nLabel"
-        [i18nGuide]="i18nGuide">
+        [i18nFormGuide]="i18nFormGuide"
+        (outUpdateAuth)="onUpdateAuth($event)"
+        (outCreateAuth)="onCreateAuth($event)"
+        (outClose)="onClosePopup()">>
     </pp-authentication-create-and-update>
-    <ng-container *ngIf="errorMessage">
-        <pp-server-error-message
-            [message]="errorMessage"
-            (outClose)="onCloseErrorMessage()">
-        </pp-server-error-message>
-    </ng-container>
-    <pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
-    <pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>
-</div>
+</ng-container>
+<ng-container *ngIf="errorMessage">
+    <pp-server-error-message
+        [message]="errorMessage"
+        (outClose)="onCloseErrorMessage()">
+    </pp-server-error-message>
+</ng-container>
+<pp-film-for-disable *ngIf="useDisable" [zIndex]="9" [marginWidth]="0"></pp-film-for-disable>    
+<pp-loading [showLoading]="showLoading" [zIndex]="20"></pp-loading>

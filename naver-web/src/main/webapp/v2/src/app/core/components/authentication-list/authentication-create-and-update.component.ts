@@ -1,28 +1,15 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthenticationInteractionService, CMD_TYPE } from './authentication-interaction.service';
-import { POSITION } from './authentication-data.service';
 
-export interface IAuthorityForm {
-    applicationId: string;
-    userGroupList: string[];
-    fixPosition: string;
-    data?: IAuthorityData;
-}
+import { POSITION, IApplicationAuthData } from './authentication-data.service';
 
-export interface IAuthorityCommandForm {
-    type: string;
-    data?: IAuthorityForm | IAuthorityData;
-}
-
-export interface IAuthorityData {
-    applicationId: string;
+export interface IAuthForm {
     position: string;
     userGroupId: string;
-    serverMap: boolean;
-    apiMeta: boolean;
-    paramMeta: boolean;
-    sqlMeta: boolean;
+    serverMapData: boolean;
+    apiMetaData: boolean;
+    paramMetaData: boolean;
+    sqlMetaData: boolean;
 }
 
 export interface ILabel {
@@ -39,106 +26,65 @@ export interface ILabel {
     templateUrl: './authentication-create-and-update.component.html',
     styleUrls: ['./authentication-create-and-update.component.css']
 })
-export class AuthenticationCreateAndUpdateComponent implements OnInit {
+export class AuthenticationCreateAndUpdateComponent implements OnInit, OnChanges {
+    @Input() isFirstAuth: boolean;
+    @Input() userGroupList: string[];
+    @Input() selectedAuth: IApplicationAuthData;
     @Input() i18nLabel: ILabel;
-    @Input() i18nGuide: { [key: string]: IFormFieldErrorType };
-    title = 'Authority';
-    showForm = false;
+    @Input() i18nFormGuide: {[key: string]: IFormFieldErrorType};
+    @Output() outUpdateAuth = new EventEmitter<IAuthForm>();
+    @Output() outCreateAuth = new EventEmitter<IAuthForm>();
+    @Output() outClose = new EventEmitter<void>();
+
     fixPosition: string;
     positionList = [POSITION.MANAGER, POSITION.USER];
-    userGroupList: string[];
-    authForm: FormGroup;
-    actionParam: IAuthorityCommandForm;
+    authForm = new FormGroup({
+        'position': new FormControl('', [Validators.required]),
+        'userGroupId': new FormControl('', [Validators.required]),
+        'serverMapData': new FormControl(false),
+        'apiMetaData': new FormControl(false),
+        'paramMetaData': new FormControl(false),
+        'sqlMetaData': new FormControl(false)
+    });
 
-    constructor(
-        private authenticationInteractionService: AuthenticationInteractionService
-    ) {}
+    constructor() {}
     ngOnInit() {
-        this.authForm = new FormGroup({
-            'position': new FormControl('', [Validators.required]),
-            'userGroupId': new FormControl('', [Validators.required]),
-            'serverMap': new FormControl(false, []),
-            'apiMeta': new FormControl(false, []),
-            'paramMeta': new FormControl(false, []),
-            'sqlMeta': new FormControl(false, [])
-        });
-        this.authenticationInteractionService.onShowInput$.subscribe((param: IAuthorityCommandForm) => {
-            this.actionParam = param;
-            switch (param.type) {
-                case CMD_TYPE.CREATE:
-                    this.createForm(param.data as IAuthorityForm);
-                    break;
-                case CMD_TYPE.UPDATE:
-                    this.updateForm(param.data as IAuthorityForm);
-                    break;
-            }
-            this.showForm = true;
-        });
-    }
-    private createForm(param: IAuthorityForm): void {
-        this.userGroupList = param.userGroupList;
-        this.setValue(param.fixPosition, '', false, false, false, false);
-        if (param.fixPosition !== '') {
-            this.fixPosition = param.fixPosition;
+        if (!this.selectedAuth && this.isFirstAuth) {
+            // When adding an auth for the first time
+            this.authForm.patchValue({position: POSITION.MANAGER});
             this.authForm.get('position').disable();
-        }
-    }
-    private updateForm(param: IAuthorityForm): void {
-        const { position, userGroupId, serverMap, apiMeta, paramMeta, sqlMeta } = param.data;
-        this.userGroupList = param.userGroupList;
-        this.setValue(position, userGroupId, serverMap, apiMeta, paramMeta, sqlMeta);
-        if (position === POSITION.MANAGER || position === POSITION.GUEST) {
-            this.fixPosition = position;
+        } else if (this.selectedAuth) {
+            // When updating auth
             this.authForm.get('userGroupId').disable();
-            this.authForm.get('position').disable();
+            if (this.selectedAuth.position === POSITION.GUEST) {
+                this.authForm.get('position').disable();
+            }
         }
     }
-    private setValue(position: string, userGroupId: string, serverMap: boolean, apiMeta: boolean, paramMeta: boolean, sqlMeta: boolean): void {
-        this.authForm.get('position').setValue(position);
-        this.authForm.get('userGroupId').setValue(userGroupId);
-        this.authForm.get('serverMap').setValue(serverMap);
-        this.authForm.get('apiMeta').setValue(apiMeta);
-        this.authForm.get('paramMeta').setValue(paramMeta);
-        this.authForm.get('sqlMeta').setValue(sqlMeta);
+
+    ngOnChanges(changes: SimpleChanges) {
+        const authChange = changes['selectedAuth'];
+
+        if (authChange && authChange.currentValue) {
+            const {position, userGroupId, configuration} = authChange.currentValue;
+            const formattedObj = {position, userGroupId, ...configuration};
+
+            this.authForm.reset(formattedObj);
+        }
     }
+
     onCreateOrUpdate() {
-        this.authenticationInteractionService.completeAction(this.actionParam.type, {
-            applicationId: this.actionParam.data.applicationId,
-            position: this.authForm.get('position').value,
-            userGroupId: this.authForm.get('userGroupId').value,
-            serverMap: this.authForm.get('serverMap').value,
-            apiMeta: this.authForm.get('apiMeta').value,
-            paramMeta: this.authForm.get('paramMeta').value,
-            sqlMeta: this.authForm.get('sqlMeta').value
-        });
+        const auth = this.authForm.getRawValue();
+
+        this.selectedAuth ? this.outUpdateAuth.emit(auth) : this.outCreateAuth.emit(auth);
         this.onClose();
     }
+
     onClose() {
-        this.authForm.get('position').enable();
-        this.authForm.get('userGroupId').enable();
-        this.authForm.reset();
-        this.showForm = false;
-        this.authenticationInteractionService.closeInput();
+        this.outClose.emit();
     }
-    isFixPositionGuest(): boolean {
-        return this.fixPosition === POSITION.GUEST;
-    }
-    get position() {
-        return this.authForm.get('position');
-    }
-    get userGroupId() {
-        return this.authForm.get('userGroupId');
-    }
-    get serverMap() {
-        return this.authForm.get('serverMap');
-    }
-    get apiMeta() {
-        return this.authForm.get('apiMeta');
-    }
-    get paramMeta() {
-        return this.authForm.get('paramMeta');
-    }
-    get sqlMeta() {
-        return this.authForm.get('sqlMeta');
+
+    isEdittingGuest(): boolean {
+        return this.selectedAuth && this.selectedAuth.position === POSITION.GUEST;
     }
 }

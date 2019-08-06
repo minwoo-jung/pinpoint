@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 @Injectable()
 export class ApplicationListInteractionForConfigurationService {
     private outSelectApplication = new BehaviorSubject<IApplication>(null);
+
     onSelectApplication$: Observable<IApplication>;
 
     constructor() {

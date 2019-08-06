@@ -1,35 +1,34 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TranslateReplaceService, UserConfigurationDataService, UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
+import { TranslateReplaceService, UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { UserGroupDataService, IUserGroup } from 'app/core/components/user-group/user-group-data.service';
 import { ApplicationListInteractionForConfigurationService } from 'app/core/components/application-list/application-list-interaction-for-configuration.service';
-import { Alarm, IAlarmCommandForm, NOTIFICATION_TYPE } from './alarm-rule-create-and-update.component';
+import { NotificationType, IAlarmForm } from './alarm-rule-create-and-update.component';
 import { AlarmRuleDataService, IAlarmRule, IAlarmRuleCreated, IAlarmRuleResponse } from './alarm-rule-data.service';
 import { isThatType } from 'app/core/utils/util';
 import { AuthenticationDataService, IPosition } from 'app/core/components/authentication-list/authentication-data.service';
-import { AlarmInteractionService, CMD_TYPE } from './alarm-interaction.service';
 
 @Component({
     selector: 'pp-alarm-rule-list-container',
     templateUrl: './alarm-rule-list-container.component.html',
     styleUrls: ['./alarm-rule-list-container.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
-    private unsubscribe: Subject<null> = new Subject();
-    private currentApplication: IApplication = null;
+    private unsubscribe = new Subject<void>();
+    private selectedApplication: IApplication = null;
     private authInfo: IPosition;
+
     hasUpdateAndRemoveAlarm: boolean;
-    errorMessage = '';
     useDisable = false;
     showLoading = false;
+    showPopup = false;
+    errorMessage: string;
     checkerList: string[];
-    alarmRuleList: IAlarmRule[];
     userGroupList: string[];
-
+    alarmRuleList: IAlarmRule[] = [];
     i18nLabel = {
         CHECKER_LABEL: '',
         USER_GROUP_LABEL: '',
@@ -37,101 +36,71 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
         TYPE_LABEL: '',
         NOTES_LABEL: '',
     };
-    i18nGuide: { [key: string]: IFormFieldErrorType };
+    i18nTemplateGuide = {
+        APP_NOT_SELECTED: '',
+        NO_ALARM_RESGISTERED: ''
+    };
+    i18nFormGuide: {[key: string]: IFormFieldErrorType};
     noPermMessage: string;
-    editAlarm: any;
+    editAlarm: IAlarmRule;
 
     constructor(
-        private changeDetectorRef: ChangeDetectorRef,
         private translateService: TranslateService,
         private translateReplaceService: TranslateReplaceService,
-        private userConfigurationDataService: UserConfigurationDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private alarmRuleDataService: AlarmRuleDataService,
         private userGroupDataSerivce: UserGroupDataService,
         private authenticationDataService: AuthenticationDataService,
         private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService,
-        private alarmInteractionService: AlarmInteractionService,
         private analyticsService: AnalyticsService,
     ) {}
+
     ngOnInit() {
-        this.loadAlarmRule();
-        this.connectApplicationList();
-        this.connectAuthenticationComponent();
-        this.connectAlarmComponent();
-        this.getI18NText();
+        this.loadCheckerList();
+        this.loadUserGroupList();
+        this.bindToAppSelectionEvent();
+        this.bindToAuthentication();
+        this.initI18NText();
     }
+
     ngOnDestroy() {
         this.unsubscribe.next();
         this.unsubscribe.complete();
     }
-    private loadAlarmRule(): void {
-        this.alarmRuleDataService.getCheckerList().pipe(
-            takeUntil(this.unsubscribe)
-        ).subscribe((result: string[] | IServerErrorShortFormat) => {
+
+    private loadCheckerList(): void {
+        this.alarmRuleDataService.getCheckerList().subscribe((result: string[] | IServerErrorShortFormat) => {
             isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
                 ? this.errorMessage = result.errorMessage
                 : this.checkerList = result as string[];
+        }, (error: IServerErrorFormat) => {
+            this.errorMessage = error.exception.message;
         });
     }
-    private loadUserData(): void {
-        this.userGroupDataSerivce.retrieve().pipe(
-            takeUntil(this.unsubscribe)
-        ).subscribe((result: IUserGroup[] | IServerErrorShortFormat) => {
+
+    private loadUserGroupList(): void {
+        this.userGroupDataSerivce.retrieve().subscribe((result: IUserGroup[] | IServerErrorShortFormat) => {
             isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
                 ? this.errorMessage = result.errorMessage
                 : this.userGroupList = result.map((userGroup: IUserGroup) => userGroup.id);
-
-            this.changeDetectorRef.detectChanges();
-        });
-        this.authenticationDataService.outPosition.pipe(
-            takeUntil(this.unsubscribe)
-        ).subscribe((authInfo: IPosition) => {
-            this.authInfo = authInfo;
-            this.changeDetectorRef.detectChanges();
+        }, (error: IServerErrorFormat) => {
+            this.errorMessage = error.exception.message;
         });
     }
-    private connectApplicationList(): void {
+
+    private bindToAppSelectionEvent(): void {
         this.applicationListInteractionForConfigurationService.onSelectApplication$.pipe(
             takeUntil(this.unsubscribe),
-            filter((selectedApplication: IApplication) => {
-                return selectedApplication !== null;
-            })
+            filter((app: IApplication) => app !== null),
         ).subscribe((selectedApplication: IApplication) => {
-            this.currentApplication = selectedApplication;
+            this.selectedApplication = selectedApplication;
             this.errorMessage = '';
+            this.onClosePopup();
             this.getAlarmData();
-            this.loadUserData();
-            this.changeDetectorRef.detectChanges();
         });
     }
-    private connectAuthenticationComponent(): void {
-        this.authenticationDataService.outPosition.pipe(
-            takeUntil(this.unsubscribe)
-        ).subscribe((authInfo: IPosition) => {
-            this.authInfo = authInfo;
-            this.hasUpdateAndRemoveAlarm = this.userPermissionCheckService.canUpdateAndRemoveAlarm(this.authInfo.isManager);
-            this.changeDetectorRef.detectChanges();
-        });
-    }
-    private connectAlarmComponent(): void {
-        this.alarmInteractionService.onComplete$.pipe(
-            takeUntil(this.unsubscribe)
-        ).subscribe((formData: IAlarmCommandForm) => {
-            switch (formData.type) {
-                case CMD_TYPE.CREATE:
-                    this.onCreateAlarm(formData.data as Alarm);
-                    break;
-                case CMD_TYPE.UPDATE:
-                    this.onUpdateAlarm(formData.data as Alarm);
-                    break;
-                case CMD_TYPE.CLOSE:
-                    this.onCloseAlarm();
-                    break;
-            }
-        });
-    }
-    private getI18NText(): void {
+
+    private initI18NText(): void {
         forkJoin(
             this.translateService.get('COMMON.REQUIRED_SELECT'),
             this.translateService.get('CONFIGURATION.COMMON.CHECKER'),
@@ -140,8 +109,10 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             this.translateService.get('CONFIGURATION.COMMON.TYPE'),
             this.translateService.get('CONFIGURATION.COMMON.NOTES'),
             this.translateService.get('COMMON.DO_NOT_HAVE_PERMISSION'),
-        ).subscribe(([requiredMessage, checkerLabel, userGroupLabel, thresholdLabel, typeLabel, notesLabel, noPermMessage]: string[]) => {
-            this.i18nGuide = {
+            this.translateService.get('CONFIGURATION.ALARM.EMPTY'),
+            this.translateService.get('COMMON.SELECT_YOUR_APP')
+        ).subscribe(([requiredMessage, checkerLabel, userGroupLabel, thresholdLabel, typeLabel, notesLabel, noPermMessage, alarmEmpty, selectApp]: string[]) => {
+            this.i18nFormGuide = {
                 checkerName: { required: this.translateReplaceService.replace(requiredMessage, checkerLabel) },
                 userGroupId: { required: this.translateReplaceService.replace(requiredMessage, userGroupLabel) },
                 threshold: {
@@ -158,79 +129,50 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
                 TYPE_LABEL: typeLabel,
                 NOTES_LABEL: notesLabel
             };
+
+            this.i18nTemplateGuide.NO_ALARM_RESGISTERED = alarmEmpty;
+            this.i18nTemplateGuide.APP_NOT_SELECTED = selectApp;
             this.noPermMessage = noPermMessage;
         });
     }
+
+    private bindToAuthentication(): void {
+        this.authenticationDataService.outPosition.pipe(
+            takeUntil(this.unsubscribe)
+        ).subscribe((authInfo: IPosition) => {
+            this.authInfo = authInfo;
+            this.hasUpdateAndRemoveAlarm = this.userPermissionCheckService.canUpdateAndRemoveAlarm(this.authInfo.isManager);
+        });
+    }
+
     private getAlarmData(): void {
         this.showProcessing();
-        this.alarmRuleDataService.retrieve(this.currentApplication.getApplicationName())
-            .subscribe((result: IAlarmRule[] | IServerErrorShortFormat) => {
-                isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
-                    ? this.errorMessage = result.errorMessage
+        this.alarmRuleDataService.retrieve(this.selectedApplication.getApplicationName()).subscribe((result: IAlarmRule[] | IServerErrorShortFormat) => {
+            isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
+                ? this.errorMessage = result.errorMessage
                 : this.alarmRuleList = result as IAlarmRule[];
-                this.hideProcessing();
-                this.changeDetectorRef.detectChanges();
-            }, (error: IServerErrorFormat) => {
-                this.hideProcessing();
-                this.errorMessage = error.exception.message;
-                this.changeDetectorRef.detectChanges();
-            });
-    }
-    private getFilteredUserGroupList(userGroupId?: string): string[] {
-        if (this.userPermissionCheckService.canEditAllAlarm()) {
-            return this.userGroupList;
-        } else {
-            if (this.authInfo.isUser) {
-                if (this.userGroupList.indexOf(userGroupId) === -1) {
-                    return this.userGroupList.concat(userGroupId);
-                } else {
-                    return this.userGroupList;
-                }
-            }
-        }
-        return this.userGroupList;
-    }
-    private getTypeStr(smsSend: boolean, emailSend: boolean): string {
-        if (smsSend && emailSend) {
-            return NOTIFICATION_TYPE.ALL;
-        } else {
-            if (smsSend) {
-                return NOTIFICATION_TYPE.SMS;
-            }
-            if (emailSend) {
-                return NOTIFICATION_TYPE.EMAIL;
-            }
-            return '';
-        }
-    }
-    onShowCreateAlarm(): void {
-        if (this.isApplicationSelected() === false || this.userPermissionCheckService.canAddAlarm(this.authInfo.isManager) === false) {
-            return;
-        }
-        this.alarmInteractionService.showCreate({
-            applicationId: this.currentApplication.getApplicationName(),
-            serviceType: this.currentApplication.getServiceType(),
-            userGroupList: this.getFilteredUserGroupList(),
-            checkerList: this.checkerList
+            this.hideProcessing();
+        }, (error: IServerErrorFormat) => {
+            this.hideProcessing();
+            this.errorMessage = error.exception.message;
         });
-        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ALARM_CREATION_POPUP);
     }
-    onCreateAlarm(alarm: Alarm): void {
+
+    onCreateAlarm({checkerName, userGroupId, threshold, type, notes}: IAlarmForm): void {
         this.showProcessing();
         this.alarmRuleDataService.create({
-            applicationId: alarm.applicationId,
-            serviceType: alarm.serviceType,
-            userGroupId: alarm.userGroupId,
-            checkerName: alarm.checkerName,
-            threshold: alarm.threshold,
-            smsSend: alarm.smsSend,
-            emailSend: alarm.emailSend,
-            notes: alarm.notes
-        } as IAlarmRule).subscribe((response: IAlarmRuleCreated | IServerErrorShortFormat) => {
+            applicationId: this.selectedApplication.getApplicationName(),
+            serviceType: this.selectedApplication.getServiceType(),
+            checkerName,
+            userGroupId,
+            threshold,
+            emailSend: type === NotificationType.ALL || type === NotificationType.EMAIL,
+            smsSend: type === NotificationType.ALL || type === NotificationType.SMS,
+            notes
+        }).subscribe((response: IAlarmRuleCreated | IServerErrorShortFormat) => {
             if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
                 this.errorMessage = response.errorMessage;
                 this.hideProcessing();
-                this.changeDetectorRef.detectChanges();
             } else {
                 this.getAlarmData();
                 this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CREATE_ALARM);
@@ -240,23 +182,25 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             this.errorMessage = error.exception.message;
         });
     }
-    onUpdateAlarm(alarm: Alarm): void {
+
+    onUpdateAlarm({checkerName, userGroupId, threshold, type, notes}: IAlarmForm): void {
         this.showProcessing();
+        const {ruleId, applicationId, serviceType} = this.editAlarm;
+
         this.alarmRuleDataService.update({
-            applicationId: alarm.applicationId,
-            ruleId: alarm.ruleId,
-            serviceType: alarm.serviceType,
-            checkerName: alarm.checkerName,
-            userGroupId: alarm.userGroupId,
-            threshold: alarm.threshold,
-            smsSend: alarm.smsSend,
-            emailSend: alarm.emailSend,
-            notes: alarm.notes
-        } as IAlarmRule).subscribe((response: IAlarmRuleResponse | IServerErrorShortFormat) => {
+            ruleId,
+            applicationId,
+            serviceType,
+            checkerName,
+            userGroupId,
+            threshold,
+            emailSend: type === NotificationType.ALL || type === NotificationType.EMAIL,
+            smsSend: type === NotificationType.ALL || type === NotificationType.SMS,
+            notes
+        }).subscribe((response: IAlarmRuleResponse | IServerErrorShortFormat) => {
             if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
                 this.errorMessage = response.errorMessage;
                 this.hideProcessing();
-                this.changeDetectorRef.detectChanges();
             } else {
                 this.getAlarmData();
                 this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_ALARM);
@@ -266,14 +210,28 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             this.errorMessage = error.exception.message;
         });
     }
-    onCloseAlarm(): void {
+
+    shouldDisabled(): boolean {
+        return !this.isApplicationSelected() || (this.authInfo && !this.userPermissionCheckService.canAddAlarm(this.authInfo.isManager));
     }
-    onCloseMessage(): void {
+
+    onClickAddBtn(): void {
+        this.editAlarm = null;
+        this.showPopup = true;
+        this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ALARM_CREATION_POPUP);
+    }
+
+    onClosePopup(): void {
+        this.showPopup = false;
+    }
+
+    onCloseErrorMessage(): void {
         this.errorMessage = '';
     }
+
     onRemoveAlarm(ruleId: string): void {
         this.showProcessing();
-        this.alarmRuleDataService.remove(this.currentApplication.getApplicationName(), ruleId).subscribe((response: IAlarmRuleResponse | IServerErrorShortFormat) => {
+        this.alarmRuleDataService.remove(this.selectedApplication.getApplicationName(), ruleId).subscribe((response: IAlarmRuleResponse | IServerErrorShortFormat) => {
             if (isThatType<IServerErrorShortFormat>(response, 'errorCode', 'errorMessage')) {
                 this.errorMessage = response.errorMessage;
                 this.hideProcessing();
@@ -286,38 +244,25 @@ export class AlarmRuleListContainerComponent implements OnInit, OnDestroy {
             this.errorMessage = error.exception.message;
         });
     }
-    onShowUpdateAlarm(ruleId: string): void {
-        const alarmInfo = this.alarmRuleList.find((alarm: IAlarmRule) => {
-            return alarm.ruleId === ruleId;
-        });
-        const alarmObj = new Alarm(
-            this.currentApplication.getApplicationName(),
-            this.currentApplication.getServiceType(),
-            alarmInfo.checkerName,
-            alarmInfo.userGroupId,
-            alarmInfo.threshold,
-            this.getTypeStr(alarmInfo.smsSend, alarmInfo.emailSend),
-            alarmInfo.notes
-        );
-        alarmObj.ruleId = alarmInfo.ruleId;
-        this.alarmInteractionService.showUpdate({
-            applicationId: this.currentApplication.getApplicationName(),
-            serviceType: this.currentApplication.getServiceType(),
-            userGroupList: this.getFilteredUserGroupList(),
-            checkerList: this.checkerList,
-            data: alarmObj
-        });
+
+    onEditAlarm(ruleId: string): void {
+        this.editAlarm = this.alarmRuleList.find(({ruleId: alarmId}: IAlarmRule) => alarmId === ruleId);
+        this.showPopup = true;
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ALARM_UPDATE_POPUP);
     }
+
     isApplicationSelected(): boolean {
-        return this.currentApplication !== null;
+        return this.selectedApplication !== null;
     }
-    getAddButtonClass(): object {
-        return {
-            'btn-blue': this.isApplicationSelected() && (this.authInfo && this.userPermissionCheckService.canAddAlarm(this.authInfo.isManager)),
-            'btn-gray': !this.isApplicationSelected() || (this.authInfo && !this.userPermissionCheckService.canAddAlarm(this.authInfo.isManager))
-        };
+
+    showGuide(): boolean {
+        return !this.isApplicationSelected() || this.alarmRuleList.length === 0;
     }
+
+    get guideMessage(): string {
+        return !this.isApplicationSelected() ? this.i18nTemplateGuide.APP_NOT_SELECTED : this.i18nTemplateGuide.NO_ALARM_RESGISTERED;
+    }
+
     private showProcessing(): void {
         this.useDisable = true;
         this.showLoading = true;

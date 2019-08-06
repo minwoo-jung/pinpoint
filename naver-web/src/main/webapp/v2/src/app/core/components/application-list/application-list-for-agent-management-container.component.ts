@@ -1,32 +1,32 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, Renderer2 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, fromEvent, forkJoin } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, pluck, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, pluck, switchMapTo } from 'rxjs/operators';
 
-import { UrlQuery } from 'app/shared/models';
 import {
     WebAppSettingDataService,
     StoreHelperService,
-    NewUrlStateNotificationService,
     AnalyticsService,
     TRACKED_EVENT_LIST,
+    MessageQueueService,
+    MESSAGE_TO,
+    ApplicationListDataService
 } from 'app/shared/services';
 import { ApplicationListInteractionForConfigurationService } from './application-list-interaction-for-configuration.service';
 import { FOCUS_TYPE } from './application-list-for-header.component';
 
 @Component({
-    selector: 'pp-application-list-for-configuration-alarm-container',
-    templateUrl: './application-list-for-configuration-alarm-container.component.html',
-    styleUrls: ['./application-list-for-configuration-alarm-container.component.css'],
+    selector: 'pp-application-list-for-agent-management-container',
+    templateUrl: './application-list-for-agent-management-container.component.html',
+    styleUrls: ['./application-list-for-agent-management-container.component.css']
 })
-export class ApplicationListForConfigurationAlarmContainerComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ApplicationListForAgentManagementContainerComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('inputQuery') inputQuery: ElementRef;
 
     private unsubscribe = new Subject<void>();
     private minLength = 3;
     private filterStr = '';
     private applicationList: IApplication[];
-    private applicationQuery: string;
 
     i18nText: { [key: string]: string } = {
         INPUT_APPLICATION_NAME: '',
@@ -43,10 +43,11 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
 
     constructor(
         private renderer: Renderer2,
-        private newUrlStateNotificationService: NewUrlStateNotificationService,
         private storeHelperService: StoreHelperService,
         private webAppSettingDataService: WebAppSettingDataService,
         private translateService: TranslateService,
+        private messageQueueService: MessageQueueService,
+        private applicationListDataService: ApplicationListDataService,
         private applicationListInteractionForConfigurationService: ApplicationListInteractionForConfigurationService,
         private analyticsService: AnalyticsService,
     ) {}
@@ -54,25 +55,15 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
     ngOnInit() {
         this.initI18nText();
         this.funcImagePath = this.webAppSettingDataService.getIconPathMakeFunc();
-        this.newUrlStateNotificationService.onUrlStateChange$.pipe(
-            takeUntil(this.unsubscribe),
-            filter((urlService: NewUrlStateNotificationService) => urlService.hasValue(UrlQuery.APPLICATION_ID))
-        ).subscribe((urlService: NewUrlStateNotificationService) => {
-            this.applicationQuery = urlService.getQueryValue(UrlQuery.APPLICATION_ID);
-        });
-
         this.storeHelperService.getApplicationList(this.unsubscribe).subscribe((applicationList: IApplication[]) => {
             this.applicationList = applicationList;
             this.filteredApplicationList = this.filterList(this.applicationList);
-            if (!this.applicationQuery) {
-                return;
-            }
+        });
 
-            const selectedApplication = this.filteredApplicationList.find((app: IApplication) => this.applicationQuery === app.getApplicationName());
-
-            if (selectedApplication) {
-                this.onSelectApplication(selectedApplication);
-            }
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.APPLICATION_REMOVED).pipe(
+            switchMapTo(this.applicationListDataService.getApplicationList())
+        ).subscribe(() => {
+            this.selectedApplication = null;
         });
     }
 
@@ -147,12 +138,10 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
             this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SELECT_APPLICATION_FOR_ALARM);
         }
     }
-
     onFocused(index: number): void {
         this.focusIndex = index;
         this.focusType = FOCUS_TYPE.MOUSE;
     }
-
     onKeyDown(keyCode: number): void {
         switch (keyCode) {
             case 27: // ESC

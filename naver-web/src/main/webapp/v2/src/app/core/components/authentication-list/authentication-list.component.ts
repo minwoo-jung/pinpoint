@@ -1,4 +1,7 @@
+import { POSITION } from 'app/core/components/authentication-list/authentication-data.service';
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
+
+import { IApplicationAuthData } from './authentication-data.service';
 
 export interface IParam {
     userGroupId: string;
@@ -11,44 +14,53 @@ export interface IParam {
     styleUrls: ['./authentication-list.component.css']
 })
 export class AuthenticationListComponent implements OnInit, OnChanges {
-    @Input() authorityList: any;
+    @Input() authorityList: IApplicationAuthData[];
     @Input() hasUpdateAndRemoveAuthority: boolean;
-    @Input() i18nLabel: any;
-    @Output() outRemove: EventEmitter<IParam> = new EventEmitter();
-    @Output() outEdit: EventEmitter<IParam> = new EventEmitter();
-    @Output() outInfo: EventEmitter<IParam> = new EventEmitter();
-    private removeConformId = '';
-    private removeConformApplicationId = '';
+    @Input() i18nLabel: {[key: string]: string};
+    @Output() outRemove = new EventEmitter<IParam>();
+    @Output() outEdit = new EventEmitter<IParam>();
+    @Output() outInfo = new EventEmitter<IParam>();
+
+    private removeConfirmId = '';
+    private removeConfirmApplicationId = '';
+
     selectedUserGroupId: string;
     selectedPosition: string;
+
     constructor() { }
     ngOnInit() {}
     ngOnChanges() {
         this.initSelected();
     }
+
     initSelected() {
         this.selectedUserGroupId = '';
         this.selectedPosition = '';
     }
+
     onRemove(userGroupId: string, applicationId: string): void {
-        this.removeConformId = userGroupId;
-        this.removeConformApplicationId = applicationId;
+        this.removeConfirmId = userGroupId;
+        this.removeConfirmApplicationId = applicationId;
     }
-    onEdit(userGroupId: string, position: string): void {
-        this.outEdit.emit({ userGroupId, position});
+
+    onEdit(userGroupId: string): void {
+        this.outEdit.emit({userGroupId});
     }
+
     onCancelRemove(): void {
-        this.removeConformId = '';
-        this.removeConformApplicationId = '';
+        this.removeConfirmId = '';
+        this.removeConfirmApplicationId = '';
     }
+
     onConfirmRemove(): void {
         this.outRemove.emit({
-            userGroupId: this.removeConformId,
-            applicationId: this.removeConformApplicationId
+            userGroupId: this.removeConfirmId,
+            applicationId: this.removeConfirmApplicationId
         });
-        this.removeConformId = '';
-        this.removeConformApplicationId = '';
+        this.removeConfirmId = '';
+        this.removeConfirmApplicationId = '';
     }
+
     toggleAuthInfo(userGroupId: string, position: string): void {
         if (this.selectedUserGroupId === userGroupId && this.selectedPosition === position) {
             this.initSelected();
@@ -56,12 +68,18 @@ export class AuthenticationListComponent implements OnInit, OnChanges {
             this.selectedUserGroupId = userGroupId;
             this.selectedPosition = position;
         }
-        this.outInfo.emit({ userGroupId, position });
+        this.outInfo.emit({userGroupId, position});
     }
+
     isShowAuthInfo(userGroupId: string, position: string): boolean {
         return this.selectedUserGroupId === userGroupId && this.selectedPosition === position;
     }
+
     isRemoveTarget(userGroupId: string, applicationId: string): boolean {
-        return this.removeConformId === userGroupId && this.removeConformApplicationId === applicationId;
+        return this.removeConfirmId === userGroupId && this.removeConfirmApplicationId === applicationId;
+    }
+
+    isGuest(position: string): boolean {
+        return position === POSITION.GUEST;
     }
 }

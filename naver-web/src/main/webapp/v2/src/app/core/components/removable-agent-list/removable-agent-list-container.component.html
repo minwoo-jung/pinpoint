@@ -1,13 +1,13 @@
 <div class="l-agent-wrapper">
     <ng-container *ngIf="!isNone();else elseBlock">
         <div class="l-agent-title">
-            <span>{{currentApplication.getApplicationName()}}</span> <button class="btn btn-red" (click)="onRemoveApplication()">Remove Application</button>
+            <span>{{selectedApplication.getApplicationName()}}</span> <button class="btn btn-red" (click)="onRemoveApplication()">Remove Application</button>
         </div>
         <div class="l-agent-list">
             <pp-removable-agent-list
                 [rowData]="agentList"
-                (outSelectAgent)="onRemoveSelectAgent($event)"
-            ></pp-removable-agent-list>
+                (outSelectAgent)="onRemoveSelectAgent($event)">
+            </pp-removable-agent-list>
         </div>
         <ng-container *ngIf="isAgentRemove()">
             <div class="l-remove-message">

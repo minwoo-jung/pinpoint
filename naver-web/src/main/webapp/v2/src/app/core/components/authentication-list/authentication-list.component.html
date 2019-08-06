@@ -1,19 +1,19 @@
-<div  *ngFor="let auth of authorityList">
+<div *ngFor="let auth of authorityList">
     <div class="l-authentication-tr">
-        <div >{{auth.userGroupId}}</div>
-        <div >{{auth.position.toUpperCase()}}</div>
+        <div>{{auth.userGroupId}}</div>
+        <div>{{auth.position.toUpperCase()}}</div>
         <div class="l-authentication-btn-group">
-        <button [hidden]="isRemoveTarget(auth.userGroupId, auth.applicationId)" class="fas fa-binoculars" [ngClass]="{'l-info-on': isShowAuthInfo(auth.userGroupId, auth.position)}" (click)="toggleAuthInfo(auth.userGroupId, auth.position)"></button>
-            <button [hidden]="!hasUpdateAndRemoveAuthority || isRemoveTarget(auth.userGroupId, auth.applicationId)" class="far fa-edit" (click)="onEdit(auth.userGroupId, auth.position)"></button>
-            <button [hidden]="!hasUpdateAndRemoveAuthority || isRemoveTarget(auth.userGroupId, auth.applicationId)" class="far fa-trash-alt" (click)="onRemove(auth.userGroupId, auth.applicationId)"></button>
+            <button [hidden]="isRemoveTarget(auth.userGroupId, auth.applicationId)" class="fas fa-binoculars" [ngClass]="{'l-info-on': isShowAuthInfo(auth.userGroupId, auth.position)}" (click)="toggleAuthInfo(auth.userGroupId, auth.position)"></button>
+            <button [hidden]="!hasUpdateAndRemoveAuthority || isRemoveTarget(auth.userGroupId, auth.applicationId)" class="far fa-edit" (click)="onEdit(auth.userGroupId)"></button>
+            <button [hidden]="!hasUpdateAndRemoveAuthority || isRemoveTarget(auth.userGroupId, auth.applicationId) || isGuest(auth.position)" class="far fa-trash-alt" (click)="onRemove(auth.userGroupId, auth.applicationId)"></button>
             <button [hidden]="!isRemoveTarget(auth.userGroupId, auth.applicationId)" class="fas fa-arrow-left" (click)="onCancelRemove()"></button>
             <button [hidden]="!isRemoveTarget(auth.userGroupId, auth.applicationId)" class="fas fa-check" (click)="onConfirmRemove()"></button>
         </div>
     </div>
     <div class="l-authentication-info" *ngIf="isShowAuthInfo(auth.userGroupId, auth.position)">
-        <span><i class="fas fa-check-square" [hidden]="!auth.configuration.serverMapData"></i><i class="far fa-square" [hidden]="auth.configuration.serverMapData"></i> {{ i18nLabel.SERVER_MAP }}</span>
-        <span><i class="fas fa-check-square" [hidden]="!auth.configuration.apiMetaData"></i><i class="far fa-square" [hidden]="auth.configuration.apiMetaData"></i> {{ i18nLabel.API_META }}</span>
-        <span><i class="fas fa-check-square" [hidden]="!auth.configuration.paramMetaData"></i><i class="far fa-square" [hidden]="auth.configuration.paramMetaData"></i> {{ i18nLabel.PARAM_META }}</span>
-        <span><i class="fas fa-check-square" [hidden]="!auth.configuration.sqlMetaData"></i><i class="far fa-square" [hidden]="auth.configuration.sqlMetaData"></i> {{ i18nLabel.SQL_META }}</span>
+        <span><i class="fas fa-check-square" [hidden]="!auth.configuration.serverMapData"></i><i class="far fa-square" [hidden]="auth.configuration.serverMapData"></i> {{i18nLabel.SERVER_MAP}}</span>
+        <span><i class="fas fa-check-square" [hidden]="!auth.configuration.apiMetaData"></i><i class="far fa-square" [hidden]="auth.configuration.apiMetaData"></i> {{i18nLabel.API_META}}</span>
+        <span><i class="fas fa-check-square" [hidden]="!auth.configuration.paramMetaData"></i><i class="far fa-square" [hidden]="auth.configuration.paramMetaData"></i> {{i18nLabel.PARAM_META}}</span>
+        <span><i class="fas fa-check-square" [hidden]="!auth.configuration.sqlMetaData"></i><i class="far fa-square" [hidden]="auth.configuration.sqlMetaData"></i> {{i18nLabel.SQL_META}}</span>
     </div>
 </div>

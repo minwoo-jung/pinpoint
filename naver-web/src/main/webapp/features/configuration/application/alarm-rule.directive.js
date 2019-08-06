@@ -316,14 +316,8 @@
 				});
 				cbFail({ errorMessage: CONSTS.SELECT_USERGROUP_OR_RULE });
 				return;
-			}
-			if ( cbHasAlarm( oNewRule.userGroupId, oNewRule.checkerName ) ) {
-				$.each( aEditNodes, function( index, $el ) {
-					$el.addClass("blink-blink");
-				});
-				cbFail({ errorMessage: CONSTS.EXIST_A_SAME });
-				return;
-			}
+            }
+
 			AlarmUtilService.sendCRUD( "createRule", oNewRule, function( oServerData ) {
 				oNewRule.ruleId = oServerData.ruleId;
 				cbSuccess( oNewRule );
@@ -383,13 +377,6 @@
 		applyAction: function( AlarmUtilService, oUpdateRule, aEditNodes, $node, $elLoading, cbHasAlarm, cbSuccess, cbFail ) {
 			var self = this;
 			AlarmUtilService.show($elLoading);
-			if ( cbHasAlarm( oUpdateRule.ruleId, oUpdateRule.applicationId, oUpdateRule.checkerName ) ) {
-				$.each( aEditNodes, function( index, $el ) {
-					$el.addClass("blink-blink");
-				});
-				cbFail({errorMessage: CONSTS.EXIST_A_SAME});
-				return;
-			}
 			AlarmUtilService.sendCRUD( "updateRule", oUpdateRule, function( oServerData ) {
 				self.cancelAction( AlarmUtilService, $node, aEditNodes, function () {});
 				cbSuccess( oUpdateRule );

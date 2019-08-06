@@ -62,6 +62,7 @@
 }
 #removableAgentList .ag-header-cell-label {
     padding: 4px;
+    justify-content: center;
 }
 #removableAgentList .ag-group-expanded span {
     margin-right: 4px;
