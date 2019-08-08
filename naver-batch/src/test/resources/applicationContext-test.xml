@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch" xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:annotation-config/>
     <context:component-scan base-package="com.navercorp.pinpoint.batch.dao,
@@ -17,7 +17,10 @@
         </property>
     </bean>
 
-    <batch:job-repository id="jobRepository" data-source="dataSource" transaction-manager="transactionManager"/>
+    <bean id="jobRepository"
+          class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
 
     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
         <property name="jobRepository" ref="jobRepository" />
@@ -25,5 +28,51 @@
 
     <import resource="applicationContext-dao-config.xml"/>
     <import resource="applicationContext-datasource.xml"/>
+
+    <bean id="jobFailListener" class="com.navercorp.pinpoint.web.batch.JobFailListener"/>
+
+    <bean id="naverJobFailMessageSender" class="com.navercorp.pinpoint.batch.NaverJobFailMessageSender">
+        <constructor-arg index="0" ref="naverBatchConfiguration"/>
+        <constructor-arg index="1" ref="restTemplate"/>
+    </bean>
+
+    <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.batch.NaverBatchConfiguration"/>
+    <util:properties id="naverBatchProps" location="classpath:pinpoint-batch.properties"/>
+
+    <bean id="jsonObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean"/>
+
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                    <property name="objectMapper">
+                        <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
+                    </property>
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/json</value>
+                            <value>application/json</value>
+                        </list>
+                    </property>
+                </bean>
+                <bean class="org.springframework.http.converter.FormHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>application/x-www-form-urlencoded</value>
+                        </list>
+                    </property>
+                </bean>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/plain</value>
+                            <value>text/html</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
 
 </beans>

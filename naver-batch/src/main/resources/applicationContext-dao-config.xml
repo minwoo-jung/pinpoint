@@ -16,7 +16,6 @@
         <property name="configLocation" value="classpath:/mybatis-config.xml"/>
         <property name="mapperLocations" value="classpath*:naverbatchmapper/*Mapper.xml"/>
         <property name="failFast" value="true"/>
-
         <property name="plugins">
             <list>
                 <bean class="com.navercorp.pinpoint.web.dao.ibatis.BindingLogPlugin32"/>

@@ -20,6 +20,7 @@
         <setting name="defaultStatementTimeout" value="5" />
         <!--undersocre mapping of DB table  -->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="defaultStatementTimeout" value="1500" />
     </settings>
 
     <typeAliases>

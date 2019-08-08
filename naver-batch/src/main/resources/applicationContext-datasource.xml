@@ -27,5 +27,6 @@
         <!-- use cache or not for preparedStatement-->
         <property name="poolPreparedStatements" value="true"/>
         <property name="maxOpenPreparedStatements" value="50"/>
+        <property name="connectionProperties" value="connectTimeout=5000;socketTimeout=1800000"/>
     </bean>
 </beans>
