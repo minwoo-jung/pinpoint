@@ -51,7 +51,7 @@ public class PreAuthenticationFilter extends OncePerRequestFilter {
 
     public PreAuthenticationFilter(String secretKey) {
         if (StringUtils.isEmpty(secretKey)) {
-            new IllegalArgumentException("secretKey must is not empty.");
+            throw new IllegalArgumentException("secretKey must is not empty.");
         }
         this.secretKey = secretKey;
     }

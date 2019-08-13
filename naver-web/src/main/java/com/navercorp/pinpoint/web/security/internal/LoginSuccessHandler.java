@@ -52,7 +52,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         super(DEFAULT_TARGET_URL);
 
         if (StringUtils.isEmpty(secretKey)) {
-            new IllegalArgumentException("secretKey must is not empty.");
+            throw new IllegalArgumentException("secretKey must is not empty.");
         }
 
         this.secretKey = secretKey;
