@@ -73,7 +73,7 @@ public class InvokeInterceptor implements AroundInterceptor {
 
         recorder.recordServiceType(LucyNetConstants.NPC_CLIENT);
 
-        if (target != null && target instanceof NpcServerAddressAccessor) {
+        if (target instanceof NpcServerAddressAccessor) {
             InetSocketAddress serverAddress = ((NpcServerAddressAccessor) target)._$PINPOINT$_getNpcServerAddress();
 
             if (serverAddress != null) {
