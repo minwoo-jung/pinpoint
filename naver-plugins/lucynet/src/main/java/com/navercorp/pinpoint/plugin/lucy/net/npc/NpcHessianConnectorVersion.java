@@ -5,7 +5,6 @@ import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
 import com.navercorp.pinpoint.plugin.lucy.net.InterceptorConstants;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetConstants;
-import com.navercorp.pinpoint.plugin.lucy.net.LucyNetPlugin;
 import com.navercorp.pinpoint.plugin.lucy.net.LucyNetUtils;
 
 /**

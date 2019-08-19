@@ -7,10 +7,6 @@
 package com.navercorp.pinpoint.thrift.dto.command;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
 public enum TTokenResponseCode implements org.apache.thrift.TEnum {
   OK(200),
   BAD_REQUEST(400),

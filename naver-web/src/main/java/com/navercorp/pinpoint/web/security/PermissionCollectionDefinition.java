@@ -18,7 +18,11 @@ package com.navercorp.pinpoint.web.security;
 import com.navercorp.pinpoint.web.controller.AdminController;
 import com.navercorp.pinpoint.web.controller.AlarmController;
 import com.navercorp.pinpoint.web.controller.UserGroupController;
-import com.navercorp.pinpoint.web.vo.role.*;
+import com.navercorp.pinpoint.web.vo.role.PermissionCollection;
+import com.navercorp.pinpoint.web.vo.role.PermsGroupAdministration;
+import com.navercorp.pinpoint.web.vo.role.PermsGroupAlarm;
+import com.navercorp.pinpoint.web.vo.role.PermsGroupAppAuthorization;
+import com.navercorp.pinpoint.web.vo.role.PermsGroupUserGroup;
 
 /**
  * @author minwoo.jung

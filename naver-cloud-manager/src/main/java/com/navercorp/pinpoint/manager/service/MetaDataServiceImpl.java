@@ -16,7 +16,6 @@
 package com.navercorp.pinpoint.manager.service;
 
 import com.navercorp.pinpoint.manager.dao.MetadataDao;
-import com.navercorp.pinpoint.manager.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.manager.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.manager.vo.exception.RepositoryException;
 import org.slf4j.Logger;

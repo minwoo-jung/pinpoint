@@ -16,12 +16,13 @@
 
 package com.navercorp.pinpoint.web.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.navercorp.pinpoint.web.security.NaverPermissionEvaluator;
 import com.navercorp.pinpoint.web.security.PermissionChecker;
+import com.navercorp.pinpoint.web.service.ApplicationConfigService;
 import com.navercorp.pinpoint.web.service.UserService;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Position;
+import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +31,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.navercorp.pinpoint.web.service.ApplicationConfigService;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth.Position;
-import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author minwoo.jung

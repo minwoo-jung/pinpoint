@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.web.vo.role;
 
-import java.security.Permission;
 import java.util.Objects;
 
 /**

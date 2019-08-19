@@ -18,7 +18,6 @@ package com.navercorp.pinpoint.web.security.internal;
 import com.navercorp.pinpoint.web.security.LoginStaticString;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;

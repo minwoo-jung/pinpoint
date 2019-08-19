@@ -21,7 +21,6 @@ import com.navercorp.pinpoint.io.header.Header;
 import com.navercorp.pinpoint.io.request.ServerRequest;
 import com.navercorp.pinpoint.io.request.ServerResponse;
 import com.navercorp.pinpoint.thrift.io.FlinkSpanStatTBaseLocator;
-import com.navercorp.pinpoint.thrift.io.FlinkTBaseLocator;
 
 import java.util.Objects;
 

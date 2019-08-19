@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.web.namespace.websocket;
 
-import com.navercorp.pinpoint.web.websocket.PinpointWebSocketHandler;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 

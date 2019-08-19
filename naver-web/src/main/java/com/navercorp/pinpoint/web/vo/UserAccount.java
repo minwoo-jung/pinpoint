@@ -17,8 +17,6 @@ package com.navercorp.pinpoint.web.vo;
 
 import org.springframework.util.Assert;
 
-import java.util.Objects;
-
 /**
  * @author minwoo.jung
  */

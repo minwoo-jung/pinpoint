@@ -28,8 +28,6 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.navercorp.pinpoint.web.dao.UserDao;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -15,12 +15,6 @@
  */
 package com.navercorp.pinpoint.plugin.nelo;
 
-import java.lang.reflect.Modifier;
-import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
 import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
@@ -37,6 +31,11 @@ import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
 import com.navercorp.pinpoint.plugin.nelo.interceptor.AddNeloAppenderMethodInterceptor;
 import com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor;
 import com.navercorp.pinpoint.plugin.nelo.interceptor.AsyncAppenderInterceptor;
+
+import java.lang.reflect.Modifier;
+import java.security.ProtectionDomain;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.navercorp.pinpoint.common.util.VarArgs.va;
 

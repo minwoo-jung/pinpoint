@@ -22,7 +22,6 @@ import com.navercorp.pinpoint.thrift.dto.flink.TFSpanStatBatch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author minwoo.jung

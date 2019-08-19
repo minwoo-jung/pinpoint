@@ -17,7 +17,6 @@ package com.navercorp.pinpoint.flink.job.span.stat.service;
 
 import com.navercorp.pinpoint.flink.job.span.stat.dao.SpanStatAgentDao;
 import com.navercorp.pinpoint.flink.job.span.stat.vo.SpanStatAgentVo;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Objects;
 

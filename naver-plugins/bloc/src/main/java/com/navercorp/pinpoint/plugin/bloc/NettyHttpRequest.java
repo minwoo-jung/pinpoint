@@ -18,7 +18,6 @@ package com.navercorp.pinpoint.plugin.bloc;
 
 import com.navercorp.pinpoint.bootstrap.plugin.request.ServerRequestWrapper;
 import com.navercorp.pinpoint.common.plugin.util.HostAndPort;
-import com.navercorp.pinpoint.plugin.bloc.v4.interceptor.MessageReceivedInterceptor;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;

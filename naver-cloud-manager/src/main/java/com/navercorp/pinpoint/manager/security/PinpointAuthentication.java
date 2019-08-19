@@ -19,7 +19,8 @@ import com.navercorp.pinpoint.common.util.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author minwoo.jung

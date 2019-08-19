@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.web.security.internal;
 
-import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.web.security.PinpointAuthentication;
 import com.navercorp.pinpoint.web.service.MetaDataService;
 import com.navercorp.pinpoint.web.service.SecurityService;

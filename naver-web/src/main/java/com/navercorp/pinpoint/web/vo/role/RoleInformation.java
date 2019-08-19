@@ -15,11 +15,6 @@
  */
 package com.navercorp.pinpoint.web.vo.role;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.navercorp.pinpoint.web.exception.AuthorityException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.Objects;

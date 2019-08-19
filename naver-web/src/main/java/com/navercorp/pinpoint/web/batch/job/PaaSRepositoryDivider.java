@@ -18,12 +18,12 @@ package com.navercorp.pinpoint.web.batch.job;
 import com.navercorp.pinpoint.web.batch.Divider;
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.web.service.MetaDataService;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author minwoo.jung

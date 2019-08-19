@@ -15,16 +15,19 @@
  */
 package com.navercorp.pinpoint.web.security;
 
-import java.util.*;
-
 import com.navercorp.pinpoint.common.util.StringUtils;
+import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
+import com.navercorp.pinpoint.web.vo.UserGroup;
 import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
-import com.navercorp.pinpoint.web.vo.UserGroup;
-import org.springframework.util.Assert;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author minwoo.jung

@@ -19,8 +19,6 @@ package com.navercorp.pinpoint.web.namespace;
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.web.namespace.websocket.WebSocketAttributes;
 import com.navercorp.pinpoint.web.namespace.websocket.WebSocketContextHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 

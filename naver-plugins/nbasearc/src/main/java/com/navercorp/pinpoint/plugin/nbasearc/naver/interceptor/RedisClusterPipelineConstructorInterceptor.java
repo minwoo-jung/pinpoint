@@ -15,10 +15,6 @@
  */
 package com.navercorp.pinpoint.plugin.nbasearc.naver.interceptor;
 
-import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
-import com.navercorp.pinpoint.bootstrap.context.TraceContext;
-
-
 /**
  * RedisCluster pipeline(nBase-ARC client) constructor interceptor 
  * - trace destinationId & endPoint

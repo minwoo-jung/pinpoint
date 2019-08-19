@@ -15,16 +15,12 @@
  */
 package com.navercorp.pinpoint.web.namespace;
 
-import com.navercorp.pinpoint.web.batch.BatchConfiguration;
 import com.navercorp.pinpoint.web.namespace.websocket.WebSocketContextHolder;
-import com.navercorp.pinpoint.web.util.BatchUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
-import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**

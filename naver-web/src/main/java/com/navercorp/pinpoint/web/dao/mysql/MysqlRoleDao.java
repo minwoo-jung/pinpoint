@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.pinpoint.common.util.CollectionUtils;
-import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.web.dao.RoleDao;
 import com.navercorp.pinpoint.web.vo.UserRole;
 import com.navercorp.pinpoint.web.vo.role.PermissionCollection;
@@ -31,7 +30,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author minwoo.jung

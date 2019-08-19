@@ -15,16 +15,14 @@
  */
 package com.navercorp.pinpoint.web.dao.mysql;
 
-import java.util.List;
-
-import com.navercorp.pinpoint.web.vo.User;
+import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import com.navercorp.pinpoint.web.dao.ApplicationConfigDao;
-import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
+import java.util.List;
 
 /**
  * @author minwoo.jung

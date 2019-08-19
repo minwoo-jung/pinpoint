@@ -16,16 +16,8 @@
 
 package com.navercorp.pinpoint.plugin.cp.nbasetcp;
 
-import com.navercorp.pinpoint.bootstrap.interceptor.Interceptor;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.common.trace.ServiceTypeFactory;
-import com.navercorp.pinpoint.plugin.cp.nbasetcp.filed.getter.MaxConnPoolSizeGetter;
-import com.navercorp.pinpoint.plugin.cp.nbasetcp.filed.getter.NumUsedSocketsGetter;
-import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.CloseConnectionInterceptor;
-import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.CloseInterceptor;
-import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.ConstructorInterceptor;
-import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.GetConnectionInterceptor;
-import com.navercorp.pinpoint.plugin.cp.nbasetcp.interceptor.ReturnConnectionInterceptor;
 
 /**
  * @author Taejin Koo

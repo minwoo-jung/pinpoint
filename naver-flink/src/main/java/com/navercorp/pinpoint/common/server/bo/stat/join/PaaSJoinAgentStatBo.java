@@ -15,10 +15,8 @@
  */
 package com.navercorp.pinpoint.common.server.bo.stat.join;
 
-import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.flink.namespace.vo.PaaSOrganizationInfo;
 
-import java.util.List;
 import java.util.Objects;
 
 /**

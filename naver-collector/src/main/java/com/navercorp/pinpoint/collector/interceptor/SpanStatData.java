@@ -17,17 +17,9 @@ package com.navercorp.pinpoint.collector.interceptor;
 
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.navercorp.pinpoint.collector.util.AtomicLongMapUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 
 /**
  * @author minwoo.jung
