@@ -212,6 +212,7 @@
                     <targetJdk>${jdk.version}</targetJdk>
                     <excludes>
                         <exclude>com/navercorp/test/pinpoint/testweb/**/*.java</exclude>
+                        <exclude>com/navercorp/pinpoint/thrift/dto/**/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
