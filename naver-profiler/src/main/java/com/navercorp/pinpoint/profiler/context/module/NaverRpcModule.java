@@ -123,7 +123,7 @@ public class NaverRpcModule extends PrivateModule {
         expose(statDataSender);
     }
 
-    private static enum SECURITY_TYPE {
+    private enum SECURITY_TYPE {
 
         NONE,
         TOKEN;

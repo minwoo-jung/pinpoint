@@ -122,7 +122,7 @@ public final class LucyNetUtils {
 
     private static byte[] stringToBytes(String key, String value, StringBuilder stringBuilder) {
         stringBuilder.setLength(0);
-        stringBuilder.append(key).append("=").append(value);
+        stringBuilder.append(key).append('=').append(value);
         return stringBuilder.toString().getBytes(LucyNetConstants.UTF_8_CHARSET);
     }
 

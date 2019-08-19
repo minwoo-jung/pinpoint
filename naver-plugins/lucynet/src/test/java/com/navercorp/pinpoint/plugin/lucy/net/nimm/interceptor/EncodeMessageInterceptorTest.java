@@ -52,8 +52,8 @@ public class EncodeMessageInterceptorTest {
     private static int transactionId = 0;
     private static DefaultCall call;
 
-    Set<String> checkDuplicateUserOptionIndex = new HashSet<String>();
-    Set<String> checkDuplicateUserOptionKey = new HashSet<String>();
+    private Set<String> checkDuplicateUserOptionIndex = new HashSet<String>();
+    private Set<String> checkDuplicateUserOptionKey = new HashSet<String>();
 
     @BeforeClass
     public static void setUpBeforeClass() {

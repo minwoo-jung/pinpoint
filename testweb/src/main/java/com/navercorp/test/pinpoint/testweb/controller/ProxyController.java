@@ -48,7 +48,7 @@ public class ProxyController {
         while (enumeration.hasMoreElements()) {
             String name = enumeration.nextElement();
             String value = request.getHeader(name);
-            buffer.append(name).append("=").append(value).append("<br>\n");
+            buffer.append(name).append('=').append(value).append("<br>\n");
         }
 
         logger.debug("## Headers " + buffer.toString());

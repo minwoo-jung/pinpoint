@@ -250,7 +250,7 @@ public class InvokeTaskRunInterceptor extends SpanSimpleAroundInterceptor {
             Entry<String, List<String>> entry = entryIterator.next();
 
             params.append(entry.getKey());
-            params.append("=");
+            params.append('=');
 
             List<String> values = entry.getValue();
 

@@ -22,7 +22,7 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
  */
 public interface NamespaceCache {
 
-    public static final String NOT_EXIST_ORGANIZATION = "NOT_EXIST_ORGANIZATION";
+    String NOT_EXIST_ORGANIZATION = "NOT_EXIST_ORGANIZATION";
 
     String selectPaaSOrganizationkey(String key);
 
