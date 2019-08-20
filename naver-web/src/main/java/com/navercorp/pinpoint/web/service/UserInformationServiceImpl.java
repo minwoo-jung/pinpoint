@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.web.service;
 
-import com.navercorp.pinpoint.web.dao.UserAccountDao;
 import com.navercorp.pinpoint.web.vo.User;
 import com.navercorp.pinpoint.web.vo.UserInformation;
 import com.navercorp.pinpoint.web.vo.UserRole;

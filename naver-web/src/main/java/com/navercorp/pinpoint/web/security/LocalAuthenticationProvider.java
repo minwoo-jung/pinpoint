@@ -15,19 +15,12 @@
  */
 package com.navercorp.pinpoint.web.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.navercorp.pinpoint.web.service.*;
+import com.navercorp.pinpoint.web.service.MetaDataService;
+import com.navercorp.pinpoint.web.service.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-
-import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
-import com.navercorp.pinpoint.web.vo.User;
-import com.navercorp.pinpoint.web.vo.UserGroup;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**

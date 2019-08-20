@@ -16,18 +16,9 @@
 package com.navercorp.pinpoint.flink.dao.hbase;
 
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
-import com.navercorp.pinpoint.common.server.bo.stat.join.PaaSJoinAgentStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.PaaSJoinApplicationStatBo;
-import com.navercorp.pinpoint.flink.namespace.FlinkAttributes;
-import com.navercorp.pinpoint.flink.namespace.FlinkContextHolder;
 import com.navercorp.pinpoint.flink.namespace.FlinkContextInterceptor;
-import com.navercorp.pinpoint.flink.namespace.vo.PaaSOrganizationInfo;
-import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author minwoo.jung

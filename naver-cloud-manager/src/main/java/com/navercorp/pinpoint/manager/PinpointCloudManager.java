@@ -16,19 +16,18 @@
 
 package com.navercorp.pinpoint.manager;
 
-import static io.undertow.predicate.Predicates.not;
-import static io.undertow.predicate.Predicates.path;
-
 import io.undertow.predicate.Predicate;
 import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.PredicateHandler;
-import io.undertow.server.handlers.resource.*;
+import io.undertow.server.handlers.resource.ClassPathResourceManager;
+import io.undertow.server.handlers.resource.Resource;
+import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.servlet.api.DeploymentInfo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -37,7 +36,9 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import java.io.IOException;
-import java.nio.file.Paths;
+
+import static io.undertow.predicate.Predicates.not;
+import static io.undertow.predicate.Predicates.path;
 
 /**
  * @author HyunGil Jeong

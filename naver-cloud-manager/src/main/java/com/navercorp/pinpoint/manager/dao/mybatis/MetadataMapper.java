@@ -16,7 +16,6 @@
 package com.navercorp.pinpoint.manager.dao.mybatis;
 
 import org.apache.ibatis.annotations.DeleteProvider;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.InsertProvider;
 
 /**

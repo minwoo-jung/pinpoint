@@ -36,6 +36,8 @@ import com.navercorp.pinpoint.web.websocket.ActiveThreadCountHandler;
 import com.navercorp.pinpoint.web.websocket.message.RequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
@@ -54,6 +56,7 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
 
     private final static String UNAUTHORIZED_AGENT = "UNAUTHORIZED_AGENT";
     private final static ServerInstanceList unAuthServerInstanceList;
+
     static {
         unAuthServerInstanceList = new ServerInstanceList();
         Map<String, List<ServerInstance>> serverInstanceList = unAuthServerInstanceList.getServerInstanceList();
@@ -64,14 +67,20 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
 
     @Override
     public boolean filter(Application application) {
-        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
+        PinpointAuthentication authentication = getAuthentication();
         return isAuthorized(authentication, application.getName()) ? false : true;
+    }
+
+    private PinpointAuthentication getAuthentication() {
+        final SecurityContext context = SecurityContextHolder.getContext();
+        final Authentication authentication = context.getAuthentication();
+        return (PinpointAuthentication) authentication;
     }
 
     @Override
     public boolean filter(WebSocketSession webSocketSession, RequestMessage requestMessage) {
-        String applicationId = (String)requestMessage.getParameters().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY);
-        PinpointAuthentication authentication = (PinpointAuthentication)webSocketSession.getPrincipal();
+        String applicationId = (String) requestMessage.getParameters().get(ActiveThreadCountHandler.APPLICATION_NAME_KEY);
+        PinpointAuthentication authentication = (PinpointAuthentication) webSocketSession.getPrincipal();
 
         return isAuthorized(authentication, applicationId) ? false : true;
     }
@@ -80,10 +89,9 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         if (!node.getServiceType().isWas()) {
             return true;
         }
-        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
+        PinpointAuthentication authentication = getAuthentication();
         return isAuthorized(authentication, node.getApplication().getName());
     }
-
 
     private boolean isAuthorized(PinpointAuthentication authentication, String applicationId) {
         if (authentication == null) {
@@ -93,23 +101,23 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
         if (authentication.isObtainAllAuthorization()) {
             return true;
         }
-        if(isEmptyUserGroup(authentication, applicationId)) {
+        if (isEmptyUserGroup(authentication, applicationId)) {
             return true;
         }
         List<AppUserGroupAuth> userGroupAuths = userGroupAuth(authentication, applicationId);
-        for(AppUserGroupAuth auth : userGroupAuths) {
+        for (AppUserGroupAuth auth : userGroupAuths) {
             if (auth.getConfiguration().getServerMapData() == false) {
                 return true;
             }
         }
 
-        logger.info("User({}) don't have ServerMap authorization for {}.",authentication.getPrincipal(), applicationId);
+        logger.info("User({}) don't have ServerMap authorization for {}.", authentication.getPrincipal(), applicationId);
         return false;
     }
 
     @Override
     public ApplicationMap dataFiltering(final ApplicationMap map) {
-        PinpointAuthentication authentication = (PinpointAuthentication)SecurityContextHolder.getContext().getAuthentication();
+        PinpointAuthentication authentication = getAuthentication();
         if (authentication.isObtainAllAuthorization()) {
             return map;
         }
@@ -119,13 +127,13 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
 
     private ApplicationMap createApplicationMap(final ApplicationMap map) {
         if (map instanceof DefaultApplicationMap) {
-            return createDefaultApplicationMap((DefaultApplicationMap)map);
+            return createDefaultApplicationMap((DefaultApplicationMap) map);
         } else if (map instanceof ApplicationMapWithScatterData) {
-            ApplicationMap appMap = createApplicationMap(((ApplicationMapWithScatterData)map).getApplicationMap());
-            return new ApplicationMapWithScatterData(appMap, ((ApplicationMapWithScatterData)map).getApplicationScatterDataMap());
+            ApplicationMap appMap = createApplicationMap(((ApplicationMapWithScatterData) map).getApplicationMap());
+            return new ApplicationMapWithScatterData(appMap, ((ApplicationMapWithScatterData) map).getApplicationScatterDataMap());
         } else if (map instanceof ApplicationMapWithScatterScanResult) {
-            ApplicationMap appMap = createApplicationMap(((ApplicationMapWithScatterScanResult)map).getApplicationMap());
-            return new ApplicationMapWithScatterScanResult(appMap, ((ApplicationMapWithScatterScanResult)map).getApplicationScatterScanResultList());
+            ApplicationMap appMap = createApplicationMap(((ApplicationMapWithScatterScanResult) map).getApplicationMap());
+            return new ApplicationMapWithScatterScanResult(appMap, ((ApplicationMapWithScatterScanResult) map).getApplicationScatterScanResultList());
         } else {
             throw new AuthorityException("Can't create ApplicationMap class while filtering data");
         }
@@ -134,13 +142,13 @@ public class ServerMapDataFilterImpl extends AppConfigOrganizer implements Serve
     private ApplicationMap createDefaultApplicationMap(final DefaultApplicationMap map) {
         Collection<Node> nodes = map.getNodes();
         NodeList nodeList = new NodeList();
-        for(Node node : nodes) {
+        for (Node node : nodes) {
             nodeList.addNode(nodeDataFiltering(node));
         }
 
         LinkList linkList = new LinkList();
         Collection<Link> links = map.getLinks();
-        for(Link link : links) {
+        for (Link link : links) {
             linkList.addLink(linkDataFiltering(link, nodeList));
         }
 
