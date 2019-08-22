@@ -48,6 +48,7 @@ import { UserConfigurationResolverService } from './services/user-configuration-
 import { UserPermissionCheckService } from './services/user-permission-check.service';
 import { FavoriteApplicationListDataService } from './services/favorite-application-list-data.service';
 import { SafeStylePipe } from './pipes/safe-style.pipe';
+import { RetryComponent } from './components/retry';
 
 @NgModule({
     declarations: [
@@ -56,6 +57,7 @@ import { SafeStylePipe } from './pipes/safe-style.pipe';
         EmptyContentsComponent,
         UrlRedirectorComponent,
         LoadingComponent,
+        RetryComponent,
         FilmForDisableComponent,
         SimpleProgressSliderComponent,
         FormFieldErrorMessageComponent,
@@ -82,6 +84,7 @@ import { SafeStylePipe } from './pipes/safe-style.pipe';
         EmptyContentsComponent,
         UrlRedirectorComponent,
         LoadingComponent,
+        RetryComponent,
         FilmForDisableComponent,
         SimpleProgressSliderComponent,
         FormFieldErrorMessageComponent,

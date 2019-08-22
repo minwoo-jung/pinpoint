@@ -7,17 +7,21 @@
             <div class="l-auth-message" *ngIf="!hasAuthrization()">
                 <a [attr.href]="securityGuideUrl$ | async" target="_blank">
                     You don't have authorization. <i class="fas fa-external-link-alt"></i>
-            </a>
+                </a>
             </div>
             <pp-server-status-container *ngIf="hasAuthrization()"></pp-server-status-container>
-            <div class="l-chart-group-list" [hidden]="!hasAuthrization()">
-                <pp-scatter-chart-container></pp-scatter-chart-container>
-                <pp-target-list-container></pp-target-list-container>
-                <hr *ngIf="hasTopElement()"/>
-                <pp-response-summary-chart-container [sourceType]="'MAIN_SIDEBAR'"></pp-response-summary-chart-container>
-                <hr/>
-                <pp-load-chart-container [sourceType]="'MAIN_SIDEBAR'"></pp-load-chart-container>
-            </div>
+            <ng-container *ngIf="hasAuthrization()">
+                <div class="l-chart-group-list">
+                    <pp-scatter-chart-container></pp-scatter-chart-container>
+                    <pp-target-list-container></pp-target-list-container>
+                    <hr *ngIf="hasTopElement()"/>
+                    <ng-container *ngIf="!isTargetMerged">
+                        <pp-response-summary-chart-container [sourceType]="'MAIN'"></pp-response-summary-chart-container>
+                        <hr/>
+                        <pp-load-chart-container [sourceType]="'MAIN'"></pp-load-chart-container>
+                    </ng-container>
+                </div>
+            </ng-container>
         </div>
     </div>
     <pp-info-per-server-container *ngIf="hasAuthrization()"></pp-info-per-server-container>

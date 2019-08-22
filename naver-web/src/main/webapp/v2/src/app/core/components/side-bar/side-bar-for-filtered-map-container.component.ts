@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ElementRef, Renderer2 } from '@angular/core';
 import { Router, RouterEvent, NavigationStart } from '@angular/router';
-import { Subject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Subject, Observable, merge } from 'rxjs';
+import { filter, mapTo, tap, map } from 'rxjs/operators';
 
 import { WebAppSettingDataService, StoreHelperService } from 'app/shared/services';
 
@@ -11,10 +11,12 @@ import { WebAppSettingDataService, StoreHelperService } from 'app/shared/service
     styleUrls: ['./side-bar-for-filtered-map-container.component.css'],
 })
 export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestroy {
-    private unsubscribe: Subject<null> = new Subject();
+    private unsubscribe = new Subject<void>();
+
     target: ISelectedTarget;
     useDisable = true;
     showLoading = true;
+    isTargetMerged: boolean;
     securityGuideUrl$: Observable<string>;
 
     constructor(
@@ -61,18 +63,30 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
                     break;
             }
         });
-        this.storeHelperService.getServerMapTargetSelected(this.unsubscribe).pipe(
-            filter((target: ISelectedTarget) => {
-                return target && (target.isNode === true || target.isNode === false) ? true : false;
-            })
-        ).subscribe((target: ISelectedTarget) => {
-            this.target = target;
-            this.renderer.setStyle(this.el.nativeElement, 'width', '477px');
+
+        merge(
+            this.storeHelperService.getServerMapTargetSelectedByList(this.unsubscribe).pipe(mapTo(false)),
+            this.storeHelperService.getServerMapTargetSelected(this.unsubscribe).pipe(
+                filter((target: ISelectedTarget) => !!target),
+                tap((target: ISelectedTarget) => {
+                    this.target = target;
+                    this.renderer.setStyle(this.el.nativeElement, 'width', '477px');
+                }),
+                map(({isMerged}: ISelectedTarget) => isMerged)
+            )
+        ).subscribe((isMerged: boolean) => {
+            this.isTargetMerged = isMerged;
         });
     }
 
     hasTopElement(): boolean {
-        return this.target && (this.target.isNode || this.target.isMerged);
+        if (!this.target) {
+            return false;
+        }
+
+        const {isNode, isWAS, isMerged} = this.target;
+
+        return isNode && isWAS && !isMerged;
     }
 
     hasAuthrization(): boolean {
