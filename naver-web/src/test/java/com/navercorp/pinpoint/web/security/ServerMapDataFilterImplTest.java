@@ -16,13 +16,14 @@
 
 package com.navercorp.pinpoint.web.security;
 
+import com.navercorp.pinpoint.bootstrap.util.jdk.ThreadLocalRandom;
 import com.navercorp.pinpoint.common.trace.ServiceType;
-import com.navercorp.pinpoint.plugin.tomcat.TomcatConstants;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMap;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapWithScatterData;
 import com.navercorp.pinpoint.web.applicationmap.ApplicationMapWithScatterScanResult;
 import com.navercorp.pinpoint.web.applicationmap.DefaultApplicationMap;
 import com.navercorp.pinpoint.web.applicationmap.histogram.NodeHistogram;
+import com.navercorp.pinpoint.web.applicationmap.histogram.TimeHistogram;
 import com.navercorp.pinpoint.web.applicationmap.link.CreateType;
 import com.navercorp.pinpoint.web.applicationmap.link.Link;
 import com.navercorp.pinpoint.web.applicationmap.link.LinkList;
@@ -31,10 +32,21 @@ import com.navercorp.pinpoint.web.applicationmap.nodes.NodeList;
 import com.navercorp.pinpoint.web.applicationmap.rawdata.LinkCallDataMap;
 import com.navercorp.pinpoint.web.exception.AuthorityException;
 import com.navercorp.pinpoint.web.service.ApplicationConfigService;
-import com.navercorp.pinpoint.web.vo.*;
-import com.navercorp.pinpoint.web.vo.role.*;
+import com.navercorp.pinpoint.web.vo.AppAuthConfiguration;
+import com.navercorp.pinpoint.web.vo.AppUserGroupAuth;
+import com.navercorp.pinpoint.web.vo.Application;
+import com.navercorp.pinpoint.web.vo.ApplicationConfiguration;
+import com.navercorp.pinpoint.web.vo.Range;
+import com.navercorp.pinpoint.web.vo.UserGroup;
+import com.navercorp.pinpoint.web.vo.role.PermissionCollection;
+import com.navercorp.pinpoint.web.vo.role.PermsGroupAdministration;
+import com.navercorp.pinpoint.web.vo.role.PermsGroupAlarm;
+import com.navercorp.pinpoint.web.vo.role.PermsGroupAppAuthorization;
+import com.navercorp.pinpoint.web.vo.role.PermsGroupUserGroup;
+import com.navercorp.pinpoint.web.vo.role.RoleInformation;
 import com.navercorp.pinpoint.web.websocket.ActiveThreadCountHandler;
 import com.navercorp.pinpoint.web.websocket.message.RequestMessage;
+
 import org.junit.Test;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,9 +54,17 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.adapter.standard.StandardWebSocketSession;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 
@@ -52,6 +72,8 @@ import static org.mockito.Mockito.mock;
  * @author minwoo.jung
  */
 public class ServerMapDataFilterImplTest {
+
+    private static final Range TEST_RANGE = new Range(1000L, 1100L);
 
     @Test
     public void filterTest() {
@@ -223,8 +245,8 @@ public class ServerMapDataFilterImplTest {
         nodeList.addNode(node2);
         nodeList.addNode(new Node(new Application("application2", ServiceType.STAND_ALONE)));
         LinkList linkList = new LinkList();
-        linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, new LinkList());
+        linkList.addLink(new Link(CreateType.Source, node1, node2, TEST_RANGE));
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, new LinkList());
         assertEquals(serverMapDataFilter.dataFiltering(map), map);
     }
 
@@ -261,8 +283,9 @@ public class ServerMapDataFilterImplTest {
         nodeList.addNode(node1);
         nodeList.addNode(node2);
         LinkList linkList = new LinkList();
-        linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
+        linkList.addLink(createTestLink(CreateType.Source, node1, node2, TEST_RANGE));
+
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(map);
 
         DefaultApplicationMap defaultApplicationMap = (DefaultApplicationMap)applicationMap;
@@ -309,14 +332,14 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         NodeList nodeList = new NodeList();
         Node node1 = new Node(new Application(applicationId, ServiceType.STAND_ALONE));
-        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), TEST_RANGE));
         Node node2 = new Node(new Application(applicationId2, ServiceType.STAND_ALONE));
-        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), TEST_RANGE));
         nodeList.addNode(node1);
         nodeList.addNode(node2);
         LinkList linkList = new LinkList();
-        linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
+        linkList.addLink(createTestLink(CreateType.Source, node1, node2, TEST_RANGE));
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(map);
 
         DefaultApplicationMap defaultApplicationMap = (DefaultApplicationMap)applicationMap;
@@ -355,14 +378,14 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         NodeList nodeList = new NodeList();
         Node node1 = new Node(new Application(applicationId, ServiceType.STAND_ALONE));
-        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), TEST_RANGE));
         Node node2 = new Node(new Application(applicationId2, ServiceType.STAND_ALONE));
-        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), TEST_RANGE));
         nodeList.addNode(node1);
         nodeList.addNode(node2);
         LinkList linkList = new LinkList();
-        linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
+        linkList.addLink(createTestLink(CreateType.Source, node1, node2, TEST_RANGE));
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
         ApplicationMapWithScatterData appMapWithScatterData = new ApplicationMapWithScatterData(map, Collections.emptyMap());
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(appMapWithScatterData);
 
@@ -411,14 +434,14 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         NodeList nodeList = new NodeList();
         Node node1 = new Node(new Application(applicationId, ServiceType.STAND_ALONE));
-        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), TEST_RANGE));
         Node node2 = new Node(new Application(applicationId2, ServiceType.STAND_ALONE));
-        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), TEST_RANGE));
         nodeList.addNode(node1);
         nodeList.addNode(node2);
         LinkList linkList = new LinkList();
-        linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
+        linkList.addLink(createTestLink(CreateType.Source, node1, node2, TEST_RANGE));
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
         ApplicationMapWithScatterScanResult appMapWithScatterScanResult = new ApplicationMapWithScatterScanResult(map, Collections.emptyList());
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(appMapWithScatterScanResult);
 
@@ -491,14 +514,14 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         NodeList nodeList = new NodeList();
         Node node1 = new Node(new Application(applicationId, ServiceType.UNKNOWN));
-        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.UNKNOWN), new Range(1000L, 1100L)));
+        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.UNKNOWN), TEST_RANGE));
         Node node2 = new Node(new Application(applicationId2, ServiceType.STAND_ALONE));
-        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), TEST_RANGE));
         nodeList.addNode(node1);
         nodeList.addNode(node2);
         LinkList linkList = new LinkList();
-        linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
+        linkList.addLink(createTestLink(CreateType.Source, node1, node2, TEST_RANGE));
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
         ApplicationMapWithScatterScanResult appMapWithScatterScanResult = new ApplicationMapWithScatterScanResult(map, Collections.emptyList());
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(appMapWithScatterScanResult);
 
@@ -549,14 +572,14 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         NodeList nodeList = new NodeList();
         Node node1 = new Node(new Application(applicationId, ServiceType.STAND_ALONE));
-        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), TEST_RANGE));
         Node node2 = new Node(new Application(applicationId2, ServiceType.STAND_ALONE));
-        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), TEST_RANGE));
         nodeList.addNode(node1);
         nodeList.addNode(node2);
         LinkList linkList = new LinkList();
-        linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
+        linkList.addLink(createTestLink(CreateType.Source, node1, node2, TEST_RANGE));
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(map);
 
         DefaultApplicationMap defaultApplicationMap = (DefaultApplicationMap)applicationMap;
@@ -609,12 +632,12 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         NodeList nodeList = new NodeList();
         Node node1 = new Node(new Application(applicationId, ServiceType.STAND_ALONE));
-        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), TEST_RANGE));
         Node node2 = new Node(new Application(applicationId2, ServiceType.STAND_ALONE));
-        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), TEST_RANGE));
         LinkList linkList = new LinkList();
-        linkList.addLink(new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L)));
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
+        linkList.addLink(createTestLink(CreateType.Source, node1, node2, TEST_RANGE));
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(map);
 
         DefaultApplicationMap defaultApplicationMap = (DefaultApplicationMap)applicationMap;
@@ -665,20 +688,18 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         NodeList nodeList = new NodeList();
         Node node1 = new Node(new Application(applicationId, ServiceType.STAND_ALONE));
-        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE),
+                TEST_RANGE));
         Node node2 = new Node(new Application(applicationId2, ServiceType.STAND_ALONE));
-        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), TEST_RANGE));
         nodeList.addNode(node1);
         nodeList.addNode(node2);
         LinkList linkList = new LinkList();
-        Link link = new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L));
-        LinkCallDataMap source = new LinkCallDataMap();
-        source.addCallData("sourceAgentId", TomcatConstants.TOMCAT, "targetId", ServiceType.STAND_ALONE, Collections.emptyList());
-        link.addSource(source);
+        Link link = createTestLink(CreateType.Source, node1, node2, TEST_RANGE);
         linkList.addLink(link);
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
-        ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(map);
 
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
+        ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(map);
         DefaultApplicationMap defaultApplicationMap = (DefaultApplicationMap)applicationMap;
 
         assertEquals(defaultApplicationMap.getLinks().size(), 1);
@@ -727,18 +748,15 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         NodeList nodeList = new NodeList();
         Node node1 = new Node(new Application(applicationId, ServiceType.STAND_ALONE));
-        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node1.setNodeHistogram(new NodeHistogram(new Application(applicationId, ServiceType.STAND_ALONE), TEST_RANGE));
         Node node2 = new Node(new Application(applicationId2, ServiceType.STAND_ALONE));
-        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), new Range(1000L, 1100L)));
+        node2.setNodeHistogram(new NodeHistogram(new Application(applicationId2, ServiceType.STAND_ALONE), TEST_RANGE));
         nodeList.addNode(node1);
         nodeList.addNode(node2);
         LinkList linkList = new LinkList();
-        Link link = new Link(CreateType.Source, node1, node2, new Range(1000L, 1100L));
-        LinkCallDataMap source = new LinkCallDataMap();
-        source.addCallData("sourceAgentId", TomcatConstants.TOMCAT, "targetId", ServiceType.STAND_ALONE, Collections.emptyList());
-        link.addSource(source);
+        Link link = createTestLink(CreateType.Source, node1, node2, TEST_RANGE);
         linkList.addLink(link);
-        ApplicationMap map = new DefaultApplicationMap(new Range(1000L, 1100L), nodeList, linkList);
+        ApplicationMap map = new DefaultApplicationMap(TEST_RANGE, nodeList, linkList);
         ApplicationMap applicationMap = serverMapDataFilter.dataFiltering(map);
 
         DefaultApplicationMap defaultApplicationMap = (DefaultApplicationMap)applicationMap;
@@ -767,6 +785,25 @@ public class ServerMapDataFilterImplTest {
         ServerMapDataFilterImpl serverMapDataFilter = new ServerMapDataFilterImpl();
         CloseStatus closeStatus = serverMapDataFilter.getCloseStatus(requestMessage);
         assertEquals(closeStatus.getCode(), 1008);
+    }
+
+    private Link createTestLink(CreateType createType, Node fromNode, Node toNode, Range range) {
+        LinkCallDataMap source = new LinkCallDataMap();
+        source.addCallData("sourceAgentId", fromNode.getServiceType(), "targetId", toNode.getServiceType(), createHistogram(fromNode));
+
+        Link link = new Link(createType, fromNode, toNode, range);
+        link.addSource(source);
+
+        return link;
+    }
+
+    private Collection<TimeHistogram> createHistogram(Node node) {
+        TimeHistogram histogram = new TimeHistogram(node.getServiceType(), System.currentTimeMillis());
+
+        int elapsedTime = ThreadLocalRandom.current().nextInt(1, 3000);
+        histogram.addCallCountByElapsedTime(elapsedTime, false);
+
+        return Arrays.asList(histogram);
     }
 
 }
