@@ -1,9 +1,18 @@
 import { Component, OnInit, Injector, ComponentFactoryResolver, OnDestroy } from '@angular/core';
-import { Subject, Observable, of, combineLatest } from 'rxjs';
+import { Subject, Observable, combineLatest } from 'rxjs';
+import { withLatestFrom, filter, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 import { UrlPath, UrlPathId } from 'app/shared/models';
-import { UrlRouteManagerService, DynamicPopupService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
+import {
+    UrlRouteManagerService,
+    DynamicPopupService,
+    MessageQueueService,
+    MESSAGE_TO,
+    AnalyticsService,
+    TRACKED_EVENT_LIST,
+    StoreHelperService
+} from 'app/shared/services';
 import { ApplicationAuthAndAlarmDataService } from './application-auth-and-alarm-data.service';
 import { ApplicationAuthAndAlarmPopupComponent } from './application-auth-and-alarm-popup.component';
 
@@ -13,15 +22,17 @@ import { ApplicationAuthAndAlarmPopupComponent } from './application-auth-and-al
     styleUrls: ['./application-auth-and-alarm-info-container.component.css']
 })
 export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, OnDestroy {
-    private unsubscribe: Subject<null> = new Subject();
+    private unsubscribe = new Subject<void>();
+
     selectedUserGroupId: string;
-    rowData: Observable<IApplicationAuthInfo[]>;
+    rowData$: Observable<IApplicationAuthInfo[]>;
     i18nText: {
         SERVER_MAP: string;
         API_META: string;
         PARAM_META: string;
         SQL_META: string;
     };
+
     constructor(
         private translateService: TranslateService,
         private urlRouteManagerService: UrlRouteManagerService,
@@ -31,18 +42,29 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, On
         private componentFactoryResolver: ComponentFactoryResolver,
         private injector: Injector,
         private analyticsService: AnalyticsService,
+        private storeHelperService: StoreHelperService
     ) {}
+
     ngOnInit() {
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((param: any[]) => {
             this.selectedUserGroupId = param[0] as string;
-            this.rowData = this.applicationAuthAndAlarmDataService.getData(this.selectedUserGroupId);
+            this.rowData$ = this.applicationAuthAndAlarmDataService.getData(this.selectedUserGroupId).pipe(
+                withLatestFrom(this.storeHelperService.getApplicationList(this.unsubscribe)),
+                map(([dataList, appList]: [IApplicationAuthInfo[], IApplication[]]) => {
+                    return dataList.filter(({applicationId}: IApplicationAuthInfo) => {
+                        return appList.some((app: IApplication) => app.getApplicationName() === applicationId);
+                    });
+                })
+            );
         });
         this.getI18NText();
     }
+
     ngOnDestroy() {
         this.unsubscribe.next();
         this.unsubscribe.complete();
     }
+
     private getI18NText(): void {
         combineLatest(
             this.translateService.get('CONFIGURATION.AUTH.SERVER_MAP'),
@@ -58,6 +80,7 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, On
             };
         });
     }
+
     onCellClicked(value: any): void {
         switch (value.type) {
             case 'configuration':
@@ -79,6 +102,7 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, On
                 break;
         }
     }
+
     showConfiguration(value: any): void {
         const {left, top, width, height} = value.coord;
 
