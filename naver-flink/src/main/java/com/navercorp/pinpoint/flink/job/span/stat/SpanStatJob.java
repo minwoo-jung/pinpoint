@@ -45,7 +45,7 @@ public class SpanStatJob implements Serializable {
         new SpanStatJob().start();
     }
 
-    private void start() throws Exception {
+    public void start() throws Exception {
         logger.info("SpanStat aggregation job");
 
         final Bootstrap bootstrap = Bootstrap.getInstance();

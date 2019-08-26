@@ -12,7 +12,7 @@
     </select>
 
     <insert id="insertSpanStatApplication" parameterType="TimeRange">
-        INSERT INTO span_stat_application ( organization, applicationId, count, timestamp)
+        INSERT INTO span_stat_application (organization, applicationId, count, timestamp)
         SELECT organization, applicationId,  SUM(count) , #{fromDateTime}
         FROM  span_stat_agent
         WHERE timestamp BETWEEN #{fromDateTime} AND #{toDateTime}
