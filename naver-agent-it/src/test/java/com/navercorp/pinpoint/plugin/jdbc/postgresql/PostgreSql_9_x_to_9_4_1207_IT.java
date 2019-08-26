@@ -17,11 +17,13 @@
 package com.navercorp.pinpoint.plugin.jdbc.postgresql;
 
 import com.navercorp.pinpoint.common.util.PropertyUtils;
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +45,11 @@ public class PostgreSql_9_x_to_9_4_1207_IT {
     public static void beforeClass() throws Exception {
         Properties databaseProperties = PropertyUtils.loadPropertyFromClassPath("database.properties");
         HELPER = new PostgreSqlItHelper(databaseProperties);
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DriverManagerUtils.deregisterDriver();
     }
 
     @Test

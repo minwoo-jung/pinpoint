@@ -27,7 +27,9 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Properties;
 
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -83,6 +85,11 @@ public class JtdsIT {
         
         DB_ID = db.getProperty("mssqlserver.user");
         DB_PASSWORD = db.getProperty("mssqlserver.password");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DriverManagerUtils.deregisterDriver();
     }
     
 //    @Test

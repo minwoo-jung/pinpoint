@@ -19,7 +19,9 @@ package com.navercorp.pinpoint.plugin;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * @author Woonduk Kang(emeroad)
@@ -28,8 +30,8 @@ public final class DriverManagerUtils {
 
     public static void deregisterDriver() {
         Enumeration<Driver> drivers = DriverManager.getDrivers();
-        while (drivers.hasMoreElements()) {
-            Driver driver = drivers.nextElement();
+        List<Driver> copyList = Collections.list(drivers);
+        for (Driver driver : copyList) {
             try {
                 DriverManager.deregisterDriver(driver);
             } catch (SQLException e) {

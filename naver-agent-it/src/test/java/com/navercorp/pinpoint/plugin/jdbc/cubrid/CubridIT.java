@@ -25,7 +25,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +70,7 @@ public class CubridIT {
         Class.forName("cubrid.jdbc.driver.CUBRIDDriver");
         
         Properties db = PropertyUtils.loadPropertyFromClassPath("database.properties");
-        
+
         JDBC_URL = db.getProperty("cubrid.url");
         String[] tokens = JDBC_URL.split(":");
         
@@ -77,6 +79,11 @@ public class CubridIT {
         
         DB_ID = db.getProperty("cubrid.user");
         DB_PASSWORD = db.getProperty("cubrid.password");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DriverManagerUtils.deregisterDriver();
     }
     
     @Test
