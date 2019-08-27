@@ -80,6 +80,11 @@
         <appender-ref ref="nelo-async"/>
     </logger>
 
+    <logger name="io.grpc" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="rollingFile"/>
+    </logger>
+
     <root>
         <level value="INFO"/>
         <!--<appender-ref ref="console" />-->
