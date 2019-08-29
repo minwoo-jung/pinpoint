@@ -14,7 +14,7 @@ import { isThatType } from 'app/core/utils/util';
     styleUrls: ['./configuration-users-container.component.css'],
 })
 export class ConfigurationUsersContainerComponent implements OnInit, OnDestroy {
-    @ViewChild('templateContainer', { read: ViewContainerRef }) templateContainer: ViewContainerRef;
+    @ViewChild('templateContainer', { read: ViewContainerRef, static: true }) templateContainer: ViewContainerRef;
 
     private componentRef: ComponentRef<any>;
 

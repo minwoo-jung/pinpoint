@@ -21,7 +21,7 @@ import { FOCUS_TYPE } from './application-list-for-header.component';
     styleUrls: ['./application-list-for-agent-management-container.component.css']
 })
 export class ApplicationListForAgentManagementContainerComponent implements OnInit, AfterViewInit, OnDestroy {
-    @ViewChild('inputQuery') inputQuery: ElementRef;
+    @ViewChild('inputQuery', { static: true }) inputQuery: ElementRef;
 
     private unsubscribe = new Subject<void>();
     private minLength = 3;

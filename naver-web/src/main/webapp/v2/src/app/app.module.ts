@@ -17,8 +17,6 @@ import { reducers } from 'app/shared/store';
 import { AppRoutingModule } from 'app/app.routing';
 import { SERVER_MAP_TYPE, ServerMapType } from 'app/core/components/server-map/class/server-map-factory';
 
-
-
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateCustomHttpLoader(http, 'assets/i18n/', '.json');
 }
@@ -32,7 +30,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         BrowserAnimationsModule,
         HttpClientModule,
         StoreModule.forRoot(reducers, {}),
-        LocalStorageModule.withConfig({
+        LocalStorageModule.forRoot({
             prefix: 'pp',
             storageType: 'localStorage'
         }),
