@@ -60,6 +60,11 @@
         <constructor-arg value="${mongodb.port}"/>
     </bean>
 
+    <bean id="restHighLevelClientFactory" class="com.navercorp.test.pinpoint.testweb.component.ElasticClientFactory">
+        <constructor-arg value="${elasticsearch.host}"/>
+        <constructor-arg value="${elasticsearch.port}"/>
+    </bean>
+
     <mongo:db-factory id="mongoDbFactory" dbname="mongo" mongo-ref="mongoClient"/>
 
     <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
