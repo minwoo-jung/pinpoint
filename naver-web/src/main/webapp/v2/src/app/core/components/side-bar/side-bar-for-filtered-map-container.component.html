@@ -16,11 +16,11 @@
                     <pp-scatter-chart-for-filtered-map-side-bar-container></pp-scatter-chart-for-filtered-map-side-bar-container>
                     <pp-target-list-container></pp-target-list-container>
                     <hr *ngIf="hasTopElement()"/>
-                    <ng-container *ngIf="!isTargetMerged">
+                    <div [hidden]="isTargetMerged">
                         <pp-response-summary-chart-container [sourceType]="'FILTERED'"></pp-response-summary-chart-container>
                         <hr/>
                         <pp-load-chart-container [sourceType]="'FILTERED'"></pp-load-chart-container>
-                    </ng-container>
+                    </div>
                 </div>
             </ng-container>
         </div>
