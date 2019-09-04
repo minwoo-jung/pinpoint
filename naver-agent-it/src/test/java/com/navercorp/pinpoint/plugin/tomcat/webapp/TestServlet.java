@@ -15,23 +15,20 @@
  */
 package com.navercorp.pinpoint.plugin.tomcat.webapp;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
+import com.navercorp.pinpoint.test.plugin.ForkedPinpointPluginTestRunner;
+import com.navercorp.pinpoint.test.plugin.PinpointPluginTestRunListener;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Runner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Runner;
-
-import com.navercorp.pinpoint.test.plugin.ForkedPinpointPluginTestRunner;
-import com.navercorp.pinpoint.test.plugin.PinpointPluginTestRunListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * @author Jongho Moon
@@ -50,12 +47,9 @@ public class TestServlet extends HttpServlet {
         ClassLoader loader = getClass().getClassLoader();
         
         if (testClassPath != null) {
-            URL[] urls = new URL[testClassPath.length];
-            
-            for (int i = 0; i < testClassPath.length; i++) {
-                urls[i] = new File(testClassPath[i]).toURI().toURL();
-            }
-            
+
+            URL[] urls = toURLs(testClassPath);
+
             loader = new URLClassLoader(urls, loader);
         }
         
@@ -84,6 +78,14 @@ public class TestServlet extends HttpServlet {
             writer.println(t.getMessage());
             t.printStackTrace(writer);
         }
+    }
+
+    private URL[] toURLs(String[] testClassPath) throws IOException {
+        final URL[] urls = new URL[testClassPath.length];
+        for (int i = 0; i < testClassPath.length; i++) {
+            urls[i] = new File(testClassPath[i]).toURI().toURL();
+        }
+        return urls;
     }
 
     public static HttpServletRequest getRequest() {
