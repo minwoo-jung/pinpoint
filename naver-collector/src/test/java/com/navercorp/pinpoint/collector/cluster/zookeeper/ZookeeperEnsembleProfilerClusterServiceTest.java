@@ -3,6 +3,7 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.cluster.ClusterPointStateChangedEventHandler;
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
+import com.navercorp.pinpoint.collector.cluster.ProfilerClusterManager;
 import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
 import com.navercorp.pinpoint.rpc.control.ProtocolException;
 import com.navercorp.pinpoint.rpc.packet.ControlHandshakePacket;
@@ -65,7 +66,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
             Thread.sleep(1000);
 
-            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            ProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
@@ -95,7 +96,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
             Thread.sleep(1000);
 
-            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            ProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
@@ -130,7 +131,7 @@ public class ZookeeperEnsembleProfilerClusterServiceTest {
             DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
             Thread.sleep(1000);
 
-            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            ProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 

@@ -17,19 +17,17 @@
 package com.navercorp.pinpoint.collector.cluster;
 
 import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperClusterService;
-import com.navercorp.pinpoint.collector.cluster.zookeeper.ZookeeperProfilerClusterManager;
 import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.DefaultPinpointServer;
 import com.navercorp.pinpoint.rpc.server.PinpointServerConfig;
 import com.navercorp.pinpoint.test.utils.TestAwaitTaskUtils;
 import com.navercorp.pinpoint.test.utils.TestAwaitUtils;
+
 import org.apache.curator.test.TestingServer;
 import org.apache.zookeeper.KeeperException;
 import org.jboss.netty.channel.Channel;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -77,15 +75,15 @@ public final class ClusterTestUtils {
     }
 
 
-    public static void assertConnectedClusterSize(ZookeeperProfilerClusterManager profilerClusterManager, int expectedConnectedClusterSize) {
+    public static void assertConnectedClusterSize(ProfilerClusterManager profilerClusterManager, int expectedConnectedClusterSize) {
         assertConnectedClusterSize(profilerClusterManager, expectedConnectedClusterSize, 0, 0);
     }
 
-    public static void assertConnectedClusterSize(ZookeeperProfilerClusterManager profilerClusterManager, int expectedConnectedClusterSize, long maxWaitTime) {
+    public static void assertConnectedClusterSize(ProfilerClusterManager profilerClusterManager, int expectedConnectedClusterSize, long maxWaitTime) {
         assertConnectedClusterSize(profilerClusterManager, expectedConnectedClusterSize, 200, maxWaitTime);
     }
 
-    public static void assertConnectedClusterSize(ZookeeperProfilerClusterManager profilerClusterManager, int expectedConnectedClusterSize, long waitUnitTime, long maxWaitTime) {
+    public static void assertConnectedClusterSize(ProfilerClusterManager profilerClusterManager, int expectedConnectedClusterSize, long waitUnitTime, long maxWaitTime) {
         if (maxWaitTime > 0) {
             boolean await = TestAwaitUtils.await(new TestAwaitTaskUtils() {
                 @Override

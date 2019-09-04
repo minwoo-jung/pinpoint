@@ -3,6 +3,7 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.cluster.ClusterPointStateChangedEventHandler;
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
+import com.navercorp.pinpoint.collector.cluster.ProfilerClusterManager;
 import com.navercorp.pinpoint.rpc.MessageListener;
 import com.navercorp.pinpoint.rpc.server.ChannelPropertiesFactory;
 import com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor;
@@ -59,7 +60,7 @@ public class ZookeeperProfilerClusterStressTest {
 
             service = ClusterTestUtils.createZookeeperClusterService(ts.getConnectString(), clusterPointRouter);
 
-            ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
+            ProfilerClusterManager profiler = service.getProfilerClusterManager();
 
             serverAcceptor = new PinpointServerAcceptor();
             ChannelPropertiesFactory propertiesFactory = new ChannelPropertiesFactory();
@@ -104,7 +105,7 @@ public class ZookeeperProfilerClusterStressTest {
 
             service = ClusterTestUtils.createZookeeperClusterService(ts.getConnectString(), clusterPointRouter);
 
-            ZookeeperProfilerClusterManager profiler = service.getProfilerClusterManager();
+            ProfilerClusterManager profiler = service.getProfilerClusterManager();
 
             serverAcceptor = new PinpointServerAcceptor();
             ChannelPropertiesFactory propertiesFactory = new ChannelPropertiesFactory();

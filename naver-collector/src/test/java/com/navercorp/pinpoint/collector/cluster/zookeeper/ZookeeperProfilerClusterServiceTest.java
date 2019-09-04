@@ -19,7 +19,7 @@ package com.navercorp.pinpoint.collector.cluster.zookeeper;
 import com.navercorp.pinpoint.collector.cluster.ClusterPointRouter;
 import com.navercorp.pinpoint.collector.cluster.ClusterPointStateChangedEventHandler;
 import com.navercorp.pinpoint.collector.cluster.ClusterTestUtils;
-import com.navercorp.pinpoint.collector.config.CollectorConfiguration;
+import com.navercorp.pinpoint.collector.cluster.ProfilerClusterManager;
 import com.navercorp.pinpoint.rpc.cluster.ClusterOption;
 import com.navercorp.pinpoint.rpc.control.ProtocolException;
 import com.navercorp.pinpoint.rpc.packet.ControlHandshakePacket;
@@ -33,6 +33,7 @@ import com.navercorp.pinpoint.rpc.stream.ServerStreamChannelMessageHandler;
 import com.navercorp.pinpoint.rpc.util.ControlMessageEncodingUtils;
 import com.navercorp.pinpoint.rpc.util.TimerFactory;
 import com.navercorp.pinpoint.test.server.TestServerMessageListenerFactory;
+
 import org.apache.curator.test.TestingServer;
 import org.jboss.netty.util.Timer;
 import org.junit.AfterClass;
@@ -87,7 +88,7 @@ public class ZookeeperProfilerClusterServiceTest {
             DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
             Thread.sleep(1000);
 
-            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            ProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
@@ -116,7 +117,7 @@ public class ZookeeperProfilerClusterServiceTest {
             DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
             Thread.sleep(1000);
 
-            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            ProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
@@ -153,7 +154,7 @@ public class ZookeeperProfilerClusterServiceTest {
             DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
             Thread.sleep(1000);
 
-            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            ProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
@@ -188,7 +189,7 @@ public class ZookeeperProfilerClusterServiceTest {
             DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
             Thread.sleep(1000);
 
-            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            ProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             ClusterTestUtils.assertConnectedClusterSize(profilerClusterManager, 0);
 
@@ -227,7 +228,7 @@ public class ZookeeperProfilerClusterServiceTest {
             DefaultPinpointServer pinpointServer = ClusterTestUtils.createPinpointServer(createPinpointServerConfig(service));
             Thread.sleep(1000);
 
-            ZookeeperProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
+            ProfilerClusterManager profilerClusterManager = service.getProfilerClusterManager();
 
             List<String> result = profilerClusterManager.getClusterData();
             Assert.assertEquals(0, result.size());
