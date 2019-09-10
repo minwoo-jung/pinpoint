@@ -21,6 +21,12 @@
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-grpc</artifactId>
         </dependency>
+        <!-- Logging depedencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>

@@ -30,6 +30,10 @@
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-naver-thrift</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-naver-grpc</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
