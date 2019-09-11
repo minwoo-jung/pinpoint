@@ -1,0 +1,13 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+::ng-deep .ngx-timepicker {
+    height: auto !important;
+}
+
+.timepicker-wrapper {
+    display: inline-block;
+    margin-left: 10px;
+}

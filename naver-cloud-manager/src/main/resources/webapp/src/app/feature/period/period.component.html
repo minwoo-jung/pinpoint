@@ -1,0 +1,42 @@
+<div class="datetime-picker-wrapper">
+    <mat-form-field>
+        <mat-label>From</mat-label>
+        <input matInput [matDatepicker]="fromPicker">
+        <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fromPicker></mat-datepicker>
+    </mat-form-field>
+    <div class="timepicker-wrapper">
+        <ngx-timepicker-field
+            [format]="24"
+            [defaultTime]="'00:00'"
+            [controlOnly]="true">
+        </ngx-timepicker-field>
+    </div>
+</div>
+<div class="datetime-picker-wrapper">
+    <mat-form-field>
+        <mat-label>To</mat-label>
+        <input matInput [matDatepicker]="toPicker">
+        <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+        <mat-datepicker #toPicker></mat-datepicker>
+    </mat-form-field>
+    <div class="timepicker-wrapper">
+        <ngx-timepicker-field
+            [format]="24"
+            [defaultTime]="'00:00'"
+            [controlOnly]="true">
+        </ngx-timepicker-field>
+    </div>
+</div>
+
+
+<!-- (opened)="onCalendarOpen()" -->
+<!-- document.querySelector('.mat-datepicker-content') -->
+<!-- <ng-template> -->
+    <!-- <ngx-timepicker-field
+        #timePicker
+        [hidden]="!showTimePicker"
+        [format]="24"
+        [controlOnly]="true">
+    </ngx-timepicker-field> -->
+<!-- </ng-template> -->

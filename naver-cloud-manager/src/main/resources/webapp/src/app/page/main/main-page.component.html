@@ -1,0 +1,39 @@
+<div class="filter-bar-wrapper">
+    <div class="form-field-wrapper">
+        <pp-select
+            selectLabel="Organization"
+            [optionList]="orgList$ | async"
+            (outSelect)="onSelectOrg($event)">
+        </pp-select>
+    </div>
+    <div class="form-field-wrapper">
+        <pp-select
+            selectLabel="Application"
+            [optionList]="appList$ | async"
+            (outSelect)="onSelectApp($event)">
+        </pp-select>
+    </div>
+    <div class="form-field-wrapper">
+        <pp-select
+            selectLabel="Agent"
+            [optionList]="agentList$ | async"
+            (outSelect)="onSelectAgent($event)">
+        </pp-select>
+    </div>
+    <div class="form-field-wrapper">
+        <pp-period></pp-period>
+    </div>
+    <!-- <div class="form-field-wrapper">
+        <pp-period
+            periodLabel="Date to">
+        </pp-period>
+    </div> -->
+    <div class="submit-button-wrapper">
+        <button mat-flat-button color="primary" (click)="onSearch()">Search</button>
+    </div>
+</div>
+<div class="result-wrapper">
+    <pp-result
+        [data]="result$ | async">
+    </pp-result>
+</div>

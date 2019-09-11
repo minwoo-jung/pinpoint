@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    box-sizing:  border-box;
+    border-collapse:  collapse;
+    background: transparent;
+    list-style: none;
+    border: 0;
+    font-family: inherit;
+    color: inherit
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+*[hidden] {
+    display: none !important;
+}
+
+button {
+    cursor: pointer;
+}
