@@ -42,6 +42,26 @@ public class ElasticSearchController {
     @Autowired
     private ElasticSearchServiceImpl elasticSearchService;
 
+    @Description("/testElasticIndexV6")
+    @RequestMapping(value = "/testElasticIndexV6")
+    @ResponseBody
+    public String testIndexV6() throws IOException {
+
+        IndexResponse response = elasticSearchService.indexV6();
+
+        return response.toString();
+    }
+
+    @Description("/testElasticGetV6")
+    @RequestMapping(value = "/testElasticGetV6")
+    @ResponseBody
+    public String testGetV6() throws IOException {
+
+        GetResponse response = elasticSearchService.getV6();
+
+        return response.toString();
+    }
+
     @Description("/testElasticIndex")
     @RequestMapping(value = "/testElasticIndex")
     @ResponseBody

@@ -32,8 +32,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.frameworkset.elasticsearch.ElasticSearchHelper;
-import org.frameworkset.elasticsearch.client.ClientInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +47,6 @@ import java.io.IOException;
 public class ElasticSearchServiceImpl {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    //DSL config file path
-    private final String mappath = "esmapper/demo.xml";
-    private ClientInterface clientUtil= ElasticSearchHelper.getConfigRestClientUtil(mappath); // return ConfigRestClientUtil instance;
 
     @Autowired
     @Qualifier("restHighLevelClientFactory")
@@ -165,10 +159,6 @@ public class ElasticSearchServiceImpl {
         GetRequest request = new GetRequest(
                 "post2", "1");
 
-
-//        GetRequest request = new GetRequest(
-//                "post2", "4");
-
         Transporter transporter = new Transporter();
 
         restHighLevelClient.getAsync(request, RequestOptions.DEFAULT, new ActionListener<GetResponse>() {
@@ -186,6 +176,33 @@ public class ElasticSearchServiceImpl {
         });
 
         return (GetResponse)transporter.getObject();
+    }
+
+    public GetResponse getV6() throws IOException {
+
+        GetRequest request = new GetRequest(
+                "postsv6",
+                "doc",
+                "1");
+
+        return restHighLevelClient.get(request, RequestOptions.DEFAULT);
+    }
+
+    public IndexResponse indexV6() throws IOException {
+
+        IndexRequest request = new IndexRequest(
+                "postsv6",
+                "doc",
+                "1");
+
+        String jsonString = "{" +
+                "\"user\":\"kimchy\"," +
+                "\"postDate\":\"2013-01-30\"," +
+                "\"message\":\"trying out Elasticsearch\"" +
+                "}";
+        request.source(jsonString, XContentType.JSON);
+
+        return restHighLevelClient.index(request, RequestOptions.DEFAULT);
     }
 
     class Transporter {
