@@ -24,14 +24,9 @@
         </property>
     </bean>
 
-    <bean id="pipelineFactory" class="com.navercorp.pinpoint.collector.NaverCollectorPipelineFactory">
-        <constructor-arg ref="pinpoint_collector_properties"/>
-    </bean>
-
     <bean id="acceptor" class="com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor">
         <constructor-arg ref="baseAcceptorOption"/>
         <constructor-arg ref="channelFilter"/>
-        <constructor-arg ref="pipelineFactory"/>
     </bean>
 
     <beans profile="tokenAuthentication">

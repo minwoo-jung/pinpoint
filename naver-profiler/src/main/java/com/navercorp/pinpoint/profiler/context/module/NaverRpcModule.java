@@ -16,20 +16,17 @@
 
 package com.navercorp.pinpoint.profiler.context.module;
 
-import com.google.inject.Key;
-import com.google.inject.PrivateModule;
-import com.google.inject.Scopes;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.profiler.NaverProfilerConfigConstants;
 import com.navercorp.pinpoint.profiler.context.provider.CommandDispatcherProvider;
-import com.navercorp.pinpoint.profiler.context.provider.NaverConnectionFactoryProviderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.NaverTcpDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenEnableConnectionFactoryProviderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenEnableSpanClientFactoryProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenEnableStatClientFactoryProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenHeaderTBaseSerializerProvider;
 import com.navercorp.pinpoint.profiler.context.provider.TokenServiceProvider;
+import com.navercorp.pinpoint.profiler.context.provider.thrift.ConnectionFactoryProviderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.thrift.HeaderTBaseSerializerProvider;
 import com.navercorp.pinpoint.profiler.context.provider.thrift.PinpointClientFactoryProvider;
 import com.navercorp.pinpoint.profiler.context.provider.thrift.SpanClientFactoryProvider;
@@ -46,6 +43,10 @@ import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.rpc.client.ConnectionFactoryProvider;
 import com.navercorp.pinpoint.rpc.client.PinpointClientFactory;
 import com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializer;
+
+import com.google.inject.Key;
+import com.google.inject.PrivateModule;
+import com.google.inject.Scopes;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.util.Timer;
 
@@ -68,8 +69,7 @@ public class NaverRpcModule extends PrivateModule {
 
         SECURITY_TYPE securityType = SECURITY_TYPE.getValue(profilerConfig.readString(NaverProfilerConfigConstants.KEY_SECURITY_TYPE, NaverProfilerConfigConstants.DEFAULT_SECURITY_TYPE));
 
-        // for enable ssl
-        bind(ConnectionFactoryProvider.class).toProvider(NaverConnectionFactoryProviderProvider.class).in(Scopes.SINGLETON);
+        bind(ConnectionFactoryProvider.class).toProvider(ConnectionFactoryProviderProvider.class).in(Scopes.SINGLETON);
 
         Key<PinpointClientFactory> pinpointClientFactory = Key.get(PinpointClientFactory.class, DefaultClientFactory.class);
         bind(pinpointClientFactory).toProvider(PinpointClientFactoryProvider.class).in(Scopes.SINGLETON);
