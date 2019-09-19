@@ -35,6 +35,13 @@
         <buildTime>${maven.build.timestamp}</buildTime>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <sniffer.artifactid>java18</sniffer.artifactid>
+
+        <plugin.antrun.version>1.8</plugin.antrun.version>
+
+        <plugin.frontend.version>1.6</plugin.frontend.version>
+        <plugin.frontend.node.version>v10.15.0</plugin.frontend.node.version>
+        <plugin.frontend.npm.version>6.1.0</plugin.frontend.npm.version>
+        <plugin.frontend.node.install.dir>${basedir}/node_install/node-${plugin.frontend.node.version}</plugin.frontend.node.install.dir>
     </properties>
 
     <dependencies>
@@ -80,56 +87,124 @@
     <profiles>
         <profile>
             <!-- for ci server -->
-            <id>run-integration-test</id>
+            <id>v2</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.tomcat.maven</groupId>
-                        <artifactId>tomcat7-maven-plugin</artifactId>
-                        <version>2.2</version>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${plugin.frontend.version}</version>
                         <configuration>
-                            <path>/</path>
-                            <port>20430</port>
-                            <fork>true</fork>
-                            <uriEncoding>UTF-8</uriEncoding>
-                            <systemProperties>
-                                <JAVA_OPTS>-Xms256m -Xmx512m -XX:MaxPermSize=256m</JAVA_OPTS>
-                            </systemProperties>
+                            <installDirectory>${plugin.frontend.node.install.dir}</installDirectory>
                         </configuration>
                         <executions>
                             <execution>
-                                <id>start-tomcat</id>
-                                <phase>pre-integration-test</phase>
+                                <id>install node and npm v2</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>${plugin.frontend.node.version}</nodeVersion>
+                                    <npmVersion>${plugin.frontend.npm.version}</npmVersion>
+                                    <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install v2</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                    <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>npm run build v2</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run build:real -- --outputPath=../../v2-build</arguments>
+                                    <!--<arguments>run build:real</arguments>-->
+                                    <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${plugin.antrun.version}</version>
+                        <executions>
+                            <execution>
+                                <id>delete pre-build file</id>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
+                                <configuration>
+                                    <target>
+                                        <delete>
+                                            <fileset dir="${basedir}/target/deploy/v2" includes="*.js, *.map, *.html" />
+                                        </delete>
+                                    </target>
+                                </configuration>
                             </execution>
                             <execution>
-                                <id>stop-tomcat</id>
-                                <phase>post-integration-test</phase>
+                                <id>copy deploy source</id>
+                                <phase>package</phase>
                                 <goals>
-                                    <goal>shutdown</goal>
+                                    <goal>run</goal>
                                 </goals>
+                                <configuration>
+                                    <target>
+                                        <copy todir="${basedir}/target/deploy/v2" failonerror="true" verbose="true" overwrite="true">
+                                            <fileset dir="${basedir}/target/v2-build">
+                                                <exclude name="node_modules/**"/>
+                                            </fileset>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-repackage</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>war</goal>
+                                </goals>
+                                <configuration>
+                                    <overlays>
+                                        <overlay>
+                                            <groupId>com.navercorp.pinpoint</groupId>
+                                            <artifactId>pinpoint-web</artifactId>
+                                        </overlay>
+                                    </overlays>
+                                    <webResources>
+                                        <resource>
+                                            <directory>target/deploy</directory>
+                                            <excludes>
+                                                <exclude>v2/node_modules/</exclude>
+                                            </excludes>
+                                        </resource>
+                                    </webResources>
+                                    <packagingExcludes>v2/node_modules/</packagingExcludes>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>m2e</id>
-            <activation>
-                <property>
-                    <name>m2e.version</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.navercorp.pinpoint</groupId>
-                    <artifactId>pinpoint-plugins-assembly</artifactId>
-                    <type>pom</type>
-                </dependency>
-            </dependencies>
         </profile>
     </profiles>
 </project>
