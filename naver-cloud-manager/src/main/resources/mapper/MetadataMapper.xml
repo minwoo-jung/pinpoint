@@ -38,8 +38,12 @@
 
     <update id="updateOrganizationInfo" parameterType="PaaSOrganizationInfo">
         UPDATE metadata.paas_organization
-        SET is_enabled = #{isEnabled},
-            is_deleted = #{isDeleted}
+        <set>
+            <if test="databaseName != null">database_name = #{databaseName},</if>
+            <if test="hbaseNamespace != null">hbase_namespace = #{hbaseNamespace},</if>
+            <if test="isEnabled != null">is_enabled = #{isEnabled},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted}</if>
+        </set>
         WHERE organization = #{organization}
     </update>
 

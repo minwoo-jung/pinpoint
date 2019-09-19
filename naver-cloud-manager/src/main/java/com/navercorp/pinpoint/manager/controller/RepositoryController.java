@@ -85,6 +85,7 @@ public class RepositoryController {
         if (isEnabled == null && isDeleted == null) {
             return ResponseEntity.badRequest().build();
         }
+        repositoryService.updateRepository(organizationName, isEnabled, isDeleted);
         return ResponseEntity.noContent().build();
     }
 

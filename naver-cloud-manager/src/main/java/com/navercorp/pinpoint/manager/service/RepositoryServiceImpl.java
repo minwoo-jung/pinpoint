@@ -19,9 +19,7 @@ import com.navercorp.pinpoint.common.util.CollectionUtils;
 import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.manager.domain.mysql.metadata.RepositoryInfo;
 import com.navercorp.pinpoint.manager.exception.database.DatabaseManagementException;
-import com.navercorp.pinpoint.manager.exception.database.UnknownDatabaseException;
 import com.navercorp.pinpoint.manager.exception.hbase.HbaseManagementException;
-import com.navercorp.pinpoint.manager.exception.hbase.UnknownHbaseException;
 import com.navercorp.pinpoint.manager.exception.repository.InvalidRepositoryStateException;
 import com.navercorp.pinpoint.manager.exception.repository.RepositoryException;
 import com.navercorp.pinpoint.manager.exception.repository.UnknownRepositoryException;
@@ -126,13 +124,11 @@ public class RepositoryServiceImpl implements RepositoryService {
         if (organizationInfo == null) {
             throw new UnknownRepositoryException(organizationName);
         }
-        if (isEnabled != null) {
-            organizationInfo.setEnabled(isEnabled);
-        }
-        if (isDeleted != null) {
-            organizationInfo.setDeleted(isDeleted);
-        }
-        metadataService.updateOrganizationInfo(organizationInfo);
+        PaaSOrganizationInfo organizationInfoForUpdate = new PaaSOrganizationInfo();
+        organizationInfoForUpdate.setOrganization(organizationName);
+        organizationInfoForUpdate.setEnabled(isEnabled);
+        organizationInfoForUpdate.setDeleted(isDeleted);
+        metadataService.updateOrganizationInfo(organizationInfoForUpdate);
     }
 
     @Override

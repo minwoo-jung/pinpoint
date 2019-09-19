@@ -21,22 +21,22 @@ package com.navercorp.pinpoint.manager.vo.repository;
  */
 public class RepositoryUpdateForm {
 
-    private Boolean isEnabled;
-    private Boolean isDeleted;
+    private Boolean enabled;
+    private Boolean deleted;
 
     public Boolean getEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
     public void setEnabled(Boolean enabled) {
-        isEnabled = enabled;
+        this.enabled = enabled;
     }
 
     public Boolean getDeleted() {
-        return isDeleted;
+        return deleted;
     }
 
     public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
+        this.deleted = deleted;
     }
 }
