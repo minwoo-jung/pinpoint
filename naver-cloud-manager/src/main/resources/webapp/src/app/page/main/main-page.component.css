@@ -5,21 +5,80 @@
     padding: 20px 40px;
 }
 
-.filter-bar-wrapper {
+.filter-bar-section {
     display: flex;
     height: 140px;
+    position: relative;
 }
 
-.form-field-wrapper {
+@media screen and (min-width: 1720px) {
+    ::ng-deep .mat-form-field-infix {
+        width: 220px !important;
+    }
+}
+
+@media screen and (min-width: 1560px) and (max-width: 1719px) {
+    ::ng-deep .mat-form-field-infix {
+        width: 180px !important;
+    }
+}
+
+@media screen and (min-width: 1480px) and (max-width: 1559px) {
+    ::ng-deep .mat-form-field-infix {
+        width: 160px !important;
+    }
+}
+
+@media screen and (max-width: 1479px) {
+    ::ng-deep .mat-form-field-infix {
+        width: 140px !important;
+    }
+}
+
+.select, .period {
     margin-right: 15px;
 }
 
-.submit-button-wrapper {
+.submit-button-section {
     margin-left: 5px;
     margin-top: 11px;
+    margin-right: 15px;
 }
 
-.result-wrapper {
+.result-section {
     margin-top: 20px;
+    width: 100%;
     height: calc(100% - 160px);
+    position: relative;
+}
+
+.spinner-section {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.period-guide {
+    position: absolute;
+    right: 0;
+    border: 1px solid #e5e8f0;
+    padding-bottom: 10px;
+}
+
+.period-guide-contents {
+    padding: 2px 15px;
+    font-size: 15px;
+    display: list-item;
+    list-style: disc inside;
+}
+
+.period-limit-text {
+    text-decoration: underline;
+    font-weight: 600;
 }

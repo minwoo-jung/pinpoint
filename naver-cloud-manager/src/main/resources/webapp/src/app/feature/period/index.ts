@@ -7,13 +7,11 @@ import { MatInputModule } from '@angular/material/input';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-// import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { PeriodComponent, DATE_FORMAT } from './period.component';
 
 @NgModule({
     imports: [
-        // NoopAnimationsModule,
         CommonModule,
         MatDatepickerModule,
         MatNativeDateModule,

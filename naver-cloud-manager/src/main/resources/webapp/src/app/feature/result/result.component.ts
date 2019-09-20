@@ -13,7 +13,8 @@ export class ResultComponent implements OnInit {
     displayedColumns = ['x', 'y'];
 
     constructor() {}
-    ngOnInit() {
-        console.log(this.data);
+    ngOnInit() {}
+    getTotalCount(): number {
+        return this.data ? this.data.reduce((acc: number, {y}: Span) => y + acc, 0) : 0;
     }
 }

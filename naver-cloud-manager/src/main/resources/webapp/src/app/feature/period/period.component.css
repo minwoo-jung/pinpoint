@@ -1,13 +1,17 @@
 :host {
     display: block;
-    width: 100%;
 }
 
 ::ng-deep .ngx-timepicker {
     height: auto !important;
 }
 
-.timepicker-wrapper {
+.timepicker-section {
     display: inline-block;
     margin-left: 10px;
+}
+
+::ng-deep .ngx-timepicker-control.disabled {
+    color: #ccc !important;
+    pointer-events: none;
 }

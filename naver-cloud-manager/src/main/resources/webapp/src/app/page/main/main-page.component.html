@@ -1,39 +1,50 @@
-<div class="filter-bar-wrapper">
-    <div class="form-field-wrapper">
-        <pp-select
-            selectLabel="Organization"
-            [optionList]="orgList$ | async"
-            (outSelect)="onSelectOrg($event)">
-        </pp-select>
-    </div>
-    <div class="form-field-wrapper">
-        <pp-select
-            selectLabel="Application"
-            [optionList]="appList$ | async"
-            (outSelect)="onSelectApp($event)">
-        </pp-select>
-    </div>
-    <div class="form-field-wrapper">
-        <pp-select
-            selectLabel="Agent"
-            [optionList]="agentList$ | async"
-            (outSelect)="onSelectAgent($event)">
-        </pp-select>
-    </div>
-    <div class="form-field-wrapper">
-        <pp-period></pp-period>
-    </div>
-    <!-- <div class="form-field-wrapper">
-        <pp-period
-            periodLabel="Date to">
-        </pp-period>
-    </div> -->
-    <div class="submit-button-wrapper">
-        <button mat-flat-button color="primary" (click)="onSearch()">Search</button>
-    </div>
-</div>
-<div class="result-wrapper">
+<section class="filter-bar-section">
+    <pp-select
+        class="select"
+        [type]="selectType.ORG"
+        [optionList]="orgList$ | async"
+        (outSelect)="onSelectOrg($event)">
+    </pp-select>
+    <pp-select
+        class="select"
+        [type]="selectType.APP"
+        [optionList]="appList$ | async"
+        (outSelect)="onSelectApp($event)">
+    </pp-select>
+    <pp-select
+        class="select"
+        [type]="selectType.AGENT"
+        [optionList]="agentList$ | async"
+        (outSelect)="onSelectAgent($event)">
+    </pp-select>
+    <pp-period
+        class="period"
+        (outPeriodSelect)="onPeriodSelect($event)">
+    </pp-period>
+    <section class="submit-button-section">
+        <button mat-flat-button color="primary" (click)="onSearch()" [disabled]="shouldDisableSearch()">Search</button>
+    </section>
+    <mat-card class="period-guide">
+        <mat-card-header>
+            <mat-card-title>Span Count 검색기간 기준</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <ul>
+                <li class="period-guide-contents">Organization만 선택했을 때: 최대 <span class="period-limit-text">40일</span></li>
+                <li class="period-guide-contents">Organization + Application 선택했을때: 최대 <span class="period-limit-text">7일</span></li>
+                <li class="period-guide-contents">Organization + Application + Agent 선택했을때: 최대 <span class="period-limit-text">24시간</span></li>        
+            </ul>
+        </mat-card-content>
+    </mat-card>
+</section>
+<section class="result-section">
     <pp-result
         [data]="result$ | async">
     </pp-result>
-</div>
+    <section class="spinner-section" *ngIf="showSpinner">
+        <mat-progress-spinner
+            [color]="'primary'"
+            [mode]="'indeterminate'">
+        </mat-progress-spinner>
+    </section>
+</section>

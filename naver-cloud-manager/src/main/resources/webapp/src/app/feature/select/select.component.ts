@@ -1,7 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ReplaySubject } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+
+export enum SelectType {
+    ORG = 'org',
+    APP = 'app',
+    AGENT = 'agent'
+}
 
 @Component({
     selector: 'pp-select',
@@ -9,9 +15,18 @@ import { takeUntil, map } from 'rxjs/operators';
     styleUrls: ['./select.component.css']
 })
 export class SelectComponent implements OnInit {
-    @Input() selectLabel: string;
+    @Input() type: SelectType;
     @Input()
     set optionList(list: string[]) {
+        if (this.originList) {
+            // When a new list is given, reset the select form.
+            this.selectCtrl.reset();
+            this.outSelect.emit('');
+        }
+
+        // Enable the select form after getting the list.
+        list ? this.selectCtrl.enable() : this.selectCtrl.disable();
+
         this.originList = list;
         this.filteredOptList.next(list);
     }
@@ -20,6 +35,8 @@ export class SelectComponent implements OnInit {
 
     private originList: string[];
 
+    selectType = SelectType;
+    selectCtrl = new FormControl({value: '', disabled: true});
     searchCtrl = new FormControl();
     filteredOptList = new ReplaySubject<string[]>(1);
 
@@ -33,15 +50,21 @@ export class SelectComponent implements OnInit {
     }
 
     onSelect(value: string): void {
-        this.outSelect.emit(value);
+        this.outSelect.emit(value ? value : '');
     }
 
-    shouldDisabled(): boolean {
-        return !this.originList;
+    getSelectLabel(): string {
+        return this.type === SelectType.ORG ? 'Organization'
+            : this.type === SelectType.APP ? 'Application'
+            : 'Agent';
     }
 
     getSearchLabel(): string {
-        return `Search ${this.selectLabel}`;
+        return `Search ${this.getSelectLabel()}`;
+    }
+
+    isTypeOrg(): boolean {
+        return this.type === SelectType.ORG;
     }
 
     private filterList(list: string[], value: string): string[] {

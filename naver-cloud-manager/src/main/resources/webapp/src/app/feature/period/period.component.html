@@ -1,42 +1,43 @@
-<div class="datetime-picker-wrapper">
+<section class="datetime-picker-section">
     <mat-form-field>
         <mat-label>From</mat-label>
-        <input matInput [matDatepicker]="fromPicker">
+        <input
+            autocomplete="off"
+            matInput
+            [matDatepicker]="fromPicker"
+            (click)="fromPicker.open()"
+            (dateChange)="onFromDateChange($event.value)">
         <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
         <mat-datepicker #fromPicker></mat-datepicker>
     </mat-form-field>
-    <div class="timepicker-wrapper">
+    <section class="timepicker-section">
         <ngx-timepicker-field
             [format]="24"
-            [defaultTime]="'00:00'"
-            [controlOnly]="true">
+            [defaultTime]="'0:00'"
+            [controlOnly]="true"
+            #fromTimepicker>
         </ngx-timepicker-field>
-    </div>
-</div>
-<div class="datetime-picker-wrapper">
+    </section>
+</section>
+<section class="datetime-picker-section">
     <mat-form-field>
         <mat-label>To</mat-label>
-        <input matInput [matDatepicker]="toPicker">
+        <input
+            autocomplete="off"
+            matInput
+            [matDatepicker]="toPicker"
+            [min]="minDate"
+            (click)="toPicker.open()"
+            (dateChange)="onToDateChange($event.value)">
         <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
         <mat-datepicker #toPicker></mat-datepicker>
     </mat-form-field>
-    <div class="timepicker-wrapper">
+    <section class="timepicker-section">
         <ngx-timepicker-field
             [format]="24"
-            [defaultTime]="'00:00'"
-            [controlOnly]="true">
+            [defaultTime]="'0:00'"
+            [controlOnly]="true"
+            #toTimepicker>
         </ngx-timepicker-field>
-    </div>
-</div>
-
-
-<!-- (opened)="onCalendarOpen()" -->
-<!-- document.querySelector('.mat-datepicker-content') -->
-<!-- <ng-template> -->
-    <!-- <ngx-timepicker-field
-        #timePicker
-        [hidden]="!showTimePicker"
-        [format]="24"
-        [controlOnly]="true">
-    </ngx-timepicker-field> -->
-<!-- </ng-template> -->
+    </section>
+</section>

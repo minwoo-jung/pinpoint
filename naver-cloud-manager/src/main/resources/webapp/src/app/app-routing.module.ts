@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-//TODO: **에 대해 PageNotFound처리.
+// TODO: **에 대해 PageNotFound처리.
 const routes: Routes = [
     {
         path: 'main',
@@ -12,7 +12,6 @@ const routes: Routes = [
         pathMatch: 'full',
         redirectTo: 'main'
     }
-    
 ];
 
 @NgModule({
