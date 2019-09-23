@@ -27,7 +27,7 @@ export class MainPageComponent implements OnInit {
     orgList$: Observable<string[]>;
     appList$: Observable<string[]>;
     agentList$: Observable<string[]>;
-    result$: Observable<Span[]>;
+    data$: Observable<Span[]>;
     selectType = SelectType;
     showSpinner = false;
 
@@ -76,12 +76,12 @@ export class MainPageComponent implements OnInit {
 
     onSearch(): void {
         if (!this.isValidPeriod()) {
-            this.snackBar.open('검색 기간을 잘못 설정하였습니다.', '닫기');
+            this.snackBar.open('검색기간을 잘못 설정하였습니다.', '닫기');
             return;
         }
 
         this.showSpinner = true;
-        this.result$ = this.getResultObs$().pipe(
+        this.data$ = this.getSpanCountObs$().pipe(
             tap(() => this.showSpinner = false)
         );
     }
@@ -90,7 +90,7 @@ export class MainPageComponent implements OnInit {
         return !(this.selectedOrg && this.selectedPeriod);
     }
 
-    private getResultObs$(): Observable<Span[]> {
+    private getSpanCountObs$(): Observable<Span[]> {
         const [from, to] = this.selectedPeriod;
         const baseParams = {organization: this.selectedOrg, from, to};
 

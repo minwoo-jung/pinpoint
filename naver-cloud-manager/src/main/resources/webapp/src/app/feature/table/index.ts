@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 
-import { ResultComponent } from './result.component';
+import { TableComponent } from './table.component';
 
 @NgModule({
     imports: [
@@ -10,11 +10,11 @@ import { ResultComponent } from './result.component';
         MatTableModule
     ],
     exports: [
-        ResultComponent
+        TableComponent
     ],
     declarations: [
-        ResultComponent
+        TableComponent
     ],
     providers: [],
 })
-export class ResultModule { }
+export class TableModule { }

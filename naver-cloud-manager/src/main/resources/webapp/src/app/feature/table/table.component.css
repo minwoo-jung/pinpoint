@@ -12,3 +12,7 @@
 table {
     width: 100%;
 }
+
+.footer-row {
+    font-weight: bold;
+}

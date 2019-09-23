@@ -9,7 +9,8 @@ import { MainPageRoutingModule } from './main-page-routing.module';
 import { MainPageComponent } from './main-page.component';
 import { SelectModule } from 'app/feature/select';
 import { PeriodModule } from 'app/feature/period';
-import { ResultModule } from 'app/feature/result';
+import { TableModule } from 'app/feature/table';
+import { ChartModule } from 'app/feature/chart';
 
 @NgModule({
     imports: [
@@ -21,7 +22,8 @@ import { ResultModule } from 'app/feature/result';
         MatProgressSpinnerModule,
         SelectModule,
         PeriodModule,
-        ResultModule,
+        TableModule,
+        ChartModule
     ],
     exports: [],
     declarations: [MainPageComponent],

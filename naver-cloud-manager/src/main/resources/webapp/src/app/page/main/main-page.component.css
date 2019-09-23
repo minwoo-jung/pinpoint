@@ -46,10 +46,20 @@
 }
 
 .result-section {
-    margin-top: 20px;
+    margin-top: 50px;
     width: 100%;
-    height: calc(100% - 160px);
+    height: calc(100% - 190px);
+    display: flex;
     position: relative;
+}
+
+.chart {
+    margin-right: 80px;
+    width: 40%;
+}
+
+.table {
+    flex: 1;
 }
 
 .spinner-section {
@@ -81,4 +91,5 @@
 .period-limit-text {
     text-decoration: underline;
     font-weight: 600;
+    color: #900000;
 }

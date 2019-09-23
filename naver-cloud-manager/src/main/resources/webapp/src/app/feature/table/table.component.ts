@@ -3,11 +3,11 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Span } from 'app/service/app-data.service';
 
 @Component({
-    selector: 'pp-result',
-    templateUrl: './result.component.html',
-    styleUrls: ['./result.component.css']
+    selector: 'pp-table',
+    templateUrl: './table.component.html',
+    styleUrls: ['./table.component.css']
 })
-export class ResultComponent implements OnInit {
+export class TableComponent implements OnInit {
     @Input() data: Span[];
 
     displayedColumns = ['x', 'y'];
@@ -15,6 +15,6 @@ export class ResultComponent implements OnInit {
     constructor() {}
     ngOnInit() {}
     getTotalCount(): number {
-        return this.data ? this.data.reduce((acc: number, {y}: Span) => y + acc, 0) : 0;
+        return this.data.reduce((acc: number, {y}: Span) => y + acc, 0);
     }
 }

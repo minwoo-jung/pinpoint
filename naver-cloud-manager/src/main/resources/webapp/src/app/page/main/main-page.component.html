@@ -38,9 +38,16 @@
     </mat-card>
 </section>
 <section class="result-section">
-    <pp-result
-        [data]="result$ | async">
-    </pp-result>
+    <ng-container *ngIf="(data$ | async) as data">
+        <pp-chart
+            class="chart"
+            [data]="data">
+        </pp-chart>
+        <pp-table
+            class="table"
+            [data]="data">
+        </pp-table>
+    </ng-container>
     <section class="spinner-section" *ngIf="showSpinner">
         <mat-progress-spinner
             [color]="'primary'"
