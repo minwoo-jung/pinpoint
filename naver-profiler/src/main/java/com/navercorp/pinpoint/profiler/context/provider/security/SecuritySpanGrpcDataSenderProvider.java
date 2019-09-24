@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,9 +16,14 @@
 
 package com.navercorp.pinpoint.profiler.context.provider.security;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.protobuf.GeneratedMessageV3;
 import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.grpc.client.ChannelFactoryOption;
+import com.navercorp.pinpoint.grpc.client.ChannelFactory;
+import com.navercorp.pinpoint.grpc.client.ChannelFactoryBuilder;
 import com.navercorp.pinpoint.grpc.client.ClientOption;
+import com.navercorp.pinpoint.grpc.client.DefaultChannelFactoryBuilder;
 import com.navercorp.pinpoint.grpc.client.HeaderFactory;
 import com.navercorp.pinpoint.grpc.client.UnaryCallDeadlineInterceptor;
 import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenInterceptor;
@@ -27,12 +32,12 @@ import com.navercorp.pinpoint.profiler.context.grpc.GrpcTransportConfig;
 import com.navercorp.pinpoint.profiler.context.module.SpanConverter;
 import com.navercorp.pinpoint.profiler.context.thrift.MessageConverter;
 import com.navercorp.pinpoint.profiler.sender.DataSender;
+import com.navercorp.pinpoint.profiler.sender.grpc.DiscardClientInterceptor;
+import com.navercorp.pinpoint.profiler.sender.grpc.DiscardEventListener;
+import com.navercorp.pinpoint.profiler.sender.grpc.LoggingDiscardEventListener;
 import com.navercorp.pinpoint.profiler.sender.grpc.ReconnectExecutor;
 import com.navercorp.pinpoint.profiler.sender.grpc.SpanGrpcDataSender;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.protobuf.GeneratedMessageV3;
+import io.grpc.ClientInterceptor;
 import io.grpc.NameResolverProvider;
 
 /**
@@ -66,27 +71,41 @@ public class SecuritySpanGrpcDataSenderProvider implements Provider<DataSender<O
         final String collectorIp = grpcTransportConfig.getSpanCollectorIp();
         final int collectorPort = grpcTransportConfig.getSpanCollectorPort();
         final int senderExecutorQueueSize = grpcTransportConfig.getSpanSenderExecutorQueueSize();
+
+        final ChannelFactoryBuilder channelFactoryBuilder = newChannelFactoryBuilder();
+        final ChannelFactory channelFactory = channelFactoryBuilder.build();
+
+        final ClientInterceptor clientInterceptor = newClientInterceptor();
+
+        final ReconnectExecutor reconnectExecutor = this.reconnectExecutor.get();
+        return new SpanGrpcDataSender(collectorIp, collectorPort, senderExecutorQueueSize, messageConverter, reconnectExecutor, channelFactory, clientInterceptor);
+    }
+
+    private ChannelFactoryBuilder newChannelFactoryBuilder() {
         final int channelExecutorQueueSize = grpcTransportConfig.getSpanChannelExecutorQueueSize();
         final ClientOption clientOption = grpcTransportConfig.getSpanClientOption();
 
-        ChannelFactoryOption.Builder channelFactoryOptionBuilder = ChannelFactoryOption.newBuilder();
-        channelFactoryOptionBuilder.setName("SpanGrpcDataSender");
-        channelFactoryOptionBuilder.setHeaderFactory(headerFactory);
-        channelFactoryOptionBuilder.setNameResolverProvider(nameResolverProvider);
+
+        ChannelFactoryBuilder channelFactoryBuilder = new DefaultChannelFactoryBuilder("SpanGrpcDataSender");
+        channelFactoryBuilder.setHeaderFactory(headerFactory);
+        channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
         // temp // for test
         final AuthorizationTokenInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(new RandomTokenProvider());
-        channelFactoryOptionBuilder.addClientInterceptor(authorizationTokenInterceptor);
-
+        channelFactoryBuilder.addClientInterceptor(authorizationTokenInterceptor);
         final UnaryCallDeadlineInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getMetadataRequestTimeout());
-        channelFactoryOptionBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
+        channelFactoryBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
 
-        channelFactoryOptionBuilder.setExecutorQueueSize(channelExecutorQueueSize);
-        channelFactoryOptionBuilder.setClientOption(clientOption);
-        ChannelFactoryOption channelFactoryOption = channelFactoryOptionBuilder.build();
+        channelFactoryBuilder.setExecutorQueueSize(channelExecutorQueueSize);
+        channelFactoryBuilder.setClientOption(clientOption);
+        return channelFactoryBuilder;
+    }
 
-        final ReconnectExecutor reconnectExecutor = this.reconnectExecutor.get();
-        return new SpanGrpcDataSender(collectorIp, collectorPort, senderExecutorQueueSize, messageConverter, reconnectExecutor, channelFactoryOption);
+    private ClientInterceptor newClientInterceptor() {
+        final int spanDiscardLogRateLimit = grpcTransportConfig.getSpanDiscardLogRateLimit();
+        final long spanDiscardMaxPendingThreshold = grpcTransportConfig.getSpanDiscardMaxPendingThreshold();
+        final DiscardEventListener<?> discardEventListener = new LoggingDiscardEventListener(SpanGrpcDataSender.class.getName(), spanDiscardLogRateLimit);
+        return new DiscardClientInterceptor(discardEventListener, spanDiscardMaxPendingThreshold);
     }
 
 }

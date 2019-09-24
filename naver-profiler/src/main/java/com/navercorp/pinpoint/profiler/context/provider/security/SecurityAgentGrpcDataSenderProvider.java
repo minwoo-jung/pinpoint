@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,10 @@
 package com.navercorp.pinpoint.profiler.context.provider.security;
 
 import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.grpc.client.ChannelFactoryOption;
+import com.navercorp.pinpoint.grpc.client.ChannelFactory;
+import com.navercorp.pinpoint.grpc.client.ChannelFactoryBuilder;
 import com.navercorp.pinpoint.grpc.client.ClientOption;
+import com.navercorp.pinpoint.grpc.client.DefaultChannelFactoryBuilder;
 import com.navercorp.pinpoint.grpc.client.HeaderFactory;
 import com.navercorp.pinpoint.grpc.client.UnaryCallDeadlineInterceptor;
 import com.navercorp.pinpoint.grpc.security.client.AuthenticationKeyInterceptor;
@@ -76,27 +78,32 @@ public class SecurityAgentGrpcDataSenderProvider implements Provider<EnhancedDat
         final String collectorIp = grpcTransportConfig.getAgentCollectorIp();
         final int collectorPort = grpcTransportConfig.getAgentCollectorPort();
         final int senderExecutorQueueSize = grpcTransportConfig.getAgentSenderExecutorQueueSize();
+        final ChannelFactoryBuilder channelFactoryBuilder = newChannelFactoryBuilder();
+        final ChannelFactory channelFactory = channelFactoryBuilder.build();
+
+        final  ReconnectExecutor reconnectExecutor = reconnectExecutorProvider.get();
+        return new AgentGrpcDataSender(collectorIp, collectorPort, senderExecutorQueueSize, messageConverter, reconnectExecutor, retransmissionExecutor, channelFactory, activeTraceRepository);
+    }
+
+    private ChannelFactoryBuilder newChannelFactoryBuilder() {
         final int channelExecutorQueueSize = grpcTransportConfig.getAgentChannelExecutorQueueSize();
         final ClientOption clientOption = grpcTransportConfig.getAgentClientOption();
 
-        ChannelFactoryOption.Builder channelFactoryOptionBuilder = ChannelFactoryOption.newBuilder();
-        channelFactoryOptionBuilder.setName("AgentGrpcDataSender");
-        channelFactoryOptionBuilder.setHeaderFactory(headerFactory);
-        channelFactoryOptionBuilder.setNameResolverProvider(nameResolverProvider);
+        final ChannelFactoryBuilder channelFactoryBuilder = new DefaultChannelFactoryBuilder("AgentGrpcDataSender");
+
+        channelFactoryBuilder.setHeaderFactory(headerFactory);
+        channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
         // temp // for test
         final AuthenticationKeyInterceptor authenticationKeyInterceptor = new AuthenticationKeyInterceptor("pinpoint!@#123test");
-        channelFactoryOptionBuilder.addClientInterceptor(authenticationKeyInterceptor);
+        channelFactoryBuilder.addClientInterceptor(authenticationKeyInterceptor);
 
         final UnaryCallDeadlineInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getAgentRequestTimeout());
-        channelFactoryOptionBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
+        channelFactoryBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
 
-        channelFactoryOptionBuilder.setExecutorQueueSize(channelExecutorQueueSize);
-        channelFactoryOptionBuilder.setClientOption(clientOption);
-        ChannelFactoryOption factoryOption = channelFactoryOptionBuilder.build();
-
-        final  ReconnectExecutor reconnectExecutor = reconnectExecutorProvider.get();
-        return new AgentGrpcDataSender(collectorIp, collectorPort, senderExecutorQueueSize, messageConverter, reconnectExecutor, retransmissionExecutor, factoryOption, activeTraceRepository);
+        channelFactoryBuilder.setExecutorQueueSize(channelExecutorQueueSize);
+        channelFactoryBuilder.setClientOption(clientOption);
+        return channelFactoryBuilder;
     }
 
 }
