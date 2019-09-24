@@ -46,12 +46,11 @@
         <appender-ref ref="nelo-logback" />
     </appender>
 
-    <logger name="com.navercorp.test" level="INFO" additivity="false">
+    <logger name="com.navercorp.test.Echo" level="INFO" additivity="false">
         <appender-ref ref="nelo-logback-async" />
     </logger>
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="nelo-logback-async" />
     </root>
 </configuration>

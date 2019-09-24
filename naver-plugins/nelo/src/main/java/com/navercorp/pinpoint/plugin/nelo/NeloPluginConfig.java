@@ -26,6 +26,7 @@ public class NeloPluginConfig {
 
     private final boolean log4jLoggingTransactionInfo;
     private final boolean logbackLoggingTransactionInfo;
+    private final boolean log4j2LoggingTransactionInfo;
 
     public NeloPluginConfig(ProfilerConfig profilerConfig) {
         /**
@@ -37,6 +38,12 @@ public class NeloPluginConfig {
          * logback
          */
         this.logbackLoggingTransactionInfo = profilerConfig.readBoolean("profiler.logback.logging.transactioninfo", false);
+
+
+        /**
+         * log4j2
+         */
+        this.log4j2LoggingTransactionInfo = profilerConfig.readBoolean("profiler.log4j2.logging.transactioninfo", false);
     }
 
     public boolean isLog4jLoggingTransactionInfo() {
@@ -48,11 +55,16 @@ public class NeloPluginConfig {
         return this.logbackLoggingTransactionInfo;
     }
 
+    public boolean isLog4j2LoggingTransactionInfo() {
+        return this.log4j2LoggingTransactionInfo;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NeloPluginConfig{");
         sb.append("log4jLoggingTransactionInfo=").append(log4jLoggingTransactionInfo);
         sb.append(", logbackLoggingTransactionInfo=").append(logbackLoggingTransactionInfo);
+        sb.append(", log4j2LoggingTransactionInfo=").append(log4j2LoggingTransactionInfo);
         sb.append('}');
         return sb.toString();
     }

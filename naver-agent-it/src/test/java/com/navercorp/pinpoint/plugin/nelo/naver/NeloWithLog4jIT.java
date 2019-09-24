@@ -22,6 +22,7 @@ import com.navercorp.pinpoint.common.trace.LoggingInfo;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import com.navercorp.pinpoint.test.plugin.*;
 import com.navercorp.test.Echo;
+import com.navercorp.test.Echo2;
 import com.navercorp.test.Empty;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,17 @@ public class NeloWithLog4jIT {
     public void test2() throws Exception {
         Empty empty = new Empty();
         empty.empty();
+
+        PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
+        verifier.printCache();
+        verifier.verifyIsLoggingTransactionInfo(LoggingInfo.NOT_LOGGED);
+        verifier.verifyTraceCount(0);
+    }
+
+    @Test
+    public void test3() throws Exception {
+        Echo2 echo = new Echo2();
+        echo.echo2("test");
 
         PluginTestVerifier verifier = PluginTestVerifierHolder.getInstance();
         verifier.printCache();

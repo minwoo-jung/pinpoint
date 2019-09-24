@@ -52,6 +52,5 @@
    
     <root level="INFO">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="nelo-logback-async" />
     </root>
 </configuration>

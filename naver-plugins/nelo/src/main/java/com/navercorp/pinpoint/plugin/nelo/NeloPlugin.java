@@ -16,11 +16,7 @@
 package com.navercorp.pinpoint.plugin.nelo;
 
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
-import com.navercorp.pinpoint.bootstrap.instrument.InstrumentClass;
-import com.navercorp.pinpoint.bootstrap.instrument.InstrumentException;
-import com.navercorp.pinpoint.bootstrap.instrument.InstrumentMethod;
-import com.navercorp.pinpoint.bootstrap.instrument.Instrumentor;
-import com.navercorp.pinpoint.bootstrap.instrument.MethodFilters;
+import com.navercorp.pinpoint.bootstrap.instrument.*;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformCallback;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplate;
 import com.navercorp.pinpoint.bootstrap.instrument.transformer.TransformTemplateAware;
@@ -28,9 +24,12 @@ import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPlugin;
 import com.navercorp.pinpoint.bootstrap.plugin.ProfilerPluginSetupContext;
+import com.navercorp.pinpoint.bootstrap.plugin.util.InstrumentUtils;
 import com.navercorp.pinpoint.plugin.nelo.interceptor.AddNeloAppenderMethodInterceptor;
 import com.navercorp.pinpoint.plugin.nelo.interceptor.AppenderInterceptor;
 import com.navercorp.pinpoint.plugin.nelo.interceptor.AsyncAppenderInterceptor;
+import com.navercorp.pinpoint.plugin.nelo.log4j2.interceptor.LoggerConstructorInterceptor;
+import com.navercorp.pinpoint.plugin.nelo.log4j2.interceptor.LoggerOnMessageMethodInterceptor;
 
 import java.lang.reflect.Modifier;
 import java.security.ProtectionDomain;
@@ -82,6 +81,101 @@ public class NeloPlugin implements ProfilerPlugin, TransformTemplateAware {
             addLogBackNeloAppenderEditor();
             //1.6.x ~
             addLogBackNeloAppender2Editor();
+        }
+
+        if (neloPluginConfig.isLog4j2LoggingTransactionInfo()) {
+            addLoggerEditor();
+        }
+
+    }
+
+    private void addLoggerEditor() {
+        transformTemplate.transform("org.apache.logging.log4j.core.Logger", LoggerTransform.class);
+        transformTemplate.transform("org.apache.logging.log4j.core.async.AsyncLogger", AsyncLoggerTransform.class);
+    }
+
+    public static abstract class ConstructorChecker {
+        protected boolean hasConstructor(InstrumentClass loggerClass) throws NotFoundInstrumentException {
+            InstrumentMethod constructor = getConstructor(loggerClass);
+
+            if (constructor == null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        protected InstrumentMethod getConstructor(InstrumentClass loggerClass) throws NotFoundInstrumentException {
+            return InstrumentUtils.findConstructor(loggerClass, "org.apache.logging.log4j.core.LoggerContext", "java.lang.String", "org.apache.logging.log4j.message.MessageFactory");
+
+        }
+
+        protected void addLoggerOnMessageMethodInterceptor(InstrumentClass target) throws InstrumentException {
+            final InstrumentMethod logMessage = target.getDeclaredMethod("logMessage", "java.lang.String", "org.apache.logging.log4j.Level", "org.apache.logging.log4j.Marker", "org.apache.logging.log4j.message.Message", "java.lang.Throwable");
+            if (logMessage != null) {
+                logMessage.addInterceptor(LoggerOnMessageMethodInterceptor.class);
+            }
+        }
+
+        protected void addLoggerLogMethodInterceptor(InstrumentClass target) throws InstrumentException {
+            final InstrumentMethod log = target.getDeclaredMethod("log", "org.apache.logging.log4j.Level", "org.apache.logging.log4j.Marker", "java.lang.String", "java.lang.StackTraceElement", "org.apache.logging.log4j.message.Message", "java.lang.Throwable" );
+            if (log != null) {
+                log.addInterceptor(LoggerOnMessageMethodInterceptor.class);
+            }
+        }
+    }
+
+    public static class AsyncLoggerTransform extends ConstructorChecker implements TransformCallback {
+
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            final InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+
+            if(hasConstructorForLogger(instrumentor, loader) == false) {
+                throw new NotFoundInstrumentException("Cannot find constructor for org.apache.logging.log4j.core.Logger");
+            }
+
+            //2.0 ~
+            addLoggerOnMessageMethodInterceptor(target);
+            //2.12.1
+            addLoggerLogMethodInterceptor(target);
+
+            return target.toBytecode();
+        }
+
+        private boolean hasConstructorForLogger(Instrumentor instrumentor, ClassLoader loader) throws NotFoundInstrumentException {
+            InstrumentClass loggerClass = instrumentor.getInstrumentClass(loader, "org.apache.logging.log4j.core.Logger", null);
+
+            if (loggerClass == null) {
+                return false;
+            }
+
+            return hasConstructor(loggerClass);
+        }
+    }
+
+    public static class LoggerTransform extends ConstructorChecker implements TransformCallback {
+        @Override
+        public byte[] doInTransform(Instrumentor instrumentor, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws InstrumentException {
+            final InstrumentClass target = instrumentor.getInstrumentClass(loader, className, classfileBuffer);
+
+            target.addField(UsingNeloAppenderAccessor.class);
+            addLoggerConstructorInterceptor(target);
+            addLoggerOnMessageMethodInterceptor(target);
+            addLoggerLogMethodInterceptor(target);
+
+            return target.toBytecode();
+        }
+
+        private void addLoggerConstructorInterceptor(InstrumentClass target) throws InstrumentException {
+            InstrumentMethod constructor = getConstructor(target);
+
+            List<String> neloAppenderClassNameList = Arrays.asList(
+                    "com.naver.nelo2.log4j2.HttpAppender",
+                    "com.naver.nelo2.log4j2.ThriftAppender"
+            );
+
+            constructor.addInterceptor(LoggerConstructorInterceptor.class, va(neloAppenderClassNameList));
         }
     }
 

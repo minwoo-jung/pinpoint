@@ -46,7 +46,7 @@
         <appender-ref ref="nelo"/>
     </appender>
 
-    <logger name="com.navercorp.test" additivity="false">
+    <logger name="com.navercorp.test.Echo" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="nelo-async"/>
     </logger>

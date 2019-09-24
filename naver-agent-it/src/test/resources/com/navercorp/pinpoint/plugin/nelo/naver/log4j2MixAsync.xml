@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2019 NAVER Corp.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<configuration status="warn" monitorInterval="30">-->
+    <Properties>
+        <property name="LOG_HOME" value="/httx/logs"/>
+        <property name="OUT_FILE" value="provider.log"/>
+        <property name="LOG_PATTERN_COMMON"
+                  value="%d{yyyy-MM-dd HH:mm:ss} [%-5p] %-26.26t (%-35.35c{1.}:%-3L) [PtxId : %X{PtxId}][PspanId : %X{PspanId}] [time : %X{time}] - %m%n"/>
+    </Properties>
+    <appenders>
+        <console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN_COMMON}"/>
+        </console>
+        <File name="FILE-OUT" fileName="${LOG_HOME}/${OUT_FILE}">
+            <PatternLayout pattern="${LOG_PATTERN_COMMON}"/>
+        </File>
+        <HttpAppender>
+            <name>nelo</name>
+            <collectorUrl>http://nelo2-col.navercorp.com/_store</collectorUrl>
+            <port>10006</port>
+            <projectName>PINPOINT</projectName>
+            <version>PINPOINT</version>
+            <logType>testtest</logType>
+            <logSource>test</logSource>
+            <debug>true</debug>
+        </HttpAppender>
+
+    </appenders>
+    <loggers>
+        <AsyncLogger name="com.navercorp.test.Echo" level="trace" includeLocation="true" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="nelo"/>
+        </AsyncLogger>
+        <root level="INFO">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="FILE-OUT"/>
+        </root>
+    </loggers>
+</configuration>
