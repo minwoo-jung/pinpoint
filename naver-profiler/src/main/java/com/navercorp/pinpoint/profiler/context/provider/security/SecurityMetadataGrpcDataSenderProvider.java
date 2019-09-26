@@ -23,7 +23,6 @@ import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.grpc.client.ChannelFactory;
 import com.navercorp.pinpoint.grpc.client.ChannelFactoryBuilder;
 import com.navercorp.pinpoint.grpc.client.ClientOption;
-import com.navercorp.pinpoint.grpc.client.DefaultChannelFactory;
 import com.navercorp.pinpoint.grpc.client.DefaultChannelFactoryBuilder;
 import com.navercorp.pinpoint.grpc.client.HeaderFactory;
 import com.navercorp.pinpoint.grpc.client.UnaryCallDeadlineInterceptor;
@@ -31,10 +30,10 @@ import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenInterceptor
 import com.navercorp.pinpoint.grpc.security.client.RandomTokenProvider;
 import com.navercorp.pinpoint.profiler.context.grpc.GrpcTransportConfig;
 import com.navercorp.pinpoint.profiler.context.module.MetadataConverter;
-import com.navercorp.pinpoint.profiler.context.provider.grpc.MetadataGrpcDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.thrift.MessageConverter;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.profiler.sender.grpc.MetadataGrpcDataSender;
+import io.grpc.ClientInterceptor;
 import io.grpc.NameResolverProvider;
 
 /**
@@ -82,10 +81,10 @@ public class SecurityMetadataGrpcDataSenderProvider implements Provider<Enhanced
         channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
         // temp // for test
-        final AuthorizationTokenInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(new RandomTokenProvider());
+        final ClientInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(new RandomTokenProvider());
         channelFactoryBuilder.addClientInterceptor(authorizationTokenInterceptor);
 
-        final UnaryCallDeadlineInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getMetadataRequestTimeout());
+        final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getMetadataRequestTimeout());
         channelFactoryBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
 
         channelFactoryBuilder.setExecutorQueueSize(channelExecutorQueueSize);

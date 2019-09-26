@@ -75,33 +75,32 @@ public class SecuritySpanGrpcDataSenderProvider implements Provider<DataSender<O
         final ChannelFactoryBuilder channelFactoryBuilder = newChannelFactoryBuilder();
         final ChannelFactory channelFactory = channelFactoryBuilder.build();
 
-        final ClientInterceptor clientInterceptor = newClientInterceptor();
-
         final ReconnectExecutor reconnectExecutor = this.reconnectExecutor.get();
-        return new SpanGrpcDataSender(collectorIp, collectorPort, senderExecutorQueueSize, messageConverter, reconnectExecutor, channelFactory, clientInterceptor);
+        return new SpanGrpcDataSender(collectorIp, collectorPort, senderExecutorQueueSize, messageConverter, reconnectExecutor, channelFactory);
     }
 
     private ChannelFactoryBuilder newChannelFactoryBuilder() {
         final int channelExecutorQueueSize = grpcTransportConfig.getSpanChannelExecutorQueueSize();
         final ClientOption clientOption = grpcTransportConfig.getSpanClientOption();
 
-
         ChannelFactoryBuilder channelFactoryBuilder = new DefaultChannelFactoryBuilder("SpanGrpcDataSender");
         channelFactoryBuilder.setHeaderFactory(headerFactory);
         channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
         // temp // for test
-        final AuthorizationTokenInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(new RandomTokenProvider());
+        final ClientInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(new RandomTokenProvider());
         channelFactoryBuilder.addClientInterceptor(authorizationTokenInterceptor);
-        final UnaryCallDeadlineInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getMetadataRequestTimeout());
+        final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getMetadataRequestTimeout());
         channelFactoryBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
+        final ClientInterceptor discardClientInterceptor = newDiscardClientInterceptor();
+        channelFactoryBuilder.addClientInterceptor(discardClientInterceptor);
 
         channelFactoryBuilder.setExecutorQueueSize(channelExecutorQueueSize);
         channelFactoryBuilder.setClientOption(clientOption);
         return channelFactoryBuilder;
     }
 
-    private ClientInterceptor newClientInterceptor() {
+    private ClientInterceptor newDiscardClientInterceptor() {
         final int spanDiscardLogRateLimit = grpcTransportConfig.getSpanDiscardLogRateLimit();
         final long spanDiscardMaxPendingThreshold = grpcTransportConfig.getSpanDiscardMaxPendingThreshold();
         final DiscardEventListener<?> discardEventListener = new LoggingDiscardEventListener(SpanGrpcDataSender.class.getName(), spanDiscardLogRateLimit);
