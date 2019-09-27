@@ -20,6 +20,7 @@ import com.navercorp.pinpoint.web.batch.NaverBatchConfiguration;
 import com.navercorp.pinpoint.web.service.UserGroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.http.*;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -55,7 +56,7 @@ public class NaverSmsSender implements SmsSender {
         headers.add("api-key", batchConfiguration.getApiKey());
     }
 
-    public void sendSms(AlarmChecker checker, int sequenceCount) {
+    public void sendSms(AlarmChecker checker, int sequenceCount, StepExecution stepExecution) {
         List<String> receivers = userGroupService.selectPhoneNumberOfMember(checker.getuserGroupId());
 
         if (receivers.isEmpty()) {
