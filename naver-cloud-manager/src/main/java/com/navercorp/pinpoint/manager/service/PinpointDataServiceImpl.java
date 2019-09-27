@@ -37,7 +37,12 @@ public class PinpointDataServiceImpl implements PinpointDataService {
     }
 
     @Override
-    public List<String> getAllApplicationNames(String namespace) {
-        return applicationIndexDao.getAllApplicationNames(namespace);
+    public List<String> getApplicationNames(String namespace) {
+        return applicationIndexDao.getApplicationNames(namespace);
+    }
+
+    @Override
+    public List<String> getAgentIds(String namespace, String applicationName) {
+        return applicationIndexDao.getAgentIds(namespace, applicationName);
     }
 }

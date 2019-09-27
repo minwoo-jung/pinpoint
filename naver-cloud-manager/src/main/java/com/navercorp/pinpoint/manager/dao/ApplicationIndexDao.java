@@ -23,5 +23,7 @@ import java.util.List;
  */
 public interface ApplicationIndexDao {
 
-    List<String> getAllApplicationNames(String namespace);
+    List<String> getApplicationNames(String namespace);
+
+    List<String> getAgentIds(String namespace, String applicationName);
 }

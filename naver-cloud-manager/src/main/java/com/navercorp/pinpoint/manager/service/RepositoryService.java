@@ -58,4 +58,6 @@ public interface RepositoryService {
 
     List<String> getApplicationNames(String organizationName);
 
+    List<String> getAgentIds(String organizationName, String applicationName);
+
 }

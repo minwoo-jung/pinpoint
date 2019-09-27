@@ -268,6 +268,16 @@ public class RepositoryServiceImpl implements RepositoryService {
             throw new UnknownRepositoryException(organizationName);
         }
         final String hbaseNamespace = organizationInfo.getHbaseNamespace();
-        return pinpointDataService.getAllApplicationNames(hbaseNamespace);
+        return pinpointDataService.getApplicationNames(hbaseNamespace);
+    }
+
+    @Override
+    public List<String> getAgentIds(String organizationName, String applicationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String hbaseNamespace = organizationInfo.getHbaseNamespace();
+        return pinpointDataService.getAgentIds(hbaseNamespace, applicationName);
     }
 }
