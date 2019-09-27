@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NAVER Corp.
+ * Copyright 2019 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.profiler.context.module;
 
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
+import com.navercorp.pinpoint.bootstrap.config.TransportModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +33,10 @@ public class NaverApplicationContextModuleFactory implements ModuleFactory {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static final String GRPC_MODULE = "GRPC";
-    public static final String THRIFT_MODULE = "THRIFT";
-
     @Override
     public Module newModule(AgentOption agentOption) {
+        logger.info("configure {}", this.getClass().getSimpleName());
+
         final Module config = new ConfigModule(agentOption);
         final Module pluginModule = new PluginModule();
         final Module applicationContextModule = new ApplicationContextModule();
@@ -49,12 +49,12 @@ public class NaverApplicationContextModuleFactory implements ModuleFactory {
 
     private Module newRpcModule(AgentOption agentOption) {
         ProfilerConfig profilerConfig = agentOption.getProfilerConfig();
-        final String transportModule = profilerConfig.getTransportModule();
-        if (GRPC_MODULE.equalsIgnoreCase(transportModule)) {
+        final TransportModule transportModule = profilerConfig.getTransportModule();
+        if (TransportModule.GRPC == transportModule) {
             logger.info("load GrpcModule");
             return new NaverSecurityGrpcModule(profilerConfig);
         }
-        if (THRIFT_MODULE.equalsIgnoreCase(transportModule)) {
+        if (TransportModule.THRIFT == transportModule) {
             logger.info("load ThriftModule");
             return new NaverRpcModule(profilerConfig);
         }

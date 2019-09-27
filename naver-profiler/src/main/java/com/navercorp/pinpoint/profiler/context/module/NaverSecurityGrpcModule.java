@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,6 +54,8 @@ import com.google.inject.name.Names;
 import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.NameResolverProvider;
 import io.netty.util.internal.PlatformDependent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -64,6 +66,8 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class NaverSecurityGrpcModule extends PrivateModule {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final ProfilerConfig profilerConfig;
 
     public NaverSecurityGrpcModule(ProfilerConfig profilerConfig) {
@@ -72,6 +76,8 @@ public class NaverSecurityGrpcModule extends PrivateModule {
 
     @Override
     protected void configure() {
+        logger.info("configure {}", this.getClass().getSimpleName());
+
         bind(GrpcTransportConfig.class).toProvider(GrpcTransportConfigProvider.class).in(Scopes.SINGLETON);
         // dns executor
         bind(ExecutorService.class).toProvider(DnsExecutorServiceProvider.class).in(Scopes.SINGLETON);

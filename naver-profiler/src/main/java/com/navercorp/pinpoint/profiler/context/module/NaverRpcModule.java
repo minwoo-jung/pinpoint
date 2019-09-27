@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NAVER Corp.
+ * Copyright 2019 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,15 @@ import com.google.inject.PrivateModule;
 import com.google.inject.Scopes;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.util.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Taejin Koo
  */
 public class NaverRpcModule extends PrivateModule {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ProfilerConfig profilerConfig;
 
     public NaverRpcModule(ProfilerConfig profilerConfig) {
@@ -63,6 +66,7 @@ public class NaverRpcModule extends PrivateModule {
 
     @Override
     protected void configure() {
+        logger.info("configure {}", this.getClass().getSimpleName());
         Key<CommandDispatcher> commandDispatcher = Key.get(CommandDispatcher.class);
         bind(commandDispatcher).toProvider(CommandDispatcherProvider.class).in(Scopes.SINGLETON);
         expose(commandDispatcher);
