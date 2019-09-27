@@ -51,6 +51,20 @@
         <property name="failFast" value="true"/>
     </bean>
 
+    <bean id="statisticsSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="statisticsDataSource"/>
+        <!-- mybatis basic config -->
+        <property name="configLocation" value="classpath:/mybatis/statistics-config.xml"/>
+        <!-- setting the location of mapper -->
+        <property name="mapperLocations">
+            <array>
+                <value>classpath*:mapper/StatisticsMapper.xml</value>
+            </array>
+        </property>
+        <!-- set "true" in order to catch the errors of declaration of statement more quickly -->
+        <property name="failFast" value="true"/>
+    </bean>
+
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" ref="sqlSessionFactory"/>
     </bean>
@@ -58,6 +72,11 @@
     <bean id="metaDataSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" ref="metaDataSqlSessionFactory"/>
     </bean>
+
+    <bean id="statisticsSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="statisticsSqlSessionFactory"/>
+    </bean>
+
 
     <mybatis:scan base-package="com.navercorp.pinpoint.manager.dao.mybatis" factory-ref="metaDataSqlSessionFactory"/>
 
