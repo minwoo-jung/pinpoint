@@ -89,6 +89,11 @@ public class RepositoryController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping(value = "/{organizationName}/applications")
+    public List<String> getApplications(@PathVariable("organizationName") String organizationName) {
+        return repositoryService.getApplicationNames(organizationName);
+    }
+
     @GetMapping(value = "/{organizationName}/admins")
     public List<AdminInfo> getAdmins(@PathVariable("organizationName") String organizationName) {
         RepositoryInfoDetail repositoryInfo = repositoryService.getDetailedRepositoryInfo(organizationName);

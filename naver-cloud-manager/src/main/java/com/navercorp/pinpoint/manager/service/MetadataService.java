@@ -27,6 +27,8 @@ import java.util.List;
  */
 public interface MetadataService {
 
+    List<String> getAllOrganizationNames();
+
     List<RepositoryInfo> getAllRepositoryInfo();
 
     RepositoryInfo getRepositoryInfo(String organizationName);

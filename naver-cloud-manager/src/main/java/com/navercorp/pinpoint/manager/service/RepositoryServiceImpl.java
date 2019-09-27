@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.manager.service;
 
-import com.navercorp.pinpoint.common.util.CollectionUtils;
 import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.manager.domain.mysql.metadata.RepositoryInfo;
 import com.navercorp.pinpoint.manager.exception.database.DatabaseManagementException;
@@ -33,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,15 +54,19 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     private final NamespaceGenerationService namespaceGenerationService;
 
+    private final PinpointDataService pinpointDataService;
+
     @Autowired
     public RepositoryServiceImpl(MetadataService metadataService,
                                  DatabaseManagementService databaseManagementService,
                                  HbaseManagementService hbaseManagementService,
-                                 NamespaceGenerationService namespaceGenerationService) {
+                                 NamespaceGenerationService namespaceGenerationService,
+                                 PinpointDataService pinpointDataService) {
         this.metadataService = Objects.requireNonNull(metadataService, "metadataService must not be null");
         this.databaseManagementService = Objects.requireNonNull(databaseManagementService, "databaseManagementService must not be null");
         this.hbaseManagementService = Objects.requireNonNull(hbaseManagementService, "hbaseManagementService must not be null");
         this.namespaceGenerationService = Objects.requireNonNull(namespaceGenerationService, "namespaceGenerationService must not be null");
+        this.pinpointDataService = Objects.requireNonNull(pinpointDataService, "pinpointDataService must not be null");
     }
 
     @Override
@@ -87,11 +89,7 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     @Override
     public List<RepositoryInfoDetail> getDetailedRepositoryInfos() {
-        List<RepositoryInfo> repositoryInfos = metadataService.getAllRepositoryInfo();
-        if (CollectionUtils.isEmpty(repositoryInfos)) {
-            return Collections.emptyList();
-        }
-        return repositoryInfos.stream()
+        return metadataService.getAllRepositoryInfo().stream()
                 .map(RepositoryInfoDetail::fromRepositoryInfo)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -261,5 +259,15 @@ public class RepositoryServiceImpl implements RepositoryService {
         } catch (HbaseManagementException e) {
             throw new InvalidRepositoryStateException(organizationName, e.getMessage(), e);
         }
+    }
+
+    @Override
+    public List<String> getApplicationNames(String organizationName) {
+        PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
+        if (organizationInfo == null) {
+            throw new UnknownRepositoryException(organizationName);
+        }
+        final String hbaseNamespace = organizationInfo.getHbaseNamespace();
+        return pinpointDataService.getAllApplicationNames(hbaseNamespace);
     }
 }

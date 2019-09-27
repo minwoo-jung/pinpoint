@@ -15,7 +15,6 @@
  */
 package com.navercorp.pinpoint.manager.service;
 
-import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
 import com.navercorp.pinpoint.manager.vo.hbase.HbaseInfo;
 import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoDetail;
@@ -56,5 +55,7 @@ public interface RepositoryService {
     void updateHbase(String organizationName);
 
     void deleteHbase(String organizationName);
+
+    List<String> getApplicationNames(String organizationName);
 
 }

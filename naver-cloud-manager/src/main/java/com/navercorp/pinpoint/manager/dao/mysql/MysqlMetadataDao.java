@@ -116,6 +116,11 @@ public class MysqlMetadataDao implements MetadataDao {
     }
 
     @Override
+    public List<String> selectAllOrganizationNames() {
+        return sqlSessionTemplate.selectList(NAMESPACE + "selectAllOrganizationNames");
+    }
+
+    @Override
     public List<RepositoryInfo> selectAllRepositoryInfo() {
         return sqlSessionTemplate.selectList(NAMESPACE + "selectAllRepositoryInfo");
     }

@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.manager.controller;
 
+import com.navercorp.pinpoint.manager.service.MetadataService;
 import com.navercorp.pinpoint.manager.service.RepositoryService;
 import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
 import com.navercorp.pinpoint.manager.vo.hbase.HbaseInfo;
@@ -45,9 +46,17 @@ public class AdminController {
 
     private final RepositoryService repositoryService;
 
+    private final MetadataService metadataService;
+
     @Autowired
-    public AdminController(RepositoryService repositoryService) {
+    public AdminController(RepositoryService repositoryService, MetadataService metadataService) {
         this.repositoryService = Objects.requireNonNull(repositoryService, "repositoryService must not be null");
+        this.metadataService = Objects.requireNonNull(metadataService, "metadataService must not be null");
+    }
+
+    @GetMapping(value = "/organizations")
+    public List<String> getAllOrganizations() {
+        return metadataService.getAllOrganizationNames();
     }
 
     @GetMapping(value = "/repositories")

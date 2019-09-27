@@ -46,6 +46,8 @@ public interface MetadataDao {
 
     boolean updatePaaSOrganizationInfo(PaaSOrganizationInfo paaSOrganizationInfo);
 
+    List<String> selectAllOrganizationNames();
+
     List<RepositoryInfo> selectAllRepositoryInfo();
 
     RepositoryInfo selectRepositoryInfo(String organizationName);

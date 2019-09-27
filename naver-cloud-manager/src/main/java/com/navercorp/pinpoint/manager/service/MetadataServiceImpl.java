@@ -31,6 +31,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -53,8 +54,21 @@ public class MetadataServiceImpl implements MetadataService {
     }
 
     @Override
+    public List<String> getAllOrganizationNames() {
+        List<String> organizationNames = metadataDao.selectAllOrganizationNames();
+        if (organizationNames == null) {
+            return Collections.emptyList();
+        }
+        return organizationNames;
+    }
+
+    @Override
     public List<RepositoryInfo> getAllRepositoryInfo() {
-        return metadataDao.selectAllRepositoryInfo();
+        List<RepositoryInfo> repositoryInfos = metadataDao.selectAllRepositoryInfo();
+        if (repositoryInfos == null) {
+            return Collections.emptyList();
+        }
+        return repositoryInfos;
     }
 
     @Override

@@ -54,6 +54,12 @@
     </delete>
 
 
+    <select id="selectAllOrganizationNames" resultType="string">
+        SELECT org.organization
+        FROM metadata.paas_organization AS org
+        ORDER BY org.number ASC
+    </select>
+
     <select id="selectAllRepositoryInfo" resultType="RepositoryInfo">
         SELECT org.organization AS organizationName,
                db.database_name AS databaseName,
