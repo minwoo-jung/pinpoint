@@ -15,11 +15,18 @@
  */
 package com.navercorp.pinpoint.manager.vo;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author minwoo.jung
  */
 public class SpanCount {
-    private String timestamp;
+
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    private long timestamp;
     private long count;
 
     public long getCount() {
@@ -30,11 +37,14 @@ public class SpanCount {
         this.count = count;
     }
 
-    public String getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setTimestamp(String timestampString) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT);
+        Date parsedDate = format.parse(timestampString);
+        this.timestamp = parsedDate.getTime();
+
     }
 }
