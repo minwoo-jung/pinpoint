@@ -1,13 +1,13 @@
 <div class="table-wrapper mat-elevation-z8">
     <table mat-table [dataSource]="data">
-        <ng-container matColumnDef="x">
+        <ng-container matColumnDef="timestamp">
             <th mat-header-cell *matHeaderCellDef>Date & Time</th>
-            <td mat-cell *matCellDef="let element">{{element.x | date: 'yyyy.MM.dd H:mm:ss'}}</td>
+            <td mat-cell *matCellDef="let element">{{element.timestamp | date: 'yyyy.MM.dd H:mm'}}</td>
             <td mat-footer-cell *matFooterCellDef>Total</td>
         </ng-container>
-        <ng-container matColumnDef="y">
+        <ng-container matColumnDef="count">
             <th mat-header-cell *matHeaderCellDef>Count</th>
-            <td mat-cell *matCellDef="let element">{{element.y | number}}</td>
+            <td mat-cell *matCellDef="let element">{{element.count | number}}</td>
             <td mat-footer-cell *matFooterCellDef >{{getTotalCount() | number}}</td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>

@@ -10,11 +10,11 @@ import { Span } from 'app/service/app-data.service';
 export class TableComponent implements OnInit {
     @Input() data: Span[];
 
-    displayedColumns = ['x', 'y'];
+    displayedColumns = ['timestamp', 'count'];
 
     constructor() {}
     ngOnInit() {}
     getTotalCount(): number {
-        return this.data.reduce((acc: number, {y}: Span) => y + acc, 0);
+        return this.data.reduce((acc: number, {count}: Span) => count + acc, 0);
     }
 }

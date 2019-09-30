@@ -54,7 +54,7 @@ export class ChartComponent implements OnInit, OnChanges, AfterViewInit {
                     tick: {
                         count: 6,
                         format: (time: Date) => {
-                            return format(time, 'yyyy.MM.dd') + '\n' + format(time, 'H:mm:ss');
+                            return format(time, 'yyyy.MM.dd') + '\n' + format(time, 'H:mm');
                         }
                     },
                     padding: {
@@ -94,8 +94,8 @@ export class ChartComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     private makeChartData(data: Span[]): PrimitiveArray[] {
-        return data.reduce(([xArr, countArr]: PrimitiveArray[], {x, y}: Span) => {
-            return [[...xArr, x], [...countArr, y]];
+        return data.reduce(([xArr, countArr]: PrimitiveArray[], {timestamp, count}: Span) => {
+            return [[...xArr, timestamp], [...countArr, count]];
         }, [['x'], ['count']]);
     }
 

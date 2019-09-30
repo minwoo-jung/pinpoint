@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 
 export interface Span {
-    x: number; // time
-    y: number; // count
+    timestamp: number;
+    count: number;
 }
 
 @Injectable({
