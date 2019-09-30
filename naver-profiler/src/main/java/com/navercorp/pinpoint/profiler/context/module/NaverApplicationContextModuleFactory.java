@@ -56,10 +56,10 @@ public class NaverApplicationContextModuleFactory implements ModuleFactory {
         }
         if (TransportModule.THRIFT == transportModule) {
             logger.info("load ThriftModule");
-            return new NaverRpcModule(profilerConfig);
+            return new ThriftModule();
         }
         logger.info("load ThriftModule");
-        return new NaverRpcModule(profilerConfig);
+        return new ThriftModule();
     }
 
 }
