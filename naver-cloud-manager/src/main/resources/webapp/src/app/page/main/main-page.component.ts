@@ -44,7 +44,7 @@ export class MainPageComponent implements OnInit {
     onSelectOrg(org: string): void {
         this.selectedOrg = org;
         this.appList$ = this.appDataService.getAppList({
-            organization: org
+            organizationName: org
         });
     }
 
@@ -56,8 +56,8 @@ export class MainPageComponent implements OnInit {
         this.selectedApp = app;
         this.appInteractionService.onAppSelect(app);
         this.agentList$ = app ? this.appDataService.getAgentList({
-            organization: this.selectedOrg,
-            application: app
+            organizationName: this.selectedOrg,
+            applicationName: app
         }) : of(null);
     }
 
@@ -92,16 +92,16 @@ export class MainPageComponent implements OnInit {
 
     private getSpanCountObs$(): Observable<Span[]> {
         const [from, to] = this.selectedPeriod;
-        const baseParams = {organization: this.selectedOrg, from, to};
+        const baseParams = {organizationName: this.selectedOrg, from, to};
 
         return this.selectedAgent ? this.appDataService.getSpanCountByAll({
             ...baseParams,
-            application: this.selectedApp,
-            agent: this.selectedAgent,
+            applicationId: this.selectedApp,
+            agentId: this.selectedAgent,
             timeUnit: 'min'
         }) : this.selectedApp ? this.appDataService.getSpanCountByOrgAndApp({
             ...baseParams,
-            application: this.selectedApp,
+            applicationId: this.selectedApp,
             timeUnit: 'hour'
         }) : this.appDataService.getSpanCountByOrg({
             ...baseParams,
