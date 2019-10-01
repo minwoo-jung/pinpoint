@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.grpc.security.client;
 
 import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.grpc.security.SecurityConstants;
+import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityMetadata;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -47,7 +47,7 @@ public class AuthorizationTokenInterceptor implements ClientInterceptor {
         final ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT> forwardingClientCall = new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(clientCall) {
             @Override
             public void start(Listener<RespT> responseListener, Metadata headers) {
-                headers.put(SecurityConstants.AUTHORIZATION_TOKEN, token);
+                GrpcSecurityMetadata.setAuthToken(headers, token);
                 super.start(responseListener, headers);
             }
 

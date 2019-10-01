@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.grpc.security;
-
-import com.navercorp.pinpoint.grpc.security.server.SecurityContext;
-
-import io.grpc.Attributes;
-import io.grpc.Metadata;
+package com.navercorp.pinpoint.grpc.security.server;
 
 /**
  * @author Taejin Koo
  */
-public class SecurityConstants {
+public enum AuthState {
 
-    public static final Metadata.Key<String> AUTHENTICATION_KEY = Metadata.Key.of("pinpointAuthenticationKey", Metadata.ASCII_STRING_MARSHALLER);
-
-    public static final Metadata.Key<String> AUTHORIZATION_TOKEN = Metadata.Key.of("pinpointAuthorizationToken", Metadata.ASCII_STRING_MARSHALLER);
-
-    public static final Attributes.Key<SecurityContext> SECURITY_CONTEXT = Attributes.Key.create("pinpointSecurityContext");
+    NONE,
+    FAIL,
+    SUCCESS,
+    EXPIRED;
 
 }

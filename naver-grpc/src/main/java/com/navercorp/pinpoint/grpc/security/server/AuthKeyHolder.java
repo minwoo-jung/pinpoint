@@ -16,11 +16,31 @@
 
 package com.navercorp.pinpoint.grpc.security.server;
 
+import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.common.util.StringUtils;
+
 /**
  * @author Taejin Koo
  */
-public interface SecurityContext {
+public class AuthKeyHolder {
 
-    SecurityState getState();
+    private final String key;
+
+    public AuthKeyHolder(String key) {
+        Assert.isTrue(StringUtils.hasLength(key), "key must not be empty");
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AuthKeyHolder{");
+        sb.append("key='").append(key).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 
 }

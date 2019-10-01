@@ -1,0 +1,2 @@
+test,navercorp,pinpoint,default
+authTest!@#123,navercorp2,pinpoint,default

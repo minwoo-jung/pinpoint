@@ -19,11 +19,8 @@ package com.navercorp.pinpoint.grpc.security.server;
 /**
  * @author Taejin Koo
  */
-public enum SecurityState {
+public interface AuthContext {
 
-    BEFORE,
-    FAIL,
-    SUCCESS,
-    EXPIRED
+    AuthState getState();
 
 }

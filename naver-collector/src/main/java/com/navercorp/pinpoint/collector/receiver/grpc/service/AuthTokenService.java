@@ -95,6 +95,16 @@ public class AuthTokenService extends AuthGrpc.AuthImplBase {
         }
     }
 
+    public boolean authenticate(String licenseKey) {
+        PaaSOrganizationKey paaSOrganizationKey = namespaceService.selectPaaSOrganizationkey(licenseKey);
+        return paaSOrganizationKey != null;
+    }
+
+    public boolean authorization(String tokenKey, TokenType tokenType) {
+        Token token = tokenService.getAndRemove(tokenKey, tokenType);
+        return token != null;
+    }
+
     private void doResponse(StreamObserver<PCmdGetTokenResponse> responseObserver, PTokenResponseCode responseCode) {
         doResponse(responseObserver, responseCode, responseCode.name(), null);
     }

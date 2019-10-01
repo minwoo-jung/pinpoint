@@ -16,32 +16,26 @@
 
 package com.navercorp.pinpoint.grpc.security.server;
 
+import com.navercorp.pinpoint.common.util.Assert;
+
 import io.grpc.Attributes;
-import io.grpc.ServerTransportFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Taejin Koo
  */
-public class SecurityServerTransportFilter extends ServerTransportFilter {
+public class GrpcSecurityAttribute {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Attributes.Key<AuthContext> AUTH_CONTEXT_ATTRIBUTE = Attributes.Key.create("pinpointAuthContext");
 
-    @Override
-    public Attributes transportReady(final Attributes attributes) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Ready attributes={}", attributes);
-        }
-
-        return GrpcSecurityAttribute.setAuthContext(attributes);
+    public static AuthContext getAuthContext(Attributes attributes) {
+        Assert.requireNonNull(attributes, "attributes must not be null");
+        return attributes.get(AUTH_CONTEXT_ATTRIBUTE);
     }
 
-    @Override
-    public void transportTerminated(Attributes transportAttrs) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Terminated attributes={}", transportAttrs);
-        }
+    public static Attributes setAuthContext(Attributes attributes) {
+        Attributes.Builder attributesBuilder = attributes.toBuilder();
+        attributesBuilder.set(AUTH_CONTEXT_ATTRIBUTE, new DefaultAuthStateContext());
+        return attributesBuilder.build();
     }
 
 }

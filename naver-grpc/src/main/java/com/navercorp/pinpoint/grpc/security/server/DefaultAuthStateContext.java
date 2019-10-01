@@ -21,24 +21,24 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author Taejin Koo
  */
-class DefaultSecurityContext implements SecurityContext {
+public class DefaultAuthStateContext implements AuthContext {
 
-    private final AtomicReference<SecurityState> currentState = new AtomicReference<SecurityState>(SecurityState.BEFORE);
+    private final AtomicReference<AuthState> currentState = new AtomicReference<AuthState>(AuthState.NONE);
 
-    boolean toSuccess() {
-        return currentState.compareAndSet(SecurityState.BEFORE, SecurityState.SUCCESS);
-    }
+    public boolean changeState(AuthState nextState) {
+        if (nextState == AuthState.SUCCESS) {
+            return currentState.compareAndSet(AuthState.NONE, nextState);
+        } else if (nextState == AuthState.FAIL) {
+            return currentState.compareAndSet(AuthState.NONE, nextState);
+        } else if (nextState == AuthState.EXPIRED) {
+            return currentState.compareAndSet(AuthState.SUCCESS, nextState);
+        }
 
-    boolean toFail() {
-        return currentState.compareAndSet(SecurityState.BEFORE, SecurityState.FAIL);
-    }
-
-    boolean toExpired() {
-        return currentState.compareAndSet(SecurityState.SUCCESS, SecurityState.EXPIRED);
+        throw new IllegalArgumentException("do not support nextState:" + nextState);
     }
 
     @Override
-    public SecurityState getState() {
+    public AuthState getState() {
         return currentState.get();
     }
 

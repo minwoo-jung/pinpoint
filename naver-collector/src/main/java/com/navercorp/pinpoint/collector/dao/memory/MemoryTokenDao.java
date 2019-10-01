@@ -40,7 +40,12 @@ public class MemoryTokenDao implements TokenDao {
 
     @Override
     public Token getAndRemove(String tokenKey) {
-        return tokenMap.remove(tokenKey);
+        try {
+            return tokenMap.remove(tokenKey);
+        } catch (Exception e) {
+            // throws exception if tokenKey is not exist
+        }
+        return null;
     }
 
 }
