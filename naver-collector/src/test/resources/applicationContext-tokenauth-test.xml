@@ -15,8 +15,6 @@
             base-package="com.navercorp.pinpoint.collector.dao.memory,
                         com.navercorp.pinpoint.collector.receiver.grpc"/>
 
-    <bean id="createTokenHandler" class="com.navercorp.pinpoint.collector.handler.thrift.ThriftCreateTokenHandler"/>
-
     <bean id="tokenConfig" class="com.navercorp.pinpoint.collector.service.TokenConfig"/>
     <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryMetadataDao" />
 

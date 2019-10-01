@@ -26,7 +26,6 @@
     <context:component-scan
             base-package="com.navercorp.pinpoint.collector.dao.memory" />
 
-    <bean id="createTokenHandler" class="com.navercorp.pinpoint.collector.handler.thrift.ThriftCreateTokenHandler"/>
     <bean id="tokenConfig" class="com.navercorp.pinpoint.collector.service.TokenConfig" />
     <bean id="tokenSevice" class="com.navercorp.pinpoint.collector.service.TokenServiceImpl" />
     <bean id="namespaceService" class="com.navercorp.pinpoint.collector.service.NamespaceServiceImpl" />
