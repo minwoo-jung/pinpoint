@@ -18,8 +18,6 @@ package com.navercorp.pinpoint.profiler.context.module;
 
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.common.util.JvmUtils;
-import com.navercorp.pinpoint.common.util.JvmVersion;
 import com.navercorp.pinpoint.grpc.client.HeaderFactory;
 import com.navercorp.pinpoint.grpc.trace.PSpan;
 import com.navercorp.pinpoint.grpc.trace.PSpanChunk;
@@ -53,11 +51,9 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.NameResolverProvider;
-import io.netty.util.internal.PlatformDependent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -134,34 +130,8 @@ public class NaverSecurityGrpcModule extends PrivateModule {
         bind(rpcModuleLifeCycleKey).to(GrpcModuleLifeCycle.class).in(Scopes.SINGLETON);
         expose(rpcModuleLifeCycleKey);
 
-        setNettyReflectionSetAccessible();
+        NettyPlatformDependent nettyPlatformDependent = new NettyPlatformDependent(profilerConfig, System.getProperties());
+        nettyPlatformDependent.setup();
     }
-
-    private void setNettyReflectionSetAccessible() {
-        boolean tryReflectionSetAccessible = profilerConfig.readBoolean(GrpcTransportConfig.KEY_PROFILER_CONFIG_NETTY_TRY_REFLECTION_SET_ACCESSIBLE,
-                GrpcTransportConfig.DEFAULT_NETTY_SYSTEM_PROPERTY_TRY_REFLECTIVE_SET_ACCESSIBLE);
-
-        if (tryReflectionSetAccessible && JvmUtils.getVersion().onOrAfter(JvmVersion.JAVA_9)) {
-            // netty system property `io.netty.tryReflectionSetAccessible`
-            String keySystemProperty = GrpcTransportConfig.SYSTEM_PROPERTY_NETTY_TRY_REFLECTION_SET_ACCESSIBLE;
-
-            final Properties properties = System.getProperties();
-            final boolean hasValue = properties.containsKey(keySystemProperty);
-
-            final String originalTryReflectionSetAccessible = properties.getProperty(keySystemProperty, null);
-            properties.put(keySystemProperty, String.valueOf(tryReflectionSetAccessible));
-
-            // for preload
-            PlatformDependent.addressSize();
-
-            if (!hasValue) {
-                properties.remove(keySystemProperty);
-            } else {
-                properties.put(keySystemProperty, originalTryReflectionSetAccessible);
-            }
-        }
-
-    }
-
 
 }
