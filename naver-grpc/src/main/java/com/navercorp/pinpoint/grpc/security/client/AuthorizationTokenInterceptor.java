@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ public class AuthorizationTokenInterceptor implements ClientInterceptor {
 
         // TokenProvider
         final ClientCall<ReqT, RespT> clientCall = next.newCall(method, callOptions);
-        final ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT> forwardingClientCall = new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(clientCall) {
+        final ClientCall<ReqT, RespT> forwardingClientCall = new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(clientCall) {
             @Override
             public void start(Listener<RespT> responseListener, Metadata headers) {
                 GrpcSecurityMetadata.setAuthToken(headers, token);

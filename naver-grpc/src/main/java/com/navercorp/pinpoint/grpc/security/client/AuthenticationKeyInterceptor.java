@@ -23,7 +23,7 @@ import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
 import io.grpc.ClientInterceptor;
-import io.grpc.ForwardingClientCall;
+import io.grpc.ForwardingClientCall.SimpleForwardingClientCall;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class AuthenticationKeyInterceptor implements ClientInterceptor {
         }
 
         final ClientCall<ReqT, RespT> clientCall = next.newCall(method, callOptions);
-        final ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT> forwardingClientCall = new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(clientCall) {
+        final ClientCall<ReqT, RespT> forwardingClientCall = new SimpleForwardingClientCall<ReqT, RespT>(clientCall) {
             @Override
             public void start(Listener<RespT> responseListener, Metadata headers) {
                 GrpcSecurityMetadata.setAuthKey(headers, authenticationKey);

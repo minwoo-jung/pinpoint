@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NAVER Corp.
+ * Copyright 2019 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.collector.receiver.thrift.tcp;
 
+import com.navercorp.pinpoint.common.util.IOUtils;
 import com.navercorp.pinpoint.io.request.Message;
 import com.navercorp.pinpoint.rpc.packet.Packet;
 import com.navercorp.pinpoint.rpc.packet.RequestPacket;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -71,12 +73,8 @@ public class TCPReceiverBOTest {
 
     @After
     public void tearDown() throws Exception {
-        if (this.os != null) {
-            os.close();
-        }
-        if (this.is != null) {
-            is.close();
-        }
+        IOUtils.closeQuietly(this.os);
+        IOUtils.closeQuietly(this.is);
         if (socket != null) {
             socket.close();
         }
