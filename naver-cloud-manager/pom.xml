@@ -27,6 +27,10 @@
         <mybatis.spring.version>1.3.2</mybatis.spring.version>
         <mybatis.spring.boot.version>1.3.2</mybatis.spring.boot.version>
         <spring.profiles.active>${env}</spring.profiles.active>
+        <plugin.frontend.verison>1.6</plugin.frontend.verison>
+        <plugin.frontend.node.verison>v10.16.3</plugin.frontend.node.verison>
+        <plugin.frontend.npm.verison>6.9.0</plugin.frontend.npm.verison>
+        <plugin.frontend.node.install.dir>${basedir}/node_install/node-${plugin.frontend.node.verison}</plugin.frontend.node.install.dir>
     </properties>
 
     <dependencyManagement>
@@ -202,6 +206,48 @@
                         <goals>
                             <goal>repackage</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${plugin.frontend.verison}</version>
+                <configuration>
+                    <installDirectory>${plugin.frontend.node.install.dir}</installDirectory>
+                    <workingDirectory>${basedir}/src/main/resources/webapp</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${plugin.frontend.node.verison}</nodeVersion>
+                            <npmVersion>${plugin.frontend.npm.verison}</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm run build v2</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build:real</arguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
