@@ -24,7 +24,7 @@
 
     <bean id="namespaceService" class="com.navercorp.pinpoint.collector.service.NamespaceServiceImpl"/>
 
-    <bean id="authTokenService" class="com.navercorp.pinpoint.collector.receiver.grpc.service.AuthTokenService"/>
+    <bean id="authTokenService" class="com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService"/>
 
     <bean id="authenticationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.AuthenticationInterceptor"/>
     <bean id="authorizationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.AuthorizationInterceptor"/>

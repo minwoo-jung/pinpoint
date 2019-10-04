@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.collector.receiver.grpc.security;
 
-import com.navercorp.pinpoint.collector.receiver.grpc.service.AuthTokenService;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService;
 import com.navercorp.pinpoint.grpc.security.server.AuthContext;
 import com.navercorp.pinpoint.grpc.security.server.AuthState;
 import com.navercorp.pinpoint.grpc.security.server.DefaultAuthStateContext;

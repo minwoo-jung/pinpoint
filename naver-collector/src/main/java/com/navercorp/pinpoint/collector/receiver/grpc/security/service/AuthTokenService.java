@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.collector.receiver.grpc.service;
+package com.navercorp.pinpoint.collector.receiver.grpc.security.service;
 
-import com.google.protobuf.ByteString;
-import com.google.protobuf.BytesValue;
-import com.google.protobuf.StringValue;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.AuthTokenException;
 import com.navercorp.pinpoint.collector.service.NamespaceService;
 import com.navercorp.pinpoint.collector.service.TokenService;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
@@ -26,13 +24,18 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
 import com.navercorp.pinpoint.collector.vo.TokenType;
-import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.grpc.auth.AuthGrpc;
+import com.navercorp.pinpoint.grpc.auth.PAuthCode;
+import com.navercorp.pinpoint.grpc.auth.PAuthorizationToken;
 import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenRequest;
 import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenResponse;
-import com.navercorp.pinpoint.grpc.auth.PTokenResponseCode;
+import com.navercorp.pinpoint.grpc.auth.PSecurityResult;
 import com.navercorp.pinpoint.grpc.auth.PTokenType;
+import com.navercorp.pinpoint.grpc.security.server.AuthKeyHolder;
+import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
 import com.navercorp.pinpoint.grpc.server.ServerContext;
+
+import com.google.protobuf.StringValue;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,37 +62,42 @@ public class AuthTokenService extends AuthGrpc.AuthImplBase {
 
     @Override
     public void getToken(PCmdGetTokenRequest request, StreamObserver<PCmdGetTokenResponse> responseObserver) {
-        // do not recrod request for security
+        // do not record request for security
         logger.info("getToken() started");
 
         try {
             if (!verifyRequest(request)) {
-                doResponse(responseObserver, PTokenResponseCode.BAD_REQUEST);
-                return;
+                throw new AuthTokenException(PAuthCode.BAD_REQUEST);
             }
 
-            String licenseKey = request.getLicenseKey().getValue().toStringUtf8();
-            PaaSOrganizationKey paasKey = namespaceService.selectPaaSOrganizationkey(licenseKey);
+            AuthKeyHolder authKeyHolder = GrpcSecurityContext.getAuthKeyHolder();
+            if (authKeyHolder == null || authKeyHolder.getKey() == null) {
+                throw new AuthTokenException(PAuthCode.INTERNAL_SERVER_ERROR);
+            }
+            String securityKey = authKeyHolder.getKey();
+
+            PaaSOrganizationKey paasKey = namespaceService.selectPaaSOrganizationkey(securityKey);
             if (paasKey == null) {
-                doResponse(responseObserver, PTokenResponseCode.UNAUTHORIZED);
-                return;
+                throw new AuthTokenException(PAuthCode.UNAUTHORIZED);
             }
 
             String organization = paasKey.getOrganization();
             PaaSOrganizationInfo organizationInfo = namespaceService.selectPaaSOrganizationInfo(organization);
             if (organizationInfo == null || !verifyPaaSOrganizationInfo(organizationInfo)) {
-                doResponse(responseObserver, PTokenResponseCode.INTERNAL_SERVER_ERROR);
-                return;
+                throw new AuthTokenException(PAuthCode.INTERNAL_SERVER_ERROR);
             }
 
             InetSocketAddress remoteAddress = ServerContext.getTransportMetadata().getRemoteAddress();
 
             TokenCreateRequest tokenCreateRequest = new TokenCreateRequest(organizationInfo, TokenType.valueOf(request.getTokenType().name()), remoteAddress.getHostString());
             Token token = tokenService.create(tokenCreateRequest);
-            doResponse(responseObserver, ByteString.copyFromUtf8(token.getKey()));
+            doResponse(responseObserver, token.getKey());
+        } catch (AuthTokenException e) {
+            logger.warn("Failed to handle createToken. message:{}", e.getMessage(), e);
+            doResponse(responseObserver, e.getAuthCode());
         } catch (Exception e) {
             logger.warn("Failed to handle createToken. message:{}", e.getMessage(), e);
-            doResponse(responseObserver, PTokenResponseCode.INTERNAL_SERVER_ERROR);
+            doResponse(responseObserver, PAuthCode.INTERNAL_SERVER_ERROR);
         } finally {
             responseObserver.onCompleted();
         }
@@ -105,31 +113,40 @@ public class AuthTokenService extends AuthGrpc.AuthImplBase {
         return token != null;
     }
 
-    private void doResponse(StreamObserver<PCmdGetTokenResponse> responseObserver, PTokenResponseCode responseCode) {
-        doResponse(responseObserver, responseCode, responseCode.name(), null);
+    private PSecurityResult createResult(PAuthCode code) {
+        return createResult(code, code.name());
     }
 
-    private void doResponse(StreamObserver<PCmdGetTokenResponse> responseObserver, ByteString tokenValue) {
-        doResponse(responseObserver, PTokenResponseCode.OK, PTokenResponseCode.OK.name(), tokenValue);
+    private PSecurityResult createResult(PAuthCode code, String message) {
+        PSecurityResult.Builder builder = PSecurityResult.newBuilder();
+        builder.setCode(code);
+        builder.setMessage(StringValue.of(message));
+        return builder.build();
     }
 
-    private void doResponse(StreamObserver<PCmdGetTokenResponse> responseObserver, PTokenResponseCode responseCode, String message, ByteString tokenValue) {
+    private void doResponse(StreamObserver<PCmdGetTokenResponse> responseObserver, PAuthCode authCode) {
+        doResponse(responseObserver, authCode, null);
+    }
+
+    private void doResponse(StreamObserver<PCmdGetTokenResponse> responseObserver, String tokenValue) {
+        doResponse(responseObserver, PAuthCode.OK, tokenValue);
+    }
+
+    private void doResponse(StreamObserver<PCmdGetTokenResponse> responseObserver, PAuthCode authCode, String tokenValue) {
+        PSecurityResult result = createResult(authCode);
+
         PCmdGetTokenResponse.Builder responseBuilder = PCmdGetTokenResponse.newBuilder();
-        responseBuilder.setCode(responseCode);
-        responseBuilder.setMessage(StringValue.of(message));
+        responseBuilder.setResult(result);
+
         if (tokenValue != null) {
-            responseBuilder.setToken(BytesValue.of(tokenValue));
+            PAuthorizationToken token = PAuthorizationToken.newBuilder().setToken(tokenValue).build();
+            responseBuilder.setAuthorizationToken(token);
         }
         responseObserver.onNext(responseBuilder.build());
     }
 
 
     private boolean verifyRequest(PCmdGetTokenRequest request) {
-        String licenseKey = request.getLicenseKey().getValue().toStringUtf8();
-        if (StringUtils.isEmpty(licenseKey)) {
-            return false;
-        }
-
         PTokenType tokenType = request.getTokenType();
         TokenType type = TokenType.valueOf(tokenType.name());
         if (type == TokenType.UNKNOWN) {

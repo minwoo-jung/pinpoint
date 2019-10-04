@@ -9,8 +9,10 @@ option java_outer_classname = "AuthProto";
 package v1;
 
 service Auth {
+
     rpc GetToken (PCmdGetTokenRequest) returns (PCmdGetTokenResponse) {
     }
+
 }
 
 enum PTokenType {
@@ -20,20 +22,31 @@ enum PTokenType {
     STAT = 2;
 }
 
-message PCmdGetTokenRequest {
-    google.protobuf.BytesValue licenseKey = 1;
-    PTokenType tokenType = 2;
-}
-
-enum PTokenResponseCode {
+enum PAuthCode {
     OK = 0;
     BAD_REQUEST = 400;
     UNAUTHORIZED = 401;
     INTERNAL_SERVER_ERROR = 500;
 }
 
-message PCmdGetTokenResponse {
-    PTokenResponseCode code = 1;
+message PSecurityResult {
+    PAuthCode code = 1;
     google.protobuf.StringValue message = 2;
-    google.protobuf.BytesValue token = 3;
+}
+
+message PAuthenticationKey {
+    string key = 1;
+}
+
+message PAuthorizationToken {
+    string token = 2;
+}
+
+message PCmdGetTokenRequest {
+    PTokenType tokenType = 1;
+}
+
+message PCmdGetTokenResponse {
+    PSecurityResult result = 1;
+    PAuthorizationToken authorizationToken = 2;
 }
