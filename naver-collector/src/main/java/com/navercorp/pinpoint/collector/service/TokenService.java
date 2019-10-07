@@ -18,7 +18,7 @@ package com.navercorp.pinpoint.collector.service;
 
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
-import com.navercorp.pinpoint.collector.vo.TokenType;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 
 /**
  * @author Taejin Koo

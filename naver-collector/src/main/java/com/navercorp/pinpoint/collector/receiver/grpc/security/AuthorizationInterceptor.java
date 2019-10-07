@@ -17,15 +17,17 @@
 package com.navercorp.pinpoint.collector.receiver.grpc.security;
 
 import com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService;
-import com.navercorp.pinpoint.collector.vo.TokenType;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 import com.navercorp.pinpoint.grpc.security.server.AuthContext;
 import com.navercorp.pinpoint.grpc.security.server.AuthState;
 import com.navercorp.pinpoint.grpc.security.server.DefaultAuthStateContext;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityAttribute;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityMetadata;
+import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
 
 import io.grpc.Attributes;
+import io.grpc.Context;
+import io.grpc.Contexts;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
@@ -54,7 +56,10 @@ public class AuthorizationInterceptor implements ServerInterceptor {
 
         AuthState authState = authContext.getState();
         if (authState == AuthState.SUCCESS) {
-            return serverCallHandler.startCall(serverCall, headers);
+            String authToken = GrpcSecurityMetadata.getAuthToken(headers);
+            Context newContext = GrpcSecurityContext.setAuthTokenHolder(authToken);
+            ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(newContext, serverCall, headers, serverCallHandler);
+            return contextPropagateInterceptor;
         } else if (authState == AuthState.FAIL) {
             SecurityException securityException = new SecurityException("authorization failed");
             throw Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException).asRuntimeException();
@@ -71,10 +76,9 @@ public class AuthorizationInterceptor implements ServerInterceptor {
             if (authorization) {
                 if (authContext instanceof DefaultAuthStateContext) {
                     boolean changed = ((DefaultAuthStateContext) authContext).changeState(AuthState.SUCCESS);
-                    if (changed) {
-                        GrpcSecurityContext.setAuthTokenHolder(authToken);
-                    }
-                    return serverCallHandler.startCall(serverCall, headers);
+                    Context newContext = GrpcSecurityContext.setAuthTokenHolder(authToken);
+                    ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(newContext, serverCall, headers, serverCallHandler);
+                    return contextPropagateInterceptor;
                 } else {
                     throw new SecurityException("InternalException : can not cast type to DefaultAuthStateContext");
                 }

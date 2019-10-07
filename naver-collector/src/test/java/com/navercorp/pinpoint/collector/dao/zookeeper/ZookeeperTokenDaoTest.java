@@ -19,7 +19,7 @@ package com.navercorp.pinpoint.collector.dao.zookeeper;
 import com.navercorp.pinpoint.collector.service.TokenConfig;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
-import com.navercorp.pinpoint.collector.vo.TokenType;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

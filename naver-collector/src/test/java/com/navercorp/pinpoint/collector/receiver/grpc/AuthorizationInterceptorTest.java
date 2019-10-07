@@ -26,7 +26,7 @@ import com.navercorp.pinpoint.grpc.security.server.AuthTokenHolder;
 import com.navercorp.pinpoint.grpc.security.server.DefaultAuthStateContext;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityAttribute;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityMetadata;
+import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
 
 import io.grpc.Attributes;
 import io.grpc.Context;

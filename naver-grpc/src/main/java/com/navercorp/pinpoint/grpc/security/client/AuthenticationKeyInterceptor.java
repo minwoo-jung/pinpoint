@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.grpc.security.client;
 
 import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityMetadata;
+import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;

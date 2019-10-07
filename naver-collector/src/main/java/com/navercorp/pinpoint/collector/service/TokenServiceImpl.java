@@ -20,7 +20,7 @@ import com.navercorp.pinpoint.collector.dao.TokenDao;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
-import com.navercorp.pinpoint.collector.vo.TokenType;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

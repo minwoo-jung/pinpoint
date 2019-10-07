@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NAVER Corp.
+ * Copyright 2019 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.collector.vo;
+package com.navercorp.pinpoint.grpc.security;
+
+import com.navercorp.pinpoint.grpc.auth.PTokenType;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -35,6 +37,7 @@ public enum TokenType {
         if (name == null) {
             return UNKNOWN;
         }
+
         for (TokenType tokenType : TOKEN_TYPES) {
             if (name.equals(tokenType.name())) {
                 return tokenType;
@@ -42,6 +45,16 @@ public enum TokenType {
         }
 
         return UNKNOWN;
+    }
+
+    public PTokenType getPTokenType() {
+        String name = name();
+        try {
+            return PTokenType.valueOf(name);
+        } catch (IllegalArgumentException e) {
+        }
+
+        return PTokenType.UNKNOWN;
     }
 
 }

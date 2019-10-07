@@ -16,11 +16,13 @@
 
 package com.navercorp.pinpoint.grpc.security.client;
 
+import com.navercorp.pinpoint.grpc.security.TokenType;
+
 /**
  * @author Taejin Koo
  */
 public interface AuthorizationTokenProvider {
 
-    String getToken() throws SecurityException;
+    String getToken(TokenType tokenType) throws SecurityException;
 
 }

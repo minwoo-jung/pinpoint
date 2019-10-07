@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.collector.vo;
 
+import com.navercorp.pinpoint.grpc.security.TokenType;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;

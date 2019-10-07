@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.grpc.security.server;
+package com.navercorp.pinpoint.grpc.security;
 
 import com.navercorp.pinpoint.common.util.Assert;
 

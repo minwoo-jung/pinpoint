@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.collector.vo;
 
 import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 
 /**
  * @author Taejin Koo

@@ -17,7 +17,8 @@
 package com.navercorp.pinpoint.grpc.security.client;
 
 import com.navercorp.pinpoint.common.util.Assert;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityMetadata;
+import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -40,7 +41,8 @@ public class AuthorizationTokenInterceptor implements ClientInterceptor {
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
-        final String token = authorizationTokenProvider.getToken();
+        // TODO & FIXME for temp SPAN
+        final String token = authorizationTokenProvider.getToken(TokenType.SPAN);
 
         // TokenProvider
         final ClientCall<ReqT, RespT> clientCall = next.newCall(method, callOptions);

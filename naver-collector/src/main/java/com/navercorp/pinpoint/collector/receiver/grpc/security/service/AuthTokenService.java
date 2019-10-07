@@ -23,7 +23,6 @@ import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
-import com.navercorp.pinpoint.collector.vo.TokenType;
 import com.navercorp.pinpoint.grpc.auth.AuthGrpc;
 import com.navercorp.pinpoint.grpc.auth.PAuthCode;
 import com.navercorp.pinpoint.grpc.auth.PAuthorizationToken;
@@ -31,6 +30,7 @@ import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenRequest;
 import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenResponse;
 import com.navercorp.pinpoint.grpc.auth.PSecurityResult;
 import com.navercorp.pinpoint.grpc.auth.PTokenType;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 import com.navercorp.pinpoint.grpc.security.server.AuthKeyHolder;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
 import com.navercorp.pinpoint.grpc.server.ServerContext;
@@ -148,7 +148,7 @@ public class AuthTokenService extends AuthGrpc.AuthImplBase {
 
     private boolean verifyRequest(PCmdGetTokenRequest request) {
         PTokenType tokenType = request.getTokenType();
-        TokenType type = TokenType.valueOf(tokenType.name());
+        TokenType type = TokenType.getValue(tokenType.name());
         if (type == TokenType.UNKNOWN) {
             return false;
         }

@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.collector.vo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 
 import java.util.Objects;
 

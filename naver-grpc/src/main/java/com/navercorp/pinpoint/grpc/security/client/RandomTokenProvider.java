@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.grpc.security.client;
 
+import com.navercorp.pinpoint.grpc.security.TokenType;
+
 import java.util.UUID;
 
 /**
@@ -26,7 +28,7 @@ import java.util.UUID;
 public class RandomTokenProvider implements AuthorizationTokenProvider {
 
     @Override
-    public String getToken() throws SecurityException {
+    public String getToken(TokenType tokenType) throws SecurityException {
         return UUID.randomUUID().toString();
     }
 
