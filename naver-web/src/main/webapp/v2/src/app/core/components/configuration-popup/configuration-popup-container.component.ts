@@ -26,8 +26,10 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
     ) {}
 
     ngOnInit() {
-        this.posX = this.windowRefService.nativeWindow.innerWidth - this.el.nativeElement.offsetWidth;
         this.canViewAdminMenu = this.userPermissionCheckService.canViewAdminMenu();
+        this.posX = this.coord.coordX - PopupConstant.SPACE_FROM_LEFT + this.el.nativeElement.offsetWidth <= this.windowRefService.nativeWindow.innerWidth
+            ? this.coord.coordX - PopupConstant.SPACE_FROM_LEFT
+            : this.windowRefService.nativeWindow.innerWidth - this.el.nativeElement.offsetWidth;
     }
 
     ngAfterViewInit() {
@@ -38,7 +40,7 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
     }
 
     calculateTooltipCaretLeft(tooltipCaret: HTMLElement): string {
-        const { coordX } = this.coord;
+        const {coordX} = this.coord;
 
         return `${coordX - this.posX - (tooltipCaret.offsetWidth / 2)}px`;
     }
@@ -57,6 +59,12 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CLICK_YOBI_LINK);
         this.windowRefService.nativeWindow.open('https://yobi.navercorp.com/Labs-public_pinpoint-issues/posts');
         this.outClose.emit();
+    }
+
+    onOpenV1(): void {
+        const {origin, pathname} = this.windowRefService.nativeWindow.location;
+
+        this.windowRefService.nativeWindow.location.href = `${origin}${pathname.replace('v2', '#')}`;
     }
 
     onClickOutside(): void {

@@ -35,7 +35,9 @@ export class ConfigurationPopupComponent implements OnInit {
     @HostBinding('class.font-opensans') fontFamily = true;
     @Output() outMenuClick = new EventEmitter<string>();
     @Output() outOpenLink = new EventEmitter<void>();
+    @Output() outOpenV1 = new EventEmitter<void>();
     @Input() canViewAdminMenu = false;
+
     isAdminCollapsed = false;
     isSettingCollapsed = false;
 
@@ -49,9 +51,14 @@ export class ConfigurationPopupComponent implements OnInit {
         this.outOpenLink.emit();
     }
 
+    onOpenV1(): void {
+        this.outOpenV1.emit();
+    }
+
     toggleAdminMenu(): void {
         this.isAdminCollapsed = !this.isAdminCollapsed;
     }
+
     toggleSettingMenu(): void {
         this.isSettingCollapsed = !this.isSettingCollapsed;
     }
@@ -59,6 +66,7 @@ export class ConfigurationPopupComponent implements OnInit {
     getAdminCollapsedState(): string {
         return this.isAdminCollapsed ? 'collapsed' : 'spreaded';
     }
+
     getSettingCollapsedState(): string {
         return this.isSettingCollapsed ? 'collapsed' : 'spreaded';
     }
