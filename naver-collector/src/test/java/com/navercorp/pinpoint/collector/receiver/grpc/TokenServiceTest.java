@@ -36,6 +36,8 @@ import com.navercorp.pinpoint.test.utils.TestAwaitUtils;
 
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.netty.InternalNettyChannelBuilder;
 import io.grpc.netty.InternalNettyServerBuilder;
 import io.grpc.netty.NettyChannelBuilder;
@@ -56,7 +58,6 @@ import org.springframework.util.SocketUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -111,33 +112,19 @@ public class TokenServiceTest {
         }
     }
 
-    // authentication success -> get token -> authrization success
+    // authentication success -> get token -> authorization success
     @Test
     public void getTokenTest() {
-        final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress("127.0.0.1", bindPort);
-        channelBuilder.usePlaintext();
-
-        channelBuilder.intercept(new AuthenticationKeyInterceptor("test"));
-
-        InternalNettyChannelBuilder.setStatsEnabled(channelBuilder, false);
-        InternalNettyChannelBuilder.setTracingEnabled(channelBuilder, false);
-        InternalNettyChannelBuilder.setStatsRecordStartedRpcs(channelBuilder, false);
-
-        ManagedChannel managedChannel = channelBuilder.build();
+        ManagedChannel managedChannel = createChannel("test");
 
         try {
             AuthGrpc.AuthStub authStub = AuthGrpc.newStub(managedChannel);
 
-            PCmdGetTokenRequest.Builder builder = PCmdGetTokenRequest.newBuilder();
-            builder.setTokenType(PTokenType.SPAN);
-
-            CountDownLatch latch = new CountDownLatch(2);
-
             RecordStreamObserver responseObserver = new RecordStreamObserver();
 
             // for checking operation when collector receive message during authentication operation
-            authStub.getToken(builder.build(), responseObserver);
-            authStub.getToken(builder.build(), responseObserver);
+            authStub.getToken(createRequest(), responseObserver);
+            authStub.getToken(createRequest(), responseObserver);
 
             boolean await = awaitUtils.await(new TestAwaitTaskUtils() {
                 @Override
@@ -171,12 +158,67 @@ public class TokenServiceTest {
 
     }
 
+    // authentication fail
+    @Test
+    public void getTokenFailTest() {
+        ManagedChannel managedChannel = createChannel("test113");
+
+        try {
+            AuthGrpc.AuthStub authStub = AuthGrpc.newStub(managedChannel);
+
+            RecordStreamObserver responseObserver = new RecordStreamObserver();
+
+            // for checking operation when collector receive message during authentication operation
+            authStub.getToken(createRequest(), responseObserver);
+
+            boolean await = awaitUtils.await(new TestAwaitTaskUtils() {
+                @Override
+                public boolean checkCompleted() {
+                    return responseObserver.getLatestThrowable() != null;
+                }
+            });
+            Assert.assertTrue(await);
+
+            Throwable latestThrowable = responseObserver.getLatestThrowable();
+            if (!(latestThrowable instanceof StatusRuntimeException)) {
+                Assert.fail();
+            }
+
+            StatusRuntimeException statusRuntimeException = (StatusRuntimeException) latestThrowable;
+            Assert.assertEquals(Status.Code.UNAUTHENTICATED, statusRuntimeException.getStatus().getCode());
+        } finally {
+            managedChannel.shutdownNow();
+        }
+
+    }
+
+    private ManagedChannel createChannel(String securityKey) {
+        final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress("127.0.0.1", bindPort);
+        channelBuilder.usePlaintext();
+
+        channelBuilder.intercept(new AuthenticationKeyInterceptor(securityKey));
+
+        InternalNettyChannelBuilder.setStatsEnabled(channelBuilder, false);
+        InternalNettyChannelBuilder.setTracingEnabled(channelBuilder, false);
+        InternalNettyChannelBuilder.setStatsRecordStartedRpcs(channelBuilder, false);
+
+        return channelBuilder.build();
+    }
+
+    private PCmdGetTokenRequest createRequest() {
+        PCmdGetTokenRequest.Builder builder = PCmdGetTokenRequest.newBuilder();
+        builder.setTokenType(PTokenType.SPAN);
+        return builder.build();
+    }
+
     private static class RecordStreamObserver implements StreamObserver<PCmdGetTokenResponse> {
 
         private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         private final AtomicInteger responseCount = new AtomicInteger(0);
         private volatile PCmdGetTokenResponse latestResponse;
+        private volatile Throwable latestThrowable;
+
 
         private RecordStreamObserver() {
         }
@@ -191,7 +233,7 @@ public class TokenServiceTest {
         @Override
         public void onError(Throwable t) {
             logger.info("onError:{}", t.getMessage(), t);
-
+            this.latestThrowable = t;
         }
 
         @Override
@@ -205,6 +247,10 @@ public class TokenServiceTest {
 
         public PCmdGetTokenResponse getLatestResponse() {
             return latestResponse;
+        }
+
+        public Throwable getLatestThrowable() {
+            return latestThrowable;
         }
 
     }

@@ -99,7 +99,8 @@ public class AuthTokenServiceTest {
         PCmdGetTokenRequest.Builder builder = PCmdGetTokenRequest.newBuilder();
         builder.setTokenType(PTokenType.SPAN);
 
-        GrpcSecurityContext.setAuthKeyHolder(LICENSE_KEY);
+        Context context = GrpcSecurityContext.setAuthKeyHolder(LICENSE_KEY);
+        context.attach();
 
         RecordedStreamObserver<PCmdGetTokenResponse> recordedStreamObserver = new RecordedStreamObserver<>();
         authTokenService.getToken(builder.build(), recordedStreamObserver);
@@ -152,7 +153,8 @@ public class AuthTokenServiceTest {
         TransportMetadata transportMetaData = createTransportMetaData(new InetSocketAddress(REMOTE_ADDRESS, 41413), 10);
         attachContext(transportMetaData);
 
-        GrpcSecurityContext.setAuthKeyHolder(LICENSE_KEY + " fail");
+        Context context = GrpcSecurityContext.setAuthKeyHolder(LICENSE_KEY + " fail");
+        context.attach();
 
         PCmdGetTokenRequest.Builder builder = PCmdGetTokenRequest.newBuilder();
         builder.setTokenType(PTokenType.SPAN);
