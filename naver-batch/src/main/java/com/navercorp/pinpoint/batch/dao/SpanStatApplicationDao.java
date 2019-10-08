@@ -15,10 +15,13 @@
  */
 package com.navercorp.pinpoint.batch.dao;
 
+import com.navercorp.pinpoint.batch.vo.ApplicationInfo;
 import com.navercorp.pinpoint.batch.vo.TimeRange;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
@@ -31,11 +34,50 @@ public class SpanStatApplicationDao {
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
-    public void insertSpanStatApplication(TimeRange timeRange) {
-        sqlSessionTemplate.insert(NAMESPACE + "insertSpanStatApplication", timeRange);
+    public void insertSpanStatApplication(ApplicationInfo applicationInfo, TimeRange timeRange) {
+        ApplicationSearchCondition applicationSearchCondition = new ApplicationSearchCondition(applicationInfo.getOrganization(), applicationInfo.getApplicationId(), timeRange.getFromDateTime(), timeRange.getToDateTime());
+        sqlSessionTemplate.insert(NAMESPACE + "insertSpanStatApplication", applicationSearchCondition);
     }
 
-    public boolean existSpanStatApplication(TimeRange timeRange) {
-        return sqlSessionTemplate.selectOne(NAMESPACE + "existSpanStatApplication", timeRange);
+    public boolean existSpanStatApplication(ApplicationInfo applicationInfo, TimeRange timeRange) {
+        ApplicationSearchCondition applicationSearchCondition = new ApplicationSearchCondition(applicationInfo.getOrganization(), applicationInfo.getApplicationId(), timeRange.getFromDateTime(), timeRange.getToDateTime());
+        return sqlSessionTemplate.selectOne(NAMESPACE + "existSpanStatApplication", applicationSearchCondition);
     }
+
+    public List<String> selectOrganizationList() {
+        return sqlSessionTemplate.selectList(NAMESPACE + "selectOrganizationList");
+    }
+
+
+    private class ApplicationSearchCondition {
+        private final String organization;
+        private final String applicationId;
+        private final String from;
+        private final String to;
+
+
+        public ApplicationSearchCondition(String organzation, String applicationId, String from, String to) {
+            this.organization = organzation;
+            this.applicationId = applicationId;
+            this.from = from;
+            this.to = to;
+        }
+
+        public String getOrganization() {
+            return organization;
+        }
+
+        public String getApplicationId() {
+            return applicationId;
+        }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public String getTo() {
+            return to;
+        }
+    }
+
 }

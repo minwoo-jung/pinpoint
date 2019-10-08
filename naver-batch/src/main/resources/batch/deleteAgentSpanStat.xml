@@ -5,9 +5,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <batch:job id="aggreagteSpanStatHourJob">
-        <batch:step id="aggreagteSpanStatHourStop">
-            <batch:tasklet ref="aggregateSpanStatHourTasklet">
+    <batch:job id="deleteAgentSpanStatJob">
+        <batch:step id="aggreagteSpanStatDayStop">
+            <batch:tasklet ref="aggregateSpanStatDayTasklet">
                 <batch:transaction-attributes propagation="NEVER"/>
             </batch:tasklet>
         </batch:step>
@@ -16,5 +16,5 @@
         </batch:listeners>
     </batch:job>
 
-    <bean id="aggregateSpanStatHourTasklet" class="com.navercorp.pinpoint.batch.AggregateSpanStatHourTasklet"/>
+    <bean id="aggregateSpanStatDayTasklet" class="com.navercorp.pinpoint.batch.DeleteAgentSpanStatTasklet"/>
 </beans>

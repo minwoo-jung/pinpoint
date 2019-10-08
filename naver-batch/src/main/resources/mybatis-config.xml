@@ -25,5 +25,9 @@
 
     <typeAliases>
         <typeAlias type="com.navercorp.pinpoint.batch.vo.TimeRange" alias="TimeRange"/>
+        <typeAlias type="com.navercorp.pinpoint.batch.vo.ApplicationInfo" alias="ApplicationInfo"/>
+        <typeAlias type="com.navercorp.pinpoint.batch.dao.SpanStatAgentDao$SearchCondition" alias="SearchCondition"/>
+        <typeAlias type="com.navercorp.pinpoint.batch.dao.SpanStatApplicationDao$ApplicationSearchCondition" alias="ApplicationSearchCondition"/>
+        <typeAlias type="com.navercorp.pinpoint.batch.dao.SpanStatOrganizationDao$OrganizationSearchCondition" alias="OrganizationSearchCondition"/>
     </typeAliases>
 </configuration>

@@ -7,7 +7,9 @@
 
     <batch:job id="aggreagteSpanStatDayJob">
         <batch:step id="aggreagteSpanStatDayStop">
-            <batch:tasklet ref="aggregateSpanStatDayTasklet"/>
+            <batch:tasklet ref="aggregateSpanStatDayTasklet">
+                <batch:transaction-attributes propagation="NEVER"/>
+            </batch:tasklet>
         </batch:step>
         <batch:listeners>
             <batch:listener ref="jobFailListener"/>

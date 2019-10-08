@@ -15,6 +15,7 @@
  */
 package com.navercorp.pinpoint.batch;
 
+import com.navercorp.pinpoint.batch.service.SpanStatApplicationService;
 import com.navercorp.pinpoint.batch.service.SpanStatOrganizationService;
 import com.navercorp.pinpoint.batch.vo.TimeRange;
 import org.slf4j.Logger;
@@ -24,6 +25,8 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
@@ -37,25 +40,36 @@ public class AggregateSpanStatDayTasklet implements Tasklet {
     @Autowired
     SpanStatOrganizationService spanStatOrganizationService;
 
+    @Autowired
+    SpanStatApplicationService spanStatApplicationService;
+
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         long dayUnitTime = currentDayUnitTime() - DAY_MILLIS;
+        final List<String> organizationList = spanStatApplicationService.selectOrganizationList();
 
         for (int i = 0; i <= 8; i++) {
             TimeRange timeRange = new TimeRange(dayUnitTime, dayUnitTime + RANGE);
             dayUnitTime = dayUnitTime - DAY_MILLIS;
-            boolean exist = spanStatOrganizationService.existSpanStatOrganization(timeRange);
-
-            if (exist) {
-                logger.info("data exist for timeRange({})", timeRange.prettyToString());
-            } else {
-                logger.info("insert data for timeRange({})", timeRange.prettyToString());
-                spanStatOrganizationService.insertSpanStatOrganization(timeRange);
-            }
+            insertSpanStatOrganization(organizationList, timeRange);
         }
 
         return RepeatStatus.FINISHED;
     }
+
+    void insertSpanStatOrganization(List<String> organizationList, TimeRange timeRange) {
+        for (String organization : organizationList) {
+            boolean exist = spanStatOrganizationService.existSpanStatOrganization(organization, timeRange);
+
+            if (exist) {
+                logger.info("data exist for organization({}), timeRange({})", organization, timeRange.prettyToString());
+            } else {
+                logger.info("insert data for organization({}), timeRange({})", organization, timeRange.prettyToString());
+                spanStatOrganizationService.insertSpanStatOrganization(organization, timeRange);
+            }
+        }
+    }
+
 
     public long currentDayUnitTime() {
         long currentTimeMillis = System.currentTimeMillis();

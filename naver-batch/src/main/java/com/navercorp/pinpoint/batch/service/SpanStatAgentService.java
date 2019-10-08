@@ -15,9 +15,8 @@
  */
 package com.navercorp.pinpoint.batch.service;
 
-import com.navercorp.pinpoint.batch.dao.SpanStatApplicationDao;
+import com.navercorp.pinpoint.batch.dao.SpanStatAgentDao;
 import com.navercorp.pinpoint.batch.vo.ApplicationInfo;
-import com.navercorp.pinpoint.batch.vo.TimeRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -29,20 +28,16 @@ import java.util.List;
  * @author minwoo.jung
  */
 @Service
-public class SpanStatApplicationService {
+public class SpanStatAgentService {
 
     @Autowired
-    SpanStatApplicationDao spanStatApplicationDao;
+    SpanStatAgentDao spanStatAgentDao;
 
-    public void insertSpanStatApplication(ApplicationInfo applicationInfo, TimeRange timeRange) {
-        spanStatApplicationDao.insertSpanStatApplication(applicationInfo, timeRange);
+    public List<ApplicationInfo> selectApplicationList() {
+        return spanStatAgentDao.selectApplicationList();
     }
 
-    public boolean existSpanStatApplication(ApplicationInfo applicationInfo, TimeRange timeRange) {
-        return spanStatApplicationDao.existSpanStatApplication(applicationInfo, timeRange);
-    }
-
-    public List<String> selectOrganizationList() {
-        return spanStatApplicationDao.selectOrganizationList();
+    public void deleteSpanStatAgent(ApplicationInfo applicationInfo, long boundaryTime) {
+        spanStatAgentDao.deleteSpanStatAgent(applicationInfo, boundaryTime);
     }
 }

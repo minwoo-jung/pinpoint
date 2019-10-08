@@ -3,20 +3,28 @@
 
 <mapper namespace="com.navercorp.pinpoint.batch.dao.SpanStatApplicationDao">
 
-    <select id="existSpanStatApplication" parameterType="TimeRange" resultType="java.lang.Boolean">
+    <select id="selectOrganizationList" resultType="java.lang.String">
+        SELECT organization
+        FROM (
+            SELECT organization
+            FROM span_stat_application
+            GROUP BY organization
+        )AS organizationList
+    </select>
+
+    <select id="existSpanStatApplication" parameterType="ApplicationSearchCondition" resultType="java.lang.Boolean">
         SELECT EXISTS (
             SELECT 1
             FROM span_stat_application
-            WHERE timestamp = #{fromDateTime}
+            WHERE organization= #{organization} AND applicationId = #{applicationId} AND timestamp = #{from}
         )
     </select>
 
-    <insert id="insertSpanStatApplication" parameterType="TimeRange">
+    <insert id="insertSpanStatApplication" parameterType="ApplicationSearchCondition">
         INSERT INTO span_stat_application (organization, applicationId, count, timestamp)
-        SELECT organization, applicationId,  SUM(count) , #{fromDateTime}
+        SELECT organization, applicationId,  SUM(count) , #{from}
         FROM  span_stat_agent
-        WHERE timestamp BETWEEN #{fromDateTime} AND #{toDateTime}
-        GROUP BY organization, applicationId
+        WHERE organization= #{organization} AND applicationId = #{applicationId} AND timestamp <![CDATA[ >= ]]> #{from} AND timestamp <![CDATA[ <= ]]> #{to}
     </insert>
 
 </mapper>

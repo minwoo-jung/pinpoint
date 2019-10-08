@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.batch.dao.SpanStatAgentDao">
+
+    <delete id="deleteSpanStatAgent" parameterType="SearchCondition">
+        DELETE
+        FROM span_stat_agent
+        WHERE organization= #{organization} AND applicationId = #{applicationId} AND timestamp <![CDATA[ < ]]> #{boundaryTime}
+    </delete>
+
+    <select id="selectApplicationList" resultType="ApplicationInfo">
+        SELECT organization, applicationId
+        FROM (
+            SELECT organization, applicationId
+            FROM span_stat_agent
+            GROUP BY organization, applicationId
+        )AS applicationIdList
+    </select>
+</mapper>

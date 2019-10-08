@@ -19,6 +19,7 @@ import com.navercorp.pinpoint.batch.dao.SpanStatOrganizationDao;
 import com.navercorp.pinpoint.batch.vo.TimeRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author minwoo.jung
@@ -29,11 +30,11 @@ public class SpanStatOrganizationService {
     @Autowired
     SpanStatOrganizationDao spanStatOrganizationDao;
 
-    public boolean existSpanStatOrganization(TimeRange timeRange) {
-        return spanStatOrganizationDao.existSpanStatOrganization(timeRange);
+    public boolean existSpanStatOrganization(String organization, TimeRange timeRange) {
+        return spanStatOrganizationDao.existSpanStatOrganization(organization, timeRange);
     }
 
-    public void insertSpanStatOrganization(TimeRange timeRange) {
-        spanStatOrganizationDao.insertSpanStatOrganization(timeRange);
+    public void insertSpanStatOrganization(String organization, TimeRange timeRange) {
+        spanStatOrganizationDao.insertSpanStatOrganization(organization, timeRange);
     }
 }

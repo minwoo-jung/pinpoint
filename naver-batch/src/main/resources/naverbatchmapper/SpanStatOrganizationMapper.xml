@@ -3,20 +3,19 @@
 
 <mapper namespace="com.navercorp.pinpoint.batch.dao.SpanStatOrganizationDao">
 
-    <select id="existSpanStatOrganization" parameterType="TimeRange" resultType="java.lang.Boolean">
+    <select id="existSpanStatOrganization" parameterType="OrganizationSearchCondition" resultType="java.lang.Boolean">
         SELECT EXISTS (
             SELECT 1
             FROM span_stat_organization
-            WHERE timestamp = #{fromDateTime}
+            WHERE organization= #{organization} AND timestamp = #{from}
         )
     </select>
 
-    <insert id="insertSpanStatOrganization" parameterType="TimeRange">
-        INSERT INTO span_stat_organization ( organization, count, timestamp)
-        SELECT organization, SUM(count) , #{fromDateTime}
+    <insert id="insertSpanStatOrganization" parameterType="OrganizationSearchCondition">
+        INSERT INTO span_stat_organization (organization, count, timestamp)
+        SELECT organization, SUM(count) , #{from}
         FROM  span_stat_application
-        WHERE timestamp BETWEEN #{fromDateTime} AND #{toDateTime}
-        GROUP BY organization
+        WHERE organization= #{organization} AND timestamp <![CDATA[ >= ]]> #{from} AND timestamp <![CDATA[ <= ]]> #{to}
     </insert>
 
 </mapper>

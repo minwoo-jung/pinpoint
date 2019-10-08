@@ -37,6 +37,11 @@ public class NaverBatchJobLauncher extends JobLaunchSupport {
         run("aggreagteSpanStatDayJob", params);
     }
 
+    public void deleteAgentSpanStatJob() {
+        JobParameters params = createTimeParameter();
+        run("deleteAgentSpanStatJob", params);
+    }
+
     private JobParameters createTimeParameter() {
         JobParametersBuilder builder = new JobParametersBuilder();
         Date now = new Date();

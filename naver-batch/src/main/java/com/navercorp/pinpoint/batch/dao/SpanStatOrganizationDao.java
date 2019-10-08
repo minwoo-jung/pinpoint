@@ -31,11 +31,38 @@ public class SpanStatOrganizationDao {
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
-    public void insertSpanStatOrganization(TimeRange timeRange) {
-        sqlSessionTemplate.insert(NAMESPACE + "insertSpanStatOrganization", timeRange);
+    public void insertSpanStatOrganization(String organization, TimeRange timeRange) {
+        OrganizationSearchCondition organizationSearchCondition = new OrganizationSearchCondition(organization, timeRange.getFromDateTime(), timeRange.getToDateTime());
+        sqlSessionTemplate.insert(NAMESPACE + "insertSpanStatOrganization", organizationSearchCondition);
     }
 
-    public boolean existSpanStatOrganization(TimeRange timeRange) {
-        return sqlSessionTemplate.selectOne(NAMESPACE + "existSpanStatOrganization", timeRange);
+    public boolean existSpanStatOrganization(String organization, TimeRange timeRange) {
+        OrganizationSearchCondition organizationSearchCondition = new OrganizationSearchCondition(organization, timeRange.getFromDateTime(), timeRange.getToDateTime());
+        return sqlSessionTemplate.selectOne(NAMESPACE + "existSpanStatOrganization", organizationSearchCondition);
+    }
+
+    private class OrganizationSearchCondition {
+        private final String organization;
+        private final String from;
+        private final String to;
+
+
+        public OrganizationSearchCondition(String organzation, String from, String to) {
+            this.organization = organzation;
+            this.from = from;
+            this.to = to;
+        }
+
+        public String getOrganization() {
+            return organization;
+        }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public String getTo() {
+            return to;
+        }
     }
 }

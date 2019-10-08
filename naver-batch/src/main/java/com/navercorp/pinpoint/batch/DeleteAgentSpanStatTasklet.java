@@ -16,9 +16,7 @@
 package com.navercorp.pinpoint.batch;
 
 import com.navercorp.pinpoint.batch.service.SpanStatAgentService;
-import com.navercorp.pinpoint.batch.service.SpanStatApplicationService;
 import com.navercorp.pinpoint.batch.vo.ApplicationInfo;
-import com.navercorp.pinpoint.batch.vo.TimeRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepContribution;
@@ -32,48 +30,31 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public class AggregateSpanStatHourTasklet implements Tasklet {
+public class DeleteAgentSpanStatTasklet implements Tasklet {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final static long HOUR_MILLIS = 3600000L;
-    private final static long RANGE = 3599000L;
-
-    @Autowired
-    SpanStatApplicationService spanStatApplicationService;
+    private final static long RANGE = 1555200000L;
 
     @Autowired
     SpanStatAgentService spanStatAgentService;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        long hourUnitTime = currentHourUnitTime() - HOUR_MILLIS;
-        final List<ApplicationInfo> applicationInfoList = spanStatAgentService.selectApplicationList();
+        long boundaryTime = calcurateBoundaryTime();
 
-        for (int i = 0; i <= 8; i++) {
-            TimeRange timeRange = new TimeRange(hourUnitTime, hourUnitTime + RANGE);
-            hourUnitTime = hourUnitTime - HOUR_MILLIS;
-            insertSpanStatApplication(applicationInfoList, timeRange);
+        List<ApplicationInfo> applicationInfoList = spanStatAgentService.selectApplicationList();
+
+        for(ApplicationInfo applicationInfo : applicationInfoList) {
+            spanStatAgentService.deleteSpanStatAgent(applicationInfo, boundaryTime);
         }
 
         return RepeatStatus.FINISHED;
     }
 
-    private void insertSpanStatApplication(List<ApplicationInfo> applicationInfoList, TimeRange timeRange) {
-        for (ApplicationInfo applicationInfo : applicationInfoList) {
-            boolean exist = spanStatApplicationService.existSpanStatApplication(applicationInfo, timeRange);
-
-            if (exist) {
-                logger.info("data exist for applicationInfo({}), timeRange({})", applicationInfo, timeRange.prettyToString());
-            } else {
-                logger.info("insert data for applicationInfo({}), timeRange({})", applicationInfo, timeRange.prettyToString());
-                spanStatApplicationService.insertSpanStatApplication(applicationInfo, timeRange);
-            }
-        }
-
-    }
-
-    private long currentHourUnitTime() {
+    public long calcurateBoundaryTime() {
         long currentTimeMillis = System.currentTimeMillis();
         long remainder = currentTimeMillis % HOUR_MILLIS;
-        return currentTimeMillis - remainder;
+        return currentTimeMillis - remainder - RANGE;
     }
 }
