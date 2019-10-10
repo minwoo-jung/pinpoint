@@ -56,8 +56,8 @@ public class SpanStatApplicationDao {
         private final String to;
 
 
-        public ApplicationSearchCondition(String organzation, String applicationId, String from, String to) {
-            this.organization = organzation;
+        public ApplicationSearchCondition(String organization, String applicationId, String from, String to) {
+            this.organization = organization;
             this.applicationId = applicationId;
             this.from = from;
             this.to = to;

@@ -22,7 +22,7 @@
 
     <insert id="insertSpanStatApplication" parameterType="ApplicationSearchCondition">
         INSERT INTO span_stat_application (organization, applicationId, count, timestamp)
-        SELECT organization, applicationId,  SUM(count) , #{from}
+        SELECT #{organization}, #{applicationId},  IFNULL(SUM(count),0) , #{from}
         FROM  span_stat_agent
         WHERE organization= #{organization} AND applicationId = #{applicationId} AND timestamp <![CDATA[ >= ]]> #{from} AND timestamp <![CDATA[ <= ]]> #{to}
     </insert>
