@@ -47,6 +47,7 @@
 
     <import resource="classpath:batch/insertAggregateSpanStatDay.xml"/>
     <import resource="classpath:batch/insertAggregateSpanStatHour.xml"/>
+    <import resource="classpath:batch/deleteAgentSpanStat.xml"/>
 
     <bean id="jobFailListener" class="com.navercorp.pinpoint.web.batch.JobFailListener"/>
 
