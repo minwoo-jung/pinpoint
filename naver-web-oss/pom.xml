@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2018 NAVER Corp.
+  ~ Copyright 2019 NAVER Corp.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -37,11 +37,6 @@
         <sniffer.artifactid>java18</sniffer.artifactid>
 
         <plugin.antrun.version>1.8</plugin.antrun.version>
-
-        <plugin.frontend.version>1.6</plugin.frontend.version>
-        <plugin.frontend.node.version>v10.15.0</plugin.frontend.node.version>
-        <plugin.frontend.npm.version>6.1.0</plugin.frontend.npm.version>
-        <plugin.frontend.node.install.dir>${basedir}/node_install/node-${plugin.frontend.node.version}</plugin.frontend.node.install.dir>
     </properties>
 
     <dependencies>
@@ -95,7 +90,7 @@
                         <artifactId>frontend-maven-plugin</artifactId>
                         <version>${plugin.frontend.version}</version>
                         <configuration>
-                            <installDirectory>${plugin.frontend.node.install.dir}</installDirectory>
+                            <installDirectory>${project.parent.basedir}/${plugin.frontend.node.install.dir}</installDirectory>
                         </configuration>
                         <executions>
                             <execution>

@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright 2019 NAVER Corp.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -19,11 +35,6 @@
         <sniffer.artifactid>java18</sniffer.artifactid>
 
         <plugin.antrun.verison>1.8</plugin.antrun.verison>
-
-        <plugin.frontend.verison>1.6</plugin.frontend.verison>
-        <plugin.frontend.node.verison>v10.15.0</plugin.frontend.node.verison>
-        <plugin.frontend.npm.verison>6.1.0</plugin.frontend.npm.verison>
-        <plugin.frontend.node.install.dir>${basedir}/node_install/node-${plugin.frontend.node.verison}</plugin.frontend.node.install.dir>
     </properties>
 
     <dependencies>
@@ -287,9 +298,9 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>${plugin.frontend.verison}</version>
+                        <version>${plugin.frontend.version}</version>
                         <configuration>
-                            <installDirectory>${plugin.frontend.node.install.dir}</installDirectory>
+                            <installDirectory>${project.parent.basedir}/${plugin.frontend.node.install.dir}</installDirectory>
                         </configuration>
                         <executions>
                             <execution>
@@ -299,8 +310,8 @@
                                     <goal>install-node-and-npm</goal>
                                 </goals>
                                 <configuration>
-                                    <nodeVersion>${plugin.frontend.node.verison}</nodeVersion>
-                                    <npmVersion>${plugin.frontend.npm.verison}</npmVersion>
+                                    <nodeVersion>${plugin.frontend.node.version}</nodeVersion>
+                                    <npmVersion>${plugin.frontend.npm.version}</npmVersion>
                                     <workingDirectory>${basedir}/deploy/webapp/v2</workingDirectory>
                                 </configuration>
                             </execution>
