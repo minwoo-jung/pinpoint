@@ -1,8 +1,31 @@
-/.project
-/.settings/
-/.idea
-/*.iml
-/deploy
-/target
-/build/
-**/node_modules
+# Maven
+deploy/
+target/
+
+# Eclipse
+.classpath
+.project
+.settings/
+/.externalToolBuilders
+/build
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+/.idea/
+out/
+
+# vscode
+.vscode
+
+# npm
+node_install/
+node_modules/
+jsdoc/
+
+#mac
+.DS_Store
+
+# pinpoint-naver
+overlays/
