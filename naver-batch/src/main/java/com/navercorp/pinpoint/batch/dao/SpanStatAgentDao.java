@@ -19,6 +19,7 @@ import com.navercorp.pinpoint.batch.vo.ApplicationInfo;
 import com.navercorp.pinpoint.common.util.DateUtils;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class SpanStatAgentDao {
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @Autowired
+    @Qualifier("sqlSessionTemplate")
     private SqlSessionTemplate sqlSessionTemplate;
 
     public void deleteSpanStatAgent(ApplicationInfo applicationInfo, long boundaryTime) {

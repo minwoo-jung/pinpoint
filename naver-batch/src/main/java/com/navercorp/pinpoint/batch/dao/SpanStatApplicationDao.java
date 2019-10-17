@@ -19,6 +19,7 @@ import com.navercorp.pinpoint.batch.vo.ApplicationInfo;
 import com.navercorp.pinpoint.batch.vo.TimeRange;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class SpanStatApplicationDao {
     private static final String NAMESPACE = SpanStatApplicationDao.class.getPackage().getName() + "." + SpanStatApplicationDao.class.getSimpleName() + ".";
 
     @Autowired
+    @Qualifier("sqlSessionTemplate")
     private SqlSessionTemplate sqlSessionTemplate;
 
     public void insertSpanStatApplication(ApplicationInfo applicationInfo, TimeRange timeRange) {

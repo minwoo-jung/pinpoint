@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.batch.dao;
 import com.navercorp.pinpoint.batch.vo.TimeRange;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -29,6 +30,7 @@ public class SpanStatOrganizationDao {
     private static final String NAMESPACE = SpanStatOrganizationDao.class.getPackage().getName() + "." + SpanStatOrganizationDao.class.getSimpleName() + ".";
 
     @Autowired
+    @Qualifier("sqlSessionTemplate")
     private SqlSessionTemplate sqlSessionTemplate;
 
     public void insertSpanStatOrganization(String organization, TimeRange timeRange) {
