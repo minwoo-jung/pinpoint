@@ -34,6 +34,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -121,7 +122,8 @@ public class NettyController {
     }
 
     private Bootstrap client() {
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        DefaultThreadFactory threadFactory = new DefaultThreadFactory("Netty-Test-Thread", true);
+        EventLoopGroup workerGroup = new NioEventLoopGroup(1, threadFactory);
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(workerGroup).channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
