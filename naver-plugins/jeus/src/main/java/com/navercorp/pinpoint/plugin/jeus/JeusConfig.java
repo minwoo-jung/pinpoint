@@ -40,7 +40,7 @@ public class JeusConfig {
     private final boolean hidePinpointHeader;
 
     public JeusConfig(ProfilerConfig config) {
-        Assert.requireNonNull(config, "config must not be null");
+        Assert.requireNonNull(config, "config");
 
         // plugin
         this.enable = config.readBoolean("profiler.jeus.enable", true);

@@ -56,10 +56,10 @@ public class AgentStat implements Serializable {
 
     public AgentStat(String agentId, long timestamp) {
         if (agentId == null) {
-            throw new NullPointerException("agentId must not be null");
+            throw new NullPointerException("agentId");
         }
         if (timestamp < 0) {
-            throw new NullPointerException("timestamp must not be negative");
+            throw new IllegalArgumentException("timestamp must not be negative");
         }
         this.agentId = agentId;
         this.timestamp = timestamp;

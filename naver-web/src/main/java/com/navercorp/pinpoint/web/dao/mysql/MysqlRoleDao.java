@@ -119,7 +119,7 @@ public class MysqlRoleDao implements RoleDao {
         }
 
         public RoleInfoConvertedJson(RoleInformation roleInformation) {
-            Objects.requireNonNull(roleInformation, "roleInformation must not be null");
+            Objects.requireNonNull(roleInformation, "roleInformation");
 
             this.roleId = roleInformation.getRoleId();
             try {

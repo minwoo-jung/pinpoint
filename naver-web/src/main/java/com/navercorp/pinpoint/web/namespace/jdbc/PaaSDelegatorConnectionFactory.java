@@ -30,7 +30,7 @@ public class PaaSDelegatorConnectionFactory implements DelegatorConnectionFactor
     private final NameSpaceInfoFactory nameSpaceInfoFactory;
 
     public PaaSDelegatorConnectionFactory(NameSpaceInfoFactory nameSpaceInfoFactory) {
-        this.nameSpaceInfoFactory = Objects.requireNonNull(nameSpaceInfoFactory, "nameSpaceInfoFactory must not be null");
+        this.nameSpaceInfoFactory = Objects.requireNonNull(nameSpaceInfoFactory, "nameSpaceInfoFactory");
     }
 
     @Override

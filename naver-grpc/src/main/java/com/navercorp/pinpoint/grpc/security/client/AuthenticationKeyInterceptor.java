@@ -39,7 +39,7 @@ public class AuthenticationKeyInterceptor implements ClientInterceptor {
     private final String authenticationKey;
 
     public AuthenticationKeyInterceptor(String authenticationKey) {
-        this.authenticationKey = Assert.requireNonNull(authenticationKey, "authenticationKey must not be null");
+        this.authenticationKey = Assert.requireNonNull(authenticationKey, "authenticationKey");
     }
 
     @Override

@@ -27,14 +27,14 @@ public class UserInformation {
     private UserRole role;
 
     public UserInformation(User profile, UserAccount account, UserRole role) {
-        this.profile = Objects.requireNonNull(profile, "profile must not be null");
-        this.account = Objects.requireNonNull(account, "account must not be null");
-        this.role = Objects.requireNonNull(role, "role must not be null");
+        this.profile = Objects.requireNonNull(profile, "profile");
+        this.account = Objects.requireNonNull(account, "account");
+        this.role = Objects.requireNonNull(role, "role");
     }
 
     public UserInformation(User profile, UserRole role) {
-        this.profile = Objects.requireNonNull(profile, "profile must not be null");
-        this.role = Objects.requireNonNull(role, "role must not be null");
+        this.profile = Objects.requireNonNull(profile, "profile");
+        this.role = Objects.requireNonNull(role, "role");
         this.account = null;
     }
 

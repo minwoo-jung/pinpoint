@@ -37,8 +37,8 @@ public class DataSourceDelegator implements DataSource {
     private final DelegatorConnectionFactory delegatorConnectionFactory;
 
     public DataSourceDelegator(DataSource dataSource, DelegatorConnectionFactory delegatorConnectionFactory) {
-        this.dataSource = Objects.requireNonNull(dataSource, "dataSource must not be null");
-        this.delegatorConnectionFactory = Objects.requireNonNull(delegatorConnectionFactory, "delegatorConnectionFactory must not be null");
+        this.dataSource = Objects.requireNonNull(dataSource, "dataSource");
+        this.delegatorConnectionFactory = Objects.requireNonNull(delegatorConnectionFactory, "delegatorConnectionFactory");
     }
 
     @Override

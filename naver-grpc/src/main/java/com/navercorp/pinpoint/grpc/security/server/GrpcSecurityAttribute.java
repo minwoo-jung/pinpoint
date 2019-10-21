@@ -28,7 +28,7 @@ public class GrpcSecurityAttribute {
     private static final Attributes.Key<AuthContext> AUTH_CONTEXT_ATTRIBUTE = Attributes.Key.create("pinpointAuthContext");
 
     public static AuthContext getAuthContext(Attributes attributes) {
-        Assert.requireNonNull(attributes, "attributes must not be null");
+        Assert.requireNonNull(attributes, "attributes");
         return attributes.get(AUTH_CONTEXT_ATTRIBUTE);
     }
 

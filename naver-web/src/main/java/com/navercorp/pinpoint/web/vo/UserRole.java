@@ -34,7 +34,7 @@ public class UserRole {
     public UserRole(String userId, List<String> roleList) {
         Assert.hasText(userId, "userId must not be empty");
         this.userId = userId;
-        this.roleList = Objects.requireNonNull(roleList, "roleList must not be null");;
+        this.roleList = Objects.requireNonNull(roleList, "roleList");;
     }
 
     public String getUserId() {

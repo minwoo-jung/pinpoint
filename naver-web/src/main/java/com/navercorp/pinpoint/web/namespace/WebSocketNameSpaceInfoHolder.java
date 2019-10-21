@@ -20,7 +20,8 @@ import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.web.namespace.websocket.WebSocketAttributes;
 import com.navercorp.pinpoint.web.namespace.websocket.WebSocketContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
+
+import java.util.Objects;
 
 /**
  * @author minwoo.jung
@@ -33,7 +34,7 @@ public class WebSocketNameSpaceInfoHolder implements NameSpaceInfoHolder {
     public WebSocketNameSpaceInfoHolder() {
         WebSocketAttributes attributes = WebSocketContextHolder.currentAttributes();
         PaaSOrganizationInfo paaSOrganizationInfo = (PaaSOrganizationInfo) attributes.getAttribute(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO);
-        Assert.notNull(paaSOrganizationInfo, "PaaSOrganizationInfo must not be null.");
+        Objects.requireNonNull(paaSOrganizationInfo, "PaaSOrganizationInfo");
 
         String databaseName = paaSOrganizationInfo.getDatabaseName();
         String hbaseNameSpace = paaSOrganizationInfo.getHbaseNameSpace();

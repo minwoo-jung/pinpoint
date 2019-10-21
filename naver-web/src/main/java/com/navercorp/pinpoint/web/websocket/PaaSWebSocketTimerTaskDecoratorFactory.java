@@ -48,7 +48,7 @@ public class PaaSWebSocketTimerTaskDecoratorFactory implements TimerTaskDecorato
         private final Map<String, Object> attributes;
 
         private WebSocketContextPreservingTimerTaskDecorator(TimerTaskDecorator pinpointWebSocketTimerTaskDecorator) {
-            this.pinpointWebSocketTimerTaskDecorator = Objects.requireNonNull(pinpointWebSocketTimerTaskDecorator, "pinpointWebSocketTimerTaskDecorator must not be null");
+            this.pinpointWebSocketTimerTaskDecorator = Objects.requireNonNull(pinpointWebSocketTimerTaskDecorator, "pinpointWebSocketTimerTaskDecorator");
 
             WebSocketAttributes webSocketAttributes = WebSocketContextHolder.getAttributes();
             if (webSocketAttributes == null) {

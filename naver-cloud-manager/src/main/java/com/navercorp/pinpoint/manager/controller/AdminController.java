@@ -50,8 +50,8 @@ public class AdminController {
 
     @Autowired
     public AdminController(RepositoryService repositoryService, MetadataService metadataService) {
-        this.repositoryService = Objects.requireNonNull(repositoryService, "repositoryService must not be null");
-        this.metadataService = Objects.requireNonNull(metadataService, "metadataService must not be null");
+        this.repositoryService = Objects.requireNonNull(repositoryService, "repositoryService");
+        this.metadataService = Objects.requireNonNull(metadataService, "metadataService");
     }
 
     @GetMapping(value = "/organizations")

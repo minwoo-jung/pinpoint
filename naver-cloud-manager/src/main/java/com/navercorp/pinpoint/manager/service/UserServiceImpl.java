@@ -49,8 +49,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl(RepositoryDao repositoryDao,
                            PasswordEncoder passwordEncoder) {
-        this.repositoryDao = Objects.requireNonNull(repositoryDao, "repositoryDao must not be null");
-        this.passwordEncoder = Objects.requireNonNull(passwordEncoder, "passwordEncoder must not be null");
+        this.repositoryDao = Objects.requireNonNull(repositoryDao, "repositoryDao");
+        this.passwordEncoder = Objects.requireNonNull(passwordEncoder, "passwordEncoder");
     }
 
     @Override

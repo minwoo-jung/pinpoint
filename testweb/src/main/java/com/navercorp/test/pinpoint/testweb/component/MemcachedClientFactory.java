@@ -43,7 +43,7 @@ public class MemcachedClientFactory implements FactoryBean<MemcachedClient>, Ini
     }
 
     public MemcachedClientFactory(String hostAddress) {
-        Assert.notNull(hostAddress, "hostAddress must not be null");
+        Assert.notNull(hostAddress, "hostAddress");
         this.hostAddress = hostAddress;
     }
 

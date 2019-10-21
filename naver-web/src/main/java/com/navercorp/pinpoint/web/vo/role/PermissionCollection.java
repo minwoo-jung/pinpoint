@@ -35,10 +35,10 @@ public class PermissionCollection {
     }
 
     public PermissionCollection(PermsGroupAdministration permsGroupAdministration, PermsGroupAppAuthorization permsGroupAppAuthorization, PermsGroupAlarm permsGroupAlarm, PermsGroupUserGroup permsGroupUserGroup) {
-        this.permsGroupAdministration = Objects.requireNonNull(permsGroupAdministration, "permsGroupAdministration must not be null");;
-        this.permsGroupAppAuthorization = Objects.requireNonNull(permsGroupAppAuthorization, "permsGroupAppAuthorization must not be null");;
-        this.permsGroupAlarm = Objects.requireNonNull(permsGroupAlarm, "permsGroupAlarm must not be null");;
-        this.permsGroupUserGroup = Objects.requireNonNull(permsGroupUserGroup, "permsGroupUserGroup must not be null");;
+        this.permsGroupAdministration = Objects.requireNonNull(permsGroupAdministration, "permsGroupAdministration");;
+        this.permsGroupAppAuthorization = Objects.requireNonNull(permsGroupAppAuthorization, "permsGroupAppAuthorization");;
+        this.permsGroupAlarm = Objects.requireNonNull(permsGroupAlarm, "permsGroupAlarm");;
+        this.permsGroupUserGroup = Objects.requireNonNull(permsGroupUserGroup, "permsGroupUserGroup");;
     }
 
     public static PermissionCollection merge(PermissionCollection permissionCollection1, PermissionCollection permissionCollection2) {

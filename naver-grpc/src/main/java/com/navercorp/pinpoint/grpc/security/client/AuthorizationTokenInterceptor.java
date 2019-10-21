@@ -36,7 +36,7 @@ public class AuthorizationTokenInterceptor implements ClientInterceptor {
     private final AuthorizationTokenProvider authorizationTokenProvider;
 
     public AuthorizationTokenInterceptor(AuthorizationTokenProvider authorizationTokenProvider) {
-        this.authorizationTokenProvider = Assert.requireNonNull(authorizationTokenProvider, "authorizationTokenProvider must not be null");
+        this.authorizationTokenProvider = Assert.requireNonNull(authorizationTokenProvider, "authorizationTokenProvider");
     }
 
     @Override

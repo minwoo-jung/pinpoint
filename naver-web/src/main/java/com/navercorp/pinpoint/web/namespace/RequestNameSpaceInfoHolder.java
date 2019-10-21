@@ -19,9 +19,10 @@ package com.navercorp.pinpoint.web.namespace;
 import com.navercorp.pinpoint.web.namespace.vo.PaaSOrganizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+
+import java.util.Objects;
 
 /**
  * @author minwoo.jung
@@ -35,7 +36,7 @@ public class RequestNameSpaceInfoHolder implements NameSpaceInfoHolder {
     public RequestNameSpaceInfoHolder() {
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
         PaaSOrganizationInfo paaSOrganizationInfo = (PaaSOrganizationInfo) attributes.getAttribute(PaaSOrganizationInfo.PAAS_ORGANIZATION_INFO, RequestAttributes.SCOPE_REQUEST);
-        Assert.notNull(paaSOrganizationInfo, "PaaSOrganizationInfo must not be null.");
+        Objects.requireNonNull(paaSOrganizationInfo, "PaaSOrganizationInfo");
 
         String databaseName = paaSOrganizationInfo.getDatabaseName();
         String hbaseNameSpace = paaSOrganizationInfo.getHbaseNameSpace();

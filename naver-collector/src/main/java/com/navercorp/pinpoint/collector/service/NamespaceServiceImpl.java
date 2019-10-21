@@ -41,7 +41,7 @@ public class NamespaceServiceImpl implements NamespaceService {
 
     @Autowired
     public NamespaceServiceImpl(MetadataDao metadataDao) {
-        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao must not be null");
+        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao");
     }
 
     @Override

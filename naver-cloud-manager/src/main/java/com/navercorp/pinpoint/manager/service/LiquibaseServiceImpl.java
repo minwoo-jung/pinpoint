@@ -51,7 +51,7 @@ public class LiquibaseServiceImpl implements LiquibaseService {
     private final DataSource dataSource;
 
     public LiquibaseServiceImpl(@Qualifier("originalDataSource") DataSource dataSource) {
-        this.dataSource = Objects.requireNonNull(dataSource, "dataSource must not be null");
+        this.dataSource = Objects.requireNonNull(dataSource, "dataSource");
     }
 
     @Override

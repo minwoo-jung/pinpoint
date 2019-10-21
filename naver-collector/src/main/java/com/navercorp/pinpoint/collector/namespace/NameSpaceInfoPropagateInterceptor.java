@@ -59,7 +59,7 @@ public class NameSpaceInfoPropagateInterceptor {
     }
 
     public NameSpaceInfoPropagateInterceptor(NamespaceService namespaceService, boolean useDefaultNameSpaceInfo) {
-        this.namespaceService = Objects.requireNonNull(namespaceService, "namespaceService must not be null");
+        this.namespaceService = Objects.requireNonNull(namespaceService, "namespaceService");
         this.useDefaultNameSpaceInfo = useDefaultNameSpaceInfo;
     }
 

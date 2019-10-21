@@ -47,7 +47,7 @@ public class HbaseApplicationIndexDao implements ApplicationIndexDao {
 
     @Autowired
     public HbaseApplicationIndexDao(HbaseOperations2 hbaseOperations2) {
-        this.hbaseOperations2 = Objects.requireNonNull(hbaseOperations2, "hbaseOperations2 must not be null");
+        this.hbaseOperations2 = Objects.requireNonNull(hbaseOperations2, "hbaseOperations2");
     }
 
     @Override

@@ -35,7 +35,7 @@ public class CallStackVerifier {
 
     public CallStackVerifier(TSpan rootSpan) {
         if (rootSpan == null) {
-            throw new NullPointerException("rootSpan must not be null");
+            throw new NullPointerException("rootSpan");
         }
         root = new SpanElement(0, rootSpan.getSpanId());
     }

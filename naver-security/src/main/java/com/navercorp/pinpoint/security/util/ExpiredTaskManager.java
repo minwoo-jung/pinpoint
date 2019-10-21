@@ -41,7 +41,7 @@ public class ExpiredTaskManager<K> {
     private final long defaultExpiryTime;
 
     public ExpiredTaskManager(Timer timer, long defaultExpiryTime) {
-        this.timer = Assert.requireNonNull(timer, "timer must not be null");
+        this.timer = Assert.requireNonNull(timer, "timer");
 
         Assert.isTrue(defaultExpiryTime > 0, "defaultExpiryTime must be greater than zero");
         this.defaultExpiryTime = defaultExpiryTime;
@@ -52,9 +52,9 @@ public class ExpiredTaskManager<K> {
     }
 
     public boolean reserve(K key, long expiryTime, FutureListener<Boolean> futureListener) {
-        Assert.requireNonNull(key, "key must not be null");
+        Assert.requireNonNull(key, "key");
         Assert.isTrue(expiryTime > 0, "expiryTime must be greater than zero");
-        Assert.requireNonNull(futureListener, "futureListener must not be null");
+        Assert.requireNonNull(futureListener, "futureListener");
 
         if (isDebug) {
             logger.debug("reserve() started. key:{}", key);

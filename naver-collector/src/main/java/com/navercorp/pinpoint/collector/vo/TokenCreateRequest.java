@@ -29,9 +29,9 @@ public class TokenCreateRequest {
     private final String remoteAddress;
 
     public TokenCreateRequest(PaaSOrganizationInfo paaSOrganizationInfo, TokenType tokenType, String remoteAddress) {
-        this.paaSOrganizationInfo = Assert.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo must not be null");
-        this.tokenType = Assert.requireNonNull(tokenType, "tokenType must not be null");
-        this.remoteAddress = Assert.requireNonNull(remoteAddress, "remoteAddress must not be null");
+        this.paaSOrganizationInfo = Assert.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo");
+        this.tokenType = Assert.requireNonNull(tokenType, "tokenType");
+        this.remoteAddress = Assert.requireNonNull(remoteAddress, "remoteAddress");
     }
 
     public PaaSOrganizationInfo getPaaSOrganizationInfo() {

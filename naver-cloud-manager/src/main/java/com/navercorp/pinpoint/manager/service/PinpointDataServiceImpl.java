@@ -33,7 +33,7 @@ public class PinpointDataServiceImpl implements PinpointDataService {
 
     @Autowired
     public PinpointDataServiceImpl(ApplicationIndexDao applicationIndexDao) {
-        this.applicationIndexDao = Objects.requireNonNull(applicationIndexDao, "applicationIndexDao must not be null");
+        this.applicationIndexDao = Objects.requireNonNull(applicationIndexDao, "applicationIndexDao");
     }
 
     @Override

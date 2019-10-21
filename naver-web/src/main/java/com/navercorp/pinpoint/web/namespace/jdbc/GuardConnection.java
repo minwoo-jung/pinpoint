@@ -54,7 +54,7 @@ public class GuardConnection implements Connection {
     }
 
     private GuardConnection(Connection delegate) {
-        this.delegate = Objects.requireNonNull(delegate, "delegate must not be null");
+        this.delegate = Objects.requireNonNull(delegate, "delegate");
     }
 
     @Override

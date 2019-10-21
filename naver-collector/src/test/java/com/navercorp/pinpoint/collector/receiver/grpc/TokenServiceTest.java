@@ -97,9 +97,9 @@ public class TokenServiceTest {
     }
 
     private Server createAndStartServer(String serverName, ServerInterceptor serverInterceptor, BindableService bindableService) throws IOException {
-        com.navercorp.pinpoint.common.util.Assert.requireNonNull(serverName, "serverName must not be null");
-        com.navercorp.pinpoint.common.util.Assert.requireNonNull(serverInterceptor, "serverInterceptor must not be null");
-        com.navercorp.pinpoint.common.util.Assert.requireNonNull(bindableService, "bindableService must not be null");
+        com.navercorp.pinpoint.common.util.Assert.requireNonNull(serverName, "serverName");
+        com.navercorp.pinpoint.common.util.Assert.requireNonNull(serverInterceptor, "serverInterceptor");
+        com.navercorp.pinpoint.common.util.Assert.requireNonNull(bindableService, "bindableService");
 
         int bindPort = SocketUtils.findAvailableTcpPort(27675);
 

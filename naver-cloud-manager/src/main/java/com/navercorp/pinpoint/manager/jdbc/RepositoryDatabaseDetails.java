@@ -27,7 +27,7 @@ public class RepositoryDatabaseDetails {
 
     public RepositoryDatabaseDetails(String databaseName) {
         if (databaseName == null) {
-            throw new NullPointerException("databaseName must not be null");
+            throw new NullPointerException("databaseName");
         }
         if (StringUtils.isEmpty(databaseName)) {
             throw new IllegalArgumentException("databaseName must not be empty");

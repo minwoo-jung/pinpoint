@@ -28,7 +28,7 @@ public class FlinkAttributes {
     private final Map<String, Object> attributes;
 
     public FlinkAttributes(Map<String, Object> attributes) {
-        Assert.notNull(attributes, "attribute must not be null");
+        Assert.notNull(attributes, "attribute");
         this.attributes = attributes;
     }
 

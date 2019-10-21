@@ -28,7 +28,7 @@ public class WebSocketAttributes {
     private final Map<String, Object> attributes;
 
     public WebSocketAttributes(Map<String, Object> attributes) {
-        Assert.notNull(attributes, "attribute must not be null");
+        Assert.notNull(attributes, "attribute");
         this.attributes = attributes;
     }
 

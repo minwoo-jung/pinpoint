@@ -44,11 +44,7 @@ public class SendSpanStatService extends SendDataToFlinkService {
     private final boolean flinkClusterEnable;
 
     public SendSpanStatService(SpanStatConfiguration spanStatConfiguration, HbaseTraceDaoV2Interceptor hbaseTraceDaoV2Interceptor) {
-        if (Objects.isNull(hbaseTraceDaoV2Interceptor)) {
-            throw new IllegalArgumentException("hbaseTraceDaoV2Interceptor must not be null.");
-        }
-        this.hbaseTraceDaoV2Interceptor = hbaseTraceDaoV2Interceptor;
-
+        this.hbaseTraceDaoV2Interceptor = Objects.requireNonNull(hbaseTraceDaoV2Interceptor, "hbaseTraceDaoV2Interceptor");
         this.flinkClusterEnable = spanStatConfiguration.isFlinkClusterEnable();
     }
 

@@ -36,7 +36,7 @@ public class WebSocketContextHandlerDecorator extends WebSocketHandlerDecorator 
 
     public WebSocketContextHandlerDecorator(WebSocketHandler delegate) {
         super(delegate);
-        Objects.requireNonNull(delegate, "WebSocketHandler must not be null");
+        Objects.requireNonNull(delegate, "WebSocketHandler");
     }
 
     @Override

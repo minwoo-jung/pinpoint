@@ -32,7 +32,7 @@ public class GrpcSecurityMetadata {
     private static final Metadata.Key<String> AUTH_TOKEN = Metadata.Key.of("pinpointAuthorizationTokenMetadata", Metadata.ASCII_STRING_MARSHALLER);
 
     public static String getAuthKey(Metadata metadata) {
-        Assert.requireNonNull(metadata, "metadata must not be null");
+        Assert.requireNonNull(metadata, "metadata");
         return metadata.get(AUTH_KEY);
     }
 
@@ -41,7 +41,7 @@ public class GrpcSecurityMetadata {
     }
 
     public static String getAuthToken(Metadata metadata) {
-        Assert.requireNonNull(metadata, "metadata must not be null");
+        Assert.requireNonNull(metadata, "metadata");
         return metadata.get(AUTH_TOKEN);
     }
 

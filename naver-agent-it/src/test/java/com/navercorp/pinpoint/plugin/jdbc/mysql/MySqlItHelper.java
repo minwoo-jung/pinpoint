@@ -59,7 +59,7 @@ public class MySqlItHelper {
 
     MySqlItHelper(Properties databaseProperties) {
         if (databaseProperties == null) {
-            throw new NullPointerException("databaseProperties must not be null");
+            throw new NullPointerException("databaseProperties");
         }
         jdbcUrl = databaseProperties.getProperty("mysql.url");
         String[] tokens = jdbcUrl.split(":");

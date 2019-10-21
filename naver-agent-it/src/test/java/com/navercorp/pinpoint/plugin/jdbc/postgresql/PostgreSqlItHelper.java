@@ -53,7 +53,7 @@ public class PostgreSqlItHelper {
 
     PostgreSqlItHelper(Properties databaseProperties) {
         if (databaseProperties == null) {
-            throw new NullPointerException("databaseProperties must not be null");
+            throw new NullPointerException("databaseProperties");
         }
         jdbcUrl = databaseProperties.getProperty("postgresql.url");
         String[] tokens = jdbcUrl.split(":");

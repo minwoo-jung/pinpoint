@@ -35,7 +35,7 @@ public class NamespaceCacheImpl implements NamespaceCache {
 
     @Autowired
     public NamespaceCacheImpl(NamespaceService namespaceService) {
-        this.namespaceService = Objects.requireNonNull(namespaceService, "namespaceService must not be null");
+        this.namespaceService = Objects.requireNonNull(namespaceService, "namespaceService");
 
     }
 

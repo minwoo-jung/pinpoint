@@ -42,7 +42,7 @@ public class HBaseManagerAdminTemplate extends HBaseAdminTemplate {
     }
 
     public NamespaceDescriptor getNamespaceDescriptor(String namespace) {
-        Objects.requireNonNull(namespace, "namespace must not be null");
+        Objects.requireNonNull(namespace, "namespace");
         return execute(admin -> admin.getNamespaceDescriptor(namespace));
     }
 
@@ -57,7 +57,7 @@ public class HBaseManagerAdminTemplate extends HBaseAdminTemplate {
     }
 
     public HTableDescriptor getTableDescriptor(TableName tableName) {
-        Objects.requireNonNull(tableName, "tableName must not be null");
+        Objects.requireNonNull(tableName, "tableName");
         return execute(admin -> admin.getTableDescriptor(tableName));
     }
 

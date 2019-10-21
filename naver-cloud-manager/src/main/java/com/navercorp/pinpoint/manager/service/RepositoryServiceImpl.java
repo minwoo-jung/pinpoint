@@ -62,11 +62,11 @@ public class RepositoryServiceImpl implements RepositoryService {
                                  HbaseManagementService hbaseManagementService,
                                  NamespaceGenerationService namespaceGenerationService,
                                  PinpointDataService pinpointDataService) {
-        this.metadataService = Objects.requireNonNull(metadataService, "metadataService must not be null");
-        this.databaseManagementService = Objects.requireNonNull(databaseManagementService, "databaseManagementService must not be null");
-        this.hbaseManagementService = Objects.requireNonNull(hbaseManagementService, "hbaseManagementService must not be null");
-        this.namespaceGenerationService = Objects.requireNonNull(namespaceGenerationService, "namespaceGenerationService must not be null");
-        this.pinpointDataService = Objects.requireNonNull(pinpointDataService, "pinpointDataService must not be null");
+        this.metadataService = Objects.requireNonNull(metadataService, "metadataService");
+        this.databaseManagementService = Objects.requireNonNull(databaseManagementService, "databaseManagementService");
+        this.hbaseManagementService = Objects.requireNonNull(hbaseManagementService, "hbaseManagementService");
+        this.namespaceGenerationService = Objects.requireNonNull(namespaceGenerationService, "namespaceGenerationService");
+        this.pinpointDataService = Objects.requireNonNull(pinpointDataService, "pinpointDataService");
     }
 
     @Override

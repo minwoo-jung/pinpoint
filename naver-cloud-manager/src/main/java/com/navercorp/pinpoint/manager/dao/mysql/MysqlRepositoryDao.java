@@ -41,7 +41,7 @@ public class MysqlRepositoryDao implements RepositoryDao {
 
     @Autowired
     public MysqlRepositoryDao(@Qualifier("sqlSessionTemplate") SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = Objects.requireNonNull(sqlSessionTemplate, "sqlSessionTemplate must not be null");
+        this.sqlSessionTemplate = Objects.requireNonNull(sqlSessionTemplate, "sqlSessionTemplate");
     }
 
     @Override

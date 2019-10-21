@@ -59,8 +59,8 @@ public class NssFilter implements Filter {
 
     public NssFilter(String userHeaderKey, NssAuthService nssAuthService, ObjectMapper objectMapper) {
         Assert.hasLength(userHeaderKey, "userHeaderKey must not be empty");
-        Assert.notNull(nssAuthService, "nssAuthService must not be null");
-        Assert.notNull(objectMapper, "objectMapper must not be null");
+        Assert.notNull(nssAuthService, "nssAuthService");
+        Assert.notNull(objectMapper, "objectMapper");
         this.userHeaderKey = userHeaderKey;
         this.nssAuthService = nssAuthService;
         this.unauthorizedResponse = createUnauthorizedResponse(objectMapper);

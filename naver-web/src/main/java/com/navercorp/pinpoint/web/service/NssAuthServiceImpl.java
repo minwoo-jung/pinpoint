@@ -22,7 +22,7 @@ public class NssAuthServiceImpl implements NssAuthService {
 
     @Autowired
     public NssAuthServiceImpl(@Qualifier("nssAuthDaoFactory") NssAuthDao nssAuthDao) {
-        Assert.notNull(nssAuthDao, "nssAuthDao must not be null");
+        Assert.notNull(nssAuthDao, "nssAuthDao");
         this.nssAuthDao = nssAuthDao;
     }
 

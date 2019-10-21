@@ -45,7 +45,7 @@ public class MysqlMetadataDao implements MetadataDao {
 
     @Autowired
     public MysqlMetadataDao(@Qualifier("metaDataSqlSessionTemplate") SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = Objects.requireNonNull(sqlSessionTemplate, "sqlSessionTemplate must not be null");
+        this.sqlSessionTemplate = Objects.requireNonNull(sqlSessionTemplate, "sqlSessionTemplate");
     }
 
     @Override

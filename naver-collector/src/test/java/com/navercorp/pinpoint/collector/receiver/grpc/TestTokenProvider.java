@@ -38,7 +38,7 @@ public class TestTokenProvider implements AuthorizationTokenProvider {
     private final AuthGrpc.AuthBlockingStub authBlockingStub;
 
     public TestTokenProvider(AuthGrpc.AuthBlockingStub authBlockingStub) {
-        this.authBlockingStub = Assert.requireNonNull(authBlockingStub, "authBlockingStub must not be null");
+        this.authBlockingStub = Assert.requireNonNull(authBlockingStub, "authBlockingStub");
     }
 
     @Override

@@ -21,9 +21,9 @@ import com.navercorp.pinpoint.collector.namespace.RequestContextHolder;
 import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author minwoo.jung
@@ -46,7 +46,7 @@ public class FlinkRequestFactoryInterceptor {
 
         RequestAttributes attributes = RequestContextHolder.currentAttributes();
         NameSpaceInfo nameSpaceInfo = (NameSpaceInfo) attributes.getAttribute(NameSpaceInfo.NAMESPACE_INFO);
-        Assert.notNull(nameSpaceInfo, "NameSpaceInfo must not be null.");
+        Objects.requireNonNull(nameSpaceInfo, "NameSpaceInfo");
 
         headerEntity.put("organization", nameSpaceInfo.getOrganization());
         headerEntity.put("databaseName", nameSpaceInfo.getMysqlDatabaseName());

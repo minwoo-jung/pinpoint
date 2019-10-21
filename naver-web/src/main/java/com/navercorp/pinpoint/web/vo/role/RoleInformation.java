@@ -32,7 +32,7 @@ public class RoleInformation {
     public RoleInformation(String roleId, PermissionCollection permissionCollection) {
         Assert.hasText(roleId, "roleId must not be empty");
         this.roleId = roleId;
-        this.permissionCollection = Objects.requireNonNull(permissionCollection, "permissionCollection must not be null");;
+        this.permissionCollection = Objects.requireNonNull(permissionCollection, "permissionCollection");;
     }
 
     public RoleInformation() {

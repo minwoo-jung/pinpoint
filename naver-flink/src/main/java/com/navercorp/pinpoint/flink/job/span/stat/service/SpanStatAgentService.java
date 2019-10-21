@@ -28,7 +28,7 @@ public class SpanStatAgentService {
     private final SpanStatAgentDao spanStatAgentDao;
 
     public SpanStatAgentService(SpanStatAgentDao spanStatAgentDao) {
-        this.spanStatAgentDao = Objects.requireNonNull(spanStatAgentDao, "spanStatAgentDao must not be null");
+        this.spanStatAgentDao = Objects.requireNonNull(spanStatAgentDao, "spanStatAgentDao");
     }
 
     public void insertSpanStatAgentVo(SpanStatAgentVo spanStatAgentVo) {

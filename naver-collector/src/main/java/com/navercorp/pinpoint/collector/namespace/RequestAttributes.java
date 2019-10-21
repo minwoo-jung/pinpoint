@@ -28,7 +28,7 @@ public class RequestAttributes {
     private final Map<String, Object> attributes;
 
     public RequestAttributes(Map<String, Object> attributes) {
-        Assert.notNull(attributes, "attribute must not be null");
+        Assert.notNull(attributes, "attribute");
         this.attributes = attributes;
     }
 

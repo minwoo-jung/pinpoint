@@ -29,9 +29,8 @@ public class PaaSJoinApplicationStatBo extends JoinApplicationStatBo {
     public PaaSJoinApplicationStatBo( PaaSOrganizationInfo paaSOrganizationInfo, JoinApplicationStatBo joinApplicationStatBo) {
         super(joinApplicationStatBo);
 
-        Objects.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo must not be null.");
-        Objects.requireNonNull(joinApplicationStatBo, "joinAgentStatBo must not be null.");
-        this.paaSOrganizationInfo = paaSOrganizationInfo;
+        Objects.requireNonNull(joinApplicationStatBo, "joinAgentStatBo");
+        this.paaSOrganizationInfo = Objects.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo");
     }
 
     public PaaSOrganizationInfo getPaaSOrganizationInfo() {

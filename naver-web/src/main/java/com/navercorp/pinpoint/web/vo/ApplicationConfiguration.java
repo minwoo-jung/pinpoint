@@ -29,9 +29,9 @@ public class ApplicationConfiguration {
     private final Map<String, AppUserGroupAuth> appUserGroupAuthes;
 
     public ApplicationConfiguration(String applicationId, List<AppUserGroupAuth> appUserGroupAuthList) {
-        this.applicationId = Objects.requireNonNull(applicationId, "applicationId must not be null");
+        this.applicationId = Objects.requireNonNull(applicationId, "applicationId");
 
-        Objects.requireNonNull(appUserGroupAuthList, "appUserGroupAuthList must not be null");
+        Objects.requireNonNull(appUserGroupAuthList, "appUserGroupAuthList");
         this.appUserGroupAuthes = toMap(appUserGroupAuthList);
     }
 

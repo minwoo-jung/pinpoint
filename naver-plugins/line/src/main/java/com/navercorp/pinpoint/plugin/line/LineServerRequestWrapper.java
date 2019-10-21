@@ -30,7 +30,7 @@ public class LineServerRequestWrapper implements ServerRequestWrapper {
     private final String acceptorHost;
 
     public LineServerRequestWrapper(final HttpRequest request, final String endPoint, final String remoteAddress, final String acceptorHost) {
-        this.request = Assert.requireNonNull(request, "request must not be null");
+        this.request = Assert.requireNonNull(request, "request");
         this.endPoint = endPoint;
         this.remoteAddress = remoteAddress;
         this.acceptorHost = acceptorHost;

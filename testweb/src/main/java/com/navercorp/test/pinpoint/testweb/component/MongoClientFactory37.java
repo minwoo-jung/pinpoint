@@ -41,8 +41,8 @@ public class MongoClientFactory37 implements FactoryBean<MongoClient>, Initializ
     }
 
     public MongoClientFactory37(String hostAddress, int hostPort) {
-        Assert.notNull(hostAddress, "hostAddress must not be null");
-        Assert.notNull(hostPort, "hostPort must not be null");
+        Assert.notNull(hostAddress, "hostAddress");
+        Assert.notNull(hostPort, "hostPort");
         this.hostAddress = hostAddress;
         this.hostPort = hostPort;
     }

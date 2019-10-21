@@ -40,7 +40,7 @@ public class HystrixMemberServiceImpl implements HystrixMemberService {
     @Override
     public Member getAndThrowException(int id, Exception exception) throws Exception {
         if (exception == null) {
-            throw new NullPointerException("exception must not be null");
+            throw new NullPointerException("exception");
         }
         memberService.get(id);
         throw exception;

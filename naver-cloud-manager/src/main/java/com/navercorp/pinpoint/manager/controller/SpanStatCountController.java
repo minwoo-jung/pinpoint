@@ -38,7 +38,7 @@ public class SpanStatCountController {
 
     @Autowired
     public SpanStatCountController(SpanCountStatService spanCountStatService) {
-        this.spanCountStatService = Objects.requireNonNull(spanCountStatService, "spanCountStatService must not be null");
+        this.spanCountStatService = Objects.requireNonNull(spanCountStatService, "spanCountStatService");
     }
 
     @GetMapping(value = "/organization")

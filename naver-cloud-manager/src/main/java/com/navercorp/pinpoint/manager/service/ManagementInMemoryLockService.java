@@ -72,7 +72,7 @@ public class ManagementInMemoryLockService implements ManagementLockService {
         private final AtomicInteger counter = new AtomicInteger();
 
         private Synchronizer(UUID monitor) {
-            this.monitor = Objects.requireNonNull(monitor, "monitor must not be null");
+            this.monitor = Objects.requireNonNull(monitor, "monitor");
         }
 
 

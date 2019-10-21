@@ -22,13 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.http.*;
-import org.springframework.util.Assert;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author minwoo.jung
@@ -43,12 +43,11 @@ public class NaverSmsSender implements SmsSender {
     private final String senderNumber;
 
     public NaverSmsSender(NaverBatchConfiguration batchConfiguration, UserGroupService userGroupService, RestTemplate restTemplate) {
-        Assert.notNull(batchConfiguration, "batchConfiguration must not be null.");
-        Assert.notNull(userGroupService, "userGroupService must not be null.");
-
+        Objects.requireNonNull(batchConfiguration, "batchConfiguration ");
         this.smsServerUrl = batchConfiguration.getMexServerUrl();
         this.senderNumber = batchConfiguration.getSenderNumber();
-        this.userGroupService = userGroupService;
+
+        this.userGroupService = Objects.requireNonNull(userGroupService, "userGroupService");
         this.restTemplate = restTemplate;
 
         this.headers = new HttpHeaders();

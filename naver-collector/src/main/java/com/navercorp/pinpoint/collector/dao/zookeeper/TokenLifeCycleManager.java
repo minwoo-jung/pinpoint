@@ -51,7 +51,7 @@ class TokenLifeCycleManager {
     private final Timer timer;
 
     TokenLifeCycleManager(ZookeeperTokenDao zookeeperTokenDao, long retryIntervalMillis) {
-        this.zookeeperTokenDao = Assert.requireNonNull(zookeeperTokenDao, "zookeeperTokenDao must not be null");
+        this.zookeeperTokenDao = Assert.requireNonNull(zookeeperTokenDao, "zookeeperTokenDao");
 
         Assert.isTrue(retryIntervalMillis > 0, "retryIntervalMillis must be greater than 0");
         this.retryIntervalMillis = retryIntervalMillis;
@@ -122,7 +122,7 @@ class TokenLifeCycleManager {
         private final String tokenKey;
 
         private DeleteNodeTask(String tokenKey) {
-            this.tokenKey = Assert.requireNonNull(tokenKey, "tokenKey must not be null");
+            this.tokenKey = Assert.requireNonNull(tokenKey, "tokenKey");
         }
 
         @Override

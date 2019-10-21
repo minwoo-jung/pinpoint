@@ -46,7 +46,7 @@ public class TokenSerializer extends JsonSerializer<Token> {
     }
 
     private void serializeOrganizationInfo(PaaSOrganizationInfo paaSOrganizationInfo, JsonGenerator jgen) throws IOException {
-        Assert.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo must not be null");
+        Assert.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo");
 
         jgen.writeObjectFieldStart("organizationInfo");
 

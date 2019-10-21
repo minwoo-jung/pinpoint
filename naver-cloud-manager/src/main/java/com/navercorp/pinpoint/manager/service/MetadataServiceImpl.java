@@ -50,7 +50,7 @@ public class MetadataServiceImpl implements MetadataService {
 
     @Autowired
     public MetadataServiceImpl(MetadataDao metadataDao) {
-        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao must not be null");
+        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao");
     }
 
     @Override

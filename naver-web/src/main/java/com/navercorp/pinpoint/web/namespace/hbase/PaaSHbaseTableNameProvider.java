@@ -36,7 +36,7 @@ public class PaaSHbaseTableNameProvider implements TableNameProvider {
     private final NameSpaceInfoFactory nameSpaceInfoFactory;
 
     public PaaSHbaseTableNameProvider(NameSpaceInfoFactory nameSpaceInfoFactory) {
-        this.nameSpaceInfoFactory = Objects.requireNonNull(nameSpaceInfoFactory, "nameSpaceInfoFactory must not be null");
+        this.nameSpaceInfoFactory = Objects.requireNonNull(nameSpaceInfoFactory, "nameSpaceInfoFactory");
     }
 
     @Override

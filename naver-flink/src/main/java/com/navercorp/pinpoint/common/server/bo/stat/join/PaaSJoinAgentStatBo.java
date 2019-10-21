@@ -29,9 +29,8 @@ public class PaaSJoinAgentStatBo extends JoinAgentStatBo {
     public PaaSJoinAgentStatBo(PaaSOrganizationInfo paaSOrganizationInfo, JoinAgentStatBo joinAgentStatBo) {
         super(joinAgentStatBo);
 
-        Objects.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo must not be null.");
-        Objects.requireNonNull(joinAgentStatBo, "joinAgentStatBo must not be null.");
-        this.paaSOrganizationInfo = paaSOrganizationInfo;
+        Objects.requireNonNull(joinAgentStatBo, "joinAgentStatBo");
+        this.paaSOrganizationInfo = Objects.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo");
 
     }
 

@@ -31,7 +31,7 @@ public class SpanStatAgentDaoImpl implements SpanStatAgentDao {
     private final SqlSessionTemplate sqlSessionTemplate;
 
     public SpanStatAgentDaoImpl(SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = Objects.requireNonNull(sqlSessionTemplate, "sqlSessionTemplate must not be null");
+        this.sqlSessionTemplate = Objects.requireNonNull(sqlSessionTemplate, "sqlSessionTemplate");
     }
 
     @Override

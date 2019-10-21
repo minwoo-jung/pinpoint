@@ -45,8 +45,8 @@ public class TokenServiceImpl implements TokenService {
 
     @Autowired
     public TokenServiceImpl(TokenConfig tokenConfig, TokenDao tokenDao) {
-        this.tokenConfig = Objects.requireNonNull(tokenConfig, "tokenConfig must not be null");
-        this.tokenDao = Objects.requireNonNull(tokenDao, "tokenDao must not be null");
+        this.tokenConfig = Objects.requireNonNull(tokenConfig, "tokenConfig");
+        this.tokenDao = Objects.requireNonNull(tokenDao, "tokenDao");
     }
 
     @Override

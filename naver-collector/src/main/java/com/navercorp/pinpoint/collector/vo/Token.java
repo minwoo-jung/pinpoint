@@ -39,14 +39,14 @@ public class Token {
     private final TokenType tokenType;
 
     public Token(String key, PaaSOrganizationInfo paaSOrganizationInfo, long expiryTime, String remoteAddress, TokenType tokenType) {
-        this.key = Assert.requireNonNull(key, "key must not be null");
-        this.paaSOrganizationInfo = Assert.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo must not be null");
+        this.key = Assert.requireNonNull(key, "key");
+        this.paaSOrganizationInfo = Assert.requireNonNull(paaSOrganizationInfo, "paaSOrganizationInfo");
 
         Assert.isTrue(expiryTime > 0, "expiryTime must be greater than 0");
         this.expiryTime = expiryTime;
 
-        this.remoteAddress = Assert.requireNonNull(remoteAddress, "remoteAddress must not be null");
-        this.tokenType = Assert.requireNonNull(tokenType, "tokenType must not be null");
+        this.remoteAddress = Assert.requireNonNull(remoteAddress, "remoteAddress");
+        this.tokenType = Assert.requireNonNull(tokenType, "tokenType");
     }
 
     public String getKey() {

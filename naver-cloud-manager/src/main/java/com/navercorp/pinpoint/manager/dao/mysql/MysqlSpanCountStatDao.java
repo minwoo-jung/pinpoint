@@ -38,7 +38,7 @@ public class MysqlSpanCountStatDao implements SpanCountStatDao {
 
     @Autowired
     public MysqlSpanCountStatDao(@Qualifier("statisticsSqlSessionTemplate") SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = Objects.requireNonNull(sqlSessionTemplate, "sqlSessionTemplate must not be null");
+        this.sqlSessionTemplate = Objects.requireNonNull(sqlSessionTemplate, "sqlSessionTemplate");
     }
 
     @Override

@@ -36,7 +36,7 @@ public enum StorageStatus {
 
     StorageStatus(int code, String value) {
         this.code = code;
-        this.value = Objects.requireNonNull(value, "value must not be null");
+        this.value = Objects.requireNonNull(value, "value");
     }
 
     public int getCode() {

@@ -34,7 +34,7 @@ public class SpanCountStatServiceImpl implements SpanCountStatService {
     private SpanCountStatDao spanCountStatDao;
 
     public SpanCountStatServiceImpl(SpanCountStatDao spanCountStatDao) {
-        this.spanCountStatDao = Objects.requireNonNull(spanCountStatDao, "spanCountStatDao must not be null");
+        this.spanCountStatDao = Objects.requireNonNull(spanCountStatDao, "spanCountStatDao");
     }
 
     @Override

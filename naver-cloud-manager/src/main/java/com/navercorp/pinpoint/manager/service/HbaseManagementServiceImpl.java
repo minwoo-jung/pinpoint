@@ -74,13 +74,13 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
             HbaseSchemaReader hbaseSchemaReader,
             HbaseNamespaceDao hbaseNamespaceDao,
             @Qualifier("storageManagementTaskExecutor") ThreadPoolTaskExecutor storageManagementTaskExecutor) {
-        this.compression = Objects.requireNonNull(compression, "compression must not be null");
-        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao must not be null");
-        this.hbaseSchemaService = Objects.requireNonNull(hbaseSchemaService, "hbaseSchemaService must not be null");
-        this.hbaseNamespaceDao = Objects.requireNonNull(hbaseNamespaceDao, "hbaseNamespaceDao must not be null");
-        Objects.requireNonNull(hbaseSchemaReader, "hbaseSchemaReader must not be null");
+        this.compression = Objects.requireNonNull(compression, "compression");
+        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao");
+        this.hbaseSchemaService = Objects.requireNonNull(hbaseSchemaService, "hbaseSchemaService");
+        this.hbaseNamespaceDao = Objects.requireNonNull(hbaseNamespaceDao, "hbaseNamespaceDao");
+        Objects.requireNonNull(hbaseSchemaReader, "hbaseSchemaReader");
         this.changeSets = Collections.unmodifiableList(hbaseSchemaReader.loadChangeSets());
-        this.storageManagementTaskExecutor = Objects.requireNonNull(storageManagementTaskExecutor, "storageManagementTaskExecutor must not be null");
+        this.storageManagementTaskExecutor = Objects.requireNonNull(storageManagementTaskExecutor, "storageManagementTaskExecutor");
     }
 
     @Override
@@ -222,8 +222,8 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
         private final String hbaseNamespace;
 
         private HbaseCreateWorkerTask(UUID taskId, String hbaseNamespace) {
-            this.taskId = Objects.requireNonNull(taskId, "taskId must not be null");
-            this.hbaseNamespace = Objects.requireNonNull(hbaseNamespace, "hbaseNamespace must not be null");
+            this.taskId = Objects.requireNonNull(taskId, "taskId");
+            this.hbaseNamespace = Objects.requireNonNull(hbaseNamespace, "hbaseNamespace");
         }
 
         private boolean validateHbaseState() {
@@ -295,8 +295,8 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
         private final String hbaseNamespace;
 
         private HbaseUpdateWorkerTask(UUID taskId, String hbaseNamespace) {
-            this.taskId = Objects.requireNonNull(taskId, "taskId must not be null");
-            this.hbaseNamespace = Objects.requireNonNull(hbaseNamespace, "hbaseNamespace must not be null");
+            this.taskId = Objects.requireNonNull(taskId, "taskId");
+            this.hbaseNamespace = Objects.requireNonNull(hbaseNamespace, "hbaseNamespace");
         }
 
         private boolean validateHbaseState() {
@@ -337,8 +337,8 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
         private final String hbaseNamespace;
 
         private HbaseDeleteWorkerTask(UUID taskId, String hbaseNamespace) {
-            this.taskId = Objects.requireNonNull(taskId, "taskId must not be null");
-            this.hbaseNamespace = Objects.requireNonNull(hbaseNamespace, "hbaseNamespace must not be null");
+            this.taskId = Objects.requireNonNull(taskId, "taskId");
+            this.hbaseNamespace = Objects.requireNonNull(hbaseNamespace, "hbaseNamespace");
         }
 
         private boolean validateHbaseState() {
