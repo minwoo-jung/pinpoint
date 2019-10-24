@@ -66,10 +66,6 @@
             <id>nhn.release.repository</id>
             <url>http://repo.navercorp.com/maven2</url>
         </repository>
-        <repository>
-            <id>cubrid.release.repository</id>
-            <url>http://maven.cubrid.org</url>
-        </repository>
     </repositories>
 
     <pluginRepositories>
