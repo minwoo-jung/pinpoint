@@ -4,6 +4,7 @@ import { filter } from 'rxjs/operators';
 
 import { Actions } from 'app/shared/store';
 import { WebAppSettingDataService, StoreHelperService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
+import { ServerMapData } from 'app/core/components/server-map/class/server-map-data.class';
 
 interface IAppData {
     applicationName: string;
@@ -21,7 +22,10 @@ interface IAppData {
 export class SideBarTitleContainerComponent implements OnInit, OnDestroy {
     @HostBinding('class.flex-container') flexContainerClass = true;
     @HostBinding('class.flex-row') flexRowClass = true;
+
     private static AGENT_ALL = 'All';
+    private unsubscribe = new Subject<void>();
+
     isWAS: boolean;
     isNode: boolean;
     fromAppData: IAppData = null;
@@ -31,12 +35,12 @@ export class SideBarTitleContainerComponent implements OnInit, OnDestroy {
     originalTargetSelected = true;
     serverMapData: any;
     funcImagePath: Function;
-    unsubscribe: Subject<null> = new Subject();
+
     constructor(
-        private changeDetector: ChangeDetectorRef,
         private storeHelperService: StoreHelperService,
         private webAppSettingDataService: WebAppSettingDataService,
         private analyticsService: AnalyticsService,
+        private cd: ChangeDetectorRef,
     ) {}
 
     ngOnInit() {
@@ -50,28 +54,30 @@ export class SideBarTitleContainerComponent implements OnInit, OnDestroy {
     }
 
     private connectStore(): void {
-        this.storeHelperService.getServerMapData(this.unsubscribe).subscribe((serverMapData: IServerMapInfo) => {
+        this.storeHelperService.getServerMapData(this.unsubscribe).pipe(
+            filter((serverMapData: ServerMapData) => !!serverMapData),
+        ).subscribe((serverMapData: ServerMapData) => {
             this.serverMapData = serverMapData;
         });
 
         this.storeHelperService.getServerMapTargetSelected(this.unsubscribe).pipe(
             filter((target: ISelectedTarget) => !!target)
         ).subscribe((target: ISelectedTarget) => {
-            this.selectedAgent = SideBarTitleContainerComponent.AGENT_ALL;
             this.originalTargetSelected = true;
             this.selectedTarget = target;
+            this.onChangeAgent(SideBarTitleContainerComponent.AGENT_ALL);
             this.makeFromToData();
-            this.changeDetector.detectChanges();
+            this.cd.detectChanges();
         });
 
         this.storeHelperService.getServerMapTargetSelectedByList(this.unsubscribe).pipe(
             filter(() => this.selectedTarget && this.selectedTarget.isNode && !this.selectedTarget.isMerged)
         ).subscribe((target: any) => {
-            this.selectedAgent = SideBarTitleContainerComponent.AGENT_ALL;
             this.originalTargetSelected = this.selectedTarget.node[0] === target.key;
-            this.changeDetector.detectChanges();
+            this.cd.detectChanges();
         });
     }
+
     makeFromToData() {
         if (this.selectedTarget.isNode) {
             this.isWAS = this.selectedTarget.isWAS;
@@ -86,9 +92,11 @@ export class SideBarTitleContainerComponent implements OnInit, OnDestroy {
             this.toAppData = this.formatToAppData({ link: link });
         }
     }
+
     private isUserType(type: string): boolean {
         return type.toUpperCase() === 'USER';
     }
+
     private formatFromAppData(link: any): IAppData {
         if (this.selectedTarget.isSourceMerge) {
             return {
@@ -102,6 +110,7 @@ export class SideBarTitleContainerComponent implements OnInit, OnDestroy {
             };
         }
     }
+
     private formatToAppData({ node, link }: { node?: any, link?: any }): IAppData {
         if (this.isNode) {
             if (this.selectedTarget.isMerged) {
@@ -143,6 +152,7 @@ export class SideBarTitleContainerComponent implements OnInit, OnDestroy {
             }
         }
     }
+
     onChangeAgent(agentName: string): void {
         this.selectedAgent = agentName;
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SELECT_AGENT);

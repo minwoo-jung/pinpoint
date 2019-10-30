@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy, ElementRef, Renderer2 } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, Renderer2, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterEvent, NavigationStart } from '@angular/router';
 import { Subject, Observable, merge } from 'rxjs';
-import { filter, mapTo, tap, map } from 'rxjs/operators';
+import { filter, mapTo, tap, map, takeUntil } from 'rxjs/operators';
 
 import { WebAppSettingDataService, StoreHelperService } from 'app/shared/services';
 
@@ -9,6 +9,7 @@ import { WebAppSettingDataService, StoreHelperService } from 'app/shared/service
     selector: 'pp-side-bar-for-filtered-map-container',
     templateUrl: './side-bar-for-filtered-map-container.component.html',
     styleUrls: ['./side-bar-for-filtered-map-container.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestroy {
     private unsubscribe = new Subject<void>();
@@ -16,6 +17,8 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
     target: ISelectedTarget;
     useDisable = true;
     showLoading = true;
+    showDivider = false;
+    isAuthorized = false;
     isTargetMerged: boolean;
     securityGuideUrl$: Observable<string>;
 
@@ -24,7 +27,8 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
         private storeHelperService: StoreHelperService,
         private webAppSettingDataService: WebAppSettingDataService,
         private el: ElementRef,
-        private renderer: Renderer2
+        private renderer: Renderer2,
+        private cd: ChangeDetectorRef,
     ) {}
 
     ngOnInit() {
@@ -40,12 +44,14 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
 
     private addPageLoadingHandler(): void {
         this.router.events.pipe(
+            takeUntil(this.unsubscribe),
             filter((e: RouterEvent) => {
                 return e instanceof NavigationStart;
             })
         ).subscribe(() => {
             this.showLoading = true;
             this.useDisable = true;
+            this.cd.detectChanges();
         });
     }
 
@@ -62,6 +68,8 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
                     this.useDisable = false;
                     break;
             }
+
+            this.cd.detectChanges();
         });
 
         merge(
@@ -72,24 +80,12 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
                     this.target = target;
                     this.renderer.setStyle(this.el.nativeElement, 'width', '477px');
                 }),
-                map(({isMerged}: ISelectedTarget) => isMerged)
             )
-        ).subscribe((isMerged: boolean) => {
+        ).subscribe(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
             this.isTargetMerged = isMerged;
+            this.isAuthorized = isAuthorized;
+            this.showDivider = isNode && isWAS && !isMerged;
+            this.cd.detectChanges();
         });
-    }
-
-    hasTopElement(): boolean {
-        if (!this.target) {
-            return false;
-        }
-
-        const {isNode, isWAS, isMerged} = this.target;
-
-        return isNode && isWAS && !isMerged;
-    }
-
-    hasAuthrization(): boolean {
-        return this.target && this.target.isAuthorized;
     }
 }
