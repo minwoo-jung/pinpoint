@@ -22,14 +22,20 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import com.navercorp.test.pinpoint.testweb.service.SpringService;
+import org.reactivestreams.Subscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.reactive.JettyClientHttpConnector;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 /**
  *
@@ -154,4 +160,25 @@ public class SpringController {
         return "OK " + elapsedTimeMillis + "ms";
     }
 
+    @RequestMapping(value = "/spring/webflux/webclient/exchange")
+    @ResponseBody
+    public String webfluxWebClientExchange() {
+        WebClient webClient = WebClient.builder().baseUrl("http://naver.com").build();
+        Mono<ClientResponse> responseMono = webClient.get().uri("").exchange();
+        responseMono.subscribe();
+
+        return "OK ";
+    }
+
+    @RequestMapping(value = "/spring/webflux/webclient/retrieve")
+    @ResponseBody
+    public String webfluxWebClientRetrieve() {
+        WebClient webClient = WebClient.builder().baseUrl("http://naver.com").build();
+        WebClient.ResponseSpec response = webClient.get().uri("").retrieve();
+        Mono<String> monoString = response.bodyToMono(String.class);
+        monoString.subscribe();
+
+
+        return "OK ";
+    }
 }
