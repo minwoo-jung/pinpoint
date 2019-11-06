@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Renderer2, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterEvent, NavigationStart } from '@angular/router';
 import { Subject, Observable, merge } from 'rxjs';
-import { filter, mapTo, tap, takeUntil } from 'rxjs/operators';
+import { filter, mapTo, tap, takeUntil, map } from 'rxjs/operators';
 
 import { WebAppSettingDataService, StoreHelperService } from 'app/shared/services';
 import { ServerMapData } from 'app/core/components/server-map/class';
@@ -69,17 +69,18 @@ export class SideBarContainerComponent implements OnInit, OnDestroy {
             this.storeHelperService.getServerMapTargetSelectedByList(this.unsubscribe).pipe(mapTo(false)),
             this.storeHelperService.getServerMapTargetSelected(this.unsubscribe).pipe(
                 filter((target: ISelectedTarget) => !!target),
-                tap((target: ISelectedTarget) => {
-                    this.target = target;
+                tap(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
+                    // this.target = target;
                     this.renderer.setStyle(this.el.nativeElement, 'width', '477px');
                     this.showLoading = false;
                     this.useDisable = false;
+                    this.isAuthorized = isAuthorized;
+                    this.showDivider = isNode && isWAS && !isMerged;
                 }),
+                map(({isMerged}: ISelectedTarget) => isMerged)
             )
-        ).subscribe(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
+        ).subscribe((isMerged: boolean) => {
             this.isTargetMerged = isMerged;
-            this.isAuthorized = isAuthorized;
-            this.showDivider = isNode && isWAS && !isMerged;
             this.cd.detectChanges();
         });
     }

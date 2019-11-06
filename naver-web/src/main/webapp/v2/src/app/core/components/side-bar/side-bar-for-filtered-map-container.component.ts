@@ -76,15 +76,16 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
             this.storeHelperService.getServerMapTargetSelectedByList(this.unsubscribe).pipe(mapTo(false)),
             this.storeHelperService.getServerMapTargetSelected(this.unsubscribe).pipe(
                 filter((target: ISelectedTarget) => !!target),
-                tap((target: ISelectedTarget) => {
-                    this.target = target;
+                tap(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
+                    // this.target = target;
                     this.renderer.setStyle(this.el.nativeElement, 'width', '477px');
+                    this.isAuthorized = isAuthorized;
+                    this.showDivider = isNode && isWAS && !isMerged;
                 }),
+                map(({isMerged}: ISelectedTarget) => isMerged)
             )
-        ).subscribe(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
+        ).subscribe((isMerged: boolean) => {
             this.isTargetMerged = isMerged;
-            this.isAuthorized = isAuthorized;
-            this.showDivider = isNode && isWAS && !isMerged;
             this.cd.detectChanges();
         });
     }
