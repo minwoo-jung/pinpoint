@@ -23,6 +23,9 @@
                 <value>classpath:/jdbc.properties</value>
             </list>
         </property>
+
+        <property name="fileEncoding" value="UTF-8"/>
+        <property name="systemPropertiesMode" value="#{T(org.springframework.beans.factory.config.PropertyPlaceholderConfigurer).SYSTEM_PROPERTIES_MODE_OVERRIDE}"/>
     </bean>
 
     <task:scheduled-tasks scheduler="naverScheduler">
