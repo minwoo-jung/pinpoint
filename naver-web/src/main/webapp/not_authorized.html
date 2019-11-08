@@ -56,12 +56,24 @@
 	<div class="container" style="padding-top:200px">
 		<div class="panel panel-danger">
 			<div class="panel-heading">
-				<h3 class="panel-title">접근 권한이 없습니다.</h3>
+				<h3 class="panel-title"></h3>
 			</div>
-			<div class="panel-body" style="font-weight:bold;">업무상 접근이 필요하시면 NAVER Service Security 허규님께 연락 부탁드립니다.</div> 
+			<div class="panel-body" style="font-weight:bold;"></div> 
 		</div>
 	</div>
+    <script>
+        const titleElem = document.querySelector('.panel-title');
+        const bodyElem = document.querySelector('.panel-body');
+        const userLang = window.navigator.language; // ko or else
 
+        if (userLang.includes('ko')) {
+            titleElem.textContent = '접근 권한이 없습니다.';
+            bodyElem.textContent = '업무상 접근이 필요하시면 NAVER Service Security 허규님께 연락 부탁드립니다.';
+        } else {
+            titleElem.textContent = 'You are not authorized.';
+            bodyElem.textContent = 'Please contact 허규(Heo Gyu) in NAVER Service Security for access.';
+        }
+    </script>
 	<script src="components/jquery/dist/jquery.js?v=${buildTime}"></script>
     <script src="components/bootstrap/dist/js/bootstrap.min.js?v=${buildTime}"></script>
 
