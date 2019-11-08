@@ -26,14 +26,14 @@
     <util:properties id="matcherInfo" location="classpath:site-matcher.properties"/>
 
     <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao">
-        <constructor-arg index="0" value="#{pinpointWebProps['nss.override.id'] ?: ''}"/>
-        <constructor-arg index="1" value="#{pinpointWebProps['nss.authorized.prefix'] ?: ''}"/>
+        <constructor-arg index="0" value="${nss.override.id:}"/>
+        <constructor-arg index="1" value="${nss.authorized.prefix:}"/>
     </bean>
 
     <bean id="nssAuthDaoFactory" class="com.navercorp.pinpoint.web.dao.NssAuthDaoFactory"/>
 
     <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter">
-        <constructor-arg index="0" value="#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}"/>
+        <constructor-arg index="0" value="${nss.user.header.key:SSO_USER}"/>
         <constructor-arg index="1" ref="nssAuthServiceImpl"/>
         <constructor-arg index="2" ref="jsonObjectMapper"/>
     </bean>
@@ -42,7 +42,7 @@
     </bean>
 
     <bean id="userInfoDecoder" class="com.navercorp.pinpoint.web.util.NaverUserInfoDecoder">
-        <constructor-arg index="0" value="#{pinpointWebProps['naver.userinfo.decode.key']}"/>
+        <constructor-arg index="0" value="${naver.userinfo.decode.key}"/>
     </bean>
     <bean id="rewriteFilter" class="com.navercorp.pinpoint.web.servlet.RewriteForV2Filter">
         <constructor-arg index="0" value="true"/>
@@ -50,7 +50,7 @@
 
     <task:scheduled-tasks>
         <task:scheduled ref="nssFilter" method="update"
-                        fixed-rate="#{pinpointWebProps['nss.update.interval'] ?: 60000}"/>
+                        fixed-rate="${nss.update.interval:60000}"/>
     </task:scheduled-tasks>
 
     <bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>

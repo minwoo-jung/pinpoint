@@ -38,7 +38,7 @@ public class NssAuthDaoFactory implements FactoryBean<NssAuthDao> {
     @Qualifier("mysqlNssAuthDao")
     private NssAuthDao mysqlNssAuthDao;
 
-    @Value("#{pinpointWebProps['nss.use.properties'] ?: false}")
+    @Value("${nss.use.properties:false}")
     private boolean useProperties;
 
     @Override

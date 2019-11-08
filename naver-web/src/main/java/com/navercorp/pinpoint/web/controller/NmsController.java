@@ -52,7 +52,7 @@ public class NmsController {
     private final static String NMS_CONN_RS_PORT_API_URL = "http://view.nms.navercorp.com/nms-api/dashboard.php?cmd=getVipsByRip&rip={hostIp}";
     private final static String NMS_CONN_CPS_API_URL = "http://view.nms.navercorp.com/nms-api/topology.php?cmd=vsByRsip&rsIp={hostIp}&rsPort={rsPort}";
     
-    @Value("#{pinpointWebProps['nms.error.message']}")
+    @Value("${nms.error.message}")
     private String nmsErrorMessage;
     
     @Autowired  

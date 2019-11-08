@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context" xmlns:task="http://www.springframework.org/schema/task" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
-    <bean id="spanStatConfiguration" class="com.navercorp.pinpoint.collector.config.SpanStatConfiguration">
-        <property name="properties" ref="pinpoint_collector_properties"/>
-    </bean>
+    <bean id="spanStatConfiguration" class="com.navercorp.pinpoint.collector.config.SpanStatConfiguration"/>
 
     <bean id="flinkClusterServiceForSpanStat" class="com.navercorp.pinpoint.collector.cluster.flink.FlinkClusterService">
         <constructor-arg index="0" ref="spanStatConfiguration"/>

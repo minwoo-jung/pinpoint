@@ -20,7 +20,8 @@ import org.aspectj.lang.JoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
+import java.util.Objects;
 
 /**
  * @author minwoo.jung
@@ -29,20 +30,23 @@ public class ApplicationControllerInterceptor {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("#{pinpointWebProps['namespaceInfo.defaultValue.userId']}")
-    private String userId;
+    private final String userId;
 
-    @Value("#{pinpointWebProps['namespaceInfo.defaultValue.organizationName']}")
-    private String organizationName;
+    private final String organizationName;
+
+    public ApplicationControllerInterceptor(String userId, String organizationName) {
+        this.userId = Objects.requireNonNull(userId, "userId");
+        this.organizationName = Objects.requireNonNull(organizationName, "organizationName");
+    }
 
     @Autowired
     private MetaDataService metaDataService;
 
     public void beforeIntercept(JoinPoint joinPoint) throws Throwable {
-        boolean allocateSuccess = metaDataService.allocatePaaSOrganizationInfoRequestScope(userId, organizationName);
+        final boolean allocateSuccess = metaDataService.allocatePaaSOrganizationInfoRequestScope(userId, organizationName);
 
         if (allocateSuccess == false) {
-            String message = String.format("error occurred in allocatePaaSOrganizationInfo userId(%s), organizationName(%s).", userId, organizationName);
+            final String message = String.format("error occurred in allocatePaaSOrganizationInfo userId(%s), organizationName(%s).", userId, organizationName);
             logger.error(message);
             throw new RuntimeException(message);
         }

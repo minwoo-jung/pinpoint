@@ -34,7 +34,7 @@ public class NaverUserInformationAcquirer implements UserInformationAcquirer {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("#{pinpointWebProps['security.header.key.userId']}")
+    @Value("${security.header.key.userId}")
     private String userIdHeaderName;
 
     @Override

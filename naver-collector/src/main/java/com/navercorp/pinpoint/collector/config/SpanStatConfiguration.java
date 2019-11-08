@@ -17,23 +17,31 @@ package com.navercorp.pinpoint.collector.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
-import java.util.Properties;
+import javax.annotation.PostConstruct;
 
 /**
  * @author minwoo.jung
  */
+@Configuration
 public class SpanStatConfiguration extends FlinkConfiguration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpanStatConfiguration.class);
+    private final Logger logger = LoggerFactory.getLogger(SpanStatConfiguration.class);
 
-    @Override
-    protected void readPropertyValues(Properties properties) {
-        LOGGER.info("pinpoint-collector.properties read.");
+    @Value("${span.stat.flink.cluster.enable}")
+    protected boolean flinkClusterEnable;
 
-        this.flinkClusterEnable = CollectorConfiguration.readBoolean(properties, "span.stat.flink.cluster.enable");
-        this.flinkClusterZookeeperAddress = CollectorConfiguration.readString(properties, "span.stat.flink.cluster.zookeeper.address", "");
-        this.flinkClusterSessionTimeout = CollectorConfiguration.readInt(properties, "span.stat.flink.cluster.zookeeper.sessiontimeout", -1);
+    @Value("${span.stat.flink.cluster.zookeeper.address:}")
+    protected String flinkClusterZookeeperAddress;
+
+    @Value("${span.stat.flink.cluster.zookeeper.sessiontimeout:-1}")
+    protected int flinkClusterSessionTimeout;
+
+    @PostConstruct
+    public void log() {
+        logger.info("{}", this);
     }
 
     @Override
@@ -46,3 +54,4 @@ public class SpanStatConfiguration extends FlinkConfiguration {
         return sb.toString();
     }
 }
+

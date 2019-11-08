@@ -36,10 +36,10 @@ import java.util.regex.Pattern;
 @Repository
 public class NaverAgentDownloadInfoDao implements AgentDownloadInfoDao {
 
-    @Value("#{pinpointWebProps['agent.repository.url']}")
+    @Value("${agent.repository.url}")
     private String repositoryUrl;
 
-    @Value("#{pinpointWebProps['agent.repository.restapi.url']}")
+    @Value("${agent.repository.restapi.url}")
     private String repositoryRestApiUrl;
 
     private static String FILE_PATH = "/%s/pinpoint-agent-%s.tar.gz";

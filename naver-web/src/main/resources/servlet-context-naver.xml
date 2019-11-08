@@ -31,7 +31,10 @@
     <bean id="naverPermissionEvaluator" class="com.navercorp.pinpoint.web.security.NaverPermissionEvaluator"/>
     <bean id="permissionChecker" class="com.navercorp.pinpoint.web.security.PermissionChecker"/>
 
-    <bean id="applicationControllerInterceptor" class="com.navercorp.pinpoint.web.controller.ApplicationControllerInterceptor"/>
+    <bean id="applicationControllerInterceptor" class="com.navercorp.pinpoint.web.controller.ApplicationControllerInterceptor">
+        <constructor-arg index="0" value="${namespaceInfo.defaultValue.userId}"/>
+        <constructor-arg index="1" value="${namespaceInfo.defaultValue.organizationName}"/>
+    </bean>
     <aop:config>
         <aop:aspect id="applicationControllerInterceptorAop" ref="applicationControllerInterceptor">
             <aop:pointcut id="applicationControllerPointCut" expression="execution(public com.navercorp.pinpoint.web.vo.ApplicationAgentHostList com.navercorp.pinpoint.web.controller.ApplicationController.getApplicationHostInfo(int, int))"/>

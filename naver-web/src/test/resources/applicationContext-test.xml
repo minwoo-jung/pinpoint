@@ -141,14 +141,14 @@
     </bean>
 
     <bean id="propsNssAuthDao" class="com.navercorp.pinpoint.web.dao.props.PropsNssAuthDao">
-        <constructor-arg index="0" value="#{pinpointWebProps['nss.override.id'] ?: ''}"/>
-        <constructor-arg index="1" value="#{pinpointWebProps['nss.authorized.prefix'] ?: ''}"/>
+        <constructor-arg index="0" value="${nss.override.id:}"/>
+        <constructor-arg index="1" value="${nss.authorized.prefix:}"/>
     </bean>
 
     <bean id="nssAuthDaoFactory" class="com.navercorp.pinpoint.web.dao.NssAuthDaoFactory"/>
 
     <bean id="nssFilter" class="com.navercorp.pinpoint.web.servlet.NssFilter">
-        <constructor-arg index="0" value="#{pinpointWebProps['nss.user.header.key'] ?: 'SSO_USER'}"/>
+        <constructor-arg index="0" value="${nss.user.header.key:SSO_USER}"/>
         <constructor-arg index="1" ref="nssAuthServiceImpl"/>
         <constructor-arg index="2" ref="jsonObjectMapper"/>
     </bean>

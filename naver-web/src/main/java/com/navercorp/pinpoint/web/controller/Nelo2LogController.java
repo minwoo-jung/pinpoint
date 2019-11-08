@@ -39,7 +39,7 @@ public class Nelo2LogController {
     
     private static final long SEARCH_INTERVAL = 1000*60*60*12;
     
-    @Value("#{pinpointWebProps['log.nelo.url']}")
+    @Value("${log.nelo.url}")
     private String neloSightUrl;
     
 //    @Autowired

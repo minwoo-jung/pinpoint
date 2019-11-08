@@ -30,10 +30,10 @@
     </http>
 
     <beans:bean id="preAuthenticationFilter" class="com.navercorp.pinpoint.web.security.internal.PreAuthenticationFilter">
-        <beans:constructor-arg index="0" value="#{pinpointWebProps['jwt.secret.key'] ?: ''}"/>
+        <beans:constructor-arg index="0" value="${jwt.secret.key:}"/>
     </beans:bean>
     <beans:bean id="loginSuccessHandler" class="com.navercorp.pinpoint.web.security.internal.LoginSuccessHandler">
-        <beans:constructor-arg index="0" value="#{pinpointWebProps['jwt.secret.key'] ?: ''}"/>
+        <beans:constructor-arg index="0" value="${jwt.secret.key:}"/>
     </beans:bean>
     <beans:bean id="logoutSuccessHandler" class="com.navercorp.pinpoint.web.security.internal.LogoutSuccessHandler"/>
     <beans:bean id="customAuthenticationDetailsSource" class="com.navercorp.pinpoint.web.security.internal.CustomAuthenticationDetailsSource"/>
