@@ -46,7 +46,6 @@ public class HelloWorldClient {
         this(ManagedChannelBuilder.forAddress(host, port)
                 // Channels are secure by default (via SSL/TLS). For the example we disable TLS to avoid
                 // needing certificates.
-//                .usePlaintext()
                 .usePlaintext()
                 .intercept(MetadataUtils.newCaptureMetadataInterceptor(new AtomicReference<>(), new AtomicReference<>()))
                 .build());
