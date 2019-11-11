@@ -17,14 +17,22 @@
 package com.navercorp.pinpoint.manager.vo.repository;
 
 import com.navercorp.pinpoint.manager.validator.constraint.OrganizationNameConstraint;
+import com.navercorp.pinpoint.manager.vo.user.AdminCreateForm;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.Valid;
 
 /**
  * @author HyunGil Jeong
  */
 public class RepositoryCreateForm {
 
+    @NotBlank
     @OrganizationNameConstraint
     private String organizationName;
+
+    @Valid
+    private AdminCreateForm admin;
 
     public String getOrganizationName() {
         return organizationName;
@@ -32,5 +40,13 @@ public class RepositoryCreateForm {
 
     public void setOrganizationName(String organizationName) {
         this.organizationName = organizationName;
+    }
+
+    public AdminCreateForm getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(AdminCreateForm admin) {
+        this.admin = admin;
     }
 }

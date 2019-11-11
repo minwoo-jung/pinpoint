@@ -16,38 +16,33 @@
 
 package com.navercorp.pinpoint.manager.vo.user;
 
-import com.navercorp.pinpoint.manager.domain.mysql.repository.user.User;
 import com.navercorp.pinpoint.manager.validator.constraint.UserIdConstraint;
 import com.navercorp.pinpoint.manager.validator.constraint.UserPasswordConstraint;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * @author HyunGil Jeong
  */
 public class AdminCreateForm {
 
+    @NotBlank
     @UserIdConstraint
     private String userId;
 
+    @NotBlank
     @UserPasswordConstraint
     private String password;
 
+    @NotBlank
     // TODO username validation
     private String userName;
 
+    @NotBlank
     // TODO department validation
     private String department;
 
     // TODO email validation
     private String email;
-
-    public User toUser() {
-        User user = new User();
-        user.setUserId(userId);
-        user.setName(userName);
-        user.setDepartment(department);
-        user.setEmail(email);
-        return user;
-    }
 
     public String getUserId() {
         return userId;

@@ -19,5 +19,5 @@ package com.navercorp.pinpoint.manager.vo.error;
 /**
  * @author HyunGil Jeong
  */
-public abstract class ApiSubError {
+public interface ApiSubError {
 }

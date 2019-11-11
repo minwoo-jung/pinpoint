@@ -34,10 +34,9 @@ public class UserIdValidator implements ConstraintValidator<UserIdConstraint, St
 
     @Override
     public boolean isValid(String userId, ConstraintValidatorContext constraintValidatorContext) {
-        if (StringUtils.isEmpty(userId)) {
-            return false;
+        if (StringUtils.hasLength(userId)) {
+            // TODO implement user id validation
         }
-        // TODO implement user id validation
         return true;
     }
 }

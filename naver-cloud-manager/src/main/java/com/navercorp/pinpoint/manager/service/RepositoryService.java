@@ -19,6 +19,7 @@ import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
 import com.navercorp.pinpoint.manager.vo.hbase.HbaseInfo;
 import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoDetail;
 import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoBasic;
+import com.navercorp.pinpoint.manager.vo.user.UserInfo;
 
 import java.util.List;
 
@@ -35,6 +36,8 @@ public interface RepositoryService {
     List<RepositoryInfoDetail> getDetailedRepositoryInfos();
 
     void createRepository(String organizationName);
+
+    void createRepository(String organizationName, UserInfo userInfo, String password);
 
     void updateRepository(String organizationName, Boolean isEnabled, Boolean isDeleted);
 

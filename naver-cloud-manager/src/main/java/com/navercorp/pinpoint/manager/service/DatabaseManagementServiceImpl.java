@@ -22,12 +22,14 @@ import com.navercorp.pinpoint.manager.dao.MetadataDao;
 import com.navercorp.pinpoint.manager.dao.RepositoryDao;
 import com.navercorp.pinpoint.manager.domain.mysql.metadata.DatabaseManagement;
 import com.navercorp.pinpoint.manager.domain.mysql.repository.role.RoleInformation;
+import com.navercorp.pinpoint.manager.domain.mysql.repository.user.User;
 import com.navercorp.pinpoint.manager.exception.database.DatabaseManagementException;
 import com.navercorp.pinpoint.manager.exception.database.DuplicateDatabaseException;
 import com.navercorp.pinpoint.manager.exception.database.UnknownDatabaseException;
 import com.navercorp.pinpoint.manager.jdbc.RepositoryDatabaseDetails;
 import com.navercorp.pinpoint.manager.jdbc.RepositoryDatabaseDetailsContextHolder;
 import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
+import com.navercorp.pinpoint.manager.vo.user.UserInfo;
 import liquibase.exception.LiquibaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.sql.SQLException;
 import java.util.EnumSet;
@@ -56,6 +59,8 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
 
     private final RepositoryDao repositoryDao;
 
+    private final UserService userService;
+
     private final LiquibaseService liquibaseService;
 
     private final ThreadPoolTaskExecutor storageManagementTaskExecutor;
@@ -63,12 +68,14 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
     @Autowired
     public DatabaseManagementServiceImpl(MetadataDao metadataDao,
                                          RepositoryDao repositoryDao,
+                                         UserService userService,
                                          LiquibaseService liquibaseService,
                                          @Qualifier("storageManagementTaskExecutor") ThreadPoolTaskExecutor storageManagementTaskExecutor) {
-        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao");
-        this.repositoryDao = Objects.requireNonNull(repositoryDao, "repositoryDao");
-        this.liquibaseService = Objects.requireNonNull(liquibaseService, "liquibaseService");
-        this.storageManagementTaskExecutor = Objects.requireNonNull(storageManagementTaskExecutor, "storageManagementTaskExecutor");
+        this.metadataDao = Objects.requireNonNull(metadataDao, "metadataDao must not be null");
+        this.repositoryDao = Objects.requireNonNull(repositoryDao, "repositoryDao must not be null");
+        this.userService = Objects.requireNonNull(userService, "userService must not be null");
+        this.liquibaseService = Objects.requireNonNull(liquibaseService, "liquibaseService must not be null");
+        this.storageManagementTaskExecutor = Objects.requireNonNull(storageManagementTaskExecutor, "storageManagementTaskExecutor must not be null");
     }
 
     @Override
@@ -137,7 +144,36 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
         } catch (RejectedExecutionException e) {
             logger.error("Database create task rejected, taskId : {}, database : {}", taskId, databaseName, e);
             if (!checkAndUpdateDatabaseStatus(databaseName, StorageStatus.NONE, EnumSet.of(StorageStatus.CREATING))) {
-                logger.error("Invalid database status for create task rejection, database : {}", databaseName);
+                logger.error("Invalid database status for create task rejection, taskId : {}, database : {}", taskId, databaseName);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean createDatabaseWithUser(String databaseName, UserInfo userInfo, String password) {
+        if (userInfo == null) {
+            throw new IllegalArgumentException("userInfo must not be null");
+        }
+        if (StringUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("password must not be empty");
+        }
+        if (metadataDao.existDatabase(databaseName)) {
+            throw new DuplicateDatabaseException(databaseName);
+        }
+        if (!checkAndUpdateDatabaseStatus(databaseName, StorageStatus.CREATING, EnumSet.of(StorageStatus.NONE))) {
+            logger.warn("Invalid database status for create, database : {}", databaseName);
+            return false;
+        }
+        final UUID taskId = UUID.randomUUID();
+        logger.info("Submitting database create task, taskId : {}, database : {}", taskId, databaseName);
+        try {
+            storageManagementTaskExecutor.execute(new DatabaseCreateWorkerTask(taskId, databaseName, userInfo, password));
+        } catch (RejectedExecutionException e) {
+            logger.error("Database create task rejected, taskId : {}, database : {}", taskId, databaseName, e);
+            if (!checkAndUpdateDatabaseStatus(databaseName, StorageStatus.NONE, EnumSet.of(StorageStatus.CREATING))) {
+                logger.error("Invalid database status for create task rejection, taskId : {}, database : {}", taskId, databaseName);
             }
             return false;
         }
@@ -160,7 +196,7 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
         } catch (RejectedExecutionException e) {
             logger.error("Database schema update task rejected, taskId : {}, database : {}", taskId, databaseName, e);
             if (!checkAndUpdateDatabaseStatus(databaseName, StorageStatus.READY, EnumSet.of(StorageStatus.UPDATING))) {
-                logger.error("Invalid database status for update task rejection, database : {}", databaseName);
+                logger.error("Invalid database status for update task rejection, taskId : {}, database : {}", taskId, databaseName);
             }
             return false;
         }
@@ -183,7 +219,7 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
         } catch (RejectedExecutionException e) {
             logger.error("Database delete task rejected, taskId : {}, database : {}", taskId, databaseName, e);
             if (!checkAndUpdateDatabaseStatus(databaseName, StorageStatus.ERROR, EnumSet.of(StorageStatus.DELETING))) {
-                logger.error("Invalid database status for delete task rejection, database : {}", databaseName);
+                logger.error("Invalid database status for delete task rejection, taskId : {}, database : {}", taskId, databaseName);
             }
             return false;
         }
@@ -194,10 +230,18 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
 
         private final UUID taskId;
         private final String databaseName;
+        private final UserInfo userInfo;
+        private final String password;
 
         private DatabaseCreateWorkerTask(UUID taskId, String databaseName) {
-            this.taskId = Objects.requireNonNull(taskId, "taskId");
-            this.databaseName = Objects.requireNonNull(databaseName, "databaseName");
+            this(taskId, databaseName, null, null);
+        }
+
+        private DatabaseCreateWorkerTask(UUID taskId, String databaseName, UserInfo userInfo, String password) {
+            this.taskId = Objects.requireNonNull(taskId, "taskId must not be null");
+            this.databaseName = Objects.requireNonNull(databaseName, "databaseName must not be null");
+            this.userInfo = userInfo;
+            this.password = password;
         }
 
         private boolean validateDatabaseState() {
@@ -223,7 +267,7 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
             }
         }
 
-        private boolean createTables() {
+        private boolean initTables() {
             try {
                 liquibaseService.createRepository(databaseName);
                 logger.info("[{}] Tables created for database : {}", taskId, databaseName);
@@ -231,16 +275,21 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
                 logger.info("[{}] Data initialized for database : {}", taskId, databaseName);
                 return true;
             } catch (Exception e) {
-                logger.error("[{}] Error creating tables for database : {}", taskId, databaseName, e);
+                logger.error("[{}] Error initializing tables for database : {}", taskId, databaseName, e);
                 return false;
             }
         }
 
         private void initData() {
+            // TODO try AOP instead (would it work?)
             RepositoryDatabaseDetails repositoryDatabaseDetails = new RepositoryDatabaseDetails(databaseName);
             RepositoryDatabaseDetailsContextHolder.setRepositoryDatabaseDetails(repositoryDatabaseDetails);
             try {
                 repositoryDao.insertRoleDefinition(RoleInformation.ADMIN_ROLE);
+
+                if (userInfo != null && StringUtils.hasLength(password)) {
+                    userService.addAdmin(userInfo, password);
+                }
             } finally {
                 RepositoryDatabaseDetailsContextHolder.resetRepositoryDatabaseDetails();
             }
@@ -258,12 +307,12 @@ public class DatabaseManagementServiceImpl implements DatabaseManagementService 
                 return;
             }
             logger.info("[{}] Database created : {}. Creating tables", taskId, databaseName);
-            boolean tablesCreated = createTables();
-            if (tablesCreated) {
-                logger.info("[{}] Database created for database : {}", taskId, databaseName);
+            boolean tablesInitialized = initTables();
+            if (tablesInitialized) {
+                logger.info("[{}] Tables initialized for database : {}", taskId, databaseName);
                 metadataDao.updateDatabaseStatus(databaseName, StorageStatus.READY);
             } else {
-                logger.error("[{}] Failed to create database : {}", taskId, databaseName);
+                logger.error("[{}] Failed to initialize tables for database : {}", taskId, databaseName);
                 metadataDao.updateDatabaseStatus(databaseName, StorageStatus.ERROR);
             }
         }

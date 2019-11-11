@@ -16,7 +16,6 @@
 package com.navercorp.pinpoint.manager.controller;
 
 import com.navercorp.pinpoint.manager.core.StorageStatus;
-import com.navercorp.pinpoint.manager.domain.mysql.repository.user.User;
 import com.navercorp.pinpoint.manager.jdbc.RepositoryDatabaseDetails;
 import com.navercorp.pinpoint.manager.jdbc.RepositoryDatabaseDetailsContextHolder;
 import com.navercorp.pinpoint.manager.service.RepositoryService;
@@ -24,7 +23,7 @@ import com.navercorp.pinpoint.manager.service.UserService;
 import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
 import com.navercorp.pinpoint.manager.vo.hbase.HbaseInfo;
 import com.navercorp.pinpoint.manager.vo.user.AdminCreateForm;
-import com.navercorp.pinpoint.manager.vo.user.AdminInfo;
+import com.navercorp.pinpoint.manager.vo.user.UserInfo;
 import com.navercorp.pinpoint.manager.vo.repository.RepositoryCreateForm;
 import com.navercorp.pinpoint.manager.vo.repository.RepositoryUpdateForm;
 import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoBasic;
@@ -61,9 +60,16 @@ public class RepositoryController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<Void> createRepository(@Valid @RequestBody RepositoryCreateForm form) {
-        String organizationName = form.getOrganizationName();
-        repositoryService.createRepository(organizationName);
+    public ResponseEntity<Void> createRepository(@Valid @RequestBody RepositoryCreateForm repositoryCreateForm) {
+        final String organizationName = repositoryCreateForm.getOrganizationName();
+        final AdminCreateForm adminCreateForm = repositoryCreateForm.getAdmin();
+        if (adminCreateForm == null) {
+            repositoryService.createRepository(organizationName);
+        } else {
+            final UserInfo userInfo = UserInfo.fromAdminCreateForm(adminCreateForm);
+            final String password = adminCreateForm.getPassword();
+            repositoryService.createRepository(organizationName, userInfo, password);
+        }
         final URI location = ServletUriComponentsBuilder.fromCurrentServletMapping()
                 .path("/repositories/{organizationName}")
                 .build()
@@ -101,7 +107,7 @@ public class RepositoryController {
     }
 
     @GetMapping(value = "/{organizationName}/admins")
-    public List<AdminInfo> getAdmins(@PathVariable("organizationName") String organizationName) {
+    public List<UserInfo> getAdmins(@PathVariable("organizationName") String organizationName) {
         RepositoryInfoDetail repositoryInfo = repositoryService.getDetailedRepositoryInfo(organizationName);
         String databaseName = repositoryInfo.getDatabaseName();
         // TODO try AOP instead
@@ -121,9 +127,9 @@ public class RepositoryController {
         // TODO try AOP instead
         RepositoryDatabaseDetailsContextHolder.setRepositoryDatabaseDetails(new RepositoryDatabaseDetails(databaseName));
         try {
-            final User user = adminCreateForm.toUser();
+            final UserInfo userInfo = UserInfo.fromAdminCreateForm(adminCreateForm);
             final String password = adminCreateForm.getPassword();
-            userService.addAdmin(user, password);
+            userService.addAdmin(userInfo, password);
             return ResponseEntity.noContent().build();
         } finally {
             RepositoryDatabaseDetailsContextHolder.resetRepositoryDatabaseDetails();

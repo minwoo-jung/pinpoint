@@ -163,7 +163,7 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
         } catch (RejectedExecutionException e) {
             logger.error("Hbase namespace create task rejected, taskId : {}, namespace : {}", taskId, namespace, e);
             if (!checkAndUpdateHbaseStatus(namespace, StorageStatus.NONE, EnumSet.of(StorageStatus.CREATING))) {
-                logger.error("Invalid hbase status for create task rejection, namespace : {}", namespace);
+                logger.error("Invalid hbase status for create task rejection, taskId : {}, namespace : {}", taskId, namespace);
             }
             return false;
         }
@@ -186,7 +186,7 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
         } catch (RejectedExecutionException e) {
             logger.error("Hbase namespace update task rejected, taskId : {}, namespace : {}", taskId, namespace, e);
             if (!checkAndUpdateHbaseStatus(namespace, StorageStatus.READY, EnumSet.of(StorageStatus.UPDATING))) {
-                logger.error("Invalid hbase status for update task rejection, namespace : {}", namespace);
+                logger.error("Invalid hbase status for update task rejection, taskId : {}, namespace : {}", taskId, namespace);
             }
             return false;
         }
@@ -209,7 +209,7 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
         } catch (RejectedExecutionException e) {
             logger.error("Hbase namespace delete task rejected, taskId : {}, namespace : {}", taskId, namespace, e);
             if (!checkAndUpdateHbaseStatus(namespace, StorageStatus.ERROR, EnumSet.of(StorageStatus.DELETING))) {
-                logger.error("Invalid hbase status for delete task rejection, namespace : {}", namespace);
+                logger.error("Invalid hbase status for delete task rejection, taskId : {}, namespace : {}", taskId, namespace);
             }
             return false;
         }
@@ -248,7 +248,7 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
                     return false;
                 }
             } catch (Exception e) {
-                logger.error("[{}] Error initializing namespace : {}", hbaseNamespace);
+                logger.error("[{}] Error initializing namespace : {}", taskId, hbaseNamespace);
                 return false;
             }
             return true;

@@ -27,11 +27,14 @@ import com.navercorp.pinpoint.manager.exception.repository.InvalidRepositoryStat
 import com.navercorp.pinpoint.manager.exception.repository.RepositoryException;
 import com.navercorp.pinpoint.manager.exception.repository.UnknownRepositoryException;
 import com.navercorp.pinpoint.manager.vo.error.ApiError;
+import com.navercorp.pinpoint.manager.vo.error.ApiSubError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -48,25 +51,44 @@ public class ErrorResponseExceptionHandler extends ResponseEntityExceptionHandle
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-//        ex.getBindingResult()
-//        BindingResult bindingResult = ex.getBindingResult();
-        return super.handleMethodArgumentNotValid(ex, headers, status, request);
+        String message = "Parameter validation failed for " + ex.getParameter();
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, message, ex);
+        BindingResult bindingResult = ex.getBindingResult();
+        if (bindingResult != null) {
+            for (ObjectError objectError : bindingResult.getAllErrors()) {
+                apiError.addSubError(new MethodArgumentNotValidSubError(objectError));
+            }
+        }
+        return buildErrorResponse(apiError);
+    }
+
+    private static class MethodArgumentNotValidSubError implements ApiSubError {
+
+        private final String message;
+
+        private MethodArgumentNotValidSubError(ObjectError error) {
+            this.message = error.toString();
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 
     @ExceptionHandler(value = {UnknownRepositoryException.class, UnknownDatabaseException.class, UnknownHbaseException.class})
-    public ResponseEntity<ApiError> handleUnknownExceptions(UnknownRepositoryException e) {
+    public ResponseEntity<Object> handleUnknownExceptions(UnknownRepositoryException e) {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, e);
         return buildErrorResponse(apiError);
     }
 
     @ExceptionHandler(value = {DuplicateRepositoryException.class, DuplicateDatabaseException.class, DuplicateHbaseException.class})
-    public ResponseEntity<ApiError> handleDuplicateExceptions(Exception e) {
+    public ResponseEntity<Object> handleDuplicateExceptions(Exception e) {
         ApiError apiError = new ApiError(HttpStatus.CONFLICT, e);
         return buildErrorResponse(apiError);
     }
 
     @ExceptionHandler(value = InvalidRepositoryStateException.class)
-    public ResponseEntity<ApiError> handleInvalidRepositoryStateException(InvalidRepositoryStateException e, WebRequest webRequest) {
+    public ResponseEntity<Object> handleInvalidRepositoryStateException(InvalidRepositoryStateException e, WebRequest webRequest) {
         final String path = webRequest.getContextPath();
         logger.error("{} Invalid repository state error for {}", path, e.getOrganizationName(), e);
         ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Invalid repository state", e);
@@ -74,7 +96,7 @@ public class ErrorResponseExceptionHandler extends ResponseEntityExceptionHandle
     }
 
     @ExceptionHandler(value = DatabaseManagementException.class)
-    public ResponseEntity<ApiError> handleDatabaseManagementException(DatabaseManagementException e, WebRequest webRequest) {
+    public ResponseEntity<Object> handleDatabaseManagementException(DatabaseManagementException e, WebRequest webRequest) {
         final String path = webRequest.getContextPath();
         logger.error("{} Database management error for {}", path, e.getDatabaseName(), e);
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected database error", e);
@@ -82,7 +104,7 @@ public class ErrorResponseExceptionHandler extends ResponseEntityExceptionHandle
     }
 
     @ExceptionHandler(value = HbaseManagementException.class)
-    public ResponseEntity<ApiError> handleHbaseManagementException(HbaseManagementException e, WebRequest webRequest) {
+    public ResponseEntity<Object> handleHbaseManagementException(HbaseManagementException e, WebRequest webRequest) {
         final String path = webRequest.getContextPath();
         logger.error("{} Hbase management error for {}", path, e.getHbaseNamespace(), e);
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected hbase error", e);
@@ -90,7 +112,7 @@ public class ErrorResponseExceptionHandler extends ResponseEntityExceptionHandle
     }
 
     @ExceptionHandler(value = RepositoryException.class)
-    public ResponseEntity<ApiError> handleRepositoryException(RepositoryException e, WebRequest webRequest) {
+    public ResponseEntity<Object> handleRepositoryException(RepositoryException e, WebRequest webRequest) {
         final String path = webRequest.getContextPath();
         logger.error("{} Unexpected repository error for {}", path, e.getOrganizationName(), e);
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected repository error", e);
@@ -98,14 +120,14 @@ public class ErrorResponseExceptionHandler extends ResponseEntityExceptionHandle
     }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ApiError> handleAll(Exception e, WebRequest webRequest) {
+    public ResponseEntity<Object> handleAll(Exception e, WebRequest webRequest) {
         final String path = webRequest.getContextPath();
         logger.error("{} Unexpected error", path, e);
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), e);
         return buildErrorResponse(apiError);
     }
 
-    private ResponseEntity<ApiError> buildErrorResponse(ApiError apiError) {
+    private ResponseEntity<Object> buildErrorResponse(ApiError apiError) {
         return ResponseEntity.status(apiError.getHttpStatus()).body(apiError);
     }
 }

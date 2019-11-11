@@ -26,11 +26,13 @@ import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
 import com.navercorp.pinpoint.manager.vo.hbase.HbaseInfo;
 import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoDetail;
 import com.navercorp.pinpoint.manager.vo.repository.RepositoryInfoBasic;
+import com.navercorp.pinpoint.manager.vo.user.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -62,11 +64,11 @@ public class RepositoryServiceImpl implements RepositoryService {
                                  HbaseManagementService hbaseManagementService,
                                  NamespaceGenerationService namespaceGenerationService,
                                  PinpointDataService pinpointDataService) {
-        this.metadataService = Objects.requireNonNull(metadataService, "metadataService");
-        this.databaseManagementService = Objects.requireNonNull(databaseManagementService, "databaseManagementService");
-        this.hbaseManagementService = Objects.requireNonNull(hbaseManagementService, "hbaseManagementService");
-        this.namespaceGenerationService = Objects.requireNonNull(namespaceGenerationService, "namespaceGenerationService");
-        this.pinpointDataService = Objects.requireNonNull(pinpointDataService, "pinpointDataService");
+        this.metadataService = Objects.requireNonNull(metadataService, "metadataService must not be null");
+        this.databaseManagementService = Objects.requireNonNull(databaseManagementService, "databaseManagementService must not be null");
+        this.hbaseManagementService = Objects.requireNonNull(hbaseManagementService, "hbaseManagementService must not be null");
+        this.namespaceGenerationService = Objects.requireNonNull(namespaceGenerationService, "namespaceGenerationService must not be null");
+        this.pinpointDataService = Objects.requireNonNull(pinpointDataService, "pinpointDataService must not be null");
     }
 
     @Override
@@ -97,10 +99,41 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     @Override
     public void createRepository(String organizationName) {
+        if (StringUtils.isEmpty(organizationName)) {
+            throw new IllegalArgumentException("organizationName must not be empty");
+        }
         logger.info("Creating repository for organization : {}", organizationName);
         String databaseName = namespaceGenerationService.generateDatabaseName(organizationName);
         String hbaseNamespace = namespaceGenerationService.generateHbaseNamespace(organizationName);
 
+        createOrganization(organizationName, databaseName, hbaseNamespace);
+
+        databaseManagementService.createDatabase(databaseName);
+        hbaseManagementService.createRepository(hbaseNamespace);
+    }
+
+    @Override
+    public void createRepository(String organizationName, UserInfo userInfo, String password) {
+        if (StringUtils.isEmpty(organizationName)) {
+            throw new IllegalArgumentException("organizationName must not be empty");
+        }
+        if (userInfo == null) {
+            throw new IllegalArgumentException("userInfo must not be null");
+        }
+        if (StringUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("password must not be empty");
+        }
+        logger.info("Creating repository for organization : {}", organizationName);
+        String databaseName = namespaceGenerationService.generateDatabaseName(organizationName);
+        String hbaseNamespace = namespaceGenerationService.generateHbaseNamespace(organizationName);
+
+        createOrganization(organizationName, databaseName, hbaseNamespace);
+
+        databaseManagementService.createDatabaseWithUser(organizationName, userInfo, password);
+        hbaseManagementService.createRepository(hbaseNamespace);
+    }
+
+    private void createOrganization(String organizationName, String databaseName, String hbaseNamespace) {
         PaaSOrganizationInfo paaSOrganizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace);
         try {
             metadataService.createOrganization(paaSOrganizationInfo);
@@ -111,8 +144,6 @@ public class RepositoryServiceImpl implements RepositoryService {
             }
             throw new RepositoryException(organizationName, "Failed to create repository", e);
         }
-        databaseManagementService.createDatabase(databaseName);
-        hbaseManagementService.createRepository(hbaseNamespace);
     }
 
     @Override

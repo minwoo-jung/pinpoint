@@ -34,10 +34,9 @@ public class UserPasswordValidator implements ConstraintValidator<UserPasswordCo
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext constraintValidatorContext) {
-        if (StringUtils.isEmpty(password)) {
-            return false;
+        if (StringUtils.hasLength(password)) {
+            // TODO implement user password validation
         }
-        // TODO implement user password validation
         return true;
     }
 }

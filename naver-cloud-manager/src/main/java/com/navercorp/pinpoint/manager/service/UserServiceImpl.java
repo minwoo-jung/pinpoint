@@ -23,8 +23,7 @@ import com.navercorp.pinpoint.manager.domain.mysql.repository.user.User;
 import com.navercorp.pinpoint.manager.domain.mysql.repository.user.UserAccount;
 import com.navercorp.pinpoint.manager.domain.mysql.repository.user.UserRole;
 import com.navercorp.pinpoint.manager.exception.user.DuplicateUserException;
-import com.navercorp.pinpoint.manager.vo.user.AdminInfo;
-import org.apache.hadoop.hbase.client.Admin;
+import com.navercorp.pinpoint.manager.vo.user.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,20 +53,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<AdminInfo> getAdmins() {
+    public List<UserInfo> getAdmins() {
         List<User> admins = repositoryDao.selectAdmins();
         if (CollectionUtils.isEmpty(admins)) {
             return Collections.emptyList();
         }
         return admins.stream()
-                .map(AdminInfo::create)
+                .map(UserInfo::fromUser)
                 .collect(Collectors.toList());
 
     }
 
     @Override
     @Transactional(transactionManager="transactionManager", readOnly = false)
-    public void addAdmin(User user, String password) {
+    public void addAdmin(UserInfo userInfo, String password) {
+        final User user = UserInfo.toUser(userInfo);
+
         final String userId = user.getUserId();
         if (repositoryDao.userExists(userId)) {
             throw new DuplicateUserException(userId);

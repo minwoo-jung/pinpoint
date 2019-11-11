@@ -22,6 +22,7 @@ import com.navercorp.pinpoint.manager.exception.database.DatabaseManagementExcep
 import com.navercorp.pinpoint.manager.exception.database.DuplicateDatabaseException;
 import com.navercorp.pinpoint.manager.exception.database.UnknownDatabaseException;
 import com.navercorp.pinpoint.manager.vo.database.DatabaseInfo;
+import com.navercorp.pinpoint.manager.vo.user.UserInfo;
 
 import java.util.Set;
 
@@ -80,6 +81,22 @@ public interface DatabaseManagementService {
      * @throws DatabaseManagementException if there was a problem updating database status
      */
     boolean createDatabase(String databaseName);
+
+    /**
+     * Starts creating a new database with the specified {@code databaseName}, initializing the schema to serve as a
+     * Pinpoint database.
+     * Additionally, this method inserts an admin user with {@code userInfo} and {@code password}.
+     * Returns {@code true} if database creation is successfully started, and {@code false} if otherwise.
+     * Note that the return value of {@code true} does not signify a successful creation of the database.
+     *
+     * @param databaseName name of the database to create
+     * @param userInfo admin user info to insert
+     * @param password password of the admin user to insert
+     * @return {@code true} if database creation is successfully started
+     * @throws DuplicateDatabaseException if a database with the same name already exists
+     * @throws DatabaseManagementException if there was a problem updating database status
+     */
+    boolean createDatabaseWithUser(String databaseName, UserInfo userInfo, String password);
 
     /**
      * Starts updating the schema of the database specified by {@code databaseName} to the latest version.

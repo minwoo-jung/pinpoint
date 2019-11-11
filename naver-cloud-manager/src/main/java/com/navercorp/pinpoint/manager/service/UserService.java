@@ -16,8 +16,7 @@
 
 package com.navercorp.pinpoint.manager.service;
 
-import com.navercorp.pinpoint.manager.domain.mysql.repository.user.User;
-import com.navercorp.pinpoint.manager.vo.user.AdminInfo;
+import com.navercorp.pinpoint.manager.vo.user.UserInfo;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ import java.util.List;
  */
 public interface UserService {
 
-    List<AdminInfo> getAdmins();
+    List<UserInfo> getAdmins();
 
-    void addAdmin(User user, String password);
+    void addAdmin(UserInfo userInfo, String password);
 }

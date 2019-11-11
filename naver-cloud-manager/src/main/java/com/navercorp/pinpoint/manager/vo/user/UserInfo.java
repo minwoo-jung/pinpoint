@@ -21,7 +21,7 @@ import com.navercorp.pinpoint.manager.domain.mysql.repository.user.User;
 /**
  * @author HyunGil Jeong
  */
-public class AdminInfo {
+public class UserInfo {
 
     private String userId;
     private String name;
@@ -29,13 +29,32 @@ public class AdminInfo {
     private String phoneNumber;
     private String email;
 
-    public static AdminInfo create(User user) {
-        AdminInfo managerInfo = new AdminInfo();
-        managerInfo.userId = user.getUserId();
-        managerInfo.name = user.getName();
-        managerInfo.department = user.getDepartment();
-        managerInfo.email = user.getEmail();
-        return managerInfo;
+    public static UserInfo fromUser(User user) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.userId = user.getUserId();
+        userInfo.name = user.getName();
+        userInfo.department = user.getDepartment();
+        userInfo.email = user.getEmail();
+        return userInfo;
+    }
+
+    public static UserInfo fromAdminCreateForm(AdminCreateForm form) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.userId = form.getUserId();
+        userInfo.name = form.getUserName();
+        userInfo.department = form.getDepartment();
+        userInfo.email = form.getEmail();
+        return userInfo;
+    }
+
+    public static User toUser(UserInfo userInfo) {
+        User user = new User();
+        user.setUserId(userInfo.userId);
+        user.setName(userInfo.name);
+        user.setDepartment(userInfo.department);
+        user.setPhoneNumber(userInfo.phoneNumber);
+        user.setEmail(userInfo.email);
+        return user;
     }
 
     public String getUserId() {
