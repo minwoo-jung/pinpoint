@@ -127,6 +127,14 @@ public class ErrorResponseExceptionHandler extends ResponseEntityExceptionHandle
         return buildErrorResponse(apiError);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        final String path = request.getContextPath();
+        logger.error("{} Unhandled error", path, ex);
+        ApiError apiError = new ApiError(status, ex.getLocalizedMessage(), ex);
+        return buildErrorResponse(apiError);
+    }
+
     private ResponseEntity<Object> buildErrorResponse(ApiError apiError) {
         return ResponseEntity.status(apiError.getHttpStatus()).body(apiError);
     }
