@@ -5,7 +5,6 @@ import { ServerMapTemplateWithGojs } from './server-map-template-with-gojs.class
 import { ServerMapDiagram } from './server-map-diagram.class';
 import { ServerMapData } from './server-map-data.class';
 import { IServerMapOption } from './server-map-factory';
-import { ServerMapNodeClickExtraParam } from './server-map-node-click-extra-param.class';
 
 export class ServerMapDiagramWithGojs extends ServerMapDiagram {
     private diagram: go.Diagram = null;
@@ -82,18 +81,12 @@ export class ServerMapDiagramWithGojs extends ServerMapDiagram {
             event.diagram.zoomToFit();
             self.outDoubleClickBackground.emit('dbclickBackground');
         });
-        // this.diagram.addDiagramListener('BackgroundContextClicked', (event: go.DiagramEvent) => {
-        //     console.log('Background context click', event);
-        //     self.outContextClickBackground.emit({
-        //         event: event
-        //     });
-        // });
         this.diagram.addDiagramListener('BackgroundContextClicked', (event: go.DiagramEvent) => {
-            const { pageX, pageY } = event.diagram.lastInput.event as MouseEvent;
-            
+            const {pageX, pageY} = event.diagram.lastInput.event as MouseEvent;
+
             self.outContextClickBackground.emit({
                 coordX: pageX,
-                coordY: pageY
+                coordY: pageY + 1
             });
         });
     }
@@ -258,15 +251,15 @@ export class ServerMapDiagramWithGojs extends ServerMapDiagram {
         this.outClickLink.emit(<go.Link>obj['data']);
     }
     onContextClickLink(event: any, obj: go.GraphObject): void {
-        const { key, targetInfo } = (obj as go.Link).data;
-        const { pageX, pageY } = event.event;
+        const {key, targetInfo} = (obj as go.Link).data;
+        const {pageX, pageY} = event.event;
 
         if (!Array.isArray(targetInfo)) {
             this.outContextClickLink.emit({
                 key,
                 coord: {
                     coordX: pageX,
-                    coordY: pageY
+                    coordY: pageY + 1
                 }
             });
         }
