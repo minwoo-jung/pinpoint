@@ -84,9 +84,12 @@ export class ServerMapDiagramWithGojs extends ServerMapDiagram {
         this.diagram.addDiagramListener('BackgroundContextClicked', (event: go.DiagramEvent) => {
             const {pageX, pageY} = event.diagram.lastInput.event as MouseEvent;
 
-            self.outContextClickBackground.emit({
-                coordX: pageX,
-                coordY: pageY + 1
+            // Bind timeout because of the browser contextmenu event occurrence order difference
+            setTimeout(() => {
+                self.outContextClickBackground.emit({
+                    coordX: pageX,
+                    coordY: pageY
+                });
             });
         });
     }
@@ -255,12 +258,15 @@ export class ServerMapDiagramWithGojs extends ServerMapDiagram {
         const {pageX, pageY} = event.event;
 
         if (!Array.isArray(targetInfo)) {
-            this.outContextClickLink.emit({
-                key,
-                coord: {
-                    coordX: pageX,
-                    coordY: pageY + 1
-                }
+            // Bind timeout because of the browser contextmenu event occurrence order difference
+            setTimeout(() => {
+                this.outContextClickLink.emit({
+                    key,
+                    coord: {
+                        coordX: pageX,
+                        coordY: pageY
+                    }
+                });
             });
         }
     }
