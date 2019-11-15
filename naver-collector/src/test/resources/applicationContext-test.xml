@@ -46,6 +46,7 @@
             <list>
                 <value>hbase.properties</value>
                 <value>pinpoint-collector.properties</value>
+                <value>pinpoint-collector-grpc.properties</value>
             </list>
         </property>
     </bean>
@@ -54,11 +55,9 @@
 
     <bean id="collectorConfiguration" class="com.navercorp.pinpoint.collector.config.CollectorConfiguration"/>
 
-    <bean id="flinkConfiguration" class="com.navercorp.pinpoint.collector.config.FlinkConfiguration"/>
-
-
-    <import resource="classpath:applicationContext-hbase.xml"/>
+    <import resource="classpath:applicationContext-collector-hbase.xml"/>
     <import resource="classpath:applicationContext-collector-namespace.xml"/>
+    <import resource="classpath:applicationContext-collector-flink.xml"/>
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry">
     </bean>
