@@ -34,10 +34,14 @@ public class DeleteAgentSpanStatTasklet implements Tasklet {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final static long HOUR_MILLIS = 3600000L;
-    private final static long RANGE = 1555200000L;
+    private final long range;
 
     @Autowired
     SpanStatAgentService spanStatAgentService;
+
+    public DeleteAgentSpanStatTasklet(NaverBatchConfiguration naverBatchConfiguration) {
+        range = naverBatchConfiguration.getDeleteRangeAgentSpanStat();
+    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -55,6 +59,6 @@ public class DeleteAgentSpanStatTasklet implements Tasklet {
     public long calcurateBoundaryTime() {
         long currentTimeMillis = System.currentTimeMillis();
         long remainder = currentTimeMillis % HOUR_MILLIS;
-        return currentTimeMillis - remainder - RANGE;
+        return currentTimeMillis - remainder - range;
     }
 }

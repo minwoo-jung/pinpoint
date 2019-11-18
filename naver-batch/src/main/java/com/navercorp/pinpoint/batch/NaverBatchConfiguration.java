@@ -42,6 +42,9 @@ public class NaverBatchConfiguration  implements InitializingBean {
     @Value("#{naverBatchProps['batch.server.env']}")
     private String batchEnv;
 
+    @Value("#{naverBatchProps['job.delete.range.agent.span.stat'] ?:1555200000L}")
+    private Long deleteRangeAgentSpanStat;
+
     @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((naverBatchProps['alarm.sms.cellphone.number'] ?: ''), ',')}")
     private List<String> cellPhoneNumberList;
 
@@ -82,6 +85,10 @@ public class NaverBatchConfiguration  implements InitializingBean {
         return batchEnv;
     }
 
+    public Long getDeleteRangeAgentSpanStat() {
+        return deleteRangeAgentSpanStat;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NaverBatchConfiguration{");
@@ -89,6 +96,7 @@ public class NaverBatchConfiguration  implements InitializingBean {
         sb.append(", apiKey='").append(apiKey).append('\'');
         sb.append(", senderNumber='").append(senderNumber).append('\'');
         sb.append(", batchEnv='").append(batchEnv).append('\'');
+        sb.append(", deleteRangeAgentSpanStat=").append(deleteRangeAgentSpanStat);
         sb.append(", cellPhoneNumberList=").append(cellPhoneNumberList);
         sb.append('}');
         return sb.toString();
