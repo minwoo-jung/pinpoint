@@ -44,9 +44,14 @@ public class FlinkRequestFactoryInterceptor {
             }
         }
 
-        RequestAttributes attributes = RequestContextHolder.currentAttributes();
-        NameSpaceInfo nameSpaceInfo = (NameSpaceInfo) attributes.getAttribute(NameSpaceInfo.NAMESPACE_INFO);
-        Objects.requireNonNull(nameSpaceInfo, "NameSpaceInfo");
+        final RequestAttributes attributes = RequestContextHolder.currentAttributes();
+        final NameSpaceInfo nameSpaceInfo = (NameSpaceInfo) attributes.getAttribute(NameSpaceInfo.NAMESPACE_INFO);
+//        SpotBug does not handle correctly.
+//        Objects.requireNonNull(nameSpaceInfo, "NameSpaceInfo");
+        if (nameSpaceInfo == null) {
+            logger.warn("NameSpaceInfo not found. attributes:{}", attributes);
+            throw new IllegalStateException("NameSpaceInfo not found");
+        }
 
         headerEntity.put("organization", nameSpaceInfo.getOrganization());
         headerEntity.put("databaseName", nameSpaceInfo.getMysqlDatabaseName());
