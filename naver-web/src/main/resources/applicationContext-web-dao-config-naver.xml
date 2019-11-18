@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="metaDataSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
-        <constructor-arg index="0" ref="metaDataSqlSessionFactory"></constructor-arg>
+        <constructor-arg index="0" ref="metaDataSqlSessionFactory"/>
     </bean>
 
     <bean id="metaDataSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
