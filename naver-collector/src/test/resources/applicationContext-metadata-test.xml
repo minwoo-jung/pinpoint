@@ -10,13 +10,13 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <import resource="classpath:applicationContext-collector.xml" />
-    <import resource="classpath:applicationContext-datasource.xml"/>
-    <import resource="classpath:applicationContext-dao-config.xml"/>
+    <import resource="classpath:applicationContext-collector-datasource.xml"/>
+    <import resource="classpath:applicationContext-collector-dao-config.xml"/>
 
     <bean id="propertyConfigurerNaver" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath:jdbc.properties</value>
+                <value>classpath:profile-local/jdbc.properties</value>
             </list>
         </property>
     </bean>

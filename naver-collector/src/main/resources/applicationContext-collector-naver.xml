@@ -5,11 +5,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+    <import resource="classpath:applicationContext-collector-profile.xml" />
     <import resource="classpath:applicationContext-collector.xml" />
-    <import resource="classpath:applicationContext-datasource.xml"/>
-    <import resource="classpath:applicationContext-dao-config.xml"/>
-    <import resource="classpath:applicationContext-cache.xml"/>
-    <import resource="classpath:applicationContext-spanStat.xml"/>
+    <import resource="classpath:applicationContext-collector-datasource.xml"/>
+    <import resource="classpath:applicationContext-collector-dao-config.xml"/>
+    <import resource="classpath:applicationContext-collector-cache.xml"/>
+    <import resource="classpath:applicationContext-collector-spanStat.xml"/>
 
     <context:component-scan
             base-package="com.navercorp.pinpoint.collector.dao.memory,
@@ -19,7 +20,7 @@
     <bean id="propertyConfigurerNaver" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath:jdbc.properties</value>
+                <value>classpath:profile-${spring.profiles.active:local}/jdbc.properties</value>
             </list>
         </property>
 
