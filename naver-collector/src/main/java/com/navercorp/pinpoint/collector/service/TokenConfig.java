@@ -27,22 +27,22 @@ import org.springframework.stereotype.Component;
 @Profile("tokenAuthentication")
 public class TokenConfig {
 
-    @Value("#{pinpoint_collector_properties['collector.receiver.token.zookeeper.address'] ?: null}")
+    @Value("${collector.receiver.token.zookeeper.address:#{null}}")
     private String address;
 
-    @Value("#{pinpoint_collector_properties['collector.receiver.token.zookeeper.path'] ?: null}")
+    @Value("${collector.receiver.token.zookeeper.path:#{null}}")
     private String path;
 
-    @Value("#{pinpoint_collector_properties['collector.receiver.token.zookeeper.sessiontimeout'] ?: 30000}")
+    @Value("${collector.receiver.token.zookeeper.sessiontimeout:30000}")
     private int sessionTimeout;
 
-    @Value("#{pinpoint_collector_properties['collector.receiver.token.operation.retry.interval'] ?: 5000}")
+    @Value("${collector.receiver.token.operation.retry.interval:5000}")
     private long operationRetryInterval;
 
-    @Value("#{pinpoint_collector_properties['collector.receiver.token.ttl'] ?: 300000}")
+    @Value("${collector.receiver.token.ttl:300000}")
     private long ttl;
 
-    @Value("#{pinpoint_collector_properties['collector.receiver.token.maxretrycount'] ?: 3}")
+    @Value("${collector.receiver.token.maxretrycount:3}")
     private int maxRetryCount;
 
     public String getAddress() {
