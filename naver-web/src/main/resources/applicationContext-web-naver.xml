@@ -7,9 +7,10 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
+    <import resource="classpath:applicationContext-web-profile-naver.xml" />
     <import resource="classpath:applicationContext-web.xml" />
     <import resource="classpath:applicationContext-web-dao-config-naver.xml" />
-    <import resource="classpath:batch/applicationContext-batch-naver.xml" />
+
 <!--     <import resource="classpath:applicationContext-web-nelo.xml"/> -->
 
     <bean id="nsightMatcherGroup" class="com.navercorp.pinpoint.web.applicationmap.link.NsightMatcherGroup">

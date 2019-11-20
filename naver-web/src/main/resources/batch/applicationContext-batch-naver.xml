@@ -16,7 +16,17 @@
 
     <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration"/>
 
-    <util:properties id="naverBatchProps" location="classpath:batch.properties"/>
+    <bean id="naverBatchConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:profile-${spring.profiles.active:local}/batch.properties</value>
+            </list>
+        </property>
+
+        <property name="fileEncoding" value="UTF-8"/>
+        <property name="systemPropertiesMode" value="#{T(org.springframework.beans.factory.config.PropertyPlaceholderConfigurer).SYSTEM_PROPERTIES_MODE_OVERRIDE}"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
 
     <bean id="naverJobFailMessageSender" class="com.navercorp.pinpoint.web.batch.NaverJobFailMessageSender">
         <constructor-arg index="0" ref="naverBatchConfiguration"/>

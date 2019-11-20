@@ -34,13 +34,13 @@ import java.util.Properties;
 public class NaverBatchConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    @Value("${alarm.sms.url']}")
+    @Value("${alarm.sms.url}")
     private String mexServerUrl;
 
-    @Value("${alarm.sms.api.key']}")
+    @Value("${alarm.sms.api.key}")
     private String apiKey;
 
-    @Value("${alarm.sms.sender.number']}")
+    @Value("${alarm.sms.sender.number}")
     private String senderNumber;
 
     @Value("${alarm.sms.cellphone.number}")
@@ -54,19 +54,12 @@ public class NaverBatchConfiguration {
 
 
     @PostConstruct
-    public void afterPropertiesSet() throws Exception {
+    public void log()  {
         logger.info("{}", this);
         AnnotationVisitor annotationVisitor = new AnnotationVisitor(Value.class);
         annotationVisitor.visit(this, new LoggingEvent(this.logger));
     }
 
-    private String readString(Properties properties, String propertyName, String defaultValue) {
-        final String result = properties.getProperty(propertyName, defaultValue);
-        if (logger.isInfoEnabled()) {
-            logger.info("{}={}", propertyName, result);
-        }
-        return result ;
-    }
 
     public List<String> getAdminUserList() {
         return Arrays.asList(adminUserList);

@@ -89,7 +89,7 @@
         <module>naver-plugins</module>
         <module>naver-flink</module>
         <module>testweb</module>
-        <module>naver-web-oss</module>
+<!--        <module>naver-web-oss</module>-->
         <module>test-vertx</module>
         <module>naver-cloud-manager</module>
         <module>naver-batch</module>
