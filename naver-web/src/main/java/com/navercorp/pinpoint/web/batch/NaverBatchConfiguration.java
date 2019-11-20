@@ -15,13 +15,15 @@
  */
 package com.navercorp.pinpoint.web.batch;
 
+import com.navercorp.pinpoint.common.server.config.AnnotationVisitor;
+import com.navercorp.pinpoint.common.server.config.LoggingEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -29,31 +31,33 @@ import java.util.Properties;
  * @author minwoo.jung
  */
 @Configuration
-public class NaverBatchConfiguration implements InitializingBean {
+public class NaverBatchConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    @Value("#{naverBatchProps['alarm.sms.url']}")
+    @Value("${alarm.sms.url']}")
     private String mexServerUrl;
 
-    @Value("#{naverBatchProps['alarm.sms.api.key']}")
+    @Value("${alarm.sms.api.key']}")
     private String apiKey;
 
-    @Value("#{naverBatchProps['alarm.sms.sender.number']}")
+    @Value("${alarm.sms.sender.number']}")
     private String senderNumber;
 
-    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['alarm.sms.cellphone.number'] ?: ''), ',')}")
-    private List<String> cellPhoneNumberList;
+    @Value("${alarm.sms.cellphone.number}")
+    private String[] cellPhoneNumberList = new String[0];
 
-    @Value("#{T(com.navercorp.pinpoint.common.util.StringUtils).tokenizeToStringList((batchProps['admin.user.list'] ?: ''), ',')}")
-    private List<String> adminUserList = Collections.emptyList();
+    @Value("${admin.user.list}")
+    private String[] adminUserList = new String[0];
 
     public NaverBatchConfiguration() {
     }
 
 
-    @Override
+    @PostConstruct
     public void afterPropertiesSet() throws Exception {
-        logger.info("NaverBatchConfiguration:{}", this.toString());
+        logger.info("{}", this);
+        AnnotationVisitor annotationVisitor = new AnnotationVisitor(Value.class);
+        annotationVisitor.visit(this, new LoggingEvent(this.logger));
     }
 
     private String readString(Properties properties, String propertyName, String defaultValue) {
@@ -65,7 +69,7 @@ public class NaverBatchConfiguration implements InitializingBean {
     }
 
     public List<String> getAdminUserList() {
-        return adminUserList;
+        return Arrays.asList(adminUserList);
     }
 
     public String getMexServerUrl() {
@@ -73,7 +77,7 @@ public class NaverBatchConfiguration implements InitializingBean {
     }
 
     public List<String> getCellPhoneNumberList() {
-        return cellPhoneNumberList;
+        return Arrays.asList(cellPhoneNumberList);
     }
 
     public String getApiKey() {
@@ -90,8 +94,8 @@ public class NaverBatchConfiguration implements InitializingBean {
         sb.append("mexServerUrl='").append(mexServerUrl).append('\'');
         sb.append(", apiKey='").append(apiKey).append('\'');
         sb.append(", senderNumber='").append(senderNumber).append('\'');
-        sb.append(", cellPhoneNumberList=").append(cellPhoneNumberList);
-        sb.append(", adminUserList=").append(adminUserList);
+        sb.append(", cellPhoneNumberList=").append(Arrays.toString(cellPhoneNumberList));
+        sb.append(", adminUserList=").append(Arrays.toString(adminUserList));
         sb.append('}');
         return sb.toString();
     }
