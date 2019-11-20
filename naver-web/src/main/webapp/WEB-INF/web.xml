@@ -32,7 +32,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:applicationContext-web-naver.xml
-            classpath:security-context.xml
+            classpath:profile-${spring.profiles.active}/security-context.xml
         </param-value>
     </context-param>
 
