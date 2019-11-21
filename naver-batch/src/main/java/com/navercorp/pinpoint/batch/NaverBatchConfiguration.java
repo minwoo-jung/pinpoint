@@ -36,19 +36,19 @@ import java.util.Properties;
 public class NaverBatchConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(BatchConfiguration.class);
 
-    @Value("${alarm.sms.url']}")
+    @Value("${alarm.sms.url}")
     private String mexServerUrl;
 
-    @Value("${alarm.sms.api.key']}")
+    @Value("${alarm.sms.api.key}")
     private String apiKey;
 
-    @Value("${alarm.sms.sender.number']}")
+    @Value("${alarm.sms.sender.number}")
     private String senderNumber;
 
-    @Value("${batch.server.env']}")
+    @Value("${batch.server.env}")
     private String batchEnv;
 
-    @Value("${job.delete.range.agent.span.stat'] ?:1555200000L}")
+    @Value("${job.delete.range.agent.span.stat:1555200000}")
     private Long deleteRangeAgentSpanStat;
 
     @Value("${alarm.sms.cellphone.number}")
