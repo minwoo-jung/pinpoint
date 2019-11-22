@@ -16,9 +16,6 @@
 
 package com.navercorp.pinpoint.profiler.context.provider.security;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.protobuf.GeneratedMessageV3;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.grpc.client.ChannelFactory;
 import com.navercorp.pinpoint.grpc.client.ChannelFactoryBuilder;
@@ -26,14 +23,20 @@ import com.navercorp.pinpoint.grpc.client.ClientOption;
 import com.navercorp.pinpoint.grpc.client.DefaultChannelFactoryBuilder;
 import com.navercorp.pinpoint.grpc.client.HeaderFactory;
 import com.navercorp.pinpoint.grpc.client.UnaryCallDeadlineInterceptor;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenInterceptor;
-import com.navercorp.pinpoint.grpc.security.client.RandomTokenProvider;
+import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenProvider;
 import com.navercorp.pinpoint.profiler.context.grpc.GrpcTransportConfig;
+import com.navercorp.pinpoint.profiler.context.module.AuthorizationTokenProviderBindingAnnotation;
 import com.navercorp.pinpoint.profiler.context.module.StatConverter;
 import com.navercorp.pinpoint.profiler.context.thrift.MessageConverter;
 import com.navercorp.pinpoint.profiler.sender.DataSender;
 import com.navercorp.pinpoint.profiler.sender.grpc.ReconnectExecutor;
 import com.navercorp.pinpoint.profiler.sender.grpc.StatGrpcDataSender;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.ClientInterceptor;
 import io.grpc.NameResolverProvider;
 
@@ -44,6 +47,7 @@ public class SecurityStatGrpcDataSenderProvider implements Provider<DataSender<O
 
     private final GrpcTransportConfig grpcTransportConfig;
     private final MessageConverter<GeneratedMessageV3> messageConverter;
+    private final Provider<AuthorizationTokenProvider> authorizationTokenProviderProvider;
     private final HeaderFactory headerFactory;
     private final Provider<ReconnectExecutor> reconnectExecutorProvider;
     private final NameResolverProvider nameResolverProvider;
@@ -51,11 +55,13 @@ public class SecurityStatGrpcDataSenderProvider implements Provider<DataSender<O
     @Inject
     public SecurityStatGrpcDataSenderProvider(GrpcTransportConfig grpcTransportConfig,
                                       @StatConverter MessageConverter<GeneratedMessageV3> messageConverter,
+                                      @AuthorizationTokenProviderBindingAnnotation Provider<AuthorizationTokenProvider> authorizationTokenProviderProvider,
                                       HeaderFactory headerFactory,
                                       Provider<ReconnectExecutor> reconnectExecutor,
                                       NameResolverProvider nameResolverProvider) {
         this.grpcTransportConfig = Assert.requireNonNull(grpcTransportConfig, "profilerConfig");
         this.messageConverter = Assert.requireNonNull(messageConverter, "messageConverter");
+        this.authorizationTokenProviderProvider = Assert.requireNonNull(authorizationTokenProviderProvider, "authorizationTokenProviderProvider");
         this.headerFactory = Assert.requireNonNull(headerFactory, "agentHeaderFactory");
         this.reconnectExecutorProvider = Assert.requireNonNull(reconnectExecutor, "reconnectExecutorProvider");
         this.nameResolverProvider = Assert.requireNonNull(nameResolverProvider, "nameResolverProvider");
@@ -81,11 +87,13 @@ public class SecurityStatGrpcDataSenderProvider implements Provider<DataSender<O
         channelFactoryBuilder.setHeaderFactory(headerFactory);
         channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
+        AuthorizationTokenProvider authorizationTokenProvider = authorizationTokenProviderProvider.get();
+
         // temp // for test
-        final ClientInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(new RandomTokenProvider());
+        final ClientInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(TokenType.STAT, authorizationTokenProvider);
         channelFactoryBuilder.addClientInterceptor(authorizationTokenInterceptor);
 
-        final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getMetadataRequestTimeout());
+        final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getStatRequestTimeout());
         channelFactoryBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
 
         channelFactoryBuilder.setExecutorQueueSize(channelExecutorQueueSize);

@@ -33,16 +33,18 @@ import io.grpc.MethodDescriptor;
  */
 public class AuthorizationTokenInterceptor implements ClientInterceptor {
 
+    private final TokenType tokenType;
     private final AuthorizationTokenProvider authorizationTokenProvider;
 
-    public AuthorizationTokenInterceptor(AuthorizationTokenProvider authorizationTokenProvider) {
+    public AuthorizationTokenInterceptor(TokenType tokenType, AuthorizationTokenProvider authorizationTokenProvider) {
+        this.tokenType = Assert.requireNonNull(tokenType, "tokenType must not be null");
         this.authorizationTokenProvider = Assert.requireNonNull(authorizationTokenProvider, "authorizationTokenProvider");
     }
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
         // TODO & FIXME for temp SPAN
-        final String token = authorizationTokenProvider.getToken(TokenType.SPAN);
+        final String token = authorizationTokenProvider.getToken(tokenType);
 
         // TokenProvider
         final ClientCall<ReqT, RespT> clientCall = next.newCall(method, callOptions);

@@ -29,8 +29,8 @@ import com.navercorp.pinpoint.profiler.context.grpc.GrpcTransportConfig;
 import com.navercorp.pinpoint.profiler.context.module.MetadataConverter;
 import com.navercorp.pinpoint.profiler.context.thrift.MessageConverter;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
-import com.navercorp.pinpoint.profiler.sender.grpc.AgentGrpcDataSender;
 import com.navercorp.pinpoint.profiler.sender.grpc.ReconnectExecutor;
+import com.navercorp.pinpoint.profiler.sender.sender.security.SecurityAgentGrpcDataSender;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -82,7 +82,7 @@ public class SecurityAgentGrpcDataSenderProvider implements Provider<EnhancedDat
         final ChannelFactory channelFactory = channelFactoryBuilder.build();
 
         final  ReconnectExecutor reconnectExecutor = reconnectExecutorProvider.get();
-        return new AgentGrpcDataSender(collectorIp, collectorPort, senderExecutorQueueSize, messageConverter, reconnectExecutor, retransmissionExecutor, channelFactory, activeTraceRepository);
+        return new SecurityAgentGrpcDataSender(collectorIp, collectorPort, senderExecutorQueueSize, messageConverter, reconnectExecutor, retransmissionExecutor, channelFactory, activeTraceRepository);
     }
 
     private ChannelFactoryBuilder newChannelFactoryBuilder() {

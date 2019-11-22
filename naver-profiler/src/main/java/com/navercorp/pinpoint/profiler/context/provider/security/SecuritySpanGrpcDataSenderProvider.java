@@ -16,9 +16,6 @@
 
 package com.navercorp.pinpoint.profiler.context.provider.security;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.protobuf.GeneratedMessageV3;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.grpc.client.ChannelFactory;
 import com.navercorp.pinpoint.grpc.client.ChannelFactoryBuilder;
@@ -26,9 +23,11 @@ import com.navercorp.pinpoint.grpc.client.ClientOption;
 import com.navercorp.pinpoint.grpc.client.DefaultChannelFactoryBuilder;
 import com.navercorp.pinpoint.grpc.client.HeaderFactory;
 import com.navercorp.pinpoint.grpc.client.UnaryCallDeadlineInterceptor;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenInterceptor;
-import com.navercorp.pinpoint.grpc.security.client.RandomTokenProvider;
+import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenProvider;
 import com.navercorp.pinpoint.profiler.context.grpc.GrpcTransportConfig;
+import com.navercorp.pinpoint.profiler.context.module.AuthorizationTokenProviderBindingAnnotation;
 import com.navercorp.pinpoint.profiler.context.module.SpanConverter;
 import com.navercorp.pinpoint.profiler.context.thrift.MessageConverter;
 import com.navercorp.pinpoint.profiler.sender.DataSender;
@@ -37,6 +36,10 @@ import com.navercorp.pinpoint.profiler.sender.grpc.DiscardEventListener;
 import com.navercorp.pinpoint.profiler.sender.grpc.LoggingDiscardEventListener;
 import com.navercorp.pinpoint.profiler.sender.grpc.ReconnectExecutor;
 import com.navercorp.pinpoint.profiler.sender.grpc.SpanGrpcDataSender;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.protobuf.GeneratedMessageV3;
 import io.grpc.ClientInterceptor;
 import io.grpc.NameResolverProvider;
 
@@ -47,6 +50,7 @@ public class SecuritySpanGrpcDataSenderProvider implements Provider<DataSender<O
 
     private final GrpcTransportConfig grpcTransportConfig;
     private final MessageConverter<GeneratedMessageV3> messageConverter;
+    private final Provider<AuthorizationTokenProvider> authorizationTokenProviderProvider;
     private final HeaderFactory headerFactory;
     private final Provider<ReconnectExecutor> reconnectExecutor;
     private final NameResolverProvider nameResolverProvider;
@@ -54,11 +58,13 @@ public class SecuritySpanGrpcDataSenderProvider implements Provider<DataSender<O
     @Inject
     public SecuritySpanGrpcDataSenderProvider(GrpcTransportConfig grpcTransportConfig,
                                               @SpanConverter MessageConverter<GeneratedMessageV3> messageConverter,
+                                              @AuthorizationTokenProviderBindingAnnotation Provider<AuthorizationTokenProvider> authorizationTokenProviderProvider,
                                               HeaderFactory headerFactory,
                                               Provider<ReconnectExecutor> reconnectExecutor,
                                               NameResolverProvider nameResolverProvider) {
         this.grpcTransportConfig = Assert.requireNonNull(grpcTransportConfig, "grpcTransportConfig");
         this.messageConverter = Assert.requireNonNull(messageConverter, "messageConverter");
+        this.authorizationTokenProviderProvider = Assert.requireNonNull(authorizationTokenProviderProvider, "authorizationTokenProviderProvider");
         this.headerFactory = Assert.requireNonNull(headerFactory, "headerFactory");
 
         this.reconnectExecutor = Assert.requireNonNull(reconnectExecutor, "reconnectExecutor");
@@ -87,10 +93,12 @@ public class SecuritySpanGrpcDataSenderProvider implements Provider<DataSender<O
         channelFactoryBuilder.setHeaderFactory(headerFactory);
         channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
+        AuthorizationTokenProvider authorizationTokenProvider = authorizationTokenProviderProvider.get();
+
         // temp // for test
-        final ClientInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(new RandomTokenProvider());
+        final ClientInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(TokenType.SPAN, authorizationTokenProvider);
         channelFactoryBuilder.addClientInterceptor(authorizationTokenInterceptor);
-        final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getMetadataRequestTimeout());
+        final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getSpanRequestTimeout());
         channelFactoryBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
         final ClientInterceptor discardClientInterceptor = newDiscardClientInterceptor();
         channelFactoryBuilder.addClientInterceptor(discardClientInterceptor);

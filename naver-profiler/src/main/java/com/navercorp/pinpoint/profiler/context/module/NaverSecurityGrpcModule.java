@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.profiler.context.module;
 import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.grpc.client.HeaderFactory;
+import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenProvider;
 import com.navercorp.pinpoint.grpc.trace.PSpan;
 import com.navercorp.pinpoint.grpc.trace.PSpanChunk;
 import com.navercorp.pinpoint.profiler.context.compress.SpanProcessor;
@@ -34,6 +35,7 @@ import com.navercorp.pinpoint.profiler.context.provider.grpc.GrpcSpanProcessorPr
 import com.navercorp.pinpoint.profiler.context.provider.grpc.GrpcTransportConfigProvider;
 import com.navercorp.pinpoint.profiler.context.provider.grpc.ReconnectExecutorProvider;
 import com.navercorp.pinpoint.profiler.context.provider.grpc.ReconnectSchedulerProvider;
+import com.navercorp.pinpoint.profiler.context.provider.security.AuthorizationTokenProviderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.security.SecurityAgentGrpcDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.security.SecurityMetadataGrpcDataSenderProvider;
 import com.navercorp.pinpoint.profiler.context.provider.security.SecuritySpanGrpcDataSenderProvider;
@@ -99,6 +101,11 @@ public class NaverSecurityGrpcModule extends PrivateModule {
         Key<EnhancedDataSender<Object>> agentDataSender = Key.get(dataSenderTypeLiteral, AgentDataSender.class);
         bind(agentDataSender).toProvider(SecurityAgentGrpcDataSenderProvider.class).in(Scopes.SINGLETON);
         expose(agentDataSender);
+
+        // Create AuthorizationTokenProviderProvider
+        Key<AuthorizationTokenProvider> authorizationTokenProviderKey = Key.get(AuthorizationTokenProvider.class, AuthorizationTokenProviderBindingAnnotation.class);
+        bind(authorizationTokenProviderKey).toProvider(AuthorizationTokenProviderProvider.class).in(Scopes.SINGLETON);
+        expose(authorizationTokenProviderKey);
 
         Key<EnhancedDataSender<Object>> metadataDataSender = Key.get(dataSenderTypeLiteral, MetadataDataSender.class);
         bind(metadataDataSender).toProvider(SecurityMetadataGrpcDataSenderProvider.class).in(Scopes.SINGLETON);

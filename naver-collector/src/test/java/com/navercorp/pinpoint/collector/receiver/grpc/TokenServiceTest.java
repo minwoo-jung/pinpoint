@@ -25,6 +25,7 @@ import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenRequest;
 import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenResponse;
 import com.navercorp.pinpoint.grpc.auth.PSecurityResult;
 import com.navercorp.pinpoint.grpc.auth.PTokenType;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 import com.navercorp.pinpoint.grpc.security.client.AuthenticationKeyInterceptor;
 import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenInterceptor;
 import com.navercorp.pinpoint.grpc.security.server.SecurityServerTransportFilter;
@@ -164,7 +165,7 @@ public class TokenServiceTest {
 
             AuthGrpc.AuthBlockingStub authBlockingStub = AuthGrpc.newBlockingStub(authenticationChannel);
 
-            authorizationChannel = createChannel(authorizationServer.getPort(), new AuthorizationTokenInterceptor(new TestTokenProvider(authBlockingStub)));
+            authorizationChannel = createChannel(authorizationServer.getPort(), new AuthorizationTokenInterceptor(TokenType.SPAN, new TestTokenProvider(authBlockingStub)));
 
             GreeterGrpc.GreeterBlockingStub greeterBlockingStub = GreeterGrpc.newBlockingStub(authorizationChannel);
 
@@ -219,7 +220,7 @@ public class TokenServiceTest {
                 Assert.assertEquals(Status.Code.UNAUTHENTICATED, e.getStatus().getCode());
             }
 
-            authorizationChannel = createChannel(authorizationServer.getPort(), new AuthorizationTokenInterceptor(new TestTokenProvider(authBlockingStub)));
+            authorizationChannel = createChannel(authorizationServer.getPort(), new AuthorizationTokenInterceptor(TokenType.SPAN, new TestTokenProvider(authBlockingStub)));
 
             GreeterGrpc.GreeterBlockingStub greeterBlockingStub = GreeterGrpc.newBlockingStub(authorizationChannel);
 
