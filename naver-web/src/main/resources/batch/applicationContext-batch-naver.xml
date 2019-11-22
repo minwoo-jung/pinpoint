@@ -18,7 +18,7 @@
     <bean id="naverBatchContextConfigurer" class="com.navercorp.pinpoint.web.batch.NaverBatchContextConfiguration" />
     <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration" depends-on="naverBatchContextConfigurer"/>
 
-    <bean id="naverBatchConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="naverBatchConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>#{batchConfigLocation}</value>
@@ -26,7 +26,6 @@
         </property>
 
         <property name="fileEncoding" value="UTF-8"/>
-        <property name="systemPropertiesMode" value="#{T(org.springframework.beans.factory.config.PropertyPlaceholderConfigurer).SYSTEM_PROPERTIES_MODE_OVERRIDE}"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 

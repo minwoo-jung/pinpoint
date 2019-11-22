@@ -9,7 +9,7 @@
 
     <bean id="jobLauncherTestUtils" class="org.springframework.batch.test.JobLauncherTestUtils"/>
 
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="propertyConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>classpath:/jdbc.properties</value>

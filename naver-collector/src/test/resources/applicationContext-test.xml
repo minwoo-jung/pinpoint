@@ -41,7 +41,7 @@
                          com.navercorp.pinpoint.common.server.bo,
                          com.navercorp.pinpoint.common.server.util" />
 
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="propertyConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>hbase.properties</value>

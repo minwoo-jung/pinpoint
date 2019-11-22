@@ -60,7 +60,7 @@
         <property name="maxOpenPreparedStatements" value="50"/>
     </bean>
 
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="propertyConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>jdbc.properties</value>

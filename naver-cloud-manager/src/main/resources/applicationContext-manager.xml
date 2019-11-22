@@ -15,7 +15,7 @@
                                           com.navercorp.pinpoint.manager.service,
                                           com.navercorp.pinpoint.manager.dao"/>
 
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="propertyConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>classpath:hbase.properties</value>

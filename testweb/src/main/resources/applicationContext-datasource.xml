@@ -13,7 +13,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+          class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="location" value="classpath:database.properties"/>
     </bean>
 

@@ -17,7 +17,7 @@
                         com.navercorp.pinpoint.collector.dao.mysql
                         com.navercorp.pinpoint.collector.handler.thrift"/>
 
-    <bean id="propertyConfigurerNaver" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="propertyConfigurerNaver" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>classpath:profile-${spring.profiles.active:local}/jdbc.properties</value>
@@ -25,7 +25,6 @@
         </property>
 
         <property name="fileEncoding" value="UTF-8"/>
-        <property name="systemPropertiesMode" value="#{T(org.springframework.beans.factory.config.PropertyPlaceholderConfigurer).SYSTEM_PROPERTIES_MODE_OVERRIDE}"/>
     </bean>
 
     <bean id="acceptor" class="com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor">

@@ -13,7 +13,7 @@
     <import resource="classpath:applicationContext-collector-datasource.xml"/>
     <import resource="classpath:applicationContext-collector-dao-config.xml"/>
 
-    <bean id="propertyConfigurerNaver" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="propertyConfigurerNaver" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>classpath:profile-local/jdbc.properties</value>
