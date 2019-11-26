@@ -16,7 +16,7 @@
     <bean id="propertyConfigurerNaver" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath:profile-local/jdbc.properties</value>
+                <value>classpath:jdbc.properties</value>
             </list>
         </property>
     </bean>

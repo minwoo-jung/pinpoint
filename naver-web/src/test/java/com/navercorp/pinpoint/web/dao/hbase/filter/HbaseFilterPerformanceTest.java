@@ -69,7 +69,6 @@ public class HbaseFilterPerformanceTest {
 
     @BeforeClass
     public static void beforeClass() throws IOException {
-//        Properties properties = PropertyUtils.loadPropertyFromClassPath("hbase.properties");
 
         Configuration cfg = HBaseConfiguration.create();
         cfg.set("hbase.zookeeper.quorum", "dev.zk.pinpoint.navercorp.com");

@@ -15,19 +15,7 @@
         <constructor-arg index="2" ref="restTemplate"/>
     </bean>
 
-    <bean id="naverBatchContextConfigurer" class="com.navercorp.pinpoint.web.batch.NaverBatchContextConfiguration" />
-    <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration" depends-on="naverBatchContextConfigurer"/>
-
-    <bean id="naverBatchConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>#{batchConfigLocation}</value>
-            </list>
-        </property>
-
-        <property name="fileEncoding" value="UTF-8"/>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-    </bean>
+    <bean id="naverBatchConfiguration" class="com.navercorp.pinpoint.web.batch.NaverBatchConfiguration"/>
 
     <bean id="naverJobFailMessageSender" class="com.navercorp.pinpoint.web.batch.NaverJobFailMessageSender">
         <constructor-arg index="0" ref="naverBatchConfiguration"/>

@@ -17,16 +17,6 @@
                         com.navercorp.pinpoint.collector.dao.mysql
                         com.navercorp.pinpoint.collector.handler.thrift"/>
 
-    <bean id="propertyConfigurerNaver" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath:profile-${spring.profiles.active:local}/jdbc.properties</value>
-            </list>
-        </property>
-
-        <property name="fileEncoding" value="UTF-8"/>
-    </bean>
-
     <bean id="acceptor" class="com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor">
         <constructor-arg ref="baseAcceptorOption"/>
         <constructor-arg ref="channelFilter"/>
