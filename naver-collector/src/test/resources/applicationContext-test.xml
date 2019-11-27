@@ -47,6 +47,11 @@
                 <value>hbase.properties</value>
                 <value>pinpoint-collector.properties</value>
                 <value>pinpoint-collector-grpc.properties</value>
+
+                <!-- override configuration -->
+                <value>classpath:profile-${pinpoint.profiles.active}/hbase-env.properties</value>
+                <value>classpath:profile-${pinpoint.profiles.active}/pinpoint-collector-env.properties</value>
+                <value>classpath:profile-${pinpoint.profiles.active}/pinpoint-collector-grpc-env.properties</value>
             </list>
         </property>
     </bean>
