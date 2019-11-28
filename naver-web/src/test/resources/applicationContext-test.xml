@@ -42,7 +42,7 @@
                 <value>test-hbase.properties</value>
 
                 <value>jdbc.properties</value>
-                <value>classpath:profile-local/jdbc-env.properties</value>
+                <value>classpath:profiles/local/jdbc-env.properties</value>
 
                 <value>pinpoint-web-junit.properties</value>
             </list>

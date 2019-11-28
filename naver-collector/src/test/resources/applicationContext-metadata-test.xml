@@ -17,7 +17,7 @@
         <property name="locations">
             <list>
                 <value>classpath:jdbc.properties</value>
-                <value>classpath:profile-${pinpoint.profiles.active}/jdbc-env.properties</value>
+                <value>classpath:profiles/${pinpoint.profiles.active}/jdbc-env.properties</value>
             </list>
         </property>
     </bean>
