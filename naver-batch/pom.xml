@@ -71,13 +71,6 @@
             <artifactId>log4j</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework.batch</groupId>
-            <artifactId>spring-batch-test</artifactId>
-            <version>${spring.batch.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
