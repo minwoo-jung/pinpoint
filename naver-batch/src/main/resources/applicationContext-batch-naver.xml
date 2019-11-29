@@ -21,6 +21,7 @@
         <property name="locations">
             <list>
                 <value>classpath:/jdbc.properties</value>
+                <value>classpath:/pinpoint-batch.properties</value>
             </list>
         </property>
 
@@ -28,9 +29,9 @@
     </bean>
 
     <task:scheduled-tasks scheduler="naverScheduler">
-        <task:scheduled ref="naverBatchJobLauncher" method="aggreagteSpanStatHourJob" cron="0 30 * * * *"/>
-        <task:scheduled ref="naverBatchJobLauncher" method="deleteAgentSpanStatJob" cron="0 10 * * * *"/>
-        <task:scheduled ref="naverBatchJobLauncher" method="aggreagteSpanStatDayJob" cron="0 0 5 * * *"/>
+        <!--<task:scheduled ref="naverBatchJobLauncher" method="aggreagteSpanStatHourJob" cron="0 30 * * * *"/>-->
+        <task:scheduled ref="naverBatchJobLauncher" method="deleteAgentSpanStatJob" cron="0 0/2 * * * *"/>
+        <!--<task:scheduled ref="naverBatchJobLauncher" method="aggreagteSpanStatDayJob" cron="0 0 5 * * *"/>-->
     </task:scheduled-tasks>
 
     <task:scheduler id="naverScheduler" pool-size="2"/>
