@@ -1,6 +1,6 @@
 import { Injectable, Injector, ComponentFactoryResolver } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, map, filter } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { LocalStorageService } from 'angular-2-local-storage';
 import 'moment-timezone';
@@ -12,8 +12,6 @@ import * as moment from 'moment-timezone';
 import { AppState, Actions, STORE_KEY } from 'app/shared/store';
 import { ComponentDefaultSettingDataService } from 'app/shared/services/component-default-setting-data.service';
 import { Application, Period } from 'app/core/models';
-import { DynamicPopupService } from 'app/shared/services/dynamic-popup.service';
-import { ServerErrorPopupContainerComponent } from 'app/core/components/server-error-popup';
 import { NewUrlStateNotificationService } from 'app/shared/services/new-url-state-notification.service';
 import { FavoriteApplicationListDataService } from 'app/shared/services/favorite-application-list-data.service';
 
@@ -49,11 +47,8 @@ export class WebAppSettingDataService {
         private store: Store<AppState>,
         private localStorageService: LocalStorageService,
         private componentDefaultSettingDataService: ComponentDefaultSettingDataService,
-        private dynamicPopupService: DynamicPopupService,
         private newUrlStateNotificationService: NewUrlStateNotificationService,
         private favoriteApplicationListDataService: FavoriteApplicationListDataService,
-        private componentFactoryResolver: ComponentFactoryResolver,
-        private injector: Injector
     ) {
         this.store.dispatch(new Actions.ChangeTimezone(this.getTimezone()));
         this.store.dispatch(new Actions.ChangeDateFormat(this.getDateFormat()));
@@ -133,45 +128,27 @@ export class WebAppSettingDataService {
     getColorByRequest(): string[] {
         return this.componentDefaultSettingDataService.getColorByRequest();
     }
-    private saveFavoriteList(newFavoriateApplicationList: IFavoriteApplication[], application: IFavoriteApplication): void {
-        this.favoriteApplicationListDataService.saveFavoriteList(newFavoriateApplicationList).subscribe((result: any) => {
-            if (result.result === 'SUCCESS') {
-                if (this.favoriteApplicationList.length > newFavoriateApplicationList.length) {
-                    this.store.dispatch(new Actions.RemoveFavoriteApplication([
-                        new Application(application.applicationName, application.serviceType, application.code)
-                    ]));
-                } else {
-                    this.store.dispatch(new Actions.AddFavoriteApplication([
-                        new Application(application.applicationName, application.serviceType, application.code)
-                    ]));
-                }
-            }
-        }, (error: IServerErrorFormat) => {
-            this.dynamicPopupService.openPopup({
-                data: {
-                    title: 'Server Error',
-                    contents: error
-                },
-                component: ServerErrorPopupContainerComponent
-            }, {
-                resolver: this.componentFactoryResolver,
-                injector: this.injector
-            });
-        });
+    private saveFavoriteList(newFavoriteApplicationList: IFavoriteApplication[], application: IFavoriteApplication): Observable<IFavoriteApplication> {
+        return this.favoriteApplicationListDataService.saveFavoriteList(newFavoriteApplicationList).pipe(
+            filter((result: any) => result.result === 'SUCCESS'),
+            map(() => application)
+        );
     }
-    addFavoriteApplication(application: IApplication): void {
-        const newApplication = {
+    addFavoriteApplication(application: IApplication): Observable<any> {
+        const addApplication = {
             applicationName: application.getApplicationName(),
             code: application.getCode(),
             serviceType: application.getServiceType()
         };
-        this.saveFavoriteList([...this.favoriteApplicationList, newApplication].sort((a, b) => {
+        const addedList = [...this.favoriteApplicationList, addApplication].sort((a, b) => {
             const aName = a.applicationName.toUpperCase();
             const bName = b.applicationName.toUpperCase();
             return aName < bName ? -1 : aName > bName ? 1 : 0;
-        }), newApplication);
+        });
+
+        return this.saveFavoriteList(addedList, addApplication);
     }
-    removeFavoriteApplication(application: IApplication): void {
+    removeFavoriteApplication(application: IApplication): Observable<any> {
         const removeApplication = {
             applicationName: application.getApplicationName(),
             code: application.getCode(),
@@ -180,7 +157,8 @@ export class WebAppSettingDataService {
         const removedList = this.favoriteApplicationList.filter((data: IFavoriteApplication) => {
             return !new Application(data.applicationName, data.serviceType, data.code).equals(application);
         });
-        this.saveFavoriteList(removedList, removeApplication);
+
+        return this.saveFavoriteList(removedList, removeApplication);
     }
     getScatterY(key: string): IMinMax {
         return this.localStorageService.get<IMinMax>(key) || { min: 0, max: 10000 };

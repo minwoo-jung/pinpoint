@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { SharedModule } from 'app/shared';
@@ -12,6 +11,7 @@ import { FavoriteApplicationListForConfigurationComponent } from './favorite-app
 import { ApplicationListForConfigurationAlarmContainerComponent } from './application-list-for-configuration-alarm-container.component';
 import { ApplicationListInteractionForConfigurationService } from './application-list-interaction-for-configuration.service';
 import { ApplicationListForAgentManagementContainerComponent } from './application-list-for-agent-management-container.component';
+import { ServerErrorPopupModule } from 'app/core/components/server-error-popup';
 
 @NgModule({
     declarations: [
@@ -25,9 +25,9 @@ import { ApplicationListForAgentManagementContainerComponent } from './applicati
         ApplicationListForAgentManagementContainerComponent
     ],
     imports: [
-        MatTooltipModule,
         ScrollingModule,
-        SharedModule
+        SharedModule,
+        ServerErrorPopupModule,
     ],
     exports: [
         ApplicationListForHeaderContainerComponent,
