@@ -1,6 +1,6 @@
-import { Injectable, Injector, ComponentFactoryResolver } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil, map, filter } from 'rxjs/operators';
+import { map, filter, withLatestFrom } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { LocalStorageService } from 'angular-2-local-storage';
 import 'moment-timezone';
@@ -14,6 +14,7 @@ import { ComponentDefaultSettingDataService } from 'app/shared/services/componen
 import { Application, Period } from 'app/core/models';
 import { NewUrlStateNotificationService } from 'app/shared/services/new-url-state-notification.service';
 import { FavoriteApplicationListDataService } from 'app/shared/services/favorite-application-list-data.service';
+import { MessageQueueService, MESSAGE_TO } from 'app/shared/services/message-queue.service';
 
 interface IMinMax {
     min: number;
@@ -49,14 +50,26 @@ export class WebAppSettingDataService {
         private componentDefaultSettingDataService: ComponentDefaultSettingDataService,
         private newUrlStateNotificationService: NewUrlStateNotificationService,
         private favoriteApplicationListDataService: FavoriteApplicationListDataService,
+        private messageQueueService: MessageQueueService,
     ) {
         this.store.dispatch(new Actions.ChangeTimezone(this.getTimezone()));
         this.store.dispatch(new Actions.ChangeDateFormat(this.getDateFormat()));
         this.store.pipe(
             select(STORE_KEY.FAVORITE_APPLICATION_LIST),
-            takeUntil(this.unsubscribe)
         ).subscribe((list: IApplication[]) => {
             this.favoriteApplicationList = list;
+        });
+        this.store.pipe(
+            select(STORE_KEY.APPLICATION_LIST),
+            filter((appList: IApplication[]) => appList.length !== 0),
+            withLatestFrom(this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.FAVORITE_APP_LIST_FROM_SERVER).pipe(map(([appList]: IApplication[][]) => appList))),
+            map(([appList, favAppListFromServer]: IApplication[][]) => {
+                return favAppListFromServer.filter((favApp: IApplication) => {
+                    return appList.some((app: IApplication) => app.equals(favApp));
+                });
+            })
+        ).subscribe((filteredFavAppList: IApplication[]) => {
+            this.store.dispatch(new Actions.AddFavoriteApplication(filteredFavAppList));
         });
     }
     getSecurityGuideUrl(): Observable<string> {
