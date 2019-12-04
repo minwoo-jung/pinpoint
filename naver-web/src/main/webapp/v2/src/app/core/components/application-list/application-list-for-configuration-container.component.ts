@@ -6,7 +6,7 @@ import { Subject, forkJoin } from 'rxjs';
 import { StoreHelperService, WebAppSettingDataService, TranslateReplaceService, AnalyticsService, TRACKED_EVENT_LIST, DynamicPopupService } from 'app/shared/services';
 import { Actions } from 'app/shared/store';
 import { Application } from 'app/core/models';
-import { ServerErrorPopupContainerComponent } from 'app/core/components/server-error-popup';
+import { ServerErrorPopupContainerComponent } from 'app/core/components/server-error-popup/server-error-popup-container.component';
 
 @Component({
     selector: 'pp-application-list-for-configuration-container',
