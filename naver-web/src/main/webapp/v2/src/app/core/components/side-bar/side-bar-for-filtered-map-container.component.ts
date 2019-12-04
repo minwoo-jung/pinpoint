@@ -14,13 +14,13 @@ import { WebAppSettingDataService, StoreHelperService } from 'app/shared/service
 export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestroy {
     private unsubscribe = new Subject<void>();
 
-    target: ISelectedTarget;
     useDisable = true;
     showLoading = true;
     showDivider = false;
     isAuthorized = false;
     isTargetMerged: boolean;
     securityGuideUrl$: Observable<string>;
+    sidebarVisibility = 'hidden';
 
     constructor(
         private router: Router,
@@ -77,10 +77,9 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
             this.storeHelperService.getServerMapTargetSelected(this.unsubscribe).pipe(
                 filter((target: ISelectedTarget) => !!target),
                 tap(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
-                    // this.target = target;
-                    this.renderer.setStyle(this.el.nativeElement, 'width', '477px');
                     this.isAuthorized = isAuthorized;
                     this.showDivider = isNode && isWAS && !isMerged;
+                    this.sidebarVisibility = 'visible';
                 }),
                 map(({isMerged}: ISelectedTarget) => isMerged)
             )

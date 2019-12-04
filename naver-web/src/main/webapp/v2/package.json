@@ -42,7 +42,8 @@
     "blueimp-md5": "^2.12.0",
     "chart.js": "^2.8.0",
     "core-js": "^3.2.1",
-    "gojs": "^2.0.16",
+    "cytoscape": "^3.12.1",
+    "cytoscape-dagre": "^2.2.2",
     "js-beautify": "^1.10.2",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
@@ -54,7 +55,6 @@
     "snapsvg": "^0.5.1",
     "sql-formatter": "^2.3.3",
     "tslib": "^1.10.0",
-    "vis": "^4.21.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -68,7 +68,6 @@
     "@types/moment-timezone": "^0.5.12",
     "@types/node": "~12.7.2",
     "@types/snapsvg": "^0.5.0",
-    "@types/vis": "^4.21.19",
     "codelyzer": "^5.0.1",
     "cpx": "^1.5.0",
     "jasmine-core": "~3.4.0",
