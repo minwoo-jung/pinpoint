@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { AgGridModule } from 'ag-grid-angular/main';
+import { AgGridModule } from 'ag-grid-angular';
 
 import { SharedModule } from 'app/shared';
 import { ApplicationAuthAndAlarmDataService } from './application-auth-and-alarm-data.service';
