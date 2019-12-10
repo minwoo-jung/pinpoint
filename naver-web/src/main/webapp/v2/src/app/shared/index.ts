@@ -49,6 +49,7 @@ import { UserPermissionCheckService } from './services/user-permission-check.ser
 import { FavoriteApplicationListDataService } from './services/favorite-application-list-data.service';
 import { SafeStylePipe } from './pipes/safe-style.pipe';
 import { RetryComponent } from './components/retry';
+import { HandleObsPipe } from './pipes/handle-obs.pipe';
 
 @NgModule({
     declarations: [
@@ -65,6 +66,7 @@ import { RetryComponent } from './components/retry';
         SafeHtmlPipe,
         SafeStylePipe,
         JSONTextParserPipe,
+        HandleObsPipe,
         ContextPopupDirective,
         SplitterDirective,
         SearchInputDirective
@@ -92,6 +94,7 @@ import { RetryComponent } from './components/retry';
         SafeHtmlPipe,
         SafeStylePipe,
         JSONTextParserPipe,
+        HandleObsPipe,
         ContextPopupDirective,
         SplitterDirective,
         SearchInputDirective
