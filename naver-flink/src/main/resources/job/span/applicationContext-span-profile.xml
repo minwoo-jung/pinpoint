@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <beans profile="local">
+        <bean id="propertyConfigurerLocal" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/local/job/span/jdbc.properties</value>
+                    <value>classpath:profiles/local/job/span/spanStat.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+    <beans profile="alpha">
+        <bean id="propertyConfigurerAlpha" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/alpha/job/span/jdbc.properties</value>
+                    <value>classpath:profiles/alpha/job/span/spanStat.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+    <beans profile="dev">
+        <bean id="propertyConfigurerDev" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/dev/job/span/jdbc.properties</value>
+                    <value>classpath:profiles/dev/job/span/spanStat.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+    <beans profile="test">
+        <bean id="propertyConfigurerTest" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/test/job/span/jdbc.properties</value>
+                    <value>classpath:profiles/test/job/span/spanStat.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+    <beans profile="release">
+        <bean id="propertyConfigurerRelease" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/release/job/span/jdbc.properties</value>
+                    <value>classpath:profiles/release/job/span/spanStat.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+</beans>

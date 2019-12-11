@@ -18,7 +18,8 @@ package com.navercorp.pinpoint.flink.job.span.stat.service;
 import com.navercorp.pinpoint.flink.job.span.stat.Bootstrap;
 import com.navercorp.pinpoint.flink.job.span.stat.vo.SpanStatAgentKey;
 import com.navercorp.pinpoint.flink.job.span.stat.vo.SpanStatAgentVo;
-import org.apache.flink.api.common.io.OutputFormat;
+import org.apache.flink.api.common.ExecutionConfig;
+import org.apache.flink.api.common.io.RichOutputFormat;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
@@ -29,14 +30,15 @@ import java.io.IOException;
 /**
  * @author minwoo.jung
  */
-public class SpanStatService implements OutputFormat<Tuple3<SpanStatAgentKey, Long, Long>> {
+public class SpanStatService extends RichOutputFormat<Tuple3<SpanStatAgentKey, Long, Long>> {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private transient SpanStatAgentService spanStatAgentService;
 
     @Override
     public void configure(Configuration parameters) {
-        Bootstrap bootstrap = Bootstrap.getInstance();
+        ExecutionConfig.GlobalJobParameters globalJobParameters = getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+        Bootstrap bootstrap = Bootstrap.getInstance(globalJobParameters.toMap());
         spanStatAgentService = bootstrap.getSpanStatAgentService();
     }
 

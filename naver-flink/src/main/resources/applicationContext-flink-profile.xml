@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="profileTestObject" class="com.navercorp.pinpoint.flink.ProfileTestObject"/>
+
+    <beans profile="local">
+        <bean id="flinkPropertyConfigurerLocal" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/local/hbase.properties</value>
+                    <value>classpath:profiles/local/pinpoint-flink.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+    <beans profile="alpha">
+        <bean id="flinkPropertyConfigurerAlpha" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/alpha/hbase.properties</value>
+                    <value>classpath:profiles/alpha/pinpoint-flink.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+    <beans profile="dev">
+        <bean id="flinkPropertyConfigurerDev" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/dev/hbase.properties</value>
+                    <value>classpath:profiles/dev/pinpoint-flink.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+    <beans profile="test">
+        <bean id="flinkPropertyConfigurerTest" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/test/hbase.properties</value>
+                    <value>classpath:profiles/test/pinpoint-flink.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+    <beans profile="release">
+        <bean id="flinkPropertyConfigurerRelease" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+            <property name="locations">
+                <list>
+                    <value>classpath:profiles/release/hbase.properties</value>
+                    <value>classpath:profiles/release/pinpoint-flink.properties</value>
+                </list>
+            </property>
+        </bean>
+    </beans>
+
+</beans>

@@ -6,6 +6,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+    <import resource="classpath:job/span/applicationContext-span-profile.xml"/>
     <import resource="classpath:job/span/applicationContext-datasource.xml"/>
     <import resource="classpath:job/span/applicationContext-dao-config.xml"/>
 
@@ -13,14 +14,6 @@
 
     <context:component-scan
         base-package="com.navercorp.pinpoint.common.server.util"/>
-
-    <bean id="propertyConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>classpath:/job/span/jdbc.properties</value>
-            </list>
-        </property>
-    </bean>
 
     <bean id="tcpDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandlerFactoryBean">
         <constructor-arg ref="tcpDispatchHandler"/>
@@ -30,17 +23,10 @@
     <bean id="tcpDispatchHandler" class="com.navercorp.pinpoint.flink.job.span.stat.receiver.TcpDispatchHandler"/>
     <bean id="handlerManager" class="com.navercorp.pinpoint.collector.manage.HandlerManager"/>
 
-    <util:properties id="span_stat_properties" location="classpath:/job/span/spanStat.properties"/>
-    <bean id="flinkConfiguration" class="com.navercorp.pinpoint.flink.config.FlinkConfiguration">
-        <property name="properties" ref="span_stat_properties"/>
-    </bean>
-    <bean id="tcpReceiverConfig" class="com.navercorp.pinpoint.collector.config.AgentBaseDataReceiverConfiguration">
-        <constructor-arg ref="span_stat_properties"/>
-        <constructor-arg ref="deprecatedConfig"/>
-    </bean>
-    <bean id="deprecatedConfig" class="com.navercorp.pinpoint.collector.config.DeprecatedConfiguration">
-        <constructor-arg ref="span_stat_properties"/>
-    </bean>
+    <bean id="flinkConfiguration" class="com.navercorp.pinpoint.flink.config.FlinkConfiguration"/>
+
+    <bean id="tcpReceiverConfig" class="com.navercorp.pinpoint.collector.config.AgentBaseDataReceiverConfiguration"/>
+
 
     <bean id="tcpSourceFunction" class="com.navercorp.pinpoint.flink.job.span.stat.receiver.TcpSourceFunction"/>
 

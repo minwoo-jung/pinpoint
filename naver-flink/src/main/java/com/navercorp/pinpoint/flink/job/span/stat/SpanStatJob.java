@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.flink.job.span.stat.service.SpanStatService;
 import com.navercorp.pinpoint.flink.job.span.stat.vo.SpanStatAgentKey;
 import com.navercorp.pinpoint.flink.vo.RawData;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -42,16 +43,18 @@ public class SpanStatJob implements Serializable {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static void main(String[] args) throws Exception {
-        new SpanStatJob().start();
+        ParameterTool parameters = ParameterTool.fromArgs(args);
+        new SpanStatJob().start(parameters);
     }
 
-    public void start() throws Exception {
+    public void start(ParameterTool parameters) throws Exception {
         logger.info("SpanStat aggregation job");
 
-        final Bootstrap bootstrap = Bootstrap.getInstance();
+        final Bootstrap bootstrap = Bootstrap.getInstance(parameters.toMap());
 
         final TcpSourceFunction tcpSourceFunction = bootstrap.getTcpSourceFunction();
         final StreamExecutionEnvironment env = bootstrap.createStreamExecutionEnvironment();
+        env.getConfig().setGlobalJobParameters(parameters);
         DataStreamSource<RawData> rawData = env.addSource(tcpSourceFunction);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 

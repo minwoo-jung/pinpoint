@@ -15,12 +15,14 @@
  */
 package com.navercorp.pinpoint.flink;
 
+import org.apache.flink.api.java.utils.ParameterTool;
+
 /**
  * @author minwoo.jung
  */
 public class StatStreamingVer2JobTest {
 
     public static void main(String[] args) throws Exception {
-        new StatStreamingVer2Job().start();
+        new StatStreamingVer2Job().start(ParameterTool.fromArgs(args));
     }
 }

@@ -16,6 +16,10 @@
 
 package com.navercorp.pinpoint.flink.job.span.stat;
 
+import org.apache.flink.api.java.utils.ParameterTool;
+
+import java.util.Collections;
+
 import static org.junit.Assert.*;
 
 /**
@@ -23,6 +27,6 @@ import static org.junit.Assert.*;
  */
 public class SpanStatJobTest {
     public static void main(String[] args) throws Exception {
-        new SpanStatJob().start();
+        new SpanStatJob().start(ParameterTool.fromArgs(args));
     }
 }
