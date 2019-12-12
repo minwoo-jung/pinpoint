@@ -127,7 +127,6 @@ export const Actions = {
     'UpdateServerMapSelectedTargetByList': targetList.UpdateServerMapSelectedTargetByList,
     'UpdateFilterOfServerAndAgentList': serverAndAgent.UpdateFilterOfServerAndAgentList,
     'UpdateAdminAgentList': admin.UpdateAdminAgentList,
-    'ChangeServerMapDisableState': uiState.ChangeServerMapDisableState,
     'ChangeInfoPerServerVisibleState': uiState.ChangeInfoPerServerVisibleState,
     'UpdateTimelineData': timeline.UpdateTimelineData,
     'UpdateRange': range.UpdateRange,
@@ -140,10 +139,6 @@ export const Actions = {
 };
 
 const getUI = createFeatureSelector('uiState');
-export const selectServerMapDisableState = createSelector(
-    getUI,
-    (state: IUIState) => state['serverMap']
-);
 export const selectInfoPerServerVisibleState = createSelector(
     getUI,
     (state: IUIState) => state['infoPerServer']
