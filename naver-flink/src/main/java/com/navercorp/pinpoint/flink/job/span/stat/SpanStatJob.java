@@ -48,7 +48,7 @@ public class SpanStatJob implements Serializable {
     }
 
     public void start(ParameterTool parameters) throws Exception {
-        logger.info("SpanStat aggregation job");
+        logger.info("SpanStat aggregation job parameter. : " + parameters.toMap() );
 
         final Bootstrap bootstrap = Bootstrap.getInstance(parameters.toMap());
 
