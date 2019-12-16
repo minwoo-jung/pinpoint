@@ -30,7 +30,6 @@
                                          com.navercorp.pinpoint.web.applicationmap,
                                          com.navercorp.pinpoint.collector.mapper.thrift,
                                          com.navercorp.pinpoint.collector.dao.hbase.stat,
-                                         com.navercorp.pinpoint.collector.dao.hbase.filter,
                                          com.navercorp.pinpoint.common.server.bo,
                                          com.navercorp.pinpoint.common.server.util">
         <context:exclude-filter type="regex" expression="com\.navercorp\.pinpoint\.collector\.mapper\.thrift\.event\..*"/>
