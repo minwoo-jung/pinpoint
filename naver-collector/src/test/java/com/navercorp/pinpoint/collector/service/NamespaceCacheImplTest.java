@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -35,6 +36,7 @@ import static org.junit.Assert.assertNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext-metadata-test.xml")
+@DirtiesContext(classMode=DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(properties = {"pinpoint.profiles.active=local"})
 @ActiveProfiles("tokenAuthentication")
 public class NamespaceCacheImplTest {
