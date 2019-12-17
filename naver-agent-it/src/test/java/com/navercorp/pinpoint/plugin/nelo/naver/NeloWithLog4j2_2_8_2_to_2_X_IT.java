@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent(NaverAgentPath.PATH)
 @Repository({"http://repo.navercorp.com/maven2", "http://repo1.maven.org/maven2"})
-@Dependency({"org.apache.logging.log4j:log4j-core:[2.8.2,)", "org.apache.logging.log4j:log4j-api:[2.12.1]", "org.apache.logging.log4j:log4j-slf4j-impl:[2.12.1]", "com.naver.nelo2:nelo2-java-sdk-log4j2:[2.8.2]"})
+@Dependency({"org.apache.logging.log4j:log4j-core:[2.8.2,2.13)", "org.apache.logging.log4j:log4j-api:[2.12.1]", "org.apache.logging.log4j:log4j-slf4j-impl:[2.12.1]", "com.naver.nelo2:nelo2-java-sdk-log4j2:[2.8.2]"})
 @JvmArgument("-Dlog4j.configurationFile=com/navercorp/pinpoint/plugin/nelo/naver/log4j2.xml")
 @JvmVersion(7)
 @PinpointConfig("pinpoint.config")
