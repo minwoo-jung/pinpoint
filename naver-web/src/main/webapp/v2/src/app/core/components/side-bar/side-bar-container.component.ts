@@ -3,7 +3,7 @@ import { Router, RouterEvent, NavigationStart } from '@angular/router';
 import { Subject, Observable, merge } from 'rxjs';
 import { filter, mapTo, tap, takeUntil, map } from 'rxjs/operators';
 
-import { WebAppSettingDataService, StoreHelperService } from 'app/shared/services';
+import { WebAppSettingDataService, MessageQueueService, MESSAGE_TO } from 'app/shared/services';
 import { ServerMapData } from 'app/core/components/server-map/class';
 
 @Component({
@@ -25,7 +25,7 @@ export class SideBarContainerComponent implements OnInit, OnDestroy {
 
     constructor(
         private router: Router,
-        private storeHelperService: StoreHelperService,
+        private messageQueueService: MessageQueueService,
         private webAppSettingDataService: WebAppSettingDataService,
         private el: ElementRef,
         private renderer: Renderer2,
@@ -35,7 +35,7 @@ export class SideBarContainerComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.securityGuideUrl$ = this.webAppSettingDataService.getSecurityGuideUrl();
         this.addPageLoadingHandler();
-        this.connectStore();
+        this.listenToEmitter();
     }
 
     ngOnDestroy() {
@@ -56,26 +56,24 @@ export class SideBarContainerComponent implements OnInit, OnDestroy {
         });
     }
 
-    private connectStore(): void {
-        this.storeHelperService.getServerMapData(this.unsubscribe).pipe(
-            filter((serverMapData: ServerMapData) => !!serverMapData),
-            map((serverMapData: ServerMapData) => serverMapData.getNodeCount() === 0)
+    private listenToEmitter(): void {
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_DATA_UPDATE).pipe(
+            map(([data]: ServerMapData[]) => data.getNodeCount() === 0)
         ).subscribe((isEmpty: boolean) => {
             this.renderer.setStyle(this.el.nativeElement, 'display', isEmpty ? 'none' : 'block');
         });
 
         merge(
-            this.storeHelperService.getServerMapTargetSelectedByList(this.unsubscribe).pipe(mapTo(false)),
-            this.storeHelperService.getServerMapTargetSelected(this.unsubscribe).pipe(
-                filter((target: ISelectedTarget) => !!target),
-                tap(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
+            this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_TARGET_SELECT_BY_LIST).pipe(mapTo(false)),
+            this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_TARGET_SELECT).pipe(
+                tap(([{isNode, isWAS, isMerged, isAuthorized}]: ISelectedTarget[]) => {
                     this.showLoading = false;
                     this.useDisable = false;
                     this.isAuthorized = isAuthorized;
                     this.showDivider = isNode && isWAS && !isMerged;
                     this.sidebarVisibility = 'visible';
                 }),
-                map(({isMerged}: ISelectedTarget) => isMerged)
+                map(([{isMerged}]: ISelectedTarget[]) => isMerged)
             )
         ).subscribe((isMerged: boolean) => {
             this.isTargetMerged = isMerged;

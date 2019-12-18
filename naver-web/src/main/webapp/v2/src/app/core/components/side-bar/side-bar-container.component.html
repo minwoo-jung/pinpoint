@@ -9,9 +9,10 @@
                     You don't have authorization. <i class="fas fa-external-link-alt"></i>
                 </a>
             </div>
-            <pp-server-status-container *ngIf="isAuthorized"></pp-server-status-container>
-            <ng-container *ngIf="isAuthorized">
-                <div class="l-chart-group-list">
+            <!-- <pp-server-status-container *ngIf="isAuthorized"></pp-server-status-container> -->
+            <pp-server-status-container [hidden]="!isAuthorized"></pp-server-status-container>
+            <!-- <ng-container *ngIf="isAuthorized"> -->
+                <div class="l-chart-group-list" [hidden]="!isAuthorized">
                     <pp-scatter-chart-container></pp-scatter-chart-container>
                     <pp-target-list-container></pp-target-list-container>
                     <hr *ngIf="showDivider"/>
@@ -21,10 +22,11 @@
                         <pp-load-chart-container [sourceType]="'MAIN'"></pp-load-chart-container>
                     </div>
                 </div>
-            </ng-container>
+            <!-- </ng-container> -->
         </div>
     </div>
-    <pp-info-per-server-container *ngIf="isAuthorized"></pp-info-per-server-container>
+    <!-- <pp-info-per-server-container *ngIf="isAuthorized"></pp-info-per-server-container> -->
+    <pp-info-per-server-container [hidden]="!isAuthorized"></pp-info-per-server-container>
 </section>
 <pp-film-for-disable *ngIf="useDisable" [zIndex]="100" [marginWidth]="0"></pp-film-for-disable>
 <pp-loading [showLoading]="showLoading" [zIndex]="101"></pp-loading>
