@@ -17,6 +17,7 @@
 
 package com.navercorp.test.pinpoint.testweb.service.http;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import com.navercorp.test.pinpoint.testweb.connector.apachehttp4.ApacheClosableA
  * @author netspider
  * 
  */
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext-testweb.xml", "/servlet-context.xml" })
 public class ApacheClosableAsyncHttpClientTest {
