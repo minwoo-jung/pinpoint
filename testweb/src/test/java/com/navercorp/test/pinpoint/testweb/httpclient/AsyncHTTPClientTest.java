@@ -39,7 +39,7 @@ import com.ning.http.client.Response;
 import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.providers.netty.NettyAsyncHttpProvider;
 
-@Ignore
+
 public class AsyncHTTPClientTest {
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");

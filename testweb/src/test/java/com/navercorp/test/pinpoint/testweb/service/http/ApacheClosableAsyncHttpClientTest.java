@@ -33,7 +33,6 @@ import com.navercorp.test.pinpoint.testweb.connector.apachehttp4.ApacheClosableA
  * @author netspider
  * 
  */
-@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext-testweb.xml", "/servlet-context.xml" })
 public class ApacheClosableAsyncHttpClientTest {
