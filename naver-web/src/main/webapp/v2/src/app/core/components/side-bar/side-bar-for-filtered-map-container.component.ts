@@ -60,7 +60,7 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
 
     private listenToEmitter(): void {
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_DATA_UPDATE).pipe(
-            map(([data]: ServerMapData[]) => data.getNodeCount() === 0),
+            map((data: ServerMapData) => data.getNodeCount() === 0),
             filter(() => this.loadingCompleted)
         ).subscribe((isEmpty: boolean) => {
             this.renderer.setStyle(this.el.nativeElement, 'display', isEmpty ? 'none' : 'block');
@@ -91,9 +91,8 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
         merge(
             this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_TARGET_SELECT_BY_LIST).pipe(mapTo(false)),
             this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_TARGET_SELECT).pipe(
-                tap(([{isNode, isWAS, isMerged, isAuthorized}]: ISelectedTarget[]) => {
-                    this.isAuthorized = false;
-                    // this.isAuthorized = isAuthorized;
+                tap(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
+                    this.isAuthorized = isAuthorized;
                     this.showDivider = isNode && isWAS && !isMerged;
                     this.sidebarVisibility = 'visible';
                     if (this.loadingCompleted) {
@@ -101,7 +100,7 @@ export class SideBarForFilteredMapContainerComponent implements OnInit, OnDestro
                         this.useDisable = false;
                     }
                 }),
-                map(([{isMerged}]: ISelectedTarget[]) => isMerged)
+                map(({isMerged}: ISelectedTarget) => isMerged)
             )
         ).subscribe((isMerged: boolean) => {
             this.isTargetMerged = isMerged;

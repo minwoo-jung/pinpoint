@@ -46,8 +46,8 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, On
     ) {}
 
     ngOnInit() {
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((param: any[]) => {
-            this.selectedUserGroupId = param[0] as string;
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((userGroupId: string) => {
+            this.selectedUserGroupId = userGroupId;
             this.rowData$ = this.applicationAuthAndAlarmDataService.getData(this.selectedUserGroupId).pipe(
                 withLatestFrom(this.storeHelperService.getApplicationList(this.unsubscribe)),
                 map(([dataList, appList]: [IApplicationAuthInfo[], IApplication[]]) => {

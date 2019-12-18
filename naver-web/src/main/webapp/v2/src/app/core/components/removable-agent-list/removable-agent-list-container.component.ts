@@ -139,7 +139,10 @@ export class RemovableAgentListContainerComponent implements OnInit, OnDestroy {
             if (this.removeType === REMOVE_TYPE.APP) {
                 this.messageQueueService.sendMessage({
                     to: MESSAGE_TO.APPLICATION_REMOVED,
-                    param: [this.selectedApplication.getApplicationName(), this.selectedApplication.getServiceType()]
+                    param: {
+                        appName: this.selectedApplication.getApplicationName(),
+                        appServiceType: this.selectedApplication.getServiceType(),
+                    }
                 });
                 this.selectedApplication = null;
                 this.removeType = REMOVE_TYPE.NONE;

@@ -75,15 +75,15 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.hasRoleEditPerm = this.userPermissionCheckService.canEditRole();
         this.getI18NText();
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_SELECT_ROLE).subscribe((param: string[]) => {
-            this.currentRoleId = param[0];
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_SELECT_ROLE).subscribe((roleId: string) => {
+            this.currentRoleId = roleId;
             this.getRoleInfo(CRUD_ACTION.UPDATE);
         });
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_REMOVE_SELECT_ROLE).subscribe((param: string[]) => {
-            this.currentRoleId = param[0];
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_REMOVE_SELECT_ROLE).subscribe((roleId: string) => {
+            this.currentRoleId = roleId;
             this.getRoleInfo(CRUD_ACTION.REMOVE);
         });
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_CREATE_ROLE).subscribe((param: string[]) => {
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_CREATE_ROLE).subscribe(() => {
             this.currentAction = CRUD_ACTION.CREATE;
             this.createRoleId = '';
             this.roleInfo = this.getPermissionForm('');
@@ -181,7 +181,7 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             } else {
                 this.messageQueueService.sendMessage({
                     to: MESSAGE_TO.ROLE_INFO_CREATED,
-                    param: [this.createRoleId]
+                    param: this.createRoleId
                 });
                 this.analyticsService.trackEvent(TRACKED_EVENT_LIST.CREATE_ROLE);
             }
@@ -247,7 +247,6 @@ export class RoleInfoContainerComponent implements OnInit, OnDestroy {
             } else {
                 this.messageQueueService.sendMessage({
                     to: MESSAGE_TO.ROLE_INFO_REMOVED,
-                    param: []
                 });
                 this.currentAction = CRUD_ACTION.NONE;
                 this.currentRoleId = '';

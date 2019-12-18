@@ -58,7 +58,7 @@ export class SideBarContainerComponent implements OnInit, OnDestroy {
 
     private listenToEmitter(): void {
         this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_DATA_UPDATE).pipe(
-            map(([data]: ServerMapData[]) => data.getNodeCount() === 0)
+            map((data: ServerMapData) => data.getNodeCount() === 0)
         ).subscribe((isEmpty: boolean) => {
             this.renderer.setStyle(this.el.nativeElement, 'display', isEmpty ? 'none' : 'block');
         });
@@ -66,14 +66,14 @@ export class SideBarContainerComponent implements OnInit, OnDestroy {
         merge(
             this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_TARGET_SELECT_BY_LIST).pipe(mapTo(false)),
             this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.SERVER_MAP_TARGET_SELECT).pipe(
-                tap(([{isNode, isWAS, isMerged, isAuthorized}]: ISelectedTarget[]) => {
+                tap(({isNode, isWAS, isMerged, isAuthorized}: ISelectedTarget) => {
                     this.showLoading = false;
                     this.useDisable = false;
                     this.isAuthorized = isAuthorized;
                     this.showDivider = isNode && isWAS && !isMerged;
                     this.sidebarVisibility = 'visible';
                 }),
-                map(([{isMerged}]: ISelectedTarget[]) => isMerged)
+                map(({isMerged}: ISelectedTarget) => isMerged)
             )
         ).subscribe((isMerged: boolean) => {
             this.isTargetMerged = isMerged;

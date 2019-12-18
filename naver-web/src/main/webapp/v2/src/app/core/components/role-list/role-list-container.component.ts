@@ -28,14 +28,14 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
     ) {}
     ngOnInit() {
         this.getRoleList();
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_REMOVED).subscribe((param: string[]) => {
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_REMOVED).subscribe(() => {
             this.selectedRoleId = '';
             this.getRoleList();
         });
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_CREATED).subscribe((param: string[]) => {
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.ROLE_INFO_CREATED).subscribe((roleId: string) => {
             this.getRoleList();
-            this.selectedRoleId = param[0];
-            this.onSelectRole(param[0]);
+            this.selectedRoleId = roleId;
+            this.onSelectRole(roleId);
         });
         this.hasRoleEditPerm = this.userPermissionCheckService.canEditRole();
     }
@@ -60,21 +60,20 @@ export class RoleListContainerComponent implements OnInit, OnDestroy {
     onAddRole(): void {
         this.messageQueueService.sendMessage({
             to: MESSAGE_TO.ROLE_INFO_CREATE_ROLE,
-            param: []
         });
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ROLE_CREATION_VIEW);
     }
     onSelectRole(selectedRole: string): void {
         this.messageQueueService.sendMessage({
             to: MESSAGE_TO.ROLE_INFO_SELECT_ROLE,
-            param: [selectedRole]
+            param: selectedRole
         });
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ROLE_UPDATE_VIEW);
     }
     onRemoveRole(selectedRole: string): void {
         this.messageQueueService.sendMessage({
             to: MESSAGE_TO.ROLE_INFO_REMOVE_SELECT_ROLE,
-            param: [selectedRole]
+            param: selectedRole
         });
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.SHOW_ROLE_REMOVE_CONFIRM_VIEW);
     }

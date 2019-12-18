@@ -59,12 +59,11 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
             this.allowedUserEdit = allowedUserEdit;
         });
         this.canAddUserGroup = this.userPermissionCheckService.canAddUserGroup();
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((param: any[]) => {
-            const userGroupId = param[0] as string;
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.USER_GROUP_SELECTED_USER_GROUP).subscribe((userGroupId: string) => {
             this.isUserGroupSelected = userGroupId === '' ? false : true;
         });
-        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.GROUP_MEMBER_SET_CURRENT_GROUP_MEMBERS).subscribe((param: any[]) => {
-            this.groupMemberList = param[0] as string[];
+        this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.GROUP_MEMBER_SET_CURRENT_GROUP_MEMBERS).subscribe((list: string[]) => {
+            this.groupMemberList = list;
             this.hideProcessing();
         });
         this.getI18NText();
@@ -148,7 +147,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
     onAddUser(pinpointUserId: string): void {
         this.messageQueueService.sendMessage({
             to: MESSAGE_TO.PINPOINT_USER_ADD_USER,
-            param: [pinpointUserId]
+            param: pinpointUserId
         });
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.ADD_USER_TO_GROUP);
     }
@@ -209,11 +208,11 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
                 if (this.isUserGroupSelected) {
                     this.messageQueueService.sendMessage({
                         to: MESSAGE_TO.PINPOINT_USER_UPDATE_USER,
-                        param: [{
+                        param: {
                             userId: pinpointUser.userId,
                             department: pinpointUser.department,
                             name: pinpointUser.name
-                        }]
+                        }
                     });
                 }
                 this.analyticsService.trackEvent(TRACKED_EVENT_LIST.UPDATE_USER_IN_USER_GROUP);
@@ -235,7 +234,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
                 if (this.isUserGroupSelected) {
                     this.messageQueueService.sendMessage({
                         to: MESSAGE_TO.PINPOINT_USER_REMOVE_USER,
-                        param: [userId]
+                        param: userId
                     });
                 }
                 this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_USER_IN_USER_GROUP);

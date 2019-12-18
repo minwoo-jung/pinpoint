@@ -62,7 +62,7 @@ export class WebAppSettingDataService {
         this.store.pipe(
             select(STORE_KEY.APPLICATION_LIST),
             filter((appList: IApplication[]) => appList.length !== 0),
-            withLatestFrom(this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.FAVORITE_APP_LIST_FROM_SERVER).pipe(map(([appList]: IApplication[][]) => appList))),
+            withLatestFrom(this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.FAVORITE_APP_LIST_FROM_SERVER)),
             map(([appList, favAppListFromServer]: IApplication[][]) => {
                 return favAppListFromServer.filter((favApp: IApplication) => {
                     return appList.some((app: IApplication) => app.equals(favApp));

@@ -22,9 +22,9 @@ export class UserConfigurationDataService {
             tap((res: IUserConfiguration) => {
                 this.messageQueueService.sendMessage({
                     to: MESSAGE_TO.FAVORITE_APP_LIST_FROM_SERVER,
-                    param: [res.configuration.favoriteApplications.map(({applicationName, serviceType, code}) => {
+                    param: res.configuration.favoriteApplications.map(({applicationName, serviceType, code}) => {
                         return new Application(applicationName, serviceType, code);
-                    })]
+                    })
                 });
                 this.store.dispatch(new Actions.UpdatePermissions(res.permission));
             })
