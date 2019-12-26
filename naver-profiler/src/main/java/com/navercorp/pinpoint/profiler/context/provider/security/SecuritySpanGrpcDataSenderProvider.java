@@ -93,15 +93,16 @@ public class SecuritySpanGrpcDataSenderProvider implements Provider<DataSender<O
         channelFactoryBuilder.setHeaderFactory(headerFactory);
         channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
+        final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getSpanRequestTimeout());
+        channelFactoryBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
+        final ClientInterceptor discardClientInterceptor = newDiscardClientInterceptor();
+        channelFactoryBuilder.addClientInterceptor(discardClientInterceptor);
+
         AuthorizationTokenProvider authorizationTokenProvider = authorizationTokenProviderProvider.get();
 
         // temp // for test
         final ClientInterceptor authorizationTokenInterceptor = new AuthorizationTokenInterceptor(TokenType.SPAN, authorizationTokenProvider);
         channelFactoryBuilder.addClientInterceptor(authorizationTokenInterceptor);
-        final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getSpanRequestTimeout());
-        channelFactoryBuilder.addClientInterceptor(unaryCallDeadlineInterceptor);
-        final ClientInterceptor discardClientInterceptor = newDiscardClientInterceptor();
-        channelFactoryBuilder.addClientInterceptor(discardClientInterceptor);
 
         channelFactoryBuilder.setExecutorQueueSize(channelExecutorQueueSize);
         channelFactoryBuilder.setClientOption(clientOption);

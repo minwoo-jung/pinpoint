@@ -46,4 +46,14 @@ public class TokenCreateRequest {
         return remoteAddress;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TokenCreateRequest{");
+        sb.append("paaSOrganizationInfo=").append(paaSOrganizationInfo);
+        sb.append(", tokenType=").append(tokenType);
+        sb.append(", remoteAddress='").append(remoteAddress).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
+
 }

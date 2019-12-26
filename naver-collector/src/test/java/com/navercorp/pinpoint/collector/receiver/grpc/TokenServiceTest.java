@@ -228,7 +228,10 @@ public class TokenServiceTest {
                 String helloMessage = "hello";
                 greeterBlockingStub.sayHello(HelloRequest.newBuilder().setName(helloMessage).build());
                 Assert.fail();
-            } catch (SecurityException e) {
+            } catch (StatusRuntimeException e) {
+                if (e.getStatus().getCode() != Status.UNAUTHENTICATED.getCode()) {
+                    Assert.fail();
+                }
             }
 
         } finally {

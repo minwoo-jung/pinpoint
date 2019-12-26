@@ -29,6 +29,8 @@ public class GrpcSecurityContext {
 
     private static final Context.Key<AuthTokenHolder> AUTH_TOKEN_CONTEXT = Context.key("authTokenHolder");
 
+    private static final Context.Key<AuthContext> AUTH_CONTEXT = Context.key("authContext");
+
     public static AuthKeyHolder getAuthKeyHolder() {
         final Context current = Context.current();
         return AUTH_KEY_CONTEXT.get(current);
@@ -48,5 +50,16 @@ public class GrpcSecurityContext {
         final Context current = Context.current();
         return current.withValue(AUTH_TOKEN_CONTEXT, new AuthTokenHolder(authToken));
     }
+
+    public static AuthContext getAuthContext() {
+        final Context current = Context.current();
+        return AUTH_CONTEXT.get(current);
+    }
+
+    public static Context setAuthContext(AuthContext authContext) {
+        final Context current = Context.current();
+        return current.withValue(AUTH_CONTEXT, authContext);
+    }
+
 
 }

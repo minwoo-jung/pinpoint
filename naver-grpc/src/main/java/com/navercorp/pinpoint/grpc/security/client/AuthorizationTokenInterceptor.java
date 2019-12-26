@@ -27,11 +27,15 @@ import io.grpc.ClientInterceptor;
 import io.grpc.ForwardingClientCall;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Taejin Koo
  */
 public class AuthorizationTokenInterceptor implements ClientInterceptor {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final TokenType tokenType;
     private final AuthorizationTokenProvider authorizationTokenProvider;
@@ -44,19 +48,24 @@ public class AuthorizationTokenInterceptor implements ClientInterceptor {
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
         // TODO & FIXME for temp SPAN
-        final String token = authorizationTokenProvider.getToken(tokenType);
+        try {
+            final String token = authorizationTokenProvider.getToken(tokenType);
+            // TokenProvider
+            final ClientCall<ReqT, RespT> clientCall = next.newCall(method, callOptions);
+            final ClientCall<ReqT, RespT> forwardingClientCall = new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(clientCall) {
+                @Override
+                public void start(Listener<RespT> responseListener, Metadata headers) {
+                    GrpcSecurityMetadata.setAuthToken(headers, token);
+                    super.start(responseListener, headers);
+                }
 
-        // TokenProvider
-        final ClientCall<ReqT, RespT> clientCall = next.newCall(method, callOptions);
-        final ClientCall<ReqT, RespT> forwardingClientCall = new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(clientCall) {
-            @Override
-            public void start(Listener<RespT> responseListener, Metadata headers) {
-                GrpcSecurityMetadata.setAuthToken(headers, token);
-                super.start(responseListener, headers);
-            }
+            };
+            return forwardingClientCall;
+        } catch (Exception e) {
+            logger.warn("Failed to get token. message:{}", e.getMessage(), e);
+        }
 
-        };
-        return forwardingClientCall;
+        return next.newCall(method, callOptions);
     }
 
 }

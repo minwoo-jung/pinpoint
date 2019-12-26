@@ -17,12 +17,12 @@
 package com.navercorp.pinpoint.collector.receiver.grpc.security;
 
 import com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService;
+import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
 import com.navercorp.pinpoint.grpc.security.server.AuthContext;
 import com.navercorp.pinpoint.grpc.security.server.AuthState;
 import com.navercorp.pinpoint.grpc.security.server.DefaultAuthStateContext;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityAttribute;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
-import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
 
 import io.grpc.Attributes;
 import io.grpc.Context;
@@ -78,7 +78,7 @@ public class AuthenticationInterceptor implements ServerInterceptor {
                     ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(newContext, serverCall, headers, serverCallHandler);
                     return contextPropagateInterceptor;
                 } else {
-                    throw new SecurityException("InternalException : can not cast type to DefaultAuthStateContext");
+                    throw Status.UNAUTHENTICATED.withDescription("InternalException : can not cast type to DefaultAuthStateContext").asRuntimeException();
                 }
             } else {
                 if (authContext instanceof DefaultAuthStateContext) {
@@ -86,12 +86,11 @@ public class AuthenticationInterceptor implements ServerInterceptor {
                     SecurityException securityException = new SecurityException("authentication failed");
                     throw Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException).asRuntimeException();
                 } else {
-                    throw new SecurityException("InternalException : can not cast type to DefaultAuthStateContext");
+                    throw Status.UNAUTHENTICATED.withDescription("InternalException : can not cast type to DefaultAuthStateContext").asRuntimeException();
                 }
             }
         } else {
-            SecurityException securityException = new SecurityException("unknown state");
-            throw Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException).asRuntimeException();
+            throw Status.UNAUTHENTICATED.withDescription("unknown state").asRuntimeException();
         }
     }
 

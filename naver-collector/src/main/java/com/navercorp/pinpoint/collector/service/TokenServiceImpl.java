@@ -81,6 +81,10 @@ public class TokenServiceImpl implements TokenService {
             logger.debug("getAndRemove() started");
         }
 
+        if (tokenKey == null) {
+            return null;
+        }
+
         return tokenDao.getAndRemove(tokenKey);
     }
 

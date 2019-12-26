@@ -24,6 +24,7 @@ import com.navercorp.pinpoint.grpc.security.server.DefaultAuthStateContext;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityAttribute;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
 import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
+import com.navercorp.pinpoint.grpc.server.ServerContext;
 
 import io.grpc.Attributes;
 import io.grpc.Context;
@@ -51,10 +52,42 @@ public class AuthorizationInterceptor implements ServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(final ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> serverCallHandler) {
-        final Attributes attributes = serverCall.getAttributes();
-        final AuthContext authContext = GrpcSecurityAttribute.getAuthContext(attributes);
+        if (GrpcSecurityContext.getAuthContext() != null) {
+            return processCall(serverCall, headers, serverCallHandler);
+        }
 
+        String authToken = GrpcSecurityMetadata.getAuthToken(headers);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Received token({}) from remote agent.", authToken);
+        }
+
+        synchronized (this) {
+            if (GrpcSecurityContext.getAuthContext() != null) {
+                return processCall(serverCall, headers, serverCallHandler);
+            }
+
+            // FIXME SPAN으로 지정해 두었는데 SPAN, STAT 을 파라미터로 넣게 해야함
+            final DefaultAuthStateContext defaultAuthStateContext = new DefaultAuthStateContext();
+            boolean authorization = authTokenService.authorization(authToken, TokenType.SPAN);
+            if (authorization) {
+                defaultAuthStateContext.changeState(AuthState.SUCCESS);
+                Context newContext = GrpcSecurityContext.setAuthTokenHolder(authToken);
+                ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(newContext, serverCall, headers, serverCallHandler);
+                return contextPropagateInterceptor;
+            } else {
+                defaultAuthStateContext.changeState(AuthState.FAIL);
+                SecurityException securityException = new SecurityException("authorization failed");
+                serverCall.close(Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException), new Metadata());
+                return disabledCall();
+            }
+        }
+    }
+
+    private <ReqT, RespT> ServerCall.Listener<ReqT> processCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> serverCallHandler) {
+        AuthContext authContext = GrpcSecurityContext.getAuthContext();
         AuthState authState = authContext.getState();
+
+        logger.warn("authState:{}", authState);
         if (authState == AuthState.SUCCESS) {
             String authToken = GrpcSecurityMetadata.getAuthToken(headers);
             Context newContext = GrpcSecurityContext.setAuthTokenHolder(authToken);
@@ -62,39 +95,21 @@ public class AuthorizationInterceptor implements ServerInterceptor {
             return contextPropagateInterceptor;
         } else if (authState == AuthState.FAIL) {
             SecurityException securityException = new SecurityException("authorization failed");
-            throw Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException).asRuntimeException();
+            serverCall.close(Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException), new Metadata());
+            return disabledCall();
         } else if (authState == AuthState.EXPIRED) {
-            SecurityException securityException = new SecurityException("authorization expired");
-            throw Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException).asRuntimeException();
-        } else if (authState == AuthState.NONE) {
-            String authToken = GrpcSecurityMetadata.getAuthToken(headers);
-
-            logger.debug("authToken:{}", authToken);
-
-            // FIXME SPAN으로 지정해 두었는데 SPAN, STAT 을 파라미터로 넣게 해야함
-            boolean authorization = authTokenService.authorization(authToken, TokenType.SPAN);
-            if (authorization) {
-                if (authContext instanceof DefaultAuthStateContext) {
-                    boolean changed = ((DefaultAuthStateContext) authContext).changeState(AuthState.SUCCESS);
-                    Context newContext = GrpcSecurityContext.setAuthTokenHolder(authToken);
-                    ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(newContext, serverCall, headers, serverCallHandler);
-                    return contextPropagateInterceptor;
-                } else {
-                    throw new SecurityException("InternalException : can not cast type to DefaultAuthStateContext");
-                }
-            } else {
-                if (authContext instanceof DefaultAuthStateContext) {
-                    ((DefaultAuthStateContext) authContext).changeState(AuthState.FAIL);
-                    SecurityException securityException = new SecurityException("authorization failed");
-                    throw Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException).asRuntimeException();
-                } else {
-                    throw new SecurityException("InternalException : can not cast type to DefaultAuthStateContext");
-                }
-            }
+            serverCall.close(Status.UNAUTHENTICATED.withDescription("already expired"), new Metadata());
+            return disabledCall();
         } else {
             SecurityException securityException = new SecurityException("unknown state");
-            throw Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException).asRuntimeException();
+            serverCall.close(Status.UNAUTHENTICATED.withDescription(securityException.getMessage()).withCause(securityException), new Metadata());
+            return disabledCall();
         }
+    }
+
+    private <ReqT> ServerCall.Listener<ReqT> disabledCall() {
+        return new ServerCall.Listener<ReqT>() {
+        };
     }
 
 }
