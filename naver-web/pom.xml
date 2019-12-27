@@ -190,23 +190,6 @@
         </resources>
 
         <plugins>
-
-            <!--
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-war-plugin</artifactId>
-                            <configuration>
-                                <attachClasses>true</attachClasses>
-                                <webResources>
-                                    <resource>
-                                        <directory>target/main/webapp</directory>
-                                    </resource>
-                                </webResources>
-                            </configuration>
-                        </plugin>
-            -->
-
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -217,20 +200,126 @@
                             <artifactId>pinpoint-web</artifactId>
                         </overlay>
                     </overlays>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
                     <webResources>
                         <resource>
-                            <filtering>true</filtering>
-                            <directory>src/main/webapp</directory>
-                            <includes>
-                                <include>**/*.html</include>
-                            </includes>
+                            <directory>src/main/angular</directory>
                             <excludes>
-                                <exclude>v2/node_modules/</exclude>
+                                <exclude>node_modules/</exclude>
                             </excludes>
                         </resource>
                     </webResources>
-                    <warSourceExcludes>v2/node_modules/</warSourceExcludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${plugin.frontend.version}</version>
+                <configuration>
+                    <installDirectory>${project.parent.basedir}/${plugin.frontend.node.install.dir}</installDirectory>
+                    <workingDirectory>${basedir}/target/deploy</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${plugin.frontend.node.version}</nodeVersion>
+                            <npmVersion>${plugin.frontend.npm.version}</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm ci</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>ci</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm run build</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build:naver:real</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${plugin.antrun.verison}</version>
+                <executions>
+                    <execution>
+                        <id>delete pre-build file</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete>
+                                    <fileset dir="${basedir}/target/deploy" includes="*.js, *.map, *.html" />
+                                </delete>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy deploy source</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy todir="${basedir}/target/deploy" failonerror="true" verbose="true" overwrite="true">
+                                    <fileset dir="${basedir}/target/v2-build">
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-repackage</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <configuration>
+                            <overlays>
+                                <overlay>
+                                    <groupId>com.navercorp.pinpoint</groupId>
+                                    <artifactId>pinpoint-web</artifactId>
+                                    <skip>true</skip>
+                                </overlay>
+                            </overlays>
+                            <webResources>
+                                <resource>
+                                    <filtering>true</filtering>
+                                    <directory>target/deploy</directory>
+                                    <excludes>
+                                        <exclude>node_modules/</exclude>
+                                    </excludes>
+                                </resource>
+                            </webResources>
+                            <packagingExcludes>node_modules/</packagingExcludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -287,129 +376,6 @@
                     <type>pom</type>
                 </dependency>
             </dependencies>
-        </profile>
-        <profile>
-            <!-- for ci server -->
-            <id>v2</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <version>${plugin.frontend.version}</version>
-                        <configuration>
-                            <installDirectory>${project.parent.basedir}/${plugin.frontend.node.install.dir}</installDirectory>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install node and npm v2</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>install-node-and-npm</goal>
-                                </goals>
-                                <configuration>
-                                    <nodeVersion>${plugin.frontend.node.version}</nodeVersion>
-                                    <npmVersion>${plugin.frontend.npm.version}</npmVersion>
-                                    <workingDirectory>${basedir}/deploy/webapp/v2</workingDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm install v2</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>install</arguments>
-                                    <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>npm run build v2</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>run build:naver:real</arguments>
-                                    <workingDirectory>${basedir}/target/deploy/v2</workingDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${plugin.antrun.verison}</version>
-                        <executions>
-                            <execution>
-                                <id>delete pre-build file</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <delete>
-                                            <fileset dir="${basedir}/target/deploy/v2" includes="*.js, *.map, *.html" />
-                                        </delete>
-                                    </target>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>copy deploy source</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <copy todir="${basedir}/target/deploy/v2" failonerror="true" verbose="true" overwrite="true">
-                                            <fileset dir="${basedir}/target/v2-build">
-                                                <exclude name="node_modules/**"/>
-                                            </fileset>
-                                        </copy>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>start-repackage</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>war</goal>
-                                </goals>
-                                <configuration>
-                                    <overlays>
-                                        <overlay>
-                                            <groupId>com.navercorp.pinpoint</groupId>
-                                            <artifactId>pinpoint-web</artifactId>
-                                            <skip>true</skip>
-                                        </overlay>
-                                    </overlays>
-                                    <webResources>
-                                        <resource>
-                                            <filtering>true</filtering>
-                                            <directory>target/deploy</directory>
-                                            <excludes>
-                                                <exclude>v2/node_modules/</exclude>
-                                            </excludes>
-                                        </resource>
-                                    </webResources>
-                                    <packagingExcludes>v2/node_modules/</packagingExcludes>
-                                </configuration>
-                            </execution>
-
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
     </profiles>
 </project>

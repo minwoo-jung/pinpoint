@@ -61,12 +61,6 @@ export class ConfigurationPopupContainerComponent implements OnInit, AfterViewIn
         this.outClose.emit();
     }
 
-    onOpenV1(): void {
-        const {origin, pathname} = this.windowRefService.nativeWindow.location;
-
-        this.windowRefService.nativeWindow.location.href = `${origin}${pathname.replace('v2', '#')}`;
-    }
-
     onClickOutside(): void {
         this.outClose.emit();
     }

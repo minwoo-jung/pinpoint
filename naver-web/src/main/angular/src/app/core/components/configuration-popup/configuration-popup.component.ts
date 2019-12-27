@@ -35,7 +35,6 @@ export class ConfigurationPopupComponent implements OnInit {
     @HostBinding('class.font-opensans') fontFamily = true;
     @Output() outMenuClick = new EventEmitter<string>();
     @Output() outOpenLink = new EventEmitter<void>();
-    @Output() outOpenV1 = new EventEmitter<void>();
     @Input() canViewAdminMenu = false;
 
     isAdminCollapsed = false;
@@ -49,10 +48,6 @@ export class ConfigurationPopupComponent implements OnInit {
 
     onOpenLink(): void {
         this.outOpenLink.emit();
-    }
-
-    onOpenV1(): void {
-        this.outOpenV1.emit();
     }
 
     toggleAdminMenu(): void {
