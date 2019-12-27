@@ -85,7 +85,14 @@ public class TokenServiceImpl implements TokenService {
             return null;
         }
 
-        return tokenDao.getAndRemove(tokenKey);
+        Token token = tokenDao.getAndRemove(tokenKey);
+        if (token.getTokenType() == tokenType) {
+            return token;
+        } else {
+            logger.warn("invalid tokenType.");
+            return null;
+        }
+
     }
 
 }

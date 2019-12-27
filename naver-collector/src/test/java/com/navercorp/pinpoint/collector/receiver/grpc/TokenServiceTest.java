@@ -16,8 +16,8 @@
 
 package com.navercorp.pinpoint.collector.receiver.grpc;
 
-import com.navercorp.pinpoint.collector.receiver.grpc.security.AuthenticationInterceptor;
-import com.navercorp.pinpoint.collector.receiver.grpc.security.AuthorizationInterceptor;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor.AuthenticationInterceptor;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor.AuthorizationInterceptor;
 import com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService;
 import com.navercorp.pinpoint.grpc.auth.AuthGrpc;
 import com.navercorp.pinpoint.grpc.auth.PAuthCode;

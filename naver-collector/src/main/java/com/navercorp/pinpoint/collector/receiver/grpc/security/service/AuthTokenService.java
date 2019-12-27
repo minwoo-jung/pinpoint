@@ -108,9 +108,8 @@ public class AuthTokenService extends AuthGrpc.AuthImplBase {
         return paaSOrganizationKey != null;
     }
 
-    public boolean authorization(String tokenKey, TokenType tokenType) {
-        Token token = tokenService.getAndRemove(tokenKey, tokenType);
-        return token != null;
+    public Token authorization(String tokenKey, TokenType tokenType) {
+        return tokenService.getAndRemove(tokenKey, tokenType);
     }
 
     private PSecurityResult createResult(PAuthCode code) {

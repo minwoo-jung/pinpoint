@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.collector.receiver.grpc.security;
+package com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor;
 
 import com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService;
 import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;

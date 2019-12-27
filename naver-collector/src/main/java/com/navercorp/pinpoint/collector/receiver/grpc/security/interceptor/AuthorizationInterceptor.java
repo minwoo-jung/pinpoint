@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.collector.receiver.grpc.security;
+package com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor;
 
 import com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService;
+import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.grpc.security.TokenType;
 import com.navercorp.pinpoint.grpc.security.server.AuthContext;
 import com.navercorp.pinpoint.grpc.security.server.AuthState;
@@ -24,9 +25,8 @@ import com.navercorp.pinpoint.grpc.security.server.DefaultAuthStateContext;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityAttribute;
 import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
 import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
-import com.navercorp.pinpoint.grpc.server.ServerContext;
+import com.navercorp.pinpoint.grpc.security.TokenType;
 
-import io.grpc.Attributes;
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.Metadata;
@@ -46,6 +46,12 @@ import org.springframework.context.annotation.Profile;
 public class AuthorizationInterceptor implements ServerInterceptor {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final TokenType tokenType;
+
+    public AuthorizationInterceptor(TokenType tokenType) {
+        this.tokenType = tokenType;
+    }
 
     @Autowired
     private AuthTokenService authTokenService;
@@ -68,10 +74,10 @@ public class AuthorizationInterceptor implements ServerInterceptor {
 
             // FIXME SPAN으로 지정해 두었는데 SPAN, STAT 을 파라미터로 넣게 해야함
             final DefaultAuthStateContext defaultAuthStateContext = new DefaultAuthStateContext();
-            boolean authorization = authTokenService.authorization(authToken, TokenType.SPAN);
-            if (authorization) {
+            final Token token = authTokenService.authorization(authToken, tokenType);
+            if (token != null) {
                 defaultAuthStateContext.changeState(AuthState.SUCCESS);
-                Context newContext = GrpcSecurityContext.setAuthTokenHolder(authToken);
+                Context newContext = GrpcSecurityContext.setAuthTokenHolder(token.getKey());
                 ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(newContext, serverCall, headers, serverCallHandler);
                 return contextPropagateInterceptor;
             } else {
@@ -89,9 +95,7 @@ public class AuthorizationInterceptor implements ServerInterceptor {
 
         logger.warn("authState:{}", authState);
         if (authState == AuthState.SUCCESS) {
-            String authToken = GrpcSecurityMetadata.getAuthToken(headers);
-            Context newContext = GrpcSecurityContext.setAuthTokenHolder(authToken);
-            ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(newContext, serverCall, headers, serverCallHandler);
+            ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(Context.current(), serverCall, headers, serverCallHandler);
             return contextPropagateInterceptor;
         } else if (authState == AuthState.FAIL) {
             SecurityException securityException = new SecurityException("authorization failed");

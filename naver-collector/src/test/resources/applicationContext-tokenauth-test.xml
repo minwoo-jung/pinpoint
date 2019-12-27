@@ -16,7 +16,7 @@
                         com.navercorp.pinpoint.collector.receiver.grpc"/>
 
     <bean id="tokenConfig" class="com.navercorp.pinpoint.collector.service.TokenConfig"/>
-    <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryMetadataDao" />
+    <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryMetadataDao"/>
 
     <bean id="tokenDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryTokenDao"/>
 
@@ -26,7 +26,8 @@
 
     <bean id="authTokenService" class="com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService"/>
 
-    <bean id="authenticationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.AuthenticationInterceptor"/>
-    <bean id="authorizationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.AuthorizationInterceptor"/>
-
+    <bean id="authenticationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor.AuthenticationInterceptor"/>
+    <bean id="authorizationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor.AuthorizationInterceptor">
+        <constructor-arg index="0" value="SPAN"/>
+    </bean>
 </beans>
