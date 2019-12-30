@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.collector.service.async.AgentProperty;
 import com.navercorp.pinpoint.collector.service.async.AgentPropertyChannelAdaptor;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationLifeCycle;
 import com.navercorp.pinpoint.rpc.packet.HandshakePropertyType;
 import com.navercorp.pinpoint.rpc.server.ChannelProperties;
 import com.navercorp.pinpoint.rpc.server.ChannelPropertiesFactory;
@@ -142,6 +143,11 @@ public class NameSpaceInfoPropagateInterceptorTest {
         @Override
         public PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName) {
             return infoMap.get(organizationName);
+        }
+
+        @Override
+        public List<PaaSOrganizationLifeCycle> selectPaaSOrganizationLifeCycle() {
+            return null;
         }
     }
 

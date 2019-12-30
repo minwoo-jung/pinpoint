@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <bean id="tableNameProvider" class="com.navercorp.pinpoint.collector.namespace.hbase.ThreadLocalHbaseTableNameProvider">
         <constructor-arg index="0" value="${namespaceInfo.use.defaultValue}"/>
@@ -37,11 +37,32 @@
     <bean id="nameSpaceInfoPropagateInterceptor" class="com.navercorp.pinpoint.collector.namespace.NameSpaceInfoPropagateInterceptor">
         <constructor-arg index="0" value="${namespaceInfo.use.defaultValue}"/>
     </bean>
+
     <beans profile="tokenAuthentication">
         <bean id="nameSpaceInfoPropagateInterceptor" class="com.navercorp.pinpoint.collector.namespace.NameSpaceInfoPropagateInterceptor">
             <constructor-arg index="0" ref="namespaceService"/>
             <constructor-arg index="1" value="${namespaceInfo.use.defaultValue}"/>
         </bean>
+
+        <bean id="repositoryLifeCycleInterceptor" class="com.navercorp.pinpoint.collector.namespace.repository.RepositoryLifeCycleInterceptor">
+            <constructor-arg ref="namespaceService"/>
+        </bean>
+
+        <task:scheduled-tasks>
+            <task:scheduled ref="repositoryLifeCycleInterceptor" method="updateOrganizationLifeCycle"
+                            fixed-rate="${repository.lifecycle.update.interval:300000}"/>
+        </task:scheduled-tasks>
+
+        <aop:config>
+            <aop:aspect id="grpcSpanHandlerAop" ref="repositoryLifeCycleInterceptor">
+                <aop:pointcut id="grpcSpanHandlerAopPointCut"
+                              expression="execution(public void com.navercorp.pinpoint.collector.handler.grpc.GrpcSpanHandler.handleSimple(com.navercorp.pinpoint.io.request.ServerRequest)) and args(serverRequest)
+                                        || execution(public void com.navercorp.pinpoint.collector.handler.grpc.GrpcSpanChunkHandler.handleSimple(com.navercorp.pinpoint.io.request.ServerRequest)) and args(serverRequest)"/>
+                <aop:around pointcut-ref="grpcSpanHandlerAopPointCut" method="aroundAdvice"/>
+            </aop:aspect>
+        </aop:config>
+
+        <bean id="namespaceService" class="com.navercorp.pinpoint.collector.service.NamespaceServiceImpl"/>
     </beans>
 
 </beans>

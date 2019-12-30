@@ -18,10 +18,13 @@ package com.navercorp.pinpoint.collector.dao.mysql;
 import com.navercorp.pinpoint.collector.dao.MetadataDao;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationLifeCycle;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
@@ -44,5 +47,10 @@ public class MysqlMetadataDao implements MetadataDao {
     @Override
     public PaaSOrganizationKey selectPaaSOrganizationkey(String key) {
         return sqlSessionTemplate.selectOne(NAMESPACE + "selectOrganizationKey", key);
+    }
+
+    @Override
+    public List<PaaSOrganizationLifeCycle> selectPaaSOrganizationLifeCycle() {
+        return sqlSessionTemplate.selectList("selectPaaSOrganizationLifeCycle");
     }
 }

@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.collector.service;
 import com.navercorp.pinpoint.collector.dao.MetadataDao;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationLifeCycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -58,4 +60,11 @@ public class NamespaceServiceImpl implements NamespaceService {
         }
         return metadataDao.selectPaaSOrganizationInfo(organizationName);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PaaSOrganizationLifeCycle> selectPaaSOrganizationLifeCycle() {
+        return metadataDao.selectPaaSOrganizationLifeCycle();
+    }
+
 }

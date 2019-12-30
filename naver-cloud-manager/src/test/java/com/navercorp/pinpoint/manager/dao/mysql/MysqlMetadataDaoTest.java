@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.manager.dao.mysql;
 import com.navercorp.pinpoint.manager.dao.MetadataDao;
 import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationKey;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +35,17 @@ import static org.junit.Assert.*;
 /**
  * @author minwoo.jung
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext-manager.xml")
-@WebAppConfiguration
-@Transactional("metaDataTransactionManager")
+@Ignore
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration("classpath:applicationContext-manager.xml")
+//@WebAppConfiguration
+//@Transactional("metaDataTransactionManager")
 public class MysqlMetadataDaoTest {
 
     @Autowired
     MetadataDao metadataDao;
 
-    @Test
+//    @Test
     public void organizationInfoTest() {
         String organizationName = "testtest";
         String databaseName = "databaseName";
@@ -63,7 +65,7 @@ public class MysqlMetadataDaoTest {
         metadataDao.deletePaaSOrganizationInfo(organizationName);
     }
 
-    @Test
+//    @Test
     public void organizationKeyTest() {
         String organizationName = "testtest";
         String uuid = UUID.nameUUIDFromBytes((organizationName).getBytes()).toString().replace("-", "");

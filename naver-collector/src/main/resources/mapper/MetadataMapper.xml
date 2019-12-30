@@ -20,7 +20,7 @@
 <mapper namespace="com.navercorp.pinpoint.collector.dao.MetadataDao">
 
     <select id="selectOrganizationInfo" resultType="PaaSOrganizationInfo">
-        SELECT *
+        SELECT organization, database_name, hbase_namespace
         FROM paas_organization
         WHERE organization = #{organization}
     </select>
@@ -29,6 +29,11 @@
         SELECT uu_key, organization
         FROM organization_key
         WHERE uu_key = #{key}
+    </select>
+
+    <select id="selectPaaSOrganizationLifeCycle" resultType="PaaSOrganizationLifeCycle">
+        SELECT organization, enable, expire_time
+        FROM paas_organization
     </select>
 
 

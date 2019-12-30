@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.collector.dao.memory;
 import com.navercorp.pinpoint.collector.dao.MetadataDao;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationLifeCycle;
 import com.navercorp.pinpoint.common.annotations.VisibleForTesting;
 import com.navercorp.pinpoint.common.util.ArrayUtils;
 import com.navercorp.pinpoint.common.util.StringUtils;
@@ -31,10 +32,7 @@ import javax.annotation.PostConstruct;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Taejin Koo
@@ -63,7 +61,7 @@ public class MemoryMetadataDao implements MetadataDao {
                 }
             }
         } catch (Exception e) {
-            logger.info("failed while creating mock metadata");
+            logger.info("failed while creating mock metadata", e);
         }
     }
 
@@ -100,5 +98,11 @@ public class MemoryMetadataDao implements MetadataDao {
     public PaaSOrganizationKey selectPaaSOrganizationkey(String licenseKey) {
         return paaSOrganizationKeyMap.get(licenseKey);
     }
+
+    @Override
+    public List<PaaSOrganizationLifeCycle> selectPaaSOrganizationLifeCycle() {
+        return Collections.EMPTY_LIST;
+    }
+
 
 }

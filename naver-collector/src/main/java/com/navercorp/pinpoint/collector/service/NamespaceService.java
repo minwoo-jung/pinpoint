@@ -17,6 +17,9 @@ package com.navercorp.pinpoint.collector.service;
 
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationLifeCycle;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
@@ -26,4 +29,6 @@ public interface NamespaceService {
     PaaSOrganizationKey selectPaaSOrganizationkey(String licenseKey);
 
     PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
+
+    List<PaaSOrganizationLifeCycle> selectPaaSOrganizationLifeCycle();
 }

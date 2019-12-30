@@ -17,6 +17,9 @@ package com.navercorp.pinpoint.collector.dao;
 
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationLifeCycle;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
@@ -25,4 +28,6 @@ public interface MetadataDao {
     PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName);
 
     PaaSOrganizationKey selectPaaSOrganizationkey(String licenseKey);
+
+    List<PaaSOrganizationLifeCycle> selectPaaSOrganizationLifeCycle();
 }

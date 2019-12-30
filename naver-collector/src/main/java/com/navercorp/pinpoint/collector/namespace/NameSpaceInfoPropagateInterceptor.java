@@ -20,6 +20,7 @@ import com.navercorp.pinpoint.collector.service.NamespaceService;
 import com.navercorp.pinpoint.collector.service.async.AgentProperty;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey;
+import com.navercorp.pinpoint.collector.vo.PaaSOrganizationLifeCycle;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.security.SecurityConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,6 +55,11 @@ public class NameSpaceInfoPropagateInterceptor {
 
             @Override
             public PaaSOrganizationInfo selectPaaSOrganizationInfo(String organizationName) {
+                return null;
+            }
+
+            @Override
+            public List<PaaSOrganizationLifeCycle> selectPaaSOrganizationLifeCycle() {
                 return null;
             }
         }, useDefaultNameSpaceInfo);

@@ -25,5 +25,6 @@
     <typeAliases>
         <typeAlias type="com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo" alias="PaaSOrganizationInfo"/>
         <typeAlias type="com.navercorp.pinpoint.collector.vo.PaaSOrganizationKey" alias="PaaSOrganizationKey"/>
+        <typeAlias type="com.navercorp.pinpoint.collector.vo.PaaSOrganizationLifeCycle" alias="PaaSOrganizationLifeCycle"/>
     </typeAliases>
 </configuration>

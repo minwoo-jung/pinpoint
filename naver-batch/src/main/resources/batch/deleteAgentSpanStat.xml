@@ -17,6 +17,6 @@
     </batch:job>
 
     <bean id="aggregateSpanStatDayTasklet" class="com.navercorp.pinpoint.batch.DeleteAgentSpanStatTasklet">
-        <constructor-arg index="1" ref="naverBatchConfiguration"/>
+        <constructor-arg ref="naverBatchConfiguration"/>
     </bean>
 </beans>
