@@ -31,8 +31,8 @@ import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenResponse;
 import com.navercorp.pinpoint.grpc.auth.PSecurityResult;
 import com.navercorp.pinpoint.grpc.auth.PTokenType;
 import com.navercorp.pinpoint.grpc.security.TokenType;
-import com.navercorp.pinpoint.grpc.security.server.AuthKeyHolder;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.AuthKeyHolder;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.GrpcSecurityContext;
 import com.navercorp.pinpoint.grpc.server.ServerContext;
 
 import com.google.protobuf.StringValue;

@@ -18,11 +18,11 @@ package com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor;
 
 import com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService;
 import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
-import com.navercorp.pinpoint.grpc.security.server.AuthContext;
-import com.navercorp.pinpoint.grpc.security.server.AuthState;
-import com.navercorp.pinpoint.grpc.security.server.DefaultAuthStateContext;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityAttribute;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.AuthContext;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.AuthState;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.DefaultAuthStateContext;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.GrpcSecurityAttribute;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.GrpcSecurityContext;
 
 import io.grpc.Attributes;
 import io.grpc.Context;

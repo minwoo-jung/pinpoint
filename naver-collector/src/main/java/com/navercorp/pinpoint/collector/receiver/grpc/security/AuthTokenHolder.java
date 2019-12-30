@@ -14,13 +14,34 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.grpc.security.server;
+package com.navercorp.pinpoint.collector.receiver.grpc.security;
+
+import com.navercorp.pinpoint.collector.vo.Token;
+
+import java.util.Objects;
 
 /**
  * @author Taejin Koo
  */
-public interface AuthContext {
+public class AuthTokenHolder {
 
-    AuthState getState();
+    private final Token token;
+
+    public AuthTokenHolder(Token token) {
+        Objects.requireNonNull(token, "token");
+        this.token = token;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AuthTokenHolder{");
+        sb.append("token='").append(token).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 
 }

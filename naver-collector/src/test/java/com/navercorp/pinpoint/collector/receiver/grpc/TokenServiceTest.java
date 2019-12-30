@@ -28,7 +28,7 @@ import com.navercorp.pinpoint.grpc.auth.PTokenType;
 import com.navercorp.pinpoint.grpc.security.TokenType;
 import com.navercorp.pinpoint.grpc.security.client.AuthenticationKeyInterceptor;
 import com.navercorp.pinpoint.grpc.security.client.AuthorizationTokenInterceptor;
-import com.navercorp.pinpoint.grpc.security.server.SecurityServerTransportFilter;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.SecurityServerTransportFilter;
 import com.navercorp.pinpoint.grpc.server.MetadataServerTransportFilter;
 import com.navercorp.pinpoint.grpc.server.TransportMetadataFactory;
 import com.navercorp.pinpoint.grpc.server.TransportMetadataServerInterceptor;

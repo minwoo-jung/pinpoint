@@ -19,13 +19,11 @@ package com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor;
 import com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.grpc.security.TokenType;
-import com.navercorp.pinpoint.grpc.security.server.AuthContext;
-import com.navercorp.pinpoint.grpc.security.server.AuthState;
-import com.navercorp.pinpoint.grpc.security.server.DefaultAuthStateContext;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityAttribute;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.AuthContext;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.AuthState;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.DefaultAuthStateContext;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.GrpcSecurityContext;
 import com.navercorp.pinpoint.grpc.security.GrpcSecurityMetadata;
-import com.navercorp.pinpoint.grpc.security.TokenType;
 
 import io.grpc.Context;
 import io.grpc.Contexts;
@@ -77,7 +75,7 @@ public class AuthorizationInterceptor implements ServerInterceptor {
             final Token token = authTokenService.authorization(authToken, tokenType);
             if (token != null) {
                 defaultAuthStateContext.changeState(AuthState.SUCCESS);
-                Context newContext = GrpcSecurityContext.setAuthTokenHolder(token.getKey());
+                Context newContext = GrpcSecurityContext.setAuthTokenHolder(token);
                 ServerCall.Listener<ReqT> contextPropagateInterceptor = Contexts.interceptCall(newContext, serverCall, headers, serverCallHandler);
                 return contextPropagateInterceptor;
             } else {

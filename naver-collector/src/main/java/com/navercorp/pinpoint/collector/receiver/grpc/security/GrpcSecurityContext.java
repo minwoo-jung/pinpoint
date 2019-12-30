@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.grpc.security.server;
+package com.navercorp.pinpoint.collector.receiver.grpc.security;
 
-import com.navercorp.pinpoint.grpc.server.TransportMetadata;
+import com.navercorp.pinpoint.collector.vo.Token;
 
 import io.grpc.Context;
 
@@ -46,9 +46,9 @@ public class GrpcSecurityContext {
         return AUTH_TOKEN_CONTEXT.get(current);
     }
 
-    public static Context setAuthTokenHolder(String authToken) {
+    public static Context setAuthTokenHolder(Token token) {
         final Context current = Context.current();
-        return current.withValue(AUTH_TOKEN_CONTEXT, new AuthTokenHolder(authToken));
+        return current.withValue(AUTH_TOKEN_CONTEXT, new AuthTokenHolder(token));
     }
 
     public static AuthContext getAuthContext() {

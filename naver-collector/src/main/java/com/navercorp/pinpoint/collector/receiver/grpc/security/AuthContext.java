@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.grpc.security.server;
+package com.navercorp.pinpoint.collector.receiver.grpc.security;
 
 /**
  * @author Taejin Koo
  */
-public enum AuthState {
+public interface AuthContext {
 
-    NONE,
-    FAIL,
-    SUCCESS,
-    EXPIRED;
+    AuthState getState();
 
 }

@@ -26,7 +26,7 @@ import com.navercorp.pinpoint.grpc.auth.PAuthCode;
 import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenRequest;
 import com.navercorp.pinpoint.grpc.auth.PCmdGetTokenResponse;
 import com.navercorp.pinpoint.grpc.auth.PTokenType;
-import com.navercorp.pinpoint.grpc.security.server.GrpcSecurityContext;
+import com.navercorp.pinpoint.collector.receiver.grpc.security.GrpcSecurityContext;
 import com.navercorp.pinpoint.grpc.server.DefaultTransportMetadata;
 import com.navercorp.pinpoint.grpc.server.ServerContext;
 import com.navercorp.pinpoint.grpc.server.TransportMetadata;

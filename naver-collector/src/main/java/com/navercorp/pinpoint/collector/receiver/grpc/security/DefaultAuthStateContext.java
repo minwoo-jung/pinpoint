@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.grpc.security.server;
+package com.navercorp.pinpoint.collector.receiver.grpc.security;
 
 import java.util.concurrent.atomic.AtomicReference;
 
