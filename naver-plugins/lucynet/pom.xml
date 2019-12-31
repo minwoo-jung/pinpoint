@@ -12,6 +12,21 @@
     <name>pinpoint-lucynet-plugin</name>
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>naver.snapshot.repository</id>
+            <name>Naver Snapshot Repository</name>
+            <url>http://repo.navercorp.com/m2-snapshot-repository/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>

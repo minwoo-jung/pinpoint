@@ -29,6 +29,21 @@
 
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>naver.snapshot.repository</id>
+            <name>Naver Snapshot Repository</name>
+            <url>http://repo.navercorp.com/m2-snapshot-repository/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
     <properties>
         <tomcat.version>7.0.34</tomcat.version>
     </properties>

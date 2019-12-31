@@ -28,6 +28,21 @@
     <name>naver-pinpoint-test-web</name>
     <packaging>war</packaging>
 
+    <repositories>
+        <repository>
+            <id>naver.snapshot.repository</id>
+            <name>Naver Snapshot Repository</name>
+            <url>http://repo.navercorp.com/m2-snapshot-repository/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
     <properties>
         <jdk.version>1.8</jdk.version>
         <jdk.home>${env.JAVA_8_HOME}</jdk.home>
