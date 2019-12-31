@@ -54,7 +54,8 @@ public class AddNameSpaceInfoServerRequestFactory implements ServerRequestFactor
             return serverRequest;
         }
 
-        serverRequest.setAttribute(NameSpaceInfo.NAMESPACE_INFO, paaSOrganizationInfo);
+        NameSpaceInfo nameSpaceInfo = new NameSpaceInfo(paaSOrganizationInfo.getOrganization(), paaSOrganizationInfo.getDatabaseName(), paaSOrganizationInfo.getHbaseNameSpace());
+        serverRequest.setAttribute(NameSpaceInfo.NAMESPACE_INFO, nameSpaceInfo);
         return serverRequest;
     }
 

@@ -48,7 +48,12 @@ public class AddNameSpaceInfoServerRequestFactoryTest {
         AddNameSpaceInfoServerRequestFactory addNameSpaceInfoServerRequestFactory = new AddNameSpaceInfoServerRequestFactory();
         ServerRequest serverRequest = addNameSpaceInfoServerRequestFactory.newServerRequest(Mockito.mock(Message.class));
 
-        Assert.assertEquals(expectedToken.getPaaSOrganizationInfo(), serverRequest.getAttribute(NameSpaceInfo.NAMESPACE_INFO));
+        NameSpaceInfo nameSpaceInfo = (NameSpaceInfo) serverRequest.getAttribute(NameSpaceInfo.NAMESPACE_INFO);
+
+        PaaSOrganizationInfo paaSOrganizationInfo = expectedToken.getPaaSOrganizationInfo();
+        Assert.assertEquals(paaSOrganizationInfo.getOrganization(), nameSpaceInfo.getOrganization());
+        Assert.assertEquals(paaSOrganizationInfo.getDatabaseName(), nameSpaceInfo.getMysqlDatabaseName());
+        Assert.assertEquals(paaSOrganizationInfo.getHbaseNameSpace(), nameSpaceInfo.getHbaseNamespace());
     }
 
     private void addHeader() {
