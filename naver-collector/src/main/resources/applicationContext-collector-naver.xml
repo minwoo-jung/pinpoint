@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="classpath:applicationContext-collector-profile.xml" />
     <import resource="classpath:applicationContext-collector.xml" />
@@ -13,9 +13,7 @@
     <import resource="classpath:applicationContext-collector-spanStat.xml"/>
 
     <context:component-scan
-            base-package="com.navercorp.pinpoint.collector.dao.memory,
-                        com.navercorp.pinpoint.collector.dao.mysql
-                        com.navercorp.pinpoint.collector.handler.thrift"/>
+            base-package="com.navercorp.pinpoint.collector.handler.thrift"/>
 
     <bean id="acceptor" class="com.navercorp.pinpoint.rpc.server.PinpointServerAcceptor">
         <constructor-arg ref="baseAcceptorOption"/>
@@ -23,14 +21,87 @@
     </bean>
 
     <beans profile="tokenAuthentication">
-        <!-- <bean id="tokenDao" class="com.navercorp.pinpoint.collector.dao.zookeeper.ZookeeperTokenDao"/> -->
 
-        <!-- <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryMetadataDao"/> -->
-        <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.mysql.MysqlMetadataDao"/>
+        <bean id="serverRequestFactory" class="com.navercorp.pinpoint.collector.receiver.grpc.AddNameSpaceInfoServerRequestFactory"/>
+
+        <bean id="tokenDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryTokenDao"/>
+
+        <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryMetadataDao"/>
 
         <bean id="tokenConfig" class="com.navercorp.pinpoint.collector.service.TokenConfig"/>
 
         <bean id="tokenService" class="com.navercorp.pinpoint.collector.service.TokenServiceImpl"/>
+
+        <bean id="authenticationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor.AuthenticationInterceptor"/>
+
+        <bean id="spanAuthorizationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor.AuthorizationInterceptor">
+            <constructor-arg index="0" value="SPAN"/>
+        </bean>
+
+        <bean id="statAuthorizationInterceptor" class="com.navercorp.pinpoint.collector.receiver.grpc.security.interceptor.AuthorizationInterceptor">
+            <constructor-arg index="0" value="STAT"/>
+        </bean>
+
+        <bean id="securityServerTransportFilter" class="com.navercorp.pinpoint.collector.receiver.grpc.security.SecurityServerTransportFilter"/>
+
+        <bean id="authTokenService" class="com.navercorp.pinpoint.collector.receiver.grpc.security.service.AuthTokenService"/>
+
+        <util:list id="agentServiceList">
+            <ref bean="agentService"/>
+            <ref bean="metadataService"/>
+            <ref bean="commandService"/>
+            <ref bean="authTokenService"/>
+        </util:list>
+
+        <bean id="grpcAgentReceiver" class="com.navercorp.pinpoint.collector.receiver.grpc.GrpcReceiver">
+            <property name="bindIp" value="#{grpcAgentReceiverConfig.grpcBindIp}"/>
+            <property name="bindPort" value="#{grpcAgentReceiverConfig.grpcBindPort}"/>
+            <property name="executor" ref="grpcAgentServerExecutor"/>
+            <property name="serverInterceptorList">
+                <list>
+                    <ref bean="authenticationInterceptor"/>
+                </list>
+            </property>
+            <property name="transportFilterList">
+                <list>
+                    <ref bean="securityServerTransportFilter"/>
+                </list>
+            </property>
+            <property name="addressFilter" ref="addressFilter"/>
+            <property name="bindableServiceList" ref="agentServiceList"/>
+            <property name="enable" value="#{grpcAgentReceiverConfig.isGrpcEnable()}"/>
+            <property name="serverOption" value="#{grpcAgentReceiverConfig.getGrpcServerOption()}"/>
+        </bean>
+
+        <bean id="grpcSpanReceiver" class="com.navercorp.pinpoint.collector.receiver.grpc.GrpcReceiver">
+            <property name="bindIp" value="#{grpcSpanReceiverConfig.grpcBindIp}"/>
+            <property name="bindPort" value="#{grpcSpanReceiverConfig.grpcBindPort}"/>
+            <property name="addressFilter" ref="addressFilter"/>
+            <property name="serverInterceptorList">
+                <list>
+                    <ref bean="spanAuthorizationInterceptor"/>
+                </list>
+            </property>
+            <property name="bindableServiceList" ref="spanServiceList"/>
+            <property name="executor" ref="grpcSpanServerExecutor"/>
+            <property name="enable" value="#{grpcSpanReceiverConfig.isGrpcEnable()}"/>
+            <property name="serverOption" value="#{grpcSpanReceiverConfig.getGrpcServerOption()}"/>
+        </bean>
+
+        <bean id="grpcStatReceiver" class="com.navercorp.pinpoint.collector.receiver.grpc.GrpcReceiver">
+            <property name="bindIp" value="#{grpcStatReceiverConfig.grpcBindIp}"/>
+            <property name="bindPort" value="#{grpcStatReceiverConfig.grpcBindPort}"/>
+            <property name="addressFilter" ref="addressFilter"/>
+            <property name="serverInterceptorList">
+                <list>
+                    <ref bean="statAuthorizationInterceptor"/>
+                </list>
+            </property>
+            <property name="bindableServiceList" ref="statServiceList"/>
+            <property name="executor" ref="grpcStatServerExecutor"/>
+            <property name="enable" value="#{grpcStatReceiverConfig.isGrpcEnable()}"/>
+            <property name="serverOption" value="#{grpcStatReceiverConfig.getGrpcServerOption()}"/>
+        </bean>
     </beans>
 
 </beans>

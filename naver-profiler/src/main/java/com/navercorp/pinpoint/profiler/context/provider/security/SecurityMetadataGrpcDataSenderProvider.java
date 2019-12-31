@@ -26,9 +26,11 @@ import com.navercorp.pinpoint.grpc.client.UnaryCallDeadlineInterceptor;
 import com.navercorp.pinpoint.grpc.security.client.AuthenticationKeyInterceptor;
 import com.navercorp.pinpoint.profiler.context.grpc.GrpcTransportConfig;
 import com.navercorp.pinpoint.profiler.context.module.MetadataConverter;
+import com.navercorp.pinpoint.profiler.context.module.PinpointLicense;
 import com.navercorp.pinpoint.profiler.context.thrift.MessageConverter;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.profiler.sender.grpc.MetadataGrpcDataSender;
+import com.navercorp.pinpoint.profiler.sender.sender.security.LicenseKeyHolder;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -46,15 +48,19 @@ public class SecurityMetadataGrpcDataSenderProvider implements Provider<Enhanced
     private final HeaderFactory headerFactory;
     private final NameResolverProvider nameResolverProvider;
 
+    private final LicenseKeyHolder licenseKeyHolder;
+
     @Inject
     public SecurityMetadataGrpcDataSenderProvider(GrpcTransportConfig grpcTransportConfig,
                                                   @MetadataConverter MessageConverter<GeneratedMessageV3> messageConverter,
                                                   HeaderFactory headerFactory,
-                                                  NameResolverProvider nameResolverProvider) {
+                                                  NameResolverProvider nameResolverProvider,
+                                                  @PinpointLicense LicenseKeyHolder licenseKeyHolder) {
         this.grpcTransportConfig = Assert.requireNonNull(grpcTransportConfig, "grpcTransportConfig");
         this.messageConverter = Assert.requireNonNull(messageConverter, "messageConverter");
         this.headerFactory = Assert.requireNonNull(headerFactory, "headerFactory");
         this.nameResolverProvider = Assert.requireNonNull(nameResolverProvider, "nameResolverProvider");
+        this.licenseKeyHolder = Assert.requireNonNull(licenseKeyHolder, "licenseKeyHolder");
     }
 
     @Override
@@ -81,7 +87,7 @@ public class SecurityMetadataGrpcDataSenderProvider implements Provider<Enhanced
         channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
         // temp // for test
-        final AuthenticationKeyInterceptor authenticationKeyInterceptor = new AuthenticationKeyInterceptor("pinpoint!@#123test");
+        final AuthenticationKeyInterceptor authenticationKeyInterceptor = new AuthenticationKeyInterceptor(licenseKeyHolder.getLicenseKey());
         channelFactoryBuilder.addClientInterceptor(authenticationKeyInterceptor);
 
         final ClientInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getMetadataRequestTimeout());

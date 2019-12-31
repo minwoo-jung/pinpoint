@@ -27,9 +27,11 @@ import com.navercorp.pinpoint.grpc.security.client.AuthenticationKeyInterceptor;
 import com.navercorp.pinpoint.profiler.context.active.ActiveTraceRepository;
 import com.navercorp.pinpoint.profiler.context.grpc.GrpcTransportConfig;
 import com.navercorp.pinpoint.profiler.context.module.MetadataConverter;
+import com.navercorp.pinpoint.profiler.context.module.PinpointLicense;
 import com.navercorp.pinpoint.profiler.context.thrift.MessageConverter;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.profiler.sender.grpc.ReconnectExecutor;
+import com.navercorp.pinpoint.profiler.sender.sender.security.LicenseKeyHolder;
 import com.navercorp.pinpoint.profiler.sender.sender.security.SecurityAgentGrpcDataSender;
 
 import com.google.inject.Inject;
@@ -54,6 +56,8 @@ public class SecurityAgentGrpcDataSenderProvider implements Provider<EnhancedDat
     private final NameResolverProvider nameResolverProvider;
     private final ActiveTraceRepository activeTraceRepository;
 
+    private final LicenseKeyHolder licenseKeyHolder;
+
     @Inject
     public SecurityAgentGrpcDataSenderProvider(GrpcTransportConfig grpcTransportConfig,
                                                @MetadataConverter MessageConverter<GeneratedMessageV3> messageConverter,
@@ -61,7 +65,8 @@ public class SecurityAgentGrpcDataSenderProvider implements Provider<EnhancedDat
                                                Provider<ReconnectExecutor> reconnectExecutor,
                                                ScheduledExecutorService retransmissionExecutor,
                                                NameResolverProvider nameResolverProvider,
-                                               ActiveTraceRepository activeTraceRepository) {
+                                               ActiveTraceRepository activeTraceRepository,
+                                               @PinpointLicense LicenseKeyHolder licenseKeyHolder) {
         this.grpcTransportConfig = Assert.requireNonNull(grpcTransportConfig, "grpcTransportConfig");
         this.messageConverter = Assert.requireNonNull(messageConverter, "messageConverter");
         this.headerFactory = Assert.requireNonNull(headerFactory, "headerFactory");
@@ -71,6 +76,8 @@ public class SecurityAgentGrpcDataSenderProvider implements Provider<EnhancedDat
 
         this.nameResolverProvider = Assert.requireNonNull(nameResolverProvider, "nameResolverProvider");
         this.activeTraceRepository = Assert.requireNonNull(activeTraceRepository, "activeTraceRepository");
+
+        this.licenseKeyHolder = Assert.requireNonNull(licenseKeyHolder, "licenseKeyHolder");
     }
 
     @Override
@@ -95,7 +102,7 @@ public class SecurityAgentGrpcDataSenderProvider implements Provider<EnhancedDat
         channelFactoryBuilder.setNameResolverProvider(nameResolverProvider);
 
         // temp // for test
-        final AuthenticationKeyInterceptor authenticationKeyInterceptor = new AuthenticationKeyInterceptor("pinpoint!@#123test");
+        final AuthenticationKeyInterceptor authenticationKeyInterceptor = new AuthenticationKeyInterceptor(licenseKeyHolder.getLicenseKey());
         channelFactoryBuilder.addClientInterceptor(authenticationKeyInterceptor);
 
         final UnaryCallDeadlineInterceptor unaryCallDeadlineInterceptor = new UnaryCallDeadlineInterceptor(grpcTransportConfig.getAgentRequestTimeout());

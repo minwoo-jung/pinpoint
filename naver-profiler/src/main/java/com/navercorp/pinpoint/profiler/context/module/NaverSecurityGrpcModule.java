@@ -45,6 +45,7 @@ import com.navercorp.pinpoint.profiler.sender.DataSender;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.profiler.sender.ResultResponse;
 import com.navercorp.pinpoint.profiler.sender.grpc.ReconnectExecutor;
+import com.navercorp.pinpoint.profiler.sender.sender.security.LicenseKeyHolder;
 
 import com.google.inject.Key;
 import com.google.inject.PrivateModule;
@@ -86,6 +87,9 @@ public class NaverSecurityGrpcModule extends PrivateModule {
 
         // not singleton
         bind(ReconnectExecutor.class).toProvider(ReconnectExecutorProvider.class);
+
+        // read license
+        bind(LicenseKeyHolder.class).annotatedWith(PinpointLicense.class).toInstance(new LicenseKeyHolder(profilerConfig));
 
         // Agent
         TypeLiteral<MessageConverter<GeneratedMessageV3>> metadataMessageConverter = new TypeLiteral<MessageConverter<GeneratedMessageV3>>() {};
