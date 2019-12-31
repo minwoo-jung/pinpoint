@@ -16,6 +16,8 @@
 
     <properties>
         <distribution.directory>${project.build.directory}/pinpoint-agent</distribution.directory>
+        <!-- for development option -->
+        <skip.agent.distribution>false</skip.agent.distribution>
     </properties>
 
     <dependencies>
@@ -193,6 +195,8 @@
                             <outputDirectory>${project.build.directory}/naver-dev</outputDirectory>
                             <appendAssemblyId>false</appendAssemblyId>
                             <attach>false</attach>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <skipAssembly>${skip.agent.distribution}</skipAssembly>
                         </configuration>
                     </execution>
                     <execution>
@@ -211,10 +215,21 @@
                             <outputDirectory>${project.build.directory}/naver-release</outputDirectory>
                             <appendAssemblyId>false</appendAssemblyId>
                             <attach>false</attach>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <skipAssembly>${skip.agent.distribution}</skipAssembly>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>naver-local</id>
+            <properties>
+                <skip.agent.distribution>true</skip.agent.distribution>
+            </properties>
+        </profile>
+    </profiles>
 </project>
