@@ -1,0 +1,8 @@
+# for custom profile
+!alpha/
+!dev/
+!local/
+!release/
+!ssl-local/
+!test/
+**/
