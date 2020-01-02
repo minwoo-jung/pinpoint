@@ -66,14 +66,8 @@ public class InvokeMethodInterceptor implements AroundInterceptor {
             logger.beforeInterceptor(target, args);
         }
 
-        Trace trace = traceContext.currentRawTraceObject();
+        Trace trace = traceContext.currentTraceObject();
         if (trace == null) {
-            return;
-        }
-
-        // UUID format을 그대로.
-        final boolean sampling = trace.canSampled();
-        if (!sampling) {
             return;
         }
 
