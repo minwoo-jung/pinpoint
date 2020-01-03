@@ -293,7 +293,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build:naver:real</arguments>
+                            <arguments>run build:real</arguments>
                         </configuration>
                     </execution>
                 </executions>

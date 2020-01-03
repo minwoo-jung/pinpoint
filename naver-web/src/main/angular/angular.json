@@ -3,116 +3,6 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "pinpoint": {
-            "root": "",
-            "sourceRoot": "src",
-            "projectType": "application",
-            "prefix": "pp",
-            "schematics": {},
-            "architect": {
-                "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
-                    "options": {
-                        "outputPath": "../../../target/deploy",
-                        "index": "src/index.html",
-                        "main": "src/main.ts",
-                        "polyfills": "src/polyfills.ts",
-                        "tsConfig": "src/tsconfig.app.json",
-                        "assets": [
-                            "src/favicon.ico",
-                            "src/assets"
-                        ],
-                        "styles": [
-                            "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
-                            "./node_modules/ag-grid-community/dist/styles/ag-grid.css",
-                            "./node_modules/ag-grid-community/dist/styles/ag-theme-balham.css",
-                            "./node_modules/nouislider/distribute/nouislider.css",
-                            "./node_modules/billboard.js/dist/billboard.css",
-                            "src/assets/lib/prettify/prettify.css",
-                            "src/assets/lib/prettify/sunburst.css",
-                            "src/styles.css"
-                        ],
-                        "scripts": [
-                            "src/assets/lib/prettify/prettify.js",
-                            "src/assets/lib/prettify/lang-sql.js",
-                            "./node_modules/snapsvg/dist/snap.svg-min.js"
-                        ]
-                    },
-                    "configurations": {
-                        "production": {
-                            "budgets": [
-                                {
-                                "type": "anyComponentStyle",
-                                "maximumWarning": "6kb"
-                                }
-                            ],
-                            "fileReplacements": [
-                                {
-                                    "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.prod.ts"
-                                }
-                            ],
-                            "optimization": true,
-                            "outputHashing": "all",
-                            "sourceMap": false,
-                            "extractCss": true,
-                            "namedChunks": false,
-                            "aot": true,
-                            "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": false
-                        }
-                    }
-                },
-                "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
-                    "options": {
-                        "browserTarget": "pinpoint:build"
-                    },
-                    "configurations": {
-                        "production": {
-                            "browserTarget": "pinpoint:build:production"
-                        }
-                    }
-                },
-                "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
-                    "options": {
-                        "browserTarget": "pinpoint:build"
-                    }
-                },
-                "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "main": "src/test.ts",
-                        "polyfills": "src/polyfills.ts",
-                        "tsConfig": "src/tsconfig.spec.json",
-                        "karmaConfig": "src/karma.conf.js",
-                        "styles": [
-                            "src/styles.css"
-                        ],
-                        "scripts": [],
-                        "assets": [
-                            "src/favicon.ico",
-                            "src/assets"
-                        ]
-                    }
-                },
-                "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
-                    "options": {
-                        "tsConfig": [
-                            "src/tsconfig.app.json",
-                            "src/tsconfig.spec.json"
-                        ],
-                        "exclude": [
-                            "**/node_modules/**",
-                            "**/src/app/core/components/angular-split/**"
-                        ]
-                    }
-                }
-            }
-        },
         "pinpoint-naver": {
             "root": "",
             "sourceRoot": "src",
@@ -178,18 +68,20 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "pinpoint:build"
+                        "browserTarget": "pinpoint-naver:build",
+                        "proxyConfig": "src/proxy.conf.js"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "pinpoint:build:production"
+                            "browserTarget": "pinpoint-naver:build:production",
+                            "proxyConfig": "src/proxy.conf.js"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "pinpoint:build"
+                        "browserTarget": "pinpoint-naver:build"
                     }
                 },
                 "test": {
@@ -247,5 +139,5 @@
             }
         }
     },
-    "defaultProject": "pinpoint"
+    "defaultProject": "pinpoint-naver"
 }
