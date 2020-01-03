@@ -1,7 +1,6 @@
 const PROXY_CONFIG = [
     {
         context: [
-            "/agent/activeThread.pinpointws",
             "/configuration.pinpoint",
             "/serverTime.pinpoint",
             "/userConfiguration.pinpoint",
