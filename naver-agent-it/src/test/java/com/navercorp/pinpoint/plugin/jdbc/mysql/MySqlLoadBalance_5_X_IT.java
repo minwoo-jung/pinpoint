@@ -44,14 +44,14 @@ import java.util.Properties;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent(NaverAgentPath.PATH)
-@Dependency({"mysql:mysql-connector-java:[5.1.6],[5.1.34],[5.1.36,5.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
+@Dependency({"mysql:mysql-connector-java:[5.1.6],[5.1.34],[5.1.36,5.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class MySqlLoadBalance_5_X_IT extends MySql_IT_Base {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Connection connectDB(String url) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-        String user = db.getProperty("mysql.user");
-        String password = db.getProperty("mysql.password");
+        String user = driverProperties.getUser();
+        String password = driverProperties.getPassword();
 
         Properties properties = new Properties();
         properties.setProperty("user", user);
@@ -62,7 +62,7 @@ public class MySqlLoadBalance_5_X_IT extends MySql_IT_Base {
     @Test
     public void loadBalancedUrlModify() throws Exception {
         // random fail
-        Connection connection = connectDB(db.getProperty("mysql.url.loadbalance"));
+        Connection connection = connectDB(driverProperties.getProperty("mysql.url.loadbalance"));
 
         logger.info("Connection class name:{}", connection.getClass().getName());
         logger.info("Connection class cl:{}", connection.getClass().getClassLoader());

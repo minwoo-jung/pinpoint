@@ -24,8 +24,8 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-agent-it7</artifactId>
-    <name>naver-pinpoint-naver-agent-it7</name>
+    <artifactId>pinpoint-naver-agent-it8</artifactId>
+    <name>naver-pinpoint-naver-agent-it8</name>
     <!-- this module contains integration tests. if we set packaging to pom, 
         tests are not run. so we set it to jar even though the project will not be 
         packaged as a jar. -->
@@ -47,8 +47,8 @@
     </repositories>
 
     <properties>
-        <jdk.version>1.7</jdk.version>
-        <jdk.home>${env.JAVA_7_HOME}</jdk.home>
+        <jdk.version>1.8</jdk.version>
+        <jdk.home>${env.JAVA_8_HOME}</jdk.home>
     </properties>
 
     <dependencies>
@@ -66,39 +66,16 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>com.nhncorp.lucy</groupId>
-            <artifactId>bloc-server</artifactId>
-            <version>4.0.3</version>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>7.0.0.jre8</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${plugin.resources.version}</version>
-                <executions>
-                    <execution>
-                        <id>copy-bloc-module</id>
-                        <!-- here the phase you need -->
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/test/bloc4/base/repository/test/classes/com/navercorp/test/pinpoint/plugin/bloc/v4/module</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.testOutputDirectory}/com/navercorp/test/pinpoint/plugin/bloc/v4/module</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -119,7 +96,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${plugin.failsafe.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -134,21 +110,6 @@
                     <failIfNoTests>true</failIfNoTests>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.6.1</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${basedir}/test/bloc4/base/repository/test</directory>
-                            <includes>
-                                <include>classes/**</include>
-                                <include>lib/**</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>            
         </plugins>
     </build>
 </project>

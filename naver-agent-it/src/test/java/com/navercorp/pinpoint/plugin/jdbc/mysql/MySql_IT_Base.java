@@ -16,30 +16,28 @@
 
 package com.navercorp.pinpoint.plugin.jdbc.mysql;
 
-import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.plugin.DriverManagerUtils;
+import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import java.sql.Driver;
 import java.sql.DriverManager;
-import java.util.Enumeration;
-import java.util.Properties;
 
 /**
  * @author Taejin Koo
  */
 public class MySql_IT_Base {
 
-    protected static Properties db;
+    
+    protected static DriverProperties driverProperties;
     protected static MySqlItHelper HELPER;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 
-        db = PropertyUtils.loadPropertyFromClassPath("database.properties");
-        HELPER = new MySqlItHelper(db);
+        driverProperties = new DriverProperties("database/mysql.properties", "mysql");
+        HELPER = new MySqlItHelper(driverProperties);
     }
 
     @AfterClass

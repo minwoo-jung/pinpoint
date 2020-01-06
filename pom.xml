@@ -70,6 +70,7 @@
         <module>naver-agent</module>
         <module>naver-agent-it</module>
         <module>naver-agent-it7</module>
+        <module>naver-agent-it8</module>
         <module>naver-profiler</module>
         <module>naver-security</module>
         <module>naver-thrift</module>
@@ -186,6 +187,15 @@
     </dependencyManagement>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>com.nhncorp.maven</groupId>

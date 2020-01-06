@@ -15,7 +15,24 @@
  */
 package com.navercorp.pinpoint.plugin.jdbc.cubrid;
 
-import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
+import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
+import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
+import com.navercorp.pinpoint.plugin.NaverAgentPath;
+import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.Dependency;
+import com.navercorp.pinpoint.test.plugin.PinpointAgent;
+import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import com.navercorp.pinpoint.test.plugin.Repository;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -25,23 +42,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
-import com.navercorp.pinpoint.plugin.NaverAgentPath;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.util.PropertyUtils;
-import com.navercorp.pinpoint.test.plugin.Dependency;
-import com.navercorp.pinpoint.test.plugin.PinpointAgent;
-import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
-import com.navercorp.pinpoint.test.plugin.Repository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.event;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.sql;
 
 /**
  * @author Jongho Moon
@@ -51,12 +55,14 @@ import org.slf4j.LoggerFactory;
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent(NaverAgentPath.PATH)
 @Repository("http://maven.cubrid.org")
-@Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.1.0.0212],[9.2.19.0003],[9.3.2,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
+@Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.1.0.0212],[9.2.19.0003],[9.3.2,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class CubridIT {
     private static final String CUBRID = "CUBRID";
     private static final String CUBRID_EXECUTE_QUERY = "CUBRID_EXECUTE_QUERY";
-    
-    
+
+
+    private static DriverProperties driverProperties;
+
     private static String DB_ID;
     private static String DB_PASSWORD;
     private static String DB_ADDRESS;
@@ -68,17 +74,18 @@ public class CubridIT {
     @BeforeClass
     public static void setup() throws Exception {
         Class.forName("cubrid.jdbc.driver.CUBRIDDriver");
-        
-        Properties db = PropertyUtils.loadPropertyFromClassPath("database.properties");
 
-        JDBC_URL = db.getProperty("cubrid.url");
-        String[] tokens = JDBC_URL.split(":");
-        
-        DB_ADDRESS = tokens[2] + ":" + tokens[3];
-        DB_NAME = tokens[4];
-        
-        DB_ID = db.getProperty("cubrid.user");
-        DB_PASSWORD = db.getProperty("cubrid.password");
+        driverProperties = new DriverProperties("database/cubrid.properties", "cubrid");
+
+        JDBC_URL = driverProperties.getUrl();
+        JdbcUrlParserV2 jdbcUrlParser = new CubridJdbcUrlParser();
+        DatabaseInfo databaseInfo = jdbcUrlParser.parse(JDBC_URL);
+
+        DB_ADDRESS = databaseInfo.getHost().get(0);
+        DB_NAME = databaseInfo.getDatabaseId();
+
+        DB_ID = driverProperties.getUser();
+        DB_PASSWORD = driverProperties.getPassword();
     }
 
     @AfterClass

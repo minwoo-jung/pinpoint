@@ -16,6 +16,19 @@
 
 package com.navercorp.pinpoint.plugin.jdbc.jtds;
 
+import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
+import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.profiler.context.SpanEvent;
+import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
@@ -25,20 +38,6 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
-import com.navercorp.pinpoint.profiler.context.SpanEvent;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
-import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
-import com.navercorp.pinpoint.common.util.PropertyUtils;
-import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
-
 /**
  * @author emeroad
  */
@@ -46,11 +45,11 @@ public class JtdsConnectionIT extends BasePinpointTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private static Properties db;
+    private static DriverProperties driverProperties;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        db = PropertyUtils.loadPropertyFromClassPath("database.properties");
+        driverProperties = new DriverProperties("database/jtds.properties", "mssqlserver-jtds");
     }
 
     @AfterClass
@@ -72,15 +71,11 @@ public class JtdsConnectionIT extends BasePinpointTest {
     }
 
     private Connection connectDB() throws SQLException {
-        String url = db.getProperty("mssqlserver.url");
-        String user = db.getProperty("mssqlserver.user");
-        String password = db.getProperty("mssqlserver.password");
-
         Driver driver = new net.sourceforge.jtds.jdbc.Driver();
         Properties properties = new Properties();
-        properties.setProperty("user", user);
-        properties.setProperty("password", password);
-        return driver.connect(url, properties);
+        properties.setProperty("user", driverProperties.getUser());
+        properties.setProperty("password", driverProperties.getPassword());
+        return driver.connect(driverProperties.getUrl(), properties);
     }
 
 

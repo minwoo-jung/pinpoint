@@ -15,19 +15,22 @@
  */
 package com.navercorp.pinpoint.plugin.jdbc.oracle;
 
+import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
-import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
+import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.Repository;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,9 +43,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Properties;
+
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.event;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.sql;
 
 /**
  * @author Jongho Moon
@@ -50,12 +59,11 @@ import java.util.Properties;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent(NaverAgentPath.PATH)
-@Dependency({"oracle:ojdbc6:(,)"})
+@Dependency({"oracle:ojdbc6:(,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 @Repository("http://repo.navercorp.com/maven2")
 public class OracleIT {
     private static final String ORACLE = "ORACLE";
     private static final String ORACLE_EXECUTE_QUERY = "ORACLE_EXECUTE_QUERY";
-    
     
     private static String DB_ID;
     private static String DB_PASSWORD;
@@ -69,30 +77,40 @@ public class OracleIT {
     public static void setup() throws Exception {
         Class.forName("oracle.jdbc.driver.OracleDriver");
         
-        Properties db = PropertyUtils.loadPropertyFromClassPath("database.properties");
+        DriverProperties driverProperties = new DriverProperties("database/oracle.properties", "oracle");
         
-        JDBC_URL = db.getProperty("oracle.url");
-        String[] tokens = JDBC_URL.split(":");
-        
-        String ip = tokens[3].substring(1);
-        String port = tokens[4];
+        JDBC_URL = driverProperties.getUrl();
 
-        
-        DB_ADDRESS = ip + ":" + port;
-        DB_NAME = tokens[5];
-        
-        DB_ID = db.getProperty("oracle.user");
-        DB_PASSWORD = db.getProperty("oracle.password");
+        JdbcUrlParserV2 jdbcUrlParser = new OracleJdbcUrlParser();
+        DatabaseInfo databaseInfo = jdbcUrlParser.parse(JDBC_URL);
+
+        DB_ADDRESS = databaseInfo.getHost().get(0);
+        DB_NAME = databaseInfo.getDatabaseId();
+
+        DB_ID = driverProperties.getUser();
+        DB_PASSWORD = driverProperties.getPassword();
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
         DriverManagerUtils.deregisterDriver();
     }
-    
-//  @Test
+
+    private Connection conn;
+    @After
+    public void shutdown() throws Exception {
+        if (this.conn != null) {
+            conn.close();
+        }
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+    }
+
+    //  @Test
   public void create() throws Exception {
-      Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+      this.conn = getConnection();
       
       Statement statement = conn.createStatement();
       statement.execute("CREATE TABLE test (id INTEGER NOT NULL, name VARCHAR(45) NOT NULL, age INTEGER NOT NULL, CONSTRAINT test_pk PRIMARY KEY (id))" );
@@ -101,10 +119,9 @@ public class OracleIT {
       conn.commit();
   }
 
-    
     @Test
     public void test() throws Exception {
-        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+        this.conn = getConnection();
         
         conn.setAutoCommit(false);
         
@@ -172,7 +189,7 @@ public class OracleIT {
         final String param2 = "b";
         final String storedProcedureQuery = "{ call concatCharacters(?, ?, ?) }";
 
-        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+        this.conn = getConnection();
 
         CallableStatement cs = conn.prepareCall(storedProcedureQuery);
         cs.setString(1, param1);
@@ -224,7 +241,7 @@ public class OracleIT {
         final int param2 = 2;
         final String storedProcedureQuery = "{ call swapAndGetSum(?, ?, ?) }";
 
-        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+        this.conn = getConnection();
 
         CallableStatement cs = conn.prepareCall(storedProcedureQuery);
         cs.setInt(1, param1);
@@ -268,4 +285,6 @@ public class OracleIT {
         Method executeQuery = oraclePreparedStatementWrapper.getDeclaredMethod("execute");
         verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
+
+
 }

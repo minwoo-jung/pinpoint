@@ -13,9 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.pinpoint.plugin.jdbc.jtds;
+package com.navercorp.pinpoint.plugin.jdbc.mssql;
 
-import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.*;
+import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
+import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
+import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
+import com.navercorp.pinpoint.plugin.DriverManagerUtils;
+import com.navercorp.pinpoint.plugin.NaverAgentPath;
+import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.plugin.jdbc.mysql.MySqlJdbcUrlParser;
+import com.navercorp.pinpoint.test.plugin.Dependency;
+import com.navercorp.pinpoint.test.plugin.PinpointAgent;
+import com.navercorp.pinpoint.test.plugin.PinpointConfig;
+import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
@@ -23,82 +43,88 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Properties;
 
-import com.navercorp.pinpoint.plugin.NaverAgentPath;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
-import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.common.util.PropertyUtils;
-import com.navercorp.pinpoint.test.plugin.Dependency;
-import com.navercorp.pinpoint.test.plugin.JvmVersion;
-import com.navercorp.pinpoint.test.plugin.PinpointAgent;
-import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.event;
+import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.sql;
 
 /**
- * @author Jongho Moon
- * 
- */
+* @author Woonduk Kang(emeroad)
+*/
+@Ignore
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent(NaverAgentPath.PATH)
-@Dependency({"net.sourceforge.jtds:jtds:[1.2.8],[1.3.1,)"})
-@JvmVersion({7, 8})
-public class JtdsIT {
+@PinpointConfig("pinpoint-mssql.config")
+@Dependency({"com.microsoft.sqlserver:mssql-jdbc:7.0.0.jre8", NaverAgentPath.TEST_IT,
+        "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
+public class MSSqlIT {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private static final String MSSQL = "MSSQL";
     private static final String MSSQL_EXECUTE_QUERY = "MSSQL_EXECUTE_QUERY";
-    
-    
+
     private static String DB_ID;
     private static String DB_PASSWORD;
     private static String DB_ADDRESS;
     private static String DB_NAME;
     private static String JDBC_URL;
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @BeforeClass
     public static void setup() throws Exception {
-        Class.forName("net.sourceforge.jtds.jdbc.Driver");
-        
-        Properties db = PropertyUtils.loadPropertyFromClassPath("database.properties");
-        
-        JDBC_URL = db.getProperty("mssqlserver.url");
-        String[] tokens = JDBC_URL.split(":");
-        
-        String ip = tokens[3].substring(2);
-        
-        int div = tokens[4].indexOf('/');
-        String port = tokens[4].substring(0, div);
 
+        getDriverClass();
+
+        DriverProperties driverProperties = new DriverProperties("database/mssql.properties", "mssqlserver");
         
-        DB_ADDRESS = ip + ":" + port;
-        DB_NAME = tokens[4].substring(div + 1);
-        
-        DB_ID = db.getProperty("mssqlserver.user");
-        DB_PASSWORD = db.getProperty("mssqlserver.password");
+        JDBC_URL = driverProperties.getUrl();
+        JdbcUrlParserV2 jdbcUrlParser = new MySqlJdbcUrlParser();
+        DatabaseInfo databaseInfo = jdbcUrlParser.parse(JDBC_URL);
+        DB_ADDRESS = databaseInfo.getHost().get(0);
+        DB_NAME = databaseInfo.getDatabaseId();
+
+//        jdbc:sqlserver://10.106.149.189:1433;databaseName=pinpoint_test
+        DB_ID = driverProperties.getUser();
+        DB_PASSWORD = driverProperties.getPassword();
     }
-    
-//    @Test
-//    public void create() throws Exception {
-//        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
-//        
-//        Statement statement = conn.createStatement();
-//        statement.execute("CREATE TABLE test (id int IDENTITY(1,1), name varchar(45) NOT NULL, age int NOT NULL, PRIMARY KEY (id))" );
-//        conn.commit();
-//    }
-    
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DriverManagerUtils.deregisterDriver();
+    }
+
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+    }
+
+    private static Class<?> getDriverClass() throws ClassNotFoundException {
+        return Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    }
+
+    private Class<?> getConnectionClass() throws ClassNotFoundException {
+        return Class.forName("com.microsoft.sqlserver.jdbc.SQLServerConnection");
+    }
+
+    private Class<?> getStatement() throws ClassNotFoundException {
+        return Class.forName("com.microsoft.sqlserver.jdbc.SQLServerStatement");
+    }
+
+    private Class<?> getPreparedStatementClass() throws ClassNotFoundException {
+        return Class.forName("com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement");
+    }
+
+    private Class<?> getCallableStatementClass() throws ClassNotFoundException {
+        return Class.forName("com.microsoft.sqlserver.jdbc.SQLServerCallableStatement");
+    }
+
     @Test
     public void test() throws Exception {
-        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+        Connection conn = getConnection();
         
         conn.setAutoCommit(false);
         
@@ -127,31 +153,26 @@ public class JtdsIT {
         
         verifier.printCache();
         
-        Class<?> driverClass = Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        Class<?> driverClass = getDriverClass();
         Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
         verifier.verifyTrace(event(MSSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
-        
-        Class<?> connectionClass = null;
-        try {
-            connectionClass = Class.forName("net.sourceforge.jtds.jdbc.ConnectionJDBC2");
-        } catch (ClassNotFoundException e) {
-            connectionClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsConnection");
-        }
-        
+
+        Class<?> connectionClass = getConnectionClass();
+
         Method setAutoCommit = connectionClass.getDeclaredMethod("setAutoCommit", boolean.class);
         verifier.verifyTrace(event(MSSQL, setAutoCommit, null, DB_ADDRESS, DB_NAME, args(false)));
         
 
         Method prepareStatement = connectionClass.getDeclaredMethod("prepareStatement", String.class);
         verifier.verifyTrace(event(MSSQL, prepareStatement, null, DB_ADDRESS, DB_NAME, sql(insertQuery, null)));
-        
-        Class<?> preparedStatement = Class.forName("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
+
+        Class<?> preparedStatement = getPreparedStatementClass();
         Method execute = preparedStatement.getDeclaredMethod("execute");
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, Expectations.sql(insertQuery, null, "maru, 5")));
 
 
-        Class<?> statement = Class.forName("net.sourceforge.jtds.jdbc.JtdsStatement");
-        
+        Class<?> statement = getStatement();
+
         Method executeQuery = statement.getDeclaredMethod("executeQuery", String.class);
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, Expectations.sql(selectQuery, null)));
         
@@ -161,6 +182,8 @@ public class JtdsIT {
         Method commit = connectionClass.getDeclaredMethod("commit");
         verifier.verifyTrace(event(MSSQL, commit, null, DB_ADDRESS, DB_NAME));
     }
+
+
 
     /*
         CREATE PROCEDURE concatCharacters
@@ -176,7 +199,7 @@ public class JtdsIT {
         final String param2 = "b";
         final String storedProcedureQuery = "{ call concatCharacters(?, ?, ?) }";
 
-        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+        Connection conn = getConnection();
 
         CallableStatement cs = conn.prepareCall(storedProcedureQuery);
         cs.setString(1, param1);
@@ -192,28 +215,22 @@ public class JtdsIT {
         verifier.verifyTraceCount(4);
 
         // Driver#connect(String, Properties)
-
-        Class<?> driverClass = Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        Class<?> driverClass = getDriverClass();
         Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
         verifier.verifyTrace(event(MSSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
 
         // ConnectionJDBC2#prepareCall(String)
-        Class<?> connectionClass = null;
-        try {
-            connectionClass = Class.forName("net.sourceforge.jtds.jdbc.ConnectionJDBC2");
-        } catch (ClassNotFoundException e) {
-            connectionClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsConnection");
-        }
+        Class<?> connectionClass = getConnectionClass();
         Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
         verifier.verifyTrace(event(MSSQL, prepareCall, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null)));
 
         // JtdsCallableStatement#registerOutParameter(int, int)
-        Class<?> jtdsCallableStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsCallableStatement");
+        Class<?> jtdsCallableStatementClass = getCallableStatementClass();
         Method registerOutParameter = jtdsCallableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
         verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(3, Types.VARCHAR)));
 
         // JtdsPreparedStatement#execute
-        Class<?> jtdsPreparedStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
+        Class<?> jtdsPreparedStatementClass = getPreparedStatementClass();
         Method execute = jtdsPreparedStatementClass.getDeclaredMethod("execute");
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
@@ -235,7 +252,7 @@ public class JtdsIT {
         final int param2 = 2;
         final String storedProcedureQuery = "{ call swapAndGetSum(?, ?) }";
 
-        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
+        Connection conn = getConnection();
 
         CallableStatement cs = conn.prepareCall(storedProcedureQuery);
         cs.setInt(1, param1);
@@ -256,22 +273,17 @@ public class JtdsIT {
         verifier.verifyTraceCount(5);
 
         // Driver#connect(String, Properties)
-        Class<?> driverClass = Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        Class<?> driverClass = getDriverClass();
         Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
         verifier.verifyTrace(event(MSSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
 
         // ConnectionJDBC2#prepareCall(String)
-        Class<?> connectionClass = null;
-        try {
-            connectionClass = Class.forName("net.sourceforge.jtds.jdbc.ConnectionJDBC2");
-        } catch (ClassNotFoundException e) {
-            connectionClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsConnection");
-        }
+        Class<?> connectionClass = getConnectionClass();
         Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
         verifier.verifyTrace(event(MSSQL, prepareCall, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null)));
 
         // JtdsCallableStatement#registerOutParameter(int, int)
-        Class<?> jtdsCallableStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsCallableStatement");
+        Class<?> jtdsCallableStatementClass = getCallableStatementClass();
         Method registerOutParameter = jtdsCallableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
         // param 1
         verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(1, Types.INTEGER)));
@@ -279,8 +291,9 @@ public class JtdsIT {
         verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(2, Types.INTEGER)));
 
         // JtdsPreparedStatement#executeQuery
-        Class<?> jtdsPreparedStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
+        Class<?> jtdsPreparedStatementClass = getPreparedStatementClass();
         Method executeQuery = jtdsPreparedStatementClass.getDeclaredMethod("executeQuery");
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
+
 }

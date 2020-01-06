@@ -16,9 +16,13 @@
 
 package com.navercorp.pinpoint.plugin.jdbc.postgresql;
 
+import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
+import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.plugin.jdbc.cubrid.CubridJdbcUrlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,25 +55,19 @@ public class PostgreSqlItHelper {
     private final String databaseAddress;
     private final String databaseName;
 
-    PostgreSqlItHelper(Properties databaseProperties) {
-        if (databaseProperties == null) {
-            throw new NullPointerException("databaseProperties");
+    PostgreSqlItHelper(DriverProperties driverProperties) {
+        if (driverProperties == null) {
+            throw new NullPointerException("driverProperties");
         }
-        jdbcUrl = databaseProperties.getProperty("postgresql.url");
-        String[] tokens = jdbcUrl.split(":");
+        jdbcUrl = driverProperties.getUrl();
+        JdbcUrlParserV2 jdbcUrlParser = new PostgreSqlJdbcUrlParser();
+        DatabaseInfo databaseInfo = jdbcUrlParser.parse(jdbcUrl);
 
-        String ip = tokens[2].substring(2);
+        databaseAddress = databaseInfo.getHost().get(0);
+        databaseName = databaseInfo.getDatabaseId();
 
-        int div = tokens[3].indexOf("/");
-        int question = tokens[3].indexOf("?");
-
-        String port = tokens[3].substring(0, div);
-
-        databaseAddress = ip + ":" + port;
-        databaseName = question == -1 ? tokens[3].substring(div + 1) : tokens[3].substring(div + 1, question);
-
-        databaseUser = databaseProperties.getProperty("postgresql.user");
-        databasePassword = databaseProperties.getProperty("postgresql.password");
+        databaseUser = driverProperties.getUser();
+        databasePassword = driverProperties.getPassword();
     }
 
     void testStatements(

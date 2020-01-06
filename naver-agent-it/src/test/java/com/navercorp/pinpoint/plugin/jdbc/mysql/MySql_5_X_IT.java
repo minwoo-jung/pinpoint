@@ -35,7 +35,7 @@ import java.sql.Statement;
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent(NaverAgentPath.PATH)
-@Dependency({"mysql:mysql-connector-java:[5.0.8],[5.1.36,5.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
+@Dependency({"mysql:mysql-connector-java:[5.0.8],[5.1.36,5.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class MySql_5_X_IT extends MySql_IT_Base {
 
     @Test

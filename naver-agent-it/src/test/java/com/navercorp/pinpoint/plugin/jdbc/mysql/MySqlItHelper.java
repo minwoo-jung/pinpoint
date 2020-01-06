@@ -16,9 +16,13 @@
 
 package com.navercorp.pinpoint.plugin.jdbc.mysql;
 
+import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
+import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.plugin.jdbc.cubrid.CubridJdbcUrlParser;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +34,6 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Properties;
@@ -57,25 +60,20 @@ public class MySqlItHelper {
     private final String databaseAddress;
     private final String databaseName;
 
-    MySqlItHelper(Properties databaseProperties) {
-        if (databaseProperties == null) {
-            throw new NullPointerException("databaseProperties");
+    MySqlItHelper(DriverProperties driverProperties) {
+        if (driverProperties == null) {
+            throw new NullPointerException("driverProperties");
         }
-        jdbcUrl = databaseProperties.getProperty("mysql.url");
-        String[] tokens = jdbcUrl.split(":");
+        jdbcUrl = driverProperties.getUrl();
 
-        String ip = tokens[2].substring(2);
+        JdbcUrlParserV2 jdbcUrlParser = new MySqlJdbcUrlParser();
+        DatabaseInfo databaseInfo = jdbcUrlParser.parse(jdbcUrl);
 
-        int div = tokens[3].indexOf('/');
-        int question = tokens[3].indexOf('?');
+        databaseAddress = databaseInfo.getHost().get(0);
+        databaseName = databaseInfo.getDatabaseId();
 
-        String port = tokens[3].substring(0, div);
-
-        databaseAddress = ip + ":" + port;
-        databaseName = question == -1 ? tokens[3].substring(div + 1) : tokens[3].substring(div + 1, question);
-
-        databaseId = databaseProperties.getProperty("mysql.user");
-        databasePassword = databaseProperties.getProperty("mysql.password");
+        databaseId = driverProperties.getUser();
+        databasePassword = driverProperties.getPassword();
     }
 
     void testStatements(Class<Driver> driverClass, Class<Connection> connectionClass, Class<PreparedStatement> preparedStatementClass, Class<Statement> statementClass) throws Exception {

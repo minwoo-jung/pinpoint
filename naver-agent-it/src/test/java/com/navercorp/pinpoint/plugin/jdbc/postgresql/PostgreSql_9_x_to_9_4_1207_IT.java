@@ -16,9 +16,9 @@
 
 package com.navercorp.pinpoint.plugin.jdbc.postgresql;
 
-import com.navercorp.pinpoint.common.util.PropertyUtils;
 import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
+import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
@@ -28,23 +28,23 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Properties;
-
 /**
  * @author HyunGil Jeong
  */
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent(NaverAgentPath.PATH)
 @JvmVersion(8)
-@Dependency({"org.postgresql:postgresql:[9.min,9.4.1207)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5", "com.nhncorp.nelo2:nelo2-java-sdk-log4j:1.3.3"})
+@Dependency({"org.postgresql:postgresql:[9.min,9.4.1207)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class PostgreSql_9_x_to_9_4_1207_IT {
 
     private static PostgreSqlItHelper HELPER;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        Properties databaseProperties = PropertyUtils.loadPropertyFromClassPath("database.properties");
-        HELPER = new PostgreSqlItHelper(databaseProperties);
+        Class.forName("org.postgresql.Driver");
+
+        DriverProperties driverProperties = new DriverProperties("database/postgre.properties", "postgresql");
+        HELPER = new PostgreSqlItHelper(driverProperties);
     }
 
     @AfterClass

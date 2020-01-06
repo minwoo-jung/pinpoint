@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.plugin.jdbc.cubrid;
+package com.navercorp.pinpoint.plugin.jdbc.mssql;
 
+import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
+import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
 import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.profiler.context.SpanEvent;
 import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
-import cubrid.jdbc.driver.CUBRIDDriver;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +36,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Properties;
 
 /**
  * @author emeroad
  */
-public class CubridConnectionIT extends BasePinpointTest {
+@Ignore
+public class MSSSqlConnectionIT extends BasePinpointTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -45,7 +51,7 @@ public class CubridConnectionIT extends BasePinpointTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        driverProperties = new DriverProperties("database/cubrid.properties", "cubrid");
+        driverProperties = new DriverProperties("database/mssql.properties", "mssqlserver");
     }
 
     @AfterClass
@@ -57,8 +63,8 @@ public class CubridConnectionIT extends BasePinpointTest {
     public void executeQueryAndExecuteUpdate() throws SQLException {
         Connection connection = connectDB();
 
-        PreparedStatement preparedStatement = connection.prepareStatement("select 1 from db_root where 1=?");
-        preparedStatement.setInt(1, 1);
+        PreparedStatement preparedStatement = connection.prepareStatement("select 1 ");
+//        preparedStatement.setInt(1, 1);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             logger.debug("---{}", resultSet.getObject(1));
@@ -68,7 +74,7 @@ public class CubridConnectionIT extends BasePinpointTest {
 
     private Connection connectDB() throws SQLException {
 
-        Driver driver = new CUBRIDDriver();
+        Driver driver = new com.microsoft.sqlserver.jdbc.SQLServerDriver();
         Properties properties = new Properties();
         properties.setProperty("user", driverProperties.getUser());
         properties.setProperty("password", driverProperties.getPassword());
@@ -78,16 +84,23 @@ public class CubridConnectionIT extends BasePinpointTest {
 
     @Test
     public void testModify() throws Exception {
+        logger.debug("testModify");
 
         Connection connection = connectDB();
 
-        logger.info("Connection class name:{}", connection.getClass().getName());
-        logger.info("Connection class cl:{}", connection.getClass().getClassLoader());
+        logger.debug("Connection class name:{}", connection.getClass().getName());
+        logger.debug("Connection class cl:{}", connection.getClass().getClassLoader());
 
-//        DatabaseInfo url = ((DatabaseInfoTraceValue) connection)._$PINPOINT$_getTraceDatabaseInfo();
-//        Assert.assertNotNull(url);
+        DatabaseInfo url = ((DatabaseInfoAccessor) connection)._$PINPOINT$_getDatabaseInfo();
+        Assert.assertNotNull(url);
+        List<SpanEvent> currentSpanEvents = getCurrentSpanEvents();
+        logger.debug("{}", currentSpanEvents);
+//        Assert.assertEquals(1, currentSpanEvents.size());
 
         statement(connection);
+        currentSpanEvents = getCurrentSpanEvents();
+        logger.debug("{}", currentSpanEvents);
+//        Assert.assertEquals(2, currentSpanEvents.size());
 
         preparedStatement(connection);
 
@@ -107,8 +120,8 @@ public class CubridConnectionIT extends BasePinpointTest {
 
 
         connection.close();
-//        DatabaseInfo clearUrl = ((DatabaseInfoTraceValue) connection)._$PINPOINT$_getTraceDatabaseInfo();
-//        Assert.assertNull(clearUrl);
+        DatabaseInfo clearUrl = ((DatabaseInfoAccessor) connection)._$PINPOINT$_getDatabaseInfo();
+        Assert.assertNull(clearUrl);
 
     }
 
@@ -121,7 +134,7 @@ public class CubridConnectionIT extends BasePinpointTest {
 
     private void preparedStatement(Connection connection) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement("select 1");
-        logger.info("PreparedStatement className:" + preparedStatement.getClass().getName());
+        logger.debug("PreparedStatement className:" + preparedStatement.getClass().getName());
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.close();
         preparedStatement.close();
@@ -156,7 +169,7 @@ public class CubridConnectionIT extends BasePinpointTest {
     private void preparedStatement4(Connection connection) throws SQLException {
 //        Statement.RETURN_GENERATED_KEYS or Statement.NO_GENERATED_KEYS
         PreparedStatement preparedStatement = connection.prepareStatement("select 1", Statement.RETURN_GENERATED_KEYS);
-        logger.info("PreparedStatement className:{}", preparedStatement.getClass().getName());
+        logger.debug("PreparedStatement className:{}", preparedStatement.getClass().getName());
         ResultSet resultSet = preparedStatement.executeQuery();
         resultSet.close();
         preparedStatement.close();
@@ -173,7 +186,7 @@ public class CubridConnectionIT extends BasePinpointTest {
 
     private void preparedStatement6(Connection connection) throws SQLException {
 //        Statement.RETURN_GENERATED_KEYS or Statement.NO_GENERATED_KEYS
-        int[] columnIndex = {1, 2, 3};
+        int[] columnIndex = {1};
         PreparedStatement preparedStatement = connection.prepareStatement("select 1", columnIndex);
         logger.info("PreparedStatement className:{}", preparedStatement.getClass().getName());
         ResultSet resultSet = preparedStatement.executeQuery();
