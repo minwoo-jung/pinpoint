@@ -86,12 +86,12 @@ public class RepositoryController {
     @PatchMapping(value = "/{organizationName}")
     public ResponseEntity<Void> updateRepository(@PathVariable("organizationName") String organizationName,
                                                  @RequestBody RepositoryUpdateForm repositoryUpdateForm) {
-        Boolean isEnabled = repositoryUpdateForm.getEnabled();
-        Boolean isDeleted = repositoryUpdateForm.getDeleted();
-        if (isEnabled == null && isDeleted == null) {
+        Boolean isEnabled = repositoryUpdateForm.getEnable();
+        long expireTime = repositoryUpdateForm.getExpireTime();
+        if (isEnabled == null && expireTime != 0) {
             return ResponseEntity.badRequest().build();
         }
-        repositoryService.updateRepository(organizationName, isEnabled, isDeleted);
+        repositoryService.updateRepository(organizationName, isEnabled, expireTime);
         return ResponseEntity.noContent().build();
     }
 

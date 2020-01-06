@@ -16,9 +16,10 @@
 
 package com.navercorp.pinpoint.manager.dao.mysql;
 
+import com.navercorp.pinpoint.manager.core.StorageStatus;
 import com.navercorp.pinpoint.manager.dao.MetadataDao;
-import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
-import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationKey;
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.*;
+import com.navercorp.pinpoint.manager.hbase.HBaseManagerAdminTemplate;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,44 +29,161 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author minwoo.jung
  */
-@Ignore
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration("classpath:applicationContext-manager.xml")
-//@WebAppConfiguration
-//@Transactional("metaDataTransactionManager")
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicationContext-manager.xml")
+@WebAppConfiguration
+@Transactional("metaDataTransactionManager")
 public class MysqlMetadataDaoTest {
 
     @Autowired
     MetadataDao metadataDao;
 
-//    @Test
+    @Test
     public void organizationInfoTest() {
         String organizationName = "testtest";
         String databaseName = "databaseName";
         String hbaseNamespace = "hbaseNamespace";
         boolean isEnabled = true;
-        boolean isDeleted = false;
-        PaaSOrganizationInfo organizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace, isEnabled, isDeleted);
+        long expireTime = PaaSOrganizationInfo.MAX_EXPIRE_TIME;
+        PaaSOrganizationInfo organizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace, true, expireTime);
         metadataDao.insertPaaSOrganizationInfo(organizationInfo);
         PaaSOrganizationInfo paaSOrganizationInfo = metadataDao.selectPaaSOrganizationInfo(organizationName);
 
         assertEquals(organizationName, paaSOrganizationInfo.getOrganization());
         assertEquals(databaseName, paaSOrganizationInfo.getDatabaseName());
         assertEquals(hbaseNamespace, paaSOrganizationInfo.getHbaseNamespace());
-        assertEquals(isEnabled, paaSOrganizationInfo.isEnabled());
-        assertEquals(isDeleted, paaSOrganizationInfo.isDeleted());
+        assertEquals(isEnabled, paaSOrganizationInfo.getEnable());
+        assertEquals(expireTime, paaSOrganizationInfo.getExpireTimeLong());
+        assertEquals("2100-12-31 23:59:59", paaSOrganizationInfo.getExpireTime());
 
         metadataDao.deletePaaSOrganizationInfo(organizationName);
     }
 
-//    @Test
+    @Test
+    public void existOrganizationTest() {
+        String organizationName = "testtest";
+        String databaseName = "databaseName";
+        String hbaseNamespace = "hbaseNamespace";
+        boolean isEnabled = true;
+        long expireTime = PaaSOrganizationInfo.MAX_EXPIRE_TIME;
+        PaaSOrganizationInfo organizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace, true, expireTime);
+        metadataDao.insertPaaSOrganizationInfo(organizationInfo);
+
+        metadataDao.existDatabase(organizationName);
+    }
+
+    @Test
+    public void updatePaaSOrganizationInfo() {
+        String organizationName = "testtest";
+        String databaseName = "databaseName";
+        String hbaseNamespace = "hbaseNamespace";
+        boolean enable = true;
+        long expireTime = PaaSOrganizationInfo.MAX_EXPIRE_TIME;
+        PaaSOrganizationInfo organizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace, true, expireTime);
+        metadataDao.insertPaaSOrganizationInfo(organizationInfo);
+
+        PaaSOrganizationInfo paaSOrganizationInfo = metadataDao.selectPaaSOrganizationInfo(organizationName);
+        assertEquals(organizationName, paaSOrganizationInfo.getOrganization());
+        assertEquals(databaseName, paaSOrganizationInfo.getDatabaseName());
+        assertEquals(hbaseNamespace, paaSOrganizationInfo.getHbaseNamespace());
+        assertEquals(enable, paaSOrganizationInfo.getEnable());
+        assertEquals(expireTime, paaSOrganizationInfo.getExpireTimeLong());
+        assertEquals("2100-12-31 23:59:59", paaSOrganizationInfo.getExpireTime());
+
+        String updatedDatabaseName = "databaseName2";
+        String updatedHbaseNamespace = "hbaseNamespace2";
+        boolean updateEnable = false;
+        long updatedExpireTime = 4102412399000L;
+        PaaSOrganizationInfo updatedOrganizationInfo = new PaaSOrganizationInfo(organizationName, updatedDatabaseName, updatedHbaseNamespace, true, updatedExpireTime);
+        metadataDao.updatePaaSOrganizationInfo(updatedOrganizationInfo);
+
+        PaaSOrganizationInfo updatedOrgInfo = metadataDao.selectPaaSOrganizationInfo(organizationName);
+        assertEquals(organizationName, updatedOrgInfo.getOrganization());
+        assertEquals(updatedDatabaseName, updatedOrgInfo.getDatabaseName());
+        assertEquals(updatedHbaseNamespace, updatedOrgInfo.getHbaseNamespace());
+        assertEquals(enable, updatedOrgInfo.getEnable());
+        assertEquals(updatedExpireTime, updatedOrgInfo.getExpireTimeLong());
+        assertEquals("2099-12-31 23:59:59", updatedOrgInfo.getExpireTime());
+
+
+    }
+
+    @Test
+    public void selectAllRepositoryInfoTest() {
+        String organizationName = "testtest";
+        String databaseName = "databaseName";
+        String hbaseNamespace = "hbaseNamespace";
+        boolean enable = true;
+        long expireTime = PaaSOrganizationInfo.MAX_EXPIRE_TIME;
+        PaaSOrganizationInfo organizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace, true, expireTime);
+        metadataDao.insertPaaSOrganizationInfo(organizationInfo);
+
+        DatabaseManagement databaseManagement = new DatabaseManagement();
+        databaseManagement.setDatabaseName(databaseName);
+        databaseManagement.setDatabaseStatus(StorageStatus.READY);
+        metadataDao.insertDatabaseManagement(databaseManagement);
+
+        HbaseManagement hbaseManagement = new HbaseManagement();
+        hbaseManagement.setHbaseNamespace(hbaseNamespace);
+        hbaseManagement.setHbaseStatus(StorageStatus.READY);
+        metadataDao.insertHbaseManagement(hbaseManagement);
+
+        List<RepositoryInfo> repositoryInfoList = metadataDao.selectAllRepositoryInfo();
+
+        for (RepositoryInfo repositoryInfo : repositoryInfoList) {
+            if (organizationName.equals(repositoryInfo.getOrganizationName())) {
+                assertEquals(repositoryInfo.getOrganizationName(), organizationName);
+                assertEquals(repositoryInfo.getDatabaseName(), databaseName);
+                assertEquals(repositoryInfo.getDatabaseStatus(), StorageStatus.READY);
+                assertEquals(repositoryInfo.getHbaseNamespace(), hbaseNamespace);
+                assertEquals(repositoryInfo.getHbaseStatus(), StorageStatus.READY);
+                assertEquals(repositoryInfo.getEnable(), enable);
+                assertEquals(repositoryInfo.getExpireTimeLong(), expireTime);
+            }
+        }
+    }
+
+    @Test
+    public void selectRepositoryInfoTest() {
+        String organizationName = "testtest";
+        String databaseName = "databaseName";
+        String hbaseNamespace = "hbaseNamespace";
+        boolean enable = true;
+        long expireTime = PaaSOrganizationInfo.MAX_EXPIRE_TIME;
+        PaaSOrganizationInfo organizationInfo = new PaaSOrganizationInfo(organizationName, databaseName, hbaseNamespace, true, expireTime);
+        metadataDao.insertPaaSOrganizationInfo(organizationInfo);
+
+        DatabaseManagement databaseManagement = new DatabaseManagement();
+        databaseManagement.setDatabaseName(databaseName);
+        databaseManagement.setDatabaseStatus(StorageStatus.READY);
+        metadataDao.insertDatabaseManagement(databaseManagement);
+
+        HbaseManagement hbaseManagement = new HbaseManagement();
+        hbaseManagement.setHbaseNamespace(hbaseNamespace);
+        hbaseManagement.setHbaseStatus(StorageStatus.READY);
+        metadataDao.insertHbaseManagement(hbaseManagement);
+
+        RepositoryInfo repositoryInfo = metadataDao.selectRepositoryInfo(organizationName);
+        assertEquals(repositoryInfo.getOrganizationName(), organizationName);
+        assertEquals(repositoryInfo.getDatabaseName(), databaseName);
+        assertEquals(repositoryInfo.getDatabaseStatus(), StorageStatus.READY);
+        assertEquals(repositoryInfo.getHbaseNamespace(), hbaseNamespace);
+        assertEquals(repositoryInfo.getHbaseStatus(), StorageStatus.READY);
+        assertEquals(repositoryInfo.getEnable(), enable);
+        assertEquals(repositoryInfo.getExpireTimeLong(), expireTime);
+    }
+
+    @Test
     public void organizationKeyTest() {
         String organizationName = "testtest";
         String uuid = UUID.nameUUIDFromBytes((organizationName).getBytes()).toString().replace("-", "");

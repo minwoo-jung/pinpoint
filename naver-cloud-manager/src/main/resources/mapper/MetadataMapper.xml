@@ -6,58 +6,44 @@
     <select id="existOrganization" parameterType="string" resultType="java.lang.Boolean">
         SELECT EXISTS (
             SELECT 1
-            FROM metadata.paas_organization
+            FROM paas_organization
             WHERE organization = #{organizationName}
         )
     </select>
 
     <select id="selectOrganizationInfo" resultType="PaaSOrganizationInfo">
-        SELECT organization AS organization,
-               database_name AS databaseName,
-               hbase_namespace AS hbaseNamespace,
-               is_enabled AS isEnabled,
-               is_deleted AS isDeleted
-        FROM metadata.paas_organization
+        SELECT *
+        FROM paas_organization
         WHERE organization = #{organization}
     </select>
 
     <select id="selectAllOrganizationInfo" resultType="PaaSOrganizationInfo">
-        SELECT organization AS organization,
-               database_name AS databaseName,
-               hbase_namespace AS hbaseNamespace,
-               is_enabled AS isEnabled,
-               is_deleted AS isDeleted
-        FROM metadata.paas_organization
+        SELECT *
+        FROM paas_organization
         ORDER BY organization ASC
     </select>
 
     <insert id="insertOrganizationInfo" parameterType="PaaSOrganizationInfo">
-        INSERT INTO metadata.paas_organization (organization, database_name, hbase_namespace, is_enabled, is_deleted)
-        VALUES (#{organization}, #{databaseName}, #{hbaseNamespace}, #{isEnabled}, #{isDeleted})
+        INSERT INTO paas_organization (organization, database_name, hbase_namespace, enable, expire_time)
+        VALUES (#{organization}, #{databaseName}, #{hbaseNamespace}, #{enable}, #{expireTime})
     </insert>
 
     <update id="updateOrganizationInfo" parameterType="PaaSOrganizationInfo">
-        UPDATE metadata.paas_organization
-        <set>
-            <if test="databaseName != null">database_name = #{databaseName},</if>
-            <if test="hbaseNamespace != null">hbase_namespace = #{hbaseNamespace},</if>
-            <if test="isEnabled != null">is_enabled = #{isEnabled},</if>
-            <if test="isDeleted != null">is_deleted = #{isDeleted}</if>
-        </set>
+        UPDATE paas_organization
+        SET database_name = #{databaseName}, hbase_namespace = #{hbaseNamespace}, enable = #{enable}, expire_time = #{expireTime}
         WHERE organization = #{organization}
     </update>
 
     <delete id="deleteOrganizationInfo" parameterType="string">
         DELETE
-        FROM metadata.paas_organization
+        FROM paas_organization
         WHERE organization = #{organizationName}
     </delete>
 
-
     <select id="selectAllOrganizationNames" resultType="string">
-        SELECT org.organization
-        FROM metadata.paas_organization AS org
-        ORDER BY org.number ASC
+        SELECT organization
+        FROM paas_organization
+        ORDER BY number
     </select>
 
     <select id="selectAllRepositoryInfo" resultType="RepositoryInfo">
@@ -66,8 +52,8 @@
                db.database_status AS databaseStatus,
                hbase.hbase_namespace AS hbaseNamespace,
                hbase.hbase_status AS hbaseStatus,
-               org.is_enabled AS isEnabled,
-               org.is_deleted AS isDeleted
+               org.enable AS enable,
+               org.expire_time AS expireTime
         FROM metadata.paas_organization AS org
         LEFT JOIN metadata.mgmt_database AS db ON db.database_name = org.database_name
         LEFT JOIN metadata.mgmt_hbase AS hbase ON hbase.hbase_namespace = org.hbase_namespace
@@ -79,8 +65,8 @@
                db.database_status AS databaseStatus,
                hbase.hbase_namespace AS hbaseNamespace,
                hbase.hbase_status AS hbaseStatus,
-               org.is_enabled AS isEnabled,
-               org.is_deleted AS isDeleted
+               org.enable AS enable,
+               org.expire_time AS expireTime
         FROM metadata.paas_organization AS org
         LEFT JOIN metadata.mgmt_database AS db ON db.database_name = org.database_name
         LEFT JOIN metadata.mgmt_hbase AS hbase ON hbase.hbase_namespace = org.hbase_namespace
@@ -91,7 +77,7 @@
     <select id="existOrganizationKey" parameterType="string" resultType="java.lang.Boolean">
         SELECT EXISTS (
             SELECT 1
-            FROM metadata.organization_key
+            FROM organization_key
             WHERE organization = #{organizationKey}
         )
     </select>
@@ -99,18 +85,18 @@
     <select id="selectOrganizationKey" resultType="PaaSOrganizationKey">
         SELECT uu_key AS uuKey,
                organization AS organization
-        FROM metadata.organization_key
+        FROM organization_key
         WHERE uu_key = #{key}
     </select>
 
     <insert id="insertOrganizationKey" parameterType="PaaSOrganizationKey">
-        INSERT INTO metadata.organization_key (uu_key, organization)
+        INSERT INTO organization_key (uu_key, organization)
         VALUES (#{uuKey}, #{organization})
     </insert>
 
     <delete id="deleteOrganizationKey" parameterType="string">
         DELETE
-        FROM metadata.organization_key
+        FROM organization_key
         WHERE organization = #{organizationName}
     </delete>
 
@@ -119,31 +105,31 @@
     <select id="selectDatabaseManagement" parameterType="string" resultType="DatabaseManagement">
         SELECT database_name AS databaseName,
                database_status AS databaseStatus
-        FROM metadata.mgmt_database
+        FROM mgmt_database
         WHERE database_name = #{databaseName}
     </select>
 
     <select id="selectDatabaseManagementForUpdate" parameterType="string" resultType="DatabaseManagement">
         SELECT database_name AS databaseName,
                database_status AS databaseStatus
-        FROM metadata.mgmt_database
+        FROM mgmt_database
         WHERE database_name = #{databaseName}
         FOR UPDATE
     </select>
 
     <insert id="insertDatabaseManagement" parameterType="DatabaseManagement">
-        INSERT INTO metadata.mgmt_database (database_name, database_status)
+        INSERT INTO mgmt_database (database_name, database_status)
         VALUES (#{databaseName}, #{databaseStatus})
     </insert>
 
     <update id="updateDatabaseStatus" parameterType="DatabaseManagement">
-        UPDATE metadata.mgmt_database
+        UPDATE mgmt_database
         SET database_status = #{databaseStatus}
         WHERE database_name = #{databaseName}
     </update>
 
     <delete id="deleteDatabaseManagement" parameterType="string">
-        DELETE FROM metadata.mgmt_database
+        DELETE FROM mgmt_database
         WHERE database_name = #{databaseName}
     </delete>
 
@@ -152,31 +138,31 @@
     <select id="selectHbaseManagement" parameterType="string" resultType="HbaseManagement">
         SELECT hbase_namespace AS hbaseNamespace,
                hbase_status AS hbaseStatus
-        FROM metadata.mgmt_hbase
+        FROM mgmt_hbase
         WHERE hbase_namespace = #{hbaseNamespace}
     </select>
 
     <select id="selectHbaseManagementForUpdate" parameterType="string" resultType="HbaseManagement">
         SELECT hbase_namespace AS hbaseNamespace,
                hbase_status AS hbaseStatus
-        FROM metadata.mgmt_hbase
+        FROM mgmt_hbase
         WHERE hbase_namespace = #{hbaseNamespace}
         FOR UPDATE
     </select>
 
     <insert id="insertHbaseManagement" parameterType="HbaseManagement">
-        INSERT INTO metadata.mgmt_hbase (hbase_namespace, hbase_status)
+        INSERT INTO mgmt_hbase (hbase_namespace, hbase_status)
         VALUES (#{hbaseNamespace}, #{hbaseStatus})
     </insert>
 
     <update id="updateHbaseStatus" parameterType="HbaseManagement">
-        UPDATE metadata.mgmt_hbase
+        UPDATE mgmt_hbase
         SET hbase_status = #{hbaseStatus}
         WHERE hbase_namespace = #{hbaseNamespace}
     </update>
 
     <delete id="deleteHbaseManagement" parameterType="string">
-        DELETE FROM metadata.mgmt_hbase
+        DELETE FROM mgmt_hbase
         WHERE hbase_namespace = #{hbaseNamespace}
     </delete>
 </mapper>

@@ -29,23 +29,23 @@ public class RepositoryInfoDetail {
     private final StorageStatus databaseStatus;
     private final String hbaseNamespace;
     private final StorageStatus hbaseStatus;
-    private final boolean isEnabled;
-    private final boolean isDeleted;
+    private final boolean enable;
+    private final long expireTime;
 
     private RepositoryInfoDetail(String organizationName,
                                  String databaseName,
                                  StorageStatus databaseStatus,
                                  String hbaseNamespace,
                                  StorageStatus hbaseStatus,
-                                 boolean isEnabled,
-                                 boolean isDeleted) {
+                                 boolean enable,
+                                 long expireTime) {
         this.organizationName = organizationName;
         this.databaseName = databaseName;
         this.databaseStatus = databaseStatus;
         this.hbaseNamespace = hbaseNamespace;
         this.hbaseStatus = hbaseStatus;
-        this.isEnabled = isEnabled;
-        this.isDeleted = isDeleted;
+        this.enable = enable;
+        this.expireTime = expireTime;
     }
 
     public static RepositoryInfoDetail fromRepositoryInfo(RepositoryInfo repositoryInfo) {
@@ -57,9 +57,9 @@ public class RepositoryInfoDetail {
         StorageStatus databaseStatus = repositoryInfo.getDatabaseStatus();
         String hbaseNamespace = repositoryInfo.getHbaseNamespace();
         StorageStatus hbaseStatus = repositoryInfo.getHbaseStatus();
-        boolean isEnabled = repositoryInfo.isEnabled();
-        boolean isDeleted = repositoryInfo.isDeleted();
-        return new RepositoryInfoDetail(organizationName, databaseName, databaseStatus, hbaseNamespace, hbaseStatus, isEnabled, isDeleted);
+        boolean enable = repositoryInfo.getEnable();
+        long expireTime = repositoryInfo.getExpireTimeLong();
+        return new RepositoryInfoDetail(organizationName, databaseName, databaseStatus, hbaseNamespace, hbaseStatus, enable, expireTime);
     }
 
     public String getOrganizationName() {
@@ -82,11 +82,11 @@ public class RepositoryInfoDetail {
         return hbaseStatus;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean isEnable() {
+        return enable;
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public long getExpireTime() {
+        return expireTime;
     }
 }

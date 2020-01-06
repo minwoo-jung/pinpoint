@@ -16,20 +16,27 @@
 
 package com.navercorp.pinpoint.manager.domain.mysql.metadata;
 
+import com.navercorp.pinpoint.common.util.DateUtils;
 import com.navercorp.pinpoint.manager.core.StorageStatus;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author HyunGil Jeong
  */
 public class RepositoryInfo {
 
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     private String organizationName;
     private String databaseName;
     private StorageStatus databaseStatus;
     private String hbaseNamespace;
     private StorageStatus hbaseStatus;
-    private boolean isEnabled;
-    private boolean isDeleted;
+    private boolean enable;
+    private long expireTime;
 
     public String getOrganizationName() {
         return organizationName;
@@ -71,19 +78,26 @@ public class RepositoryInfo {
         this.hbaseStatus = hbaseStatus;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean getEnable() {
+        return enable;
     }
 
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public String getExpireTime() {
+        return DateUtils.longToDateStr(expireTime, DATE_TIME_FORMAT);
     }
 
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    public void setExpireTime(String expireTime) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT);
+        Date parsedDate = format.parse(expireTime);
+
+        this.expireTime = parsedDate.getTime();
+    }
+
+    public long getExpireTimeLong() {
+        return expireTime;
     }
 }

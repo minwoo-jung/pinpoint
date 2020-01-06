@@ -39,7 +39,7 @@ public interface RepositoryService {
 
     void createRepository(String organizationName, UserInfo userInfo, String password);
 
-    void updateRepository(String organizationName, Boolean isEnabled, Boolean isDeleted);
+    void updateRepository(String organizationName, boolean enable, long expireTime);
 
     void deleteRepository(String organizationName);
 

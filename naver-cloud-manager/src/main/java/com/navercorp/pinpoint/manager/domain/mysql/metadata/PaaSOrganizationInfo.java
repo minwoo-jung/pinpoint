@@ -15,7 +15,12 @@
  */
 package com.navercorp.pinpoint.manager.domain.mysql.metadata;
 
+import com.navercorp.pinpoint.common.util.DateUtils;
 import org.springframework.util.StringUtils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author minwoo.jung
@@ -23,20 +28,22 @@ import org.springframework.util.StringUtils;
  */
 public class PaaSOrganizationInfo {
 
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static long MAX_EXPIRE_TIME = 4133948399000L;
     private String organization;
     private String databaseName;
     private String hbaseNamespace;
-    private Boolean isEnabled;
-    private Boolean isDeleted;
+    private boolean enable;
+    private long expireTime;
 
     public PaaSOrganizationInfo() {
     }
 
     public PaaSOrganizationInfo(String company, String databaseName, String hbaseNamespace) {
-        this(company, databaseName, hbaseNamespace, true, false);
+        this(company, databaseName, hbaseNamespace, true, MAX_EXPIRE_TIME);
     }
 
-    public PaaSOrganizationInfo(String company, String databaseName, String hbaseNamespace, Boolean isEnabled, Boolean isDeleted) {
+    public PaaSOrganizationInfo(String company, String databaseName, String hbaseNamespace, Boolean isEnabled, long expireTime) {
         if (StringUtils.isEmpty(company)) {
             throw new IllegalArgumentException("company must not be empty");
         }
@@ -49,8 +56,8 @@ public class PaaSOrganizationInfo {
         this.organization = company;
         this.databaseName = databaseName;
         this.hbaseNamespace = hbaseNamespace;
-        this.isEnabled = isEnabled;
-        this.isDeleted = isDeleted;
+        this.enable = isEnabled;
+        this.expireTime = expireTime;
     }
 
     public String getOrganization() {
@@ -77,19 +84,26 @@ public class PaaSOrganizationInfo {
         this.hbaseNamespace = hbaseNamespace;
     }
 
-    public Boolean isEnabled() {
-        return isEnabled;
+    public Boolean getEnable() {
+        return enable;
     }
 
-    public void setEnabled(Boolean enabled) {
-        isEnabled = enabled;
+    public void setEnable(Boolean enable) {
+        this.enable = enable;
     }
 
-    public Boolean isDeleted() {
-        return isDeleted;
+    public String getExpireTime() {
+        return DateUtils.longToDateStr(expireTime, DATE_TIME_FORMAT);
     }
 
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
+    public void setExpireTime(String expireTime) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat(DATE_TIME_FORMAT);
+        Date parsedDate = format.parse(expireTime);
+
+        this.expireTime = parsedDate.getTime();
+    }
+
+    public long getExpireTimeLong() {
+        return expireTime;
     }
 }

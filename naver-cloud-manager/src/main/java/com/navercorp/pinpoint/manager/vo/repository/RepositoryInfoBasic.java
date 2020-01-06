@@ -43,7 +43,7 @@ public class RepositoryInfoBasic {
         StorageStatus databaseStatus = repositoryInfo.getDatabaseStatus();
         StorageStatus hbaseStatus = repositoryInfo.getHbaseStatus();
         RepositoryStatus repositoryStatus = RepositoryStatus.fromStorageStatuses(databaseStatus, hbaseStatus);
-        boolean isEnabled = repositoryInfo.isEnabled();
+        boolean isEnabled = repositoryInfo.getEnable();
         return new RepositoryInfoBasic(organizationName, repositoryStatus, isEnabled);
     }
 

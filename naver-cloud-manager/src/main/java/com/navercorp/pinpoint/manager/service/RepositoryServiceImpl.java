@@ -148,15 +148,12 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     @Override
     @Transactional(transactionManager="metaDataTransactionManager", readOnly = false)
-    public void updateRepository(String organizationName, Boolean isEnabled, Boolean isDeleted) {
+    public void updateRepository(String organizationName, boolean enable, long expireTime) {
         PaaSOrganizationInfo organizationInfo = metadataService.getOrganizationInfo(organizationName);
         if (organizationInfo == null) {
             throw new UnknownRepositoryException(organizationName);
         }
-        PaaSOrganizationInfo organizationInfoForUpdate = new PaaSOrganizationInfo();
-        organizationInfoForUpdate.setOrganization(organizationName);
-        organizationInfoForUpdate.setEnabled(isEnabled);
-        organizationInfoForUpdate.setDeleted(isDeleted);
+        PaaSOrganizationInfo organizationInfoForUpdate = new PaaSOrganizationInfo(organizationInfo.getOrganization(), organizationInfo.getDatabaseName(), organizationInfo.getHbaseNamespace(), enable, expireTime);
         metadataService.updateOrganizationInfo(organizationInfoForUpdate);
     }
 
