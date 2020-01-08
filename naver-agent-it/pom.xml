@@ -24,7 +24,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-agent-it</artifactId>
+    <artifactId>naver-pinpoint-agent-it</artifactId>
     <name>naver-pinpoint-agent-it</name>
 
     <packaging>jar</packaging>

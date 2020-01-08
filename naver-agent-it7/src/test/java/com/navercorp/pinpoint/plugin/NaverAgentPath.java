@@ -27,5 +27,5 @@ public final class NaverAgentPath {
 
     public static final String PATH = "naver-agent/target/pinpoint-naver-agent-" + Version.VERSION;
 
-    public static final String TEST_IT = "com.navercorp.pinpoint:pinpoint-naver-agent-it:jar:tests:" + Version.VERSION;
+    public static final String TEST_IT = "com.navercorp.pinpoint:naver-pinpoint-agent-it:jar:tests:" + Version.VERSION;
 }
