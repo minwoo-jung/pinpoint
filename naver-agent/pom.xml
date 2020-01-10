@@ -145,6 +145,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <outputDirectory>${project.build.directory}</outputDirectory>
+                    <finalName>pinpoint-agent-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
