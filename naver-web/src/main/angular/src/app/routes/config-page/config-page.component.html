@@ -7,11 +7,11 @@
         <ul class="l-list l-depth-0">
             <ng-container *ngIf="canViewAdminMenu">
                 <li class="l-list-item">
-                    <a class="l-link l-link-with-arrow" [class.active]="isActive(linkAdmin)" (click)="toggleAdminMenu()" #linkAdmin>
-                        <span class="l-link-text">Administration</span><i class="fas fa-angle-right" [@rightDown]="getAdminCollapsedState()"></i>
+                    <a class="l-link l-link-with-arrow" [class.active]="isActive(linkAdmin)" (click)="toggleMenu('admin')" #linkAdmin>
+                        <span class="l-link-text">Administration</span><i class="fas fa-angle-right" [@rightDown]="getCollapsedState('admin')"></i>
                     </a>
                 </li>
-                <ul class="l-list l-depth-1" [@collapseSpread]="getAdminCollapsedState()">
+                <ul class="l-list l-depth-1" [@collapseSpread]="getCollapsedState('admin')">
                     <li class="l-list-item"><a (click)="onMenuClick('users')" routerLink="/config/users" routerLinkActive="active" class="l-link">Users</a></li>
                     <li class="l-list-item"><a (click)="onMenuClick('role')" routerLink="/config/role" routerLinkActive="active" class="l-link">Role</a></li>
                     <li class="l-list-item"><a (click)="onMenuClick('agentStatistic')" routerLink="/config/agentStatistic" routerLinkActive="active" class="l-link">Agent Statistic</a></li>
@@ -20,10 +20,10 @@
                 <li class="l-list-item l-separator"></li>
             </ng-container>
             <li class="l-list-item">
-                <a class="l-link l-link-with-arrow" [class.active]="isActive(linkSetting)" (click)="toggleSettingMenu()" #linkSetting>
-                    <span class="l-link-text">Setting</span><i class="fas fa-angle-right" [@rightDown]="getSettingCollapsedState()"></i>
+                <a class="l-link l-link-with-arrow" [class.active]="isActive(linkSetting)" (click)="toggleMenu('setting')" #linkSetting>
+                    <span class="l-link-text">Setting</span><i class="fas fa-angle-right" [@rightDown]="getCollapsedState('setting')"></i>
                 </a>
-                <ul class="l-list l-depth-1" [@collapseSpread]="getSettingCollapsedState()">
+                <ul class="l-list l-depth-1" [@collapseSpread]="getCollapsedState('setting')">
                     <li class="l-list-item"><a (click)="onMenuClick('general')" routerLink="/config/general" routerLinkActive="active" class="l-link">General</a></li>
                     <li class="l-list-item"><a (click)="onMenuClick('favorite')" routerLink="/config/favorite" routerLinkActive="active" class="l-link">Favorite List</a></li>
                     <li class="l-list-item"><a (click)="onMenuClick('userProfile')" routerLink="/config/userProfile" routerLinkActive="active" class="l-link">User Profile</a></li>

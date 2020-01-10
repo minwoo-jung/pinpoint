@@ -79,10 +79,7 @@ export class UrlPathId {
     static TRACE_ID = 'traceId';
     static FOCUS_TIMESTAMP = 'focusTimestamp';
     static SPAN_ID = 'spanId';
-    static AGENT_LIST = 'agentList';
     static PAGE = 'page';
-    static STAT = 'stat';
-    static AGENT = 'agent';
     static GENERAL = 'general';
     static FAVORITE = 'favorite';
     static USER_PROFILE = 'userProfile';
@@ -99,7 +96,6 @@ export class UrlPathId {
     constructor() {}
     static getPathIdList(): string[] {
         return [
-            UrlPathId.AGENT_LIST,
             UrlPathId.AGENT_ID,
             UrlPathId.APPLICATION,
             UrlPathId.END_TIME,
@@ -112,8 +108,6 @@ export class UrlPathId {
             UrlPathId.SPAN_ID,
             UrlPathId.TRACE_ID,
             UrlPathId.TRANSACTION_INFO,
-            UrlPathId.STAT,
-            UrlPathId.AGENT,
             UrlPathId.USERS,
             UrlPathId.ROLE,
             UrlPathId.AGENT_STATISTIC,
@@ -143,7 +137,6 @@ export class UrlPathIdFactory {
             case UrlPathId.TRACE_ID:
             case UrlPathId.FOCUS_TIMESTAMP:
             case UrlPathId.SPAN_ID:
-            case UrlPathId.AGENT_LIST:
             case UrlPathId.USERS:
             case UrlPathId.ROLE:
             case UrlPathId.AGENT_STATISTIC:

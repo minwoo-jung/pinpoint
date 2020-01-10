@@ -56,15 +56,6 @@ export class TranslateCustomHttpLoader implements TranslateLoader {
                         EDIT_GROUP_FOR_EVERYTHING: 'User Group 생성 및 수정 가능',
                         EDIT_GROUP_ONLY_GROUP_MEMBER: 'User Group의 Member 만 생성 및 수정 가능'
                     };
-                    data.CONFIGURATION.AGENT_MANAGEMENT = {
-                        REMOVE_APPLICATION: '선택한 Application을 삭제 합니다.',
-                        REMOVE_AGENT: '선택한 Agent를 삭제합니다.'
-                    };
-                    data.CONFIGURATION.AGENT_STATISTIC = {
-                        LOAD_GUIDE: 'Agent의 통계 정보를 가져오는 작업은 많은 시간을 소요합니다.',
-                        LOADING: '데이터 가져오기',
-                        RELOAD: '데이터 다시 가져오기'
-                    };
 
                     data.INSPECTOR.APPLICAITION_NAME_ISSUE.ISSUE_SOLUTIONS = ['문제 발생시 핀포인트 개발팀에 문의 해 주세요. 해결 해 드립니다.'];
                 } else {
@@ -114,15 +105,6 @@ export class TranslateCustomHttpLoader implements TranslateLoader {
                         EDIT_GROUP_TITLE: 'User Group Modification',
                         EDIT_GROUP_FOR_EVERYTHING: 'Edit group for everything',
                         EDIT_GROUP_ONLY_GROUP_MEMBER: 'Edit Group only group member'
-                    };
-                    data.CONFIGURATION.AGENT_MANAGEMENT = {
-                        REMOVE_APPLICATION: 'Remove selected application.',
-                        REMOVE_AGENT: 'Remove selected agent.'
-                    };
-                    data.CONFIGURATION.AGENT_STATISTIC = {
-                        LOAD_GUIDE: 'It takes a long time to load the agent\'s statistical data.',
-                        LOADING: 'Load data',
-                        RELOAD: 'Reload'
                     };
 
                     data.INSPECTOR.APPLICAITION_NAME_ISSUE.ISSUE_SOLUTIONS = ['Please contact the pinpoint development team in case of problems. We will solve it.'];
