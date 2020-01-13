@@ -25,5 +25,5 @@ public final class NaverAgentPath {
     private NaverAgentPath() {
     }
 
-    public static final String PATH = "../naver-agent/target/pinpoint-naver-agent-" + Version.VERSION;
+    public static final String PATH = "../naver-agent/target/pinpoint-agent-" + Version.VERSION;
 }
