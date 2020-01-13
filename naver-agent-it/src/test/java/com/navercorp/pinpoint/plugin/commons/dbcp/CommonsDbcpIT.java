@@ -42,7 +42,7 @@ public class CommonsDbcpIT {
     
     @Test
     public void test() throws Exception {
-        Properties db = PropertyUtils.loadPropertyFromClassPath("database.properties");
+        Properties db = PropertyUtils.loadPropertyFromClassPath("database/mysql.properties");
         
         String url = db.getProperty("mysql.url");
         String username = db.getProperty("mysql.user");
