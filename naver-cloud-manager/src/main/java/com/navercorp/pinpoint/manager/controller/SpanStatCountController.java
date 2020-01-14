@@ -44,7 +44,6 @@ public class SpanStatCountController {
     @GetMapping(value = "/organization")
     public List<SpanCount> getOrganizationSpanStat(
         @RequestParam(value = "organizationName") String organizationName,
-        @RequestParam(value = "timeUnit") String timeUnit,
         @RequestParam(value = "from") long from,
         @RequestParam(value = "to") long to) {
         final Range range = new Range(from, to);
@@ -56,7 +55,6 @@ public class SpanStatCountController {
     public List<SpanCount> getApplicationStat(
         @RequestParam(value = "organizationName") String organizationName,
         @RequestParam(value = "applicationId") String applicationId,
-        @RequestParam(value = "timeUnit") String timeUnit,
         @RequestParam(value = "from") long from,
         @RequestParam(value = "to") long to) {
         final Range range = new Range(from, to);
@@ -69,7 +67,6 @@ public class SpanStatCountController {
         @RequestParam(value = "organizationName") String organizationName,
         @RequestParam(value = "applicationId") String applicationId,
         @RequestParam(value = "agentId") String agentId,
-        @RequestParam(value = "timeUnit") String timeUnit,
         @RequestParam(value = "from") long from,
         @RequestParam(value = "to") long to) {
         final Range range = new Range(from, to);
