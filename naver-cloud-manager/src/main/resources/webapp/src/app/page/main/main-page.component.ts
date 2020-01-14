@@ -98,14 +98,11 @@ export class MainPageComponent implements OnInit {
             ...baseParams,
             applicationId: this.selectedApp,
             agentId: this.selectedAgent,
-            timeUnit: 'min'
         }) : this.selectedApp ? this.appDataService.getSpanCountByOrgAndApp({
             ...baseParams,
             applicationId: this.selectedApp,
-            timeUnit: 'hour'
         }) : this.appDataService.getSpanCountByOrg({
             ...baseParams,
-            timeUnit: 'day'
         });
     }
 
