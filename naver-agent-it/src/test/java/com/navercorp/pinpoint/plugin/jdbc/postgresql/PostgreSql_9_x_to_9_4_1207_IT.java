@@ -16,13 +16,13 @@
 
 package com.navercorp.pinpoint.plugin.jdbc.postgresql;
 
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,10 +38,14 @@ import org.junit.runner.RunWith;
 public class PostgreSql_9_x_to_9_4_1207_IT {
 
     private static PostgreSqlItHelper HELPER;
+    
+    private static final PostgreSqlJDBCDriverClass jdbcDriverClass = new PostgreSql_9_x_to_9_4_1207_JDBCDriverClass();
+
+    private final PostgreSqlJDBCApi jdbcMethod = new PostgreSqlJDBCApi(jdbcDriverClass);
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        Class.forName("org.postgresql.Driver");
+        jdbcDriverClass.getDriver();
 
         DriverProperties driverProperties = new DriverProperties("database/postgre.properties", "postgresql");
         HELPER = new PostgreSqlItHelper(driverProperties);
@@ -54,11 +58,6 @@ public class PostgreSql_9_x_to_9_4_1207_IT {
 
     @Test
     public void testStatements() throws Exception {
-        final Class<?> driverClazz = Class.forName("org.postgresql.Driver");
-        final Class<?> connectionClazz = Class.forName("org.postgresql.jdbc2.AbstractJdbc2Connection");
-        final Class<?> abstractJdbc2StatementClazz = Class.forName("org.postgresql.jdbc2.AbstractJdbc2Statement");
-        final Class<?> abstractJdbc3StatementClazz = Class.forName("org.postgresql.jdbc3.AbstractJdbc3Statement");;
-
-        HELPER.testStatements(driverClazz, connectionClazz, abstractJdbc2StatementClazz, abstractJdbc2StatementClazz, abstractJdbc3StatementClazz);
+        HELPER.testStatements(jdbcMethod);
     }
 }

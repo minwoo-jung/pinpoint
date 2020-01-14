@@ -16,9 +16,9 @@
 
 package com.navercorp.pinpoint.plugin.jdbc.cubrid;
 
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
 import cubrid.jdbc.driver.CUBRIDDriver;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

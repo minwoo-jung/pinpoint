@@ -19,14 +19,11 @@ import com.navercorp.pinpoint.plugin.NaverAgentPath;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import com.navercorp.pinpoint.test.plugin.jdbc.DefaultJDBCApi;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 
 /**
  * @author Jongho Moon
@@ -38,51 +35,25 @@ import java.sql.Statement;
 @Dependency({"mysql:mysql-connector-java:[5.0.8],[5.1.36,5.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class MySql_5_X_IT extends MySql_IT_Base {
 
+    private final JDBCApi jdbcApi = new DefaultJDBCApi(new MySql5JDBCDriverClass());
+
+    @Before
+    public void setUp() throws Exception {
+        jdbcApi.getJDBCDriverClass().getDriver();
+    }
+
     @Test
     public void testStatements() throws Exception {
-        Class<Driver> driverClass = (Class<Driver>) Class.forName("com.mysql.jdbc.NonRegisteringDriver");
-        Class<Connection> connectionClass = null;
-        try {
-            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.ConnectionImpl");
-        } catch (ClassNotFoundException e) {
-            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.Connection");
-        }
-        Class<PreparedStatement> preparedStatementClass = (Class<PreparedStatement>) Class.forName("com.mysql.jdbc.PreparedStatement");
-        Class<Statement> statementClass = null;
-        try {
-            statementClass = (Class<Statement>) Class.forName("com.mysql.jdbc.StatementImpl");
-        } catch (ClassNotFoundException e) {
-            statementClass = (Class<Statement>) Class.forName("com.mysql.jdbc.Statement");
-        }
-
-        HELPER.testStatements(driverClass, connectionClass, preparedStatementClass, statementClass);
+        HELPER.testStatements(jdbcApi);
     }
 
     @Test
     public void testStoredProcedure_with_IN_OUT_parameters() throws Exception {
-        Class<Driver> driverClass = (Class<Driver>) Class.forName("com.mysql.jdbc.NonRegisteringDriver");
-        Class<Connection> connectionClass = null;
-        try {
-            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.ConnectionImpl");
-        } catch (ClassNotFoundException e) {
-            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.Connection");
-        }
-        Class<CallableStatement> callableStatementClass = (Class<CallableStatement>) Class.forName("com.mysql.jdbc.CallableStatement");
-
-        HELPER.testStoredProcedure_with_IN_OUT_parameters(driverClass, connectionClass, callableStatementClass);
+        HELPER.testStoredProcedure_with_IN_OUT_parameters(jdbcApi);
     }
 
     @Test
     public void testStoredProcedure_with_INOUT_parameters() throws Exception {
-        Class<Driver> driverClass = (Class<Driver>) Class.forName("com.mysql.jdbc.NonRegisteringDriver");
-        Class<Connection> connectionClass = null;
-        try {
-            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.ConnectionImpl");
-        } catch (ClassNotFoundException e) {
-            connectionClass = (Class<Connection>) Class.forName("com.mysql.jdbc.Connection");
-        }
-        Class<CallableStatement> callableStatementClass = (Class<CallableStatement>) Class.forName("com.mysql.jdbc.CallableStatement");
-
-        HELPER.testStoredProcedure_with_INOUT_parameters(driverClass, connectionClass, callableStatementClass);
+        HELPER.testStoredProcedure_with_INOUT_parameters(jdbcApi);
     }
 }

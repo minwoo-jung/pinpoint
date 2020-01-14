@@ -18,14 +18,14 @@ package com.navercorp.pinpoint.plugin.jdbc.mssql;
 
 import com.navercorp.pinpoint.bootstrap.context.DatabaseInfo;
 import com.navercorp.pinpoint.bootstrap.plugin.jdbc.DatabaseInfoAccessor;
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.profiler.context.SpanEvent;
 import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
+import com.navercorp.pinpoint.test.junit4.PinpointConfig;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ import java.util.Properties;
 /**
  * @author emeroad
  */
-@Ignore
+@PinpointConfig("pinpoint-mssql.config")
 public class MSSSqlConnectionIT extends BasePinpointTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

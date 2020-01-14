@@ -21,8 +21,8 @@ import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
-import com.navercorp.pinpoint.plugin.jdbc.cubrid.CubridJdbcUrlParser;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Properties;
 
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
@@ -70,12 +69,7 @@ public class PostgreSqlItHelper {
         databasePassword = driverProperties.getPassword();
     }
 
-    void testStatements(
-            Class<?> driverClazz,
-            Class<?> connectionClazz,
-            Class<?> insertStatementClazz,
-            Class<?> selectStatementClazz,
-            Class<?> deleteStatementClazz) throws Exception {
+    void testStatements(PostgreSqlJDBCApi jdbcMethod) throws Exception {
         final String name = "testUser";
         final int age = 5;
 
@@ -96,7 +90,9 @@ public class PostgreSqlItHelper {
         ResultSet rs = selectStatement.executeQuery(selectQuery);
 
         while (rs.next()) {
-            logger.debug("name : " + rs.getString("name") + ", age : " + rs.getInt("age"));
+              final String nameRs = rs.getString("name");
+            final int ageRs = rs.getInt("age");
+            logger.debug("name : {}, age: {}", nameRs, ageRs);
         }
 
         Statement deleteStatement = conn.createStatement();
@@ -109,31 +105,34 @@ public class PostgreSqlItHelper {
         verifier.printCache();
 
         // Driver#connect(String, Properties)
-        Method connect = driverClazz.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = jdbcMethod.getDriver().getConnect();
         verifier.verifyTrace(event(POSTGRESQL, connect, null, databaseAddress, databaseName, cachedArgs(jdbcUrl)));
 
         // Connection#setAutoCommit(boolean)
-        Method setAutoCommit = connectionClazz.getDeclaredMethod("setAutoCommit", boolean.class);
+        final JDBCApi.ConnectionClass connectionClazz = jdbcMethod.getConnection();
+        Method setAutoCommit = connectionClazz.getSetAutoCommit();
         verifier.verifyTrace(event(POSTGRESQL, setAutoCommit, null, databaseAddress, databaseName, args(false)));
 
         // Connection#prepareStatement(String) - prepare insert
-        Method prepareStatement = connectionClazz.getDeclaredMethod("prepareStatement", String.class);
+        Method prepareStatement = connectionClazz.getPrepareStatement();
         verifier.verifyTrace(event(POSTGRESQL, prepareStatement, null, databaseAddress, databaseName, sql(insertQuery, null)));
 
         // PreparedStatement#execute() - execute insert
-        Method execute = insertStatementClazz.getDeclaredMethod("execute");
+        final JDBCApi.PreparedStatementClass prepareStatementClazz = jdbcMethod.getPreparedStatement();
+        Method execute = prepareStatementClazz.getExecute();
         verifier.verifyTrace(event(POSTGRESQL_EXECUTE_QUERY, execute, null, databaseAddress, databaseName, Expectations.sql(insertQuery, null, name + ", " + age)));
 
         // Statement#executeQuery(String) - execute select
-        Method executeQuery = selectStatementClazz.getDeclaredMethod("executeQuery", String.class);
+        final PostgreSqlJDBCApi.PostgreSqlStatementClass selectStatementClazz = jdbcMethod.getStatement();
+        Method executeQuery = selectStatementClazz.getExecuteQuery();
         verifier.verifyTrace(event(POSTGRESQL_EXECUTE_QUERY, executeQuery, null, databaseAddress, databaseName, Expectations.sql(selectQuery, null)));
 
         // Statement#executeUpdate(String, int) - execute delete
-        Method executeUpdate = deleteStatementClazz.getDeclaredMethod("executeUpdate", String.class, int.class);
+        Method executeUpdate = selectStatementClazz.getStatementForExecuteUpdate();
         verifier.verifyTrace(event(POSTGRESQL_EXECUTE_QUERY, executeUpdate, null, databaseAddress, databaseName, Expectations.sql(deleteQuery, null)));
 
         // Connection#commit()
-        Method commit = connectionClazz.getDeclaredMethod("commit");
+        Method commit = connectionClazz.getCommit();
         verifier.verifyTrace(event(POSTGRESQL, commit, null, databaseAddress, databaseName));
     }
 }

@@ -20,17 +20,18 @@ import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.Repository;
+import com.navercorp.pinpoint.test.plugin.jdbc.DefaultJDBCApi;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +47,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Properties;
 
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
@@ -73,10 +73,12 @@ public class OracleIT {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private static final JDBCApi JDBC_API = new DefaultJDBCApi(new OracleJDBCDriverClass());
+
     @BeforeClass
     public static void setup() throws Exception {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        
+        JDBC_API.getJDBCDriverClass().getDriver();
+
         DriverProperties driverProperties = new DriverProperties("database/oracle.properties", "oracle");
         
         JDBC_URL = driverProperties.getUrl();
@@ -138,8 +140,11 @@ public class OracleIT {
         ResultSet rs = select.executeQuery(selectQuery);
         
         while (rs.next()) {
-            logger.debug("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
-        } 
+            final int id = rs.getInt("id");
+            final String name = rs.getString("name");
+            final int age = rs.getInt("age");
+            logger.debug("id: {}, name: {}, age: {}", id, name, age);
+        }
         
         Statement delete = conn.createStatement();
         delete.executeUpdate(deleteQuery);
@@ -150,29 +155,28 @@ public class OracleIT {
         
         verifier.printCache();
         
-        Class<?> driverClass = Class.forName("oracle.jdbc.driver.OracleDriver");
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = JDBC_API.getDriver().getConnect();
         verifier.verifyTrace(event(ORACLE, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
         
-        Class<?> connectionClass = Class.forName("oracle.jdbc.driver.PhysicalConnection");
+        final JDBCApi.ConnectionClass connectionClass = JDBC_API.getConnection();
         
-        Method setAutoCommit = connectionClass.getDeclaredMethod("setAutoCommit", boolean.class);
+        Method setAutoCommit = connectionClass.getSetAutoCommit();
         verifier.verifyTrace(event(ORACLE, setAutoCommit, null, DB_ADDRESS, DB_NAME, args(false)));
         
 
-        Method prepareStatement = connectionClass.getDeclaredMethod("prepareStatement", String.class);
+        Method prepareStatement = connectionClass.getPrepareStatement();
         verifier.verifyTrace(event(ORACLE, prepareStatement, null, DB_ADDRESS, DB_NAME, sql(insertQuery, null)));
         
-        Method execute = insert.getClass().getDeclaredMethod("execute");
+        Method execute = JDBC_API.getPreparedStatement().getExecute();
         verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, Expectations.sql(insertQuery, null, "maru, 5")));
         
-        Method executeQuery = select.getClass().getDeclaredMethod("executeQuery", String.class);
+        Method executeQuery = JDBC_API.getStatement().getExecuteQuery();
         verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, Expectations.sql(selectQuery, null)));
         
-        Method executeUpdate = select.getClass().getDeclaredMethod("executeUpdate", String.class);
+        Method executeUpdate = JDBC_API.getStatement().getExecuteUpdate();
         verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, executeUpdate, null, DB_ADDRESS, DB_NAME, Expectations.sql(deleteQuery, null)));
         
-        Method commit = connectionClass.getDeclaredMethod("commit");
+        Method commit = connectionClass.getCommit();
         verifier.verifyTrace(event(ORACLE, commit, null, DB_ADDRESS, DB_NAME));
     }
 
@@ -205,23 +209,22 @@ public class OracleIT {
         verifier.verifyTraceCount(4);
 
         // OracleDriver#connect(String, Properties)
-        Class<?> driverClass = Class.forName("oracle.jdbc.driver.OracleDriver");
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = JDBC_API.getDriver().getConnect();
         verifier.verifyTrace(event(ORACLE, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
 
         // PhysicalConnection#prepareCall(String)
-        Class<?> connectionClass = Class.forName("oracle.jdbc.driver.PhysicalConnection");
-        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        final JDBCApi.ConnectionClass connectionClass = JDBC_API.getConnection();
+        Method prepareCall = connectionClass.getPrepareCall();
         verifier.verifyTrace(event(ORACLE, prepareCall, null, DB_ADDRESS, DB_NAME, Expectations.sql(storedProcedureQuery, null)));
 
         // OracleCallableStatementWrapper#registerOutParameter(int, int)
-        Class<?> oracleCallableStatementClass = Class.forName("oracle.jdbc.driver.OracleCallableStatementWrapper");
-        Method registerOutParameter = oracleCallableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        final JDBCApi.CallableStatementClass callableStatementClass = JDBC_API.getCallableStatement();
+        Method registerOutParameter = callableStatementClass.getRegisterOutParameter();
         verifier.verifyTrace(event(ORACLE, registerOutParameter, null, DB_ADDRESS, DB_NAME, Expectations.args(3, Types.NCHAR)));
 
         // OraclePreparedStatementWrapper#execute
-        Class<?> oraclePreparedStatementWrapper = Class.forName("oracle.jdbc.driver.OraclePreparedStatementWrapper");
-        Method executeQuery = oraclePreparedStatementWrapper.getDeclaredMethod("execute");
+        final JDBCApi.PreparedStatementClass preparedStatementWrapper = JDBC_API.getPreparedStatement();
+        Method executeQuery = preparedStatementWrapper.getExecute();
         verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
 
@@ -261,18 +264,17 @@ public class OracleIT {
         verifier.verifyTraceCount(6);
 
         // OracleDriver#connect(String, Properties)
-        Class<?> driverClass = Class.forName("oracle.jdbc.driver.OracleDriver");
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = JDBC_API.getDriver().getConnect();
         verifier.verifyTrace(event(ORACLE, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
 
         // PhysicalConnection#prepareCall(String)
-        Class<?> connectionClass = Class.forName("oracle.jdbc.driver.PhysicalConnection");
-        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        final JDBCApi.ConnectionClass connectionClass = JDBC_API.getConnection();
+        Method prepareCall = connectionClass.getPrepareCall();
         verifier.verifyTrace(event(ORACLE, prepareCall, null, DB_ADDRESS, DB_NAME, Expectations.sql(storedProcedureQuery, null)));
 
         // OracleCallableStatementWrapper#registerOutParameter(int, int)
-        Class<?> oracleCallableStatementClass = Class.forName("oracle.jdbc.driver.OracleCallableStatementWrapper");
-        Method registerOutParameter = oracleCallableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        final JDBCApi.CallableStatementClass callableStatementClass = JDBC_API.getCallableStatement();
+        Method registerOutParameter = callableStatementClass.getRegisterOutParameter();
         // param 1
         verifier.verifyTrace(event(ORACLE, registerOutParameter, null, DB_ADDRESS, DB_NAME, Expectations.args(1, Types.INTEGER)));
         // param 2
@@ -281,8 +283,8 @@ public class OracleIT {
         verifier.verifyTrace(event(ORACLE, registerOutParameter, null, DB_ADDRESS, DB_NAME, Expectations.args(3, Types.INTEGER)));
 
         // OraclePreparedStatementWrapper#execute
-        Class<?> oraclePreparedStatementWrapper = Class.forName("oracle.jdbc.driver.OraclePreparedStatementWrapper");
-        Method executeQuery = oraclePreparedStatementWrapper.getDeclaredMethod("execute");
+        final JDBCApi.PreparedStatementClass preparedStatement = JDBC_API.getPreparedStatement();
+        Method executeQuery = preparedStatement.getExecute();
         verifier.verifyTrace(event(ORACLE_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
 

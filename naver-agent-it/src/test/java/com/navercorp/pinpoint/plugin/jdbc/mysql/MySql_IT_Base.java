@@ -16,8 +16,8 @@
 
 package com.navercorp.pinpoint.plugin.jdbc.mysql;
 
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 

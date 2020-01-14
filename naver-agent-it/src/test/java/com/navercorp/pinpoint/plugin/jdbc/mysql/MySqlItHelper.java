@@ -21,8 +21,8 @@ import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
-import com.navercorp.pinpoint.plugin.jdbc.cubrid.CubridJdbcUrlParser;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Properties;
 
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
@@ -57,8 +56,8 @@ public class MySqlItHelper {
     private final String jdbcUrl;
     private final String databaseId;
     private final String databasePassword;
-    private final String databaseAddress;
-    private final String databaseName;
+    private String databaseAddress;
+    private String databaseName;
 
     MySqlItHelper(DriverProperties driverProperties) {
         if (driverProperties == null) {
@@ -66,17 +65,37 @@ public class MySqlItHelper {
         }
         jdbcUrl = driverProperties.getUrl();
 
-        JdbcUrlParserV2 jdbcUrlParser = new MySqlJdbcUrlParser();
-        DatabaseInfo databaseInfo = jdbcUrlParser.parse(jdbcUrl);
-
-        databaseAddress = databaseInfo.getHost().get(0);
-        databaseName = databaseInfo.getDatabaseId();
+        init2();
 
         databaseId = driverProperties.getUser();
         databasePassword = driverProperties.getPassword();
     }
 
-    void testStatements(Class<Driver> driverClass, Class<Connection> connectionClass, Class<PreparedStatement> preparedStatementClass, Class<Statement> statementClass) throws Exception {
+    private void init1() {
+        JdbcUrlParserV2 jdbcUrlParser = new MySqlJdbcUrlParser();
+        DatabaseInfo databaseInfo = jdbcUrlParser.parse(jdbcUrl);
+
+        databaseAddress = databaseInfo.getHost().get(0);
+        databaseName = databaseInfo.getDatabaseId();
+    }
+
+    private void init2() {
+        String[] tokens = jdbcUrl.split(":");
+
+        String ip = tokens[2].substring(2);
+
+        int div = tokens[3].indexOf('/');
+        int question = tokens[3].indexOf('?');
+
+        String port = tokens[3].substring(0, div);
+
+        databaseAddress = ip + ":" + port;
+        databaseName = question == -1 ? tokens[3].substring(div + 1) : tokens[3].substring(div + 1, question);
+    }
+
+    void testStatements(JDBCApi jdbcApi) throws Exception {
+
+        Class<Driver> driverClass = jdbcApi.getJDBCDriverClass().getDriver();
         final Connection conn = connect(driverClass);
 
         conn.setAutoCommit(false);
@@ -94,7 +113,10 @@ public class MySqlItHelper {
         ResultSet rs = select.executeQuery(selectQuery);
 
         while (rs.next()) {
-            logger.debug("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
+            final int id = rs.getInt("id");
+            final String name = rs.getString("name");
+            final int age = rs.getInt("age");
+            logger.debug("id: {}, name: {}, age: {}", id, name, age);
         }
 
         Statement delete = conn.createStatement();
@@ -107,25 +129,28 @@ public class MySqlItHelper {
 
         verifier.printCache();
 
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = jdbcApi.getDriver().getConnect();
         verifier.verifyTrace(event(MYSQL, connect, null, databaseAddress, databaseName, cachedArgs(jdbcUrl)));
 
-        Method setAutoCommit = connectionClass.getDeclaredMethod("setAutoCommit", boolean.class);
+        final JDBCApi.ConnectionClass connectionClass = jdbcApi.getConnection();
+        Method setAutoCommit = connectionClass.getSetAutoCommit();
         verifier.verifyTrace(event(MYSQL, setAutoCommit, null, databaseAddress, databaseName, args(false)));
 
-        Method prepareStatement = connectionClass.getDeclaredMethod("prepareStatement", String.class);
+        Method prepareStatement = connectionClass.getPrepareStatement();
         verifier.verifyTrace(event(MYSQL, prepareStatement, null, databaseAddress, databaseName, sql(insertQuery, null)));
 
-        Method execute = preparedStatementClass.getDeclaredMethod("execute");
+        final JDBCApi.PreparedStatementClass preparedStatementClass = jdbcApi.getPreparedStatement();
+        Method execute = preparedStatementClass.getExecute();
         verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, execute, null, databaseAddress, databaseName, Expectations.sql(insertQuery, null, "maru, 5")));
 
-        Method executeQuery = statementClass.getDeclaredMethod("executeQuery", String.class);
+        final JDBCApi.StatementClass statementClass = jdbcApi.getStatement();
+        Method executeQuery = statementClass.getExecuteQuery();
         verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, executeQuery, null, databaseAddress, databaseName, Expectations.sql(selectQuery, null)));
 
-        Method executeUpdate = statementClass.getDeclaredMethod("executeUpdate", String.class);
+        Method executeUpdate = statementClass.getExecuteUpdate();
         verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, executeUpdate, null, databaseAddress, databaseName, Expectations.sql(deleteQuery, null)));
 
-        Method commit = connectionClass.getDeclaredMethod("commit");
+        Method commit = connectionClass.getCommit();
         verifier.verifyTrace(event(MYSQL, commit, null, databaseAddress, databaseName));
     }
 
@@ -137,11 +162,12 @@ public class MySqlItHelper {
         BEGIN
             SET c = CONCAT(a, b);
         END                                             */
-    void testStoredProcedure_with_IN_OUT_parameters(Class<Driver> driverClass, Class<Connection> connectionClass, Class<CallableStatement> callableStatementClass) throws Exception {
+    void testStoredProcedure_with_IN_OUT_parameters(JDBCApi jdbcApi) throws Exception {
         final String param1 = "a";
         final String param2 = "b";
         final String storedProcedureQuery = "{ call concatCharacters(?, ?, ?) }";
 
+        final Class<Driver> driverClass = jdbcApi.getJDBCDriverClass().getDriver();
         final Connection conn = connect(driverClass);
 
         CallableStatement cs = conn.prepareCall(storedProcedureQuery);
@@ -159,19 +185,21 @@ public class MySqlItHelper {
         verifier.verifyTraceCount(4);
 
         // NonRegisteringDriver#connect(String, Properties)
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = jdbcApi.getDriver().getConnect();
         verifier.verifyTrace(event(MYSQL, connect, null, databaseAddress, databaseName, cachedArgs(jdbcUrl)));
 
         // Connection#prepareCall(String)
-        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        final JDBCApi.ConnectionClass connectionClass = jdbcApi.getConnection();
+        Method prepareCall = connectionClass.getPrepareCall();
         verifier.verifyTrace(event(MYSQL, prepareCall, null, databaseAddress, databaseName, sql(storedProcedureQuery, null)));
 
         // CallableStatement#registerOutParameter(int, int)
-        Method registerOutParameter = callableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        final JDBCApi.CallableStatementClass callableStatementClass = jdbcApi.getCallableStatement();
+        Method registerOutParameter = callableStatementClass.getRegisterOutParameter();
         verifier.verifyTrace(event(MYSQL, registerOutParameter, null, databaseAddress, databaseName, args(3, Types.VARCHAR)));
 
         // CallableStatement#execute
-        Method execute = callableStatementClass.getDeclaredMethod("execute");
+        Method execute = callableStatementClass.getExecute();
         verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, execute, null, databaseAddress, databaseName, Expectations.sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
 
@@ -185,11 +213,12 @@ public class MySqlItHelper {
             SELECT temp + a;
         END
      */
-    void testStoredProcedure_with_INOUT_parameters(Class<Driver> driverClass, Class<Connection> connectionClass, Class<CallableStatement> callableStatementClass) throws Exception {
+    void testStoredProcedure_with_INOUT_parameters(JDBCApi jdbcApi) throws Exception {
         final int param1 = 1;
         final int param2 = 2;
         final String storedProcedureQuery = "{ call swapAndGetSum(?, ?) }";
 
+        final Class<Driver> driverClass = jdbcApi.getJDBCDriverClass().getDriver();
         final Connection conn = connect(driverClass);
 
         CallableStatement cs = conn.prepareCall(storedProcedureQuery);
@@ -211,22 +240,24 @@ public class MySqlItHelper {
         verifier.verifyTraceCount(5);
 
         // NonRegisteringDriver#connect(String, Properties)
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = jdbcApi.getDriver().getConnect();
         verifier.verifyTrace(event(MYSQL, connect, null, databaseAddress, databaseName, cachedArgs(jdbcUrl)));
 
         // NonRegisteringDriver#connect(String, Properties)
-        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        final JDBCApi.ConnectionClass connectionClass = jdbcApi.getConnection();
+        Method prepareCall = connectionClass.getPrepareCall();
         verifier.verifyTrace(event(MYSQL, prepareCall, null, databaseAddress, databaseName, sql(storedProcedureQuery, null)));
 
         // CallableStatement#registerOutParameter(int, int)
-        Method registerOutParameter = callableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        final JDBCApi.CallableStatementClass callableStatementClass = jdbcApi.getCallableStatement();
+        Method registerOutParameter = callableStatementClass.getRegisterOutParameter();
         // param 1
         verifier.verifyTrace(event(MYSQL, registerOutParameter, null, databaseAddress, databaseName, args(1, Types.INTEGER)));
         // param 2
         verifier.verifyTrace(event(MYSQL, registerOutParameter, null, databaseAddress, databaseName, args(2, Types.INTEGER)));
 
         // CallableStatement#execute
-        Method execute = callableStatementClass.getDeclaredMethod("executeQuery");
+        Method execute = callableStatementClass.getExecuteQuery();
         verifier.verifyTrace(event(MYSQL_EXECUTE_QUERY, execute, null, databaseAddress, databaseName, Expectations.sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
 }

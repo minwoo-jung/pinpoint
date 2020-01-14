@@ -20,13 +20,15 @@ import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.Repository;
+import com.navercorp.pinpoint.test.plugin.jdbc.DefaultJDBCApi;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +42,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Properties;
 
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
@@ -60,8 +61,8 @@ public class CubridIT {
     private static final String CUBRID = "CUBRID";
     private static final String CUBRID_EXECUTE_QUERY = "CUBRID_EXECUTE_QUERY";
 
-
     private static DriverProperties driverProperties;
+    private static JDBCApi jdbcApi = new DefaultJDBCApi(new CubridJDBCDriverClass());
 
     private static String DB_ID;
     private static String DB_PASSWORD;
@@ -73,7 +74,8 @@ public class CubridIT {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Class.forName("cubrid.jdbc.driver.CUBRIDDriver");
+        // load jdbc driver
+        jdbcApi.getJDBCDriverClass().getDriver();
 
         driverProperties = new DriverProperties("database/cubrid.properties", "cubrid");
 
@@ -112,7 +114,10 @@ public class CubridIT {
         ResultSet rs = select.executeQuery(selectQuery);
         
         while (rs.next()) {
-            logger.debug("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
+            final int id = rs.getInt("id");
+            final String name = rs.getString("name");
+            final int age = rs.getInt("age");
+            logger.debug("id: {}, name: {}, age: {}", id, name, age);
         }
         
         Statement delete = conn.createStatement();
@@ -124,30 +129,27 @@ public class CubridIT {
         
         verifier.printCache();
         
-        Class<?> driverClass = Class.forName("cubrid.jdbc.driver.CUBRIDDriver");
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = jdbcApi.getDriver().getConnect();
         verifier.verifyTrace(event(CUBRID, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
-        
-        Class<?> connectionClass = Class.forName("cubrid.jdbc.driver.CUBRIDConnection");
-        Method setAutoCommit = connectionClass.getDeclaredMethod("setAutoCommit", boolean.class);
+
+        JDBCApi.ConnectionClass connectionClass = jdbcApi.getConnection();
+        Method setAutoCommit = connectionClass.getSetAutoCommit();
         verifier.verifyTrace(event(CUBRID, setAutoCommit, null, DB_ADDRESS, DB_NAME, args(false)));
         
-
-        Method prepareStatement = connectionClass.getDeclaredMethod("prepareStatement", String.class);
+        Method prepareStatement = connectionClass.getPrepareStatement();
         verifier.verifyTrace(event(CUBRID, prepareStatement, null, DB_ADDRESS, DB_NAME, sql(insertQuery, null)));
         
-        Class<?> preparedStatement = Class.forName("cubrid.jdbc.driver.CUBRIDPreparedStatement");
-        Method execute = preparedStatement.getDeclaredMethod("execute");
+        Method execute = jdbcApi.getPreparedStatement().getExecute();
         verifier.verifyTrace(event(CUBRID_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, Expectations.sql(insertQuery, null, "maru, 5")));
-        
-        Class<?> statement = Class.forName("cubrid.jdbc.driver.CUBRIDStatement");
-        Method executeQuery = statement.getDeclaredMethod("executeQuery", String.class);
+
+        JDBCApi.StatementClass statementClass = jdbcApi.getStatement();
+        Method executeQuery = statementClass.getExecuteQuery();
         verifier.verifyTrace(event(CUBRID_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, Expectations.sql(selectQuery, null)));
         
-        Method executeUpdate = statement.getDeclaredMethod("executeUpdate", String.class);
+        Method executeUpdate = statementClass.getExecuteUpdate();
         verifier.verifyTrace(event(CUBRID_EXECUTE_QUERY, executeUpdate, null, DB_ADDRESS, DB_NAME, Expectations.sql(deleteQuery, null)));
         
-        Method commit = connectionClass.getDeclaredMethod("commit");
+        Method commit = connectionClass.getCommit();
         verifier.verifyTrace(event(CUBRID, commit, null, DB_ADDRESS, DB_NAME));
     }
 }

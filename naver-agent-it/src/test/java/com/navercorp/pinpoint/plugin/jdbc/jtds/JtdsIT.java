@@ -20,13 +20,15 @@ import com.navercorp.pinpoint.bootstrap.plugin.jdbc.JdbcUrlParserV2;
 import com.navercorp.pinpoint.bootstrap.plugin.test.Expectations;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifier;
 import com.navercorp.pinpoint.bootstrap.plugin.test.PluginTestVerifierHolder;
-import com.navercorp.pinpoint.plugin.DriverManagerUtils;
 import com.navercorp.pinpoint.plugin.NaverAgentPath;
-import com.navercorp.pinpoint.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.Repository;
+import com.navercorp.pinpoint.test.plugin.jdbc.DefaultJDBCApi;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -43,7 +45,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Properties;
 
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.args;
 import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.cachedArgs;
@@ -70,10 +71,12 @@ public class JtdsIT {
     private static String JDBC_URL;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static JDBCApi jdbcApi = new DefaultJDBCApi(new JtdsJDBCDriverClass());
 
     @BeforeClass
     public static void setup() throws Exception {
-        Class.forName("net.sourceforge.jtds.jdbc.Driver");
+        // load jdbc driver
+        jdbcApi.getJDBCDriverClass().getDriver();
 
         DriverProperties driverProperties = new DriverProperties("database/jtds.properties", "mssqlserver-jtds");
 
@@ -94,14 +97,7 @@ public class JtdsIT {
         DriverManagerUtils.deregisterDriver();
     }
 
-    protected Class<?> getConnectionClass() throws ClassNotFoundException {
-        try {
-            return Class.forName("net.sourceforge.jtds.jdbc.ConnectionJDBC2");
-        } catch (ClassNotFoundException e) {
-            return  Class.forName("net.sourceforge.jtds.jdbc.JtdsConnection");
-        }
-    }
-    
+
 //    @Test
 //    public void create() throws Exception {
 //        Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
@@ -130,8 +126,11 @@ public class JtdsIT {
         ResultSet rs = select.executeQuery(selectQuery);
         
         while (rs.next()) {
-            logger.debug("id: " + rs.getInt("id") + ", name: " + rs.getString("name") + ", age: " + rs.getInt("age"));
-        } 
+            final int id = rs.getInt("id");
+            final String name = rs.getString("name");
+            final int age = rs.getInt("age");
+            logger.debug("id: {}, name: {}, age: {}", id, name, age);
+        }
         
         Statement delete = conn.createStatement();
         delete.executeUpdate(deleteQuery);
@@ -142,33 +141,28 @@ public class JtdsIT {
         
         verifier.printCache();
         
-        Class<?> driverClass = Class.forName("net.sourceforge.jtds.jdbc.Driver");
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = jdbcApi.getDriver().getConnect();
         verifier.verifyTrace(event(MSSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
         
-        Class<?> connectionClass = getConnectionClass();
-
-        Method setAutoCommit = connectionClass.getDeclaredMethod("setAutoCommit", boolean.class);
+        JDBCApi.ConnectionClass connectionClass = jdbcApi.getConnection();
+        Method setAutoCommit = connectionClass.getSetAutoCommit();
         verifier.verifyTrace(event(MSSQL, setAutoCommit, null, DB_ADDRESS, DB_NAME, args(false)));
         
 
-        Method prepareStatement = connectionClass.getDeclaredMethod("prepareStatement", String.class);
+        Method prepareStatement = connectionClass.getPrepareStatement();
         verifier.verifyTrace(event(MSSQL, prepareStatement, null, DB_ADDRESS, DB_NAME, sql(insertQuery, null)));
         
-        Class<?> preparedStatement = Class.forName("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
-        Method execute = preparedStatement.getDeclaredMethod("execute");
+        Method execute = jdbcApi.getPreparedStatement().getExecute();
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, Expectations.sql(insertQuery, null, "maru, 5")));
 
-
-        Class<?> statement = Class.forName("net.sourceforge.jtds.jdbc.JtdsStatement");
-        
-        Method executeQuery = statement.getDeclaredMethod("executeQuery", String.class);
+        JDBCApi.StatementClass statementClass = jdbcApi.getStatement();
+        Method executeQuery = statementClass.getExecuteQuery();
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, Expectations.sql(selectQuery, null)));
         
-        Method executeUpdate = statement.getDeclaredMethod("executeUpdate", String.class);
+        Method executeUpdate = statementClass.getExecuteUpdate();
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, executeUpdate, null, DB_ADDRESS, DB_NAME, Expectations.sql(deleteQuery, null)));
         
-        Method commit = connectionClass.getDeclaredMethod("commit");
+        Method commit = connectionClass.getCommit();
         verifier.verifyTrace(event(MSSQL, commit, null, DB_ADDRESS, DB_NAME));
     }
 
@@ -202,23 +196,20 @@ public class JtdsIT {
         verifier.verifyTraceCount(4);
 
         // Driver#connect(String, Properties)
-        Class<?> driverClass = Class.forName("net.sourceforge.jtds.jdbc.Driver");
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = jdbcApi.getDriver().getConnect();
         verifier.verifyTrace(event(MSSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
 
         // ConnectionJDBC2#prepareCall(String)
-        Class<?> connectionClass = getConnectionClass();
-        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        JDBCApi.ConnectionClass connectionClass = jdbcApi.getConnection();
+        Method prepareCall = connectionClass.getPrepareCall();
         verifier.verifyTrace(event(MSSQL, prepareCall, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null)));
 
         // JtdsCallableStatement#registerOutParameter(int, int)
-        Class<?> jtdsCallableStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsCallableStatement");
-        Method registerOutParameter = jtdsCallableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        Method registerOutParameter = jdbcApi.getCallableStatement().getRegisterOutParameter();
         verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(3, Types.VARCHAR)));
 
         // JtdsPreparedStatement#execute
-        Class<?> jtdsPreparedStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
-        Method execute = jtdsPreparedStatementClass.getDeclaredMethod("execute");
+        Method execute = jdbcApi.getPreparedStatement().getExecute();
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, execute, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
 
@@ -260,26 +251,22 @@ public class JtdsIT {
         verifier.verifyTraceCount(5);
 
         // Driver#connect(String, Properties)
-        Class<?> driverClass = Class.forName("net.sourceforge.jtds.jdbc.Driver");
-        Method connect = driverClass.getDeclaredMethod("connect", String.class, Properties.class);
+        Method connect = jdbcApi.getDriver().getConnect();
         verifier.verifyTrace(event(MSSQL, connect, null, DB_ADDRESS, DB_NAME, cachedArgs(JDBC_URL)));
 
         // ConnectionJDBC2#prepareCall(String)
-        Class<?> connectionClass = getConnectionClass();
-        Method prepareCall = connectionClass.getDeclaredMethod("prepareCall", String.class);
+        Method prepareCall = jdbcApi.getConnection().getPrepareCall();;
         verifier.verifyTrace(event(MSSQL, prepareCall, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null)));
 
         // JtdsCallableStatement#registerOutParameter(int, int)
-        Class<?> jtdsCallableStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsCallableStatement");
-        Method registerOutParameter = jtdsCallableStatementClass.getDeclaredMethod("registerOutParameter", int.class, int.class);
+        Method registerOutParameter = jdbcApi.getCallableStatement().getRegisterOutParameter();
         // param 1
         verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(1, Types.INTEGER)));
         // param 2
         verifier.verifyTrace(event(MSSQL, registerOutParameter, null, DB_ADDRESS, DB_NAME, args(2, Types.INTEGER)));
 
         // JtdsPreparedStatement#executeQuery
-        Class<?> jtdsPreparedStatementClass = Class.forName("net.sourceforge.jtds.jdbc.JtdsPreparedStatement");
-        Method executeQuery = jtdsPreparedStatementClass.getDeclaredMethod("executeQuery");
+        Method executeQuery = jdbcApi.getPreparedStatement().getExecuteQuery();
         verifier.verifyTrace(event(MSSQL_EXECUTE_QUERY, executeQuery, null, DB_ADDRESS, DB_NAME, sql(storedProcedureQuery, null, param1 + ", " + param2)));
     }
 }
