@@ -29,6 +29,10 @@ import java.sql.Statement;
  */
 public class CubridJDBCDriverClass extends AbstractJDBCDriverClass {
 
+    public CubridJDBCDriverClass(ClassLoader classLoader) {
+        super(classLoader);
+    }
+
     @Override
     public Class<Driver> getDriver() {
         return forName("cubrid.jdbc.driver.CUBRIDDriver");

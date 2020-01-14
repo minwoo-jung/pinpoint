@@ -19,8 +19,9 @@ package com.navercorp.pinpoint.plugin.jdbc.cubrid;
 import com.navercorp.pinpoint.test.junit4.BasePinpointTest;
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
-import cubrid.jdbc.driver.CUBRIDDriver;
-import org.junit.AfterClass;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCDriverClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -28,11 +29,11 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 /**
  * @author emeroad
@@ -42,14 +43,22 @@ public class CubridConnectionIT extends BasePinpointTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static DriverProperties driverProperties;
+    private static JDBCDriverClass driverClass = new CubridJDBCDriverClass(CubridIT.class.getClassLoader());
 
     @BeforeClass
     public static void beforeClass() throws Exception {
+        // DriverManager.setLogWriter(new PrintWriter(System.out));
         driverProperties = new DriverProperties("database/cubrid.properties", "cubrid");
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @Before
+    public void registerDriver() throws Exception {
+        Driver driver = driverClass.getDriver().newInstance();
+        DriverManager.registerDriver(driver);
+    }
+
+    @After
+    public void tearDown() throws Exception {
         DriverManagerUtils.deregisterDriver();
     }
 
@@ -67,12 +76,7 @@ public class CubridConnectionIT extends BasePinpointTest {
     }
 
     private Connection connectDB() throws SQLException {
-
-        Driver driver = new CUBRIDDriver();
-        Properties properties = new Properties();
-        properties.setProperty("user", driverProperties.getUser());
-        properties.setProperty("password", driverProperties.getPassword());
-        return driver.connect(driverProperties.getUrl(), properties);
+        return DriverManager.getConnection(driverProperties.getUrl(), driverProperties.getUser(), driverProperties.getPassword());
     }
 
 

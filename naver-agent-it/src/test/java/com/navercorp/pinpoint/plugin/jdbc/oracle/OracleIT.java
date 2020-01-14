@@ -29,9 +29,10 @@ import com.navercorp.pinpoint.test.plugin.jdbc.DefaultJDBCApi;
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCDriverClass;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -72,8 +74,8 @@ public class OracleIT {
     private static String JDBC_URL;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private static final JDBCApi JDBC_API = new DefaultJDBCApi(new OracleJDBCDriverClass());
+    private static final JDBCDriverClass driverClass = new OracleJDBCDriverClass();
+    private static final JDBCApi JDBC_API = new DefaultJDBCApi(driverClass);
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -93,8 +95,14 @@ public class OracleIT {
         DB_PASSWORD = driverProperties.getPassword();
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @Before
+    public void registerDriver() throws Exception {
+        Driver driver = driverClass.getDriver().newInstance();
+        DriverManager.registerDriver(driver);
+    }
+
+    @After
+    public void tearDown() throws Exception {
         DriverManagerUtils.deregisterDriver();
     }
 

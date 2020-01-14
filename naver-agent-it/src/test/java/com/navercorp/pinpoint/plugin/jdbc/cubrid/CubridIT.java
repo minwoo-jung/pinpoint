@@ -29,7 +29,9 @@ import com.navercorp.pinpoint.test.plugin.jdbc.DefaultJDBCApi;
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
-import org.junit.AfterClass;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCDriverClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,13 +59,14 @@ import static com.navercorp.pinpoint.bootstrap.plugin.test.Expectations.sql;
 @RunWith(PinpointPluginTestSuite.class)
 @PinpointAgent(NaverAgentPath.PATH)
 @Repository("http://maven.cubrid.org")
-@Dependency({"cubrid:cubrid-jdbc:[8.2.2],[8.3.1],[8.4.4.12003],[8.5.0],[9.1.0.0212],[9.2.19.0003],[9.3.2,)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
+@Dependency({"cubrid:cubrid-jdbc:[8.2.2]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class CubridIT {
     private static final String CUBRID = "CUBRID";
     private static final String CUBRID_EXECUTE_QUERY = "CUBRID_EXECUTE_QUERY";
 
     private static DriverProperties driverProperties;
-    private static JDBCApi jdbcApi = new DefaultJDBCApi(new CubridJDBCDriverClass());
+    private static JDBCDriverClass driverClass;
+    private static JDBCApi jdbcApi ;
 
     private static String DB_ID;
     private static String DB_PASSWORD;
@@ -74,11 +78,13 @@ public class CubridIT {
 
     @BeforeClass
     public static void setup() throws Exception {
-        // load jdbc driver
-        jdbcApi.getJDBCDriverClass().getDriver();
-
+        // DriverManager.setLogWriter(new PrintWriter(System.out));
         driverProperties = new DriverProperties("database/cubrid.properties", "cubrid");
+        driverClass = new CubridJDBCDriverClass(CubridIT.class.getClassLoader());
+        jdbcApi = new DefaultJDBCApi(driverClass);
 
+        driverClass.getDriver();
+        
         JDBC_URL = driverProperties.getUrl();
         JdbcUrlParserV2 jdbcUrlParser = new CubridJdbcUrlParser();
         DatabaseInfo databaseInfo = jdbcUrlParser.parse(JDBC_URL);
@@ -90,13 +96,20 @@ public class CubridIT {
         DB_PASSWORD = driverProperties.getPassword();
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @Before
+    public void registerDriver() throws Exception {
+        Driver driver = driverClass.getDriver().newInstance();
+        DriverManager.registerDriver(driver);
+    }
+
+    @After
+    public void tearDown() throws Exception {
         DriverManagerUtils.deregisterDriver();
     }
     
     @Test
     public void test() throws Exception {
+        System.out.println("classLoader"+ this.getClass().getClassLoader());
         Connection conn = DriverManager.getConnection(JDBC_URL, DB_ID, DB_PASSWORD);
         
         conn.setAutoCommit(false);

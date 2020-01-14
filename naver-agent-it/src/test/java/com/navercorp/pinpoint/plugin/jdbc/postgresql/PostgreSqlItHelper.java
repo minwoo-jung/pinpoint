@@ -90,7 +90,7 @@ public class PostgreSqlItHelper {
         ResultSet rs = selectStatement.executeQuery(selectQuery);
 
         while (rs.next()) {
-              final String nameRs = rs.getString("name");
+            final String nameRs = rs.getString("name");
             final int ageRs = rs.getInt("age");
             logger.debug("name : {}, age: {}", nameRs, ageRs);
         }

@@ -21,9 +21,8 @@ import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
-import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
-import org.junit.AfterClass;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCDriverClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,28 +34,31 @@ import org.junit.runner.RunWith;
 @PinpointAgent(NaverAgentPath.PATH)
 @JvmVersion(8)
 @Dependency({"org.postgresql:postgresql:[9.4.1207,9.4.1208)", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
-public class PostgreSql_9_4_1207_IT {
+public class PostgreSql_9_4_1207_IT extends PostgreSqlBase {
 
     private static PostgreSqlItHelper HELPER;
-    private static final PostgreSqlJDBCDriverClass jdbcDriverClass = new PostgreSql_9_4_1207_JDBCDriverClass();
+    private static PostgreSqlJDBCDriverClass driverClass;
 
-    private final PostgreSqlJDBCApi jdbcMethod = new PostgreSqlJDBCApi(jdbcDriverClass);
+    private static PostgreSqlJDBCApi jdbcApi;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        jdbcDriverClass.getDriver();
-        
         DriverProperties driverProperties = new DriverProperties("database/postgre.properties", "postgresql");
+        driverClass = new PostgreSql_9_4_1207_JDBCDriverClass();
+        jdbcApi = new PostgreSqlJDBCApi(driverClass);
+
+        driverClass.getDriver();
+
         HELPER = new PostgreSqlItHelper(driverProperties);
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
-        DriverManagerUtils.deregisterDriver();
+    @Override
+    protected JDBCDriverClass getJDBCDriverClass() {
+        return driverClass;
     }
 
     @Test
     public void testStatements() throws Exception {
-        HELPER.testStatements(jdbcMethod);
+        HELPER.testStatements(jdbcApi);
     }
 }

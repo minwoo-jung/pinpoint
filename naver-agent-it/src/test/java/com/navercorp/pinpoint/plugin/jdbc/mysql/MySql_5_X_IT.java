@@ -20,8 +20,10 @@ import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
 import com.navercorp.pinpoint.test.plugin.jdbc.DefaultJDBCApi;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
 import com.navercorp.pinpoint.test.plugin.jdbc.JDBCApi;
-import org.junit.Before;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCDriverClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,11 +37,30 @@ import org.junit.runner.RunWith;
 @Dependency({"mysql:mysql-connector-java:[5.0.8],[5.1.36,5.max]", "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 public class MySql_5_X_IT extends MySql_IT_Base {
 
-    private final JDBCApi jdbcApi = new DefaultJDBCApi(new MySql5JDBCDriverClass());
+    private static DriverProperties driverProperties;
+    private static MySqlItHelper HELPER;
 
-    @Before
-    public void setUp() throws Exception {
-        jdbcApi.getJDBCDriverClass().getDriver();
+    private static JDBCDriverClass driverClass;
+    private static JDBCApi jdbcApi;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        driverProperties = new DriverProperties("database/mysql.properties", "mysql");
+        driverClass = new MySql5JDBCDriverClass();
+        jdbcApi = new DefaultJDBCApi(driverClass);
+        driverClass.getDriver();
+
+        HELPER = new MySqlItHelper(driverProperties);
+    }
+
+    @Override
+    protected JDBCDriverClass getJDBCDriverClass() {
+        return driverClass;
+    }
+
+    @Override
+    protected DriverProperties getDriverProperties() {
+        return driverProperties;
     }
 
     @Test

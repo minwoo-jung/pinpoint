@@ -23,6 +23,8 @@ import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCDriverClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,12 +35,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 /**
  * @author emeroad
@@ -51,20 +51,24 @@ public class MySqlLoadBalance_6_X_IT extends MySql_IT_Base {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private Connection connectDB(String url) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
-        String user = driverProperties.getUser();
-        String password = driverProperties.getPassword();
 
-        Properties properties = new Properties();
-        properties.setProperty("user", user);
-        properties.setProperty("password", password);
-        return DriverManager.getConnection(url, properties);
+    private final DriverProperties driverProperties = new DriverProperties("database/mysql.properties", "mysql");
+    private final JDBCDriverClass driverClass = new MySql6JDBCDriverClass();
+
+    @Override
+    protected JDBCDriverClass getJDBCDriverClass() {
+        return driverClass;
+    }
+
+    @Override
+    protected DriverProperties getDriverProperties() {
+        return driverProperties;
     }
 
     @Test
     public void loadBalancedUrlModify() throws Exception {
         // random fail
-        Connection connection = connectDB(driverProperties.getProperty("mysql.url.loadbalance"));
+        Connection connection = getConnection(driverProperties.getProperty("mysql.url.loadbalance"));
 
         logger.info("Connection class name:{}", connection.getClass().getName());
         logger.info("Connection class cl:{}", connection.getClass().getClassLoader());

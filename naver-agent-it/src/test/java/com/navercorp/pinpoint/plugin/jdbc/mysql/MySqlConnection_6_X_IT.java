@@ -23,6 +23,8 @@ import com.navercorp.pinpoint.test.plugin.Dependency;
 import com.navercorp.pinpoint.test.plugin.JvmVersion;
 import com.navercorp.pinpoint.test.plugin.PinpointAgent;
 import com.navercorp.pinpoint.test.plugin.PinpointPluginTestSuite;
+import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCDriverClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,12 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 /**
  * @author emeroad
@@ -48,10 +48,23 @@ public class MySqlConnection_6_X_IT extends MySql_IT_Base {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private final DriverProperties driverProperties = new DriverProperties("database/mysql.properties", "mysql");
+    private final JDBCDriverClass driverClass = new MySql6JDBCDriverClass();
+
+    @Override
+    protected JDBCDriverClass getJDBCDriverClass() {
+        return driverClass;
+    }
+
+    @Override
+    protected DriverProperties getDriverProperties() {
+        return driverProperties;
+    }
+
     @Test
     public void testModify() throws Exception {
 
-        Connection connection = connectDB(driverProperties.getUrl());
+        Connection connection = getConnection(driverProperties.getUrl());
 
         logger.info("Connection class name:{}", connection.getClass().getName());
         logger.info("Connection class cl:{}", connection.getClass().getClassLoader());
@@ -72,16 +85,6 @@ public class MySqlConnection_6_X_IT extends MySql_IT_Base {
         DatabaseInfo clearUrl = ((DatabaseInfoAccessor) connection)._$PINPOINT$_getDatabaseInfo();
         Assert.assertNull(clearUrl);
 
-    }
-
-    private Connection connectDB(String url) throws SQLException {
-        String user = driverProperties.getUser();
-        String password = driverProperties.getPassword();
-
-        Properties properties = new Properties();
-        properties.setProperty("user", user);
-        properties.setProperty("password", password);
-        return DriverManager.getConnection(url, properties);
     }
 
     private void statement(Connection connection) throws SQLException {

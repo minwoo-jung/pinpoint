@@ -18,30 +18,46 @@ package com.navercorp.pinpoint.plugin.jdbc.mysql;
 
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverManagerUtils;
 import com.navercorp.pinpoint.test.plugin.jdbc.DriverProperties;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.navercorp.pinpoint.test.plugin.jdbc.JDBCDriverClass;
+import org.junit.After;
+import org.junit.Before;
 
+import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * @author Taejin Koo
  */
-public class MySql_IT_Base {
+public abstract class MySql_IT_Base {
 
     
-    protected static DriverProperties driverProperties;
-    protected static MySqlItHelper HELPER;
+    protected abstract JDBCDriverClass getJDBCDriverClass();
 
-    @BeforeClass
-    public static void beforeClass() throws Exception {
-        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+    protected abstract DriverProperties getDriverProperties();
 
-        driverProperties = new DriverProperties("database/mysql.properties", "mysql");
-        HELPER = new MySqlItHelper(driverProperties);
+    public Connection getConnection(String url) throws SQLException {
+        DriverProperties driverProperties = getDriverProperties();
+        final String user = driverProperties.getUser();
+        final String password = driverProperties.getPassword();
+
+        Properties properties = new Properties();
+        properties.setProperty("user", user);
+        properties.setProperty("password", password);
+        return DriverManager.getConnection(url, properties);
     }
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    @Before
+    public void before() throws Exception {
+        JDBCDriverClass driverClass = getJDBCDriverClass();
+        Driver driver = driverClass.getDriver().newInstance();
+        DriverManager.registerDriver(driver);
+    }
+
+    @After
+    public void after() throws Exception {
         DriverManagerUtils.deregisterDriver();
     }
 

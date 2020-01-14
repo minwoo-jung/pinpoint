@@ -52,6 +52,21 @@
     </properties>
 
     <dependencies>
+        <!-- plug-ins -->
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-plugins-assembly</artifactId>
+            <type>pom</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-naver-plugins-assembly</artifactId>
+            <type>pom</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        
         <!-- for tests -->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
@@ -76,23 +91,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-bloc-test-dependencies</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/test/bloc4/base/repository/test/lib</outputDirectory>
-                           <includeArtifactIds>junit,hamcrest-core,pinpoint-test</includeArtifactIds>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>

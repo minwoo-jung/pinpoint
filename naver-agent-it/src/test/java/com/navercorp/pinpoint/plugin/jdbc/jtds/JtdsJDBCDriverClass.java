@@ -29,6 +29,10 @@ import java.sql.Statement;
  */
 public class JtdsJDBCDriverClass extends AbstractJDBCDriverClass {
 
+    public JtdsJDBCDriverClass(ClassLoader classLoader) {
+        super(classLoader);
+    }
+
     @Override
     public Class<Driver> getDriver() {
         return forName("net.sourceforge.jtds.jdbc.Driver");
@@ -38,7 +42,7 @@ public class JtdsJDBCDriverClass extends AbstractJDBCDriverClass {
     public Class<Connection> getConnection() {
         try {
             return forName("net.sourceforge.jtds.jdbc.ConnectionJDBC2");
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return  forName("net.sourceforge.jtds.jdbc.JtdsConnection");
         }
     }

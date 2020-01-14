@@ -65,33 +65,16 @@ public class MySqlItHelper {
         }
         jdbcUrl = driverProperties.getUrl();
 
-        init2();
-
-        databaseId = driverProperties.getUser();
-        databasePassword = driverProperties.getPassword();
-    }
-
-    private void init1() {
         JdbcUrlParserV2 jdbcUrlParser = new MySqlJdbcUrlParser();
         DatabaseInfo databaseInfo = jdbcUrlParser.parse(jdbcUrl);
 
         databaseAddress = databaseInfo.getHost().get(0);
         databaseName = databaseInfo.getDatabaseId();
+
+        databaseId = driverProperties.getUser();
+        databasePassword = driverProperties.getPassword();
     }
 
-    private void init2() {
-        String[] tokens = jdbcUrl.split(":");
-
-        String ip = tokens[2].substring(2);
-
-        int div = tokens[3].indexOf('/');
-        int question = tokens[3].indexOf('?');
-
-        String port = tokens[3].substring(0, div);
-
-        databaseAddress = ip + ":" + port;
-        databaseName = question == -1 ? tokens[3].substring(div + 1) : tokens[3].substring(div + 1, question);
-    }
 
     void testStatements(JDBCApi jdbcApi) throws Exception {
 

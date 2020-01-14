@@ -38,7 +38,7 @@ public class MySql5JDBCDriverClass extends AbstractJDBCDriverClass {
     public Class<Connection> getConnection() {
         try {
             return forName("com.mysql.jdbc.ConnectionImpl");
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return forName("com.mysql.jdbc.Connection");
         }
     }
@@ -47,7 +47,7 @@ public class MySql5JDBCDriverClass extends AbstractJDBCDriverClass {
     public Class<Statement> getStatement() {
         try {
             return forName("com.mysql.jdbc.StatementImpl");
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return forName("com.mysql.jdbc.Statement");
         }
     }
