@@ -28,6 +28,10 @@ import java.sql.Statement;
  * @author Woonduk Kang(emeroad)
  */
 public class MSSqlJDBCDriverClass extends AbstractJDBCDriverClass {
+    public MSSqlJDBCDriverClass(ClassLoader classLoader) {
+        super(classLoader);
+    }
+
     @Override
     public Class<Driver> getDriver() {
         return forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");

@@ -32,6 +32,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
+import java.io.PrintWriter;
+import java.sql.DriverManager;
+
 /**
  * @author Jongho Moon
  * 
@@ -41,7 +44,8 @@ import org.junit.runner.RunWith;
 @PinpointAgent(NaverAgentPath.PATH)
 @Dependency({"com.microsoft.sqlserver:mssql-jdbc:[6.1.0.jre8],[6.2.0.jre8],[6.4.0.jre8],[6.5.0.jre8],[7.0.0.jre8],[7.2.0.jre8],[7.4.0.jre8],[8.1.1.jre8]",
         NaverAgentPath.TEST_IT, "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
-//@Dependency({"com.microsoft.sqlserver:mssql-jdbc:[6.2.0.jre8]", NaverAgentPath.TEST_IT, "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
+//@Dependency({"com.microsoft.sqlserver:mssql-jdbc:[7.4.0.jre8]",
+//        NaverAgentPath.TEST_IT, "log4j:log4j:1.2.16", "org.slf4j:slf4j-log4j12:1.7.5"})
 @JvmVersion({8})
 @PinpointConfig("pinpoint-mssql.config")
 public class MSSqlIT extends DataBaseTestCase {
@@ -50,19 +54,21 @@ public class MSSqlIT extends DataBaseTestCase {
     private static final String MSSQL_EXECUTE_QUERY = "MSSQL_JDBC_QUERY";
 
     private static DriverProperties driverProperties;
-    private static JDBCDriverClass driverClass = new MSSqlJDBCDriverClass();
-    private static JDBCApi jdbcApi = new DefaultJDBCApi(driverClass);
+    private static JDBCDriverClass driverClass;
+    private static JDBCApi jdbcApi ;
 
     private static JdbcUrlParserV2 jdbcUrlParser;
 
     @BeforeClass
-    public static void setup()  {
-        // load jdbc driver
-        jdbcApi.getJDBCDriverClass().getDriver();
-
+    public static void setup() {
         driverProperties = new DriverProperties("database/mssql.properties", "mssqlserver");
+        driverClass = new MSSqlJDBCDriverClass(MSSqlIT.class.getClassLoader());
+        jdbcApi = new DefaultJDBCApi(driverClass);
 
-        jdbcUrlParser = new MssqlJdbcUrlParser();
+        // load jdbc driver
+        driverClass.getDriver();
+// TODO ignore mssql-plugin
+//        jdbcUrlParser = new MssqlJdbcUrlParser();
     }
 
     @Override
