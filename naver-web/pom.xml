@@ -326,6 +326,26 @@
                 <artifactId>maven-clean-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>frontend-clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${basedir}/src/main/frontend</directory>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>node_modules/</exclude>
+                                    </excludes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>node-clean</id>
                         <phase>clean</phase>
                         <goals>
@@ -340,7 +360,7 @@
                                     </includes>
                                 </fileset>
                                 <fileset>
-                                    <directory>${basedir}/src/main/angular/node_modules</directory>
+                                    <directory>${basedir}/src/main/frontend/node_modules</directory>
                                     <includes>
                                         <include>**</include>
                                     </includes>
