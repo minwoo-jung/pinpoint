@@ -16,16 +16,22 @@
 
 package com.navercorp.pinpoint.manager.validator;
 
-import com.navercorp.pinpoint.manager.util.ValidationUtils;
 import com.navercorp.pinpoint.manager.validator.constraint.OrganizationNameConstraint;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author HyunGil Jeong
  */
-public class OrganizationNameValidator implements ConstraintValidator<OrganizationNameConstraint, String> {
+public class OrganizationNameValidator extends ValueValidator implements ConstraintValidator<OrganizationNameConstraint, String> {
+
+    private static final int ORGANIZATION_MAX_LENGTH = 20;
+    private static final int ORGANIZATION_MIN_LENGTH = 3;
+    private static final String ORGANIZATION_PATTERN_EXPRESSION = "[A-Za-z0-9\\-_]+";
+    private static final Pattern ORGANIZATION_PATTERN = Pattern.compile(ORGANIZATION_PATTERN_EXPRESSION);
 
     @Override
     public void initialize(OrganizationNameConstraint constraintAnnotation) {
@@ -34,6 +40,11 @@ public class OrganizationNameValidator implements ConstraintValidator<Organizati
 
     @Override
     public boolean isValid(String organizationName, ConstraintValidatorContext constraintValidatorContext) {
-        return ValidationUtils.isValidOrganizationName(organizationName);
+        if (validateLength(organizationName, ORGANIZATION_MAX_LENGTH, ORGANIZATION_MIN_LENGTH) == false) {
+            return false;
+        }
+
+        final Matcher matcher = ORGANIZATION_PATTERN.matcher(organizationName);
+        return matcher.matches();
     }
 }

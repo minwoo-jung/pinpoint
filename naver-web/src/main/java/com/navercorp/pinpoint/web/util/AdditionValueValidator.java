@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  */
 public class AdditionValueValidator extends ValueValidator {
 
-    private static final int ORGANIZATION_MAX_LENGTH = 40;
+    private static final int ORGANIZATION_MAX_LENGTH = 20;
     private static final int ORGANIZATION_MIN_LENGTH = 3;
     private static final String ORGANIZATION_PATTERN_EXPRESSION = "[A-Za-z0-9\\-_]+";
     private static final Pattern ORGANIZATION_PATTERN = Pattern.compile(ORGANIZATION_PATTERN_EXPRESSION);

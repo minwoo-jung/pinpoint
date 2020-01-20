@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 NAVER Corp.
+ * Copyright 2020 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,19 @@
 
 package com.navercorp.pinpoint.manager.service;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
- * @author HyunGil Jeong
+ * @author minwoo.jung
  */
-public interface NamespaceGenerationService {
+public class NamespaceGenerationServiceImplTest {
 
-    String gernerateName(String organizationName);
-
-    @Deprecated
-    String generateDatabaseName(String organizationName);
-
-    @Deprecated
-    String generateHbaseNamespace(String organizationName);
+    @Test
+    public void gernerateName() {
+        NamespaceGenerationService namespaceGenerationService = new NamespaceGenerationServiceImpl();
+        String pinpointDevName = namespaceGenerationService.gernerateName("pinpoint_dev");
+        assertEquals(pinpointDevName.length(), 25);
+    }
 }

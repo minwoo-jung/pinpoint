@@ -16,7 +16,10 @@
 
 package com.navercorp.pinpoint.manager.service;
 
+import com.navercorp.pinpoint.manager.domain.mysql.metadata.PaaSOrganizationInfo;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * @author HyunGil Jeong
@@ -25,11 +28,28 @@ import org.springframework.stereotype.Service;
 public class NamespaceGenerationServiceImpl implements NamespaceGenerationService {
 
     @Override
+    public String gernerateName(String organizationName) {
+        final int length = organizationName.length();
+        final int requiredLength= PaaSOrganizationInfo.DATABASE_NAME_MAX_SIZE - length;
+
+        final String uuid = UUID.randomUUID().toString().replace("-", "");
+        String substring = uuid.substring(0, requiredLength-1);
+        StringBuilder nameBuilder = new StringBuilder();
+        nameBuilder.append(organizationName).append(PaaSOrganizationInfo.DATABASE_NAME_DELIMITER).append(substring);
+        return nameBuilder.toString();
+
+
+
+    }
+
+    @Deprecated
+    @Override
     public String generateDatabaseName(String organizationName) {
         // TODO implement logic, check for availability and retry
         return organizationName;
     }
 
+    @Deprecated
     @Override
     public String generateHbaseNamespace(String organizationName) {
         // TODO implement logic, check for availability and retry

@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+
 /**
  * @author minwoo.jung
  */
@@ -29,8 +30,8 @@ public class AdditionValueValidatorTest {
         //length test
         assertFalse(AdditionValueValidator.validateOrganization(""));
         assertFalse(AdditionValueValidator.validateOrganization("or"));
-        assertFalse(AdditionValueValidator.validateOrganization("12345678901234567890123456789012345678901"));
-        assertTrue(AdditionValueValidator.validateOrganization("1234567890123456789012345678901234567890"));
+        assertFalse(AdditionValueValidator.validateOrganization("123456789012345678901"));
+        assertTrue(AdditionValueValidator.validateOrganization("12345678901234567890"));
 
         //uppercase test
         assertTrue(AdditionValueValidator.validateOrganization("AAAaaa"));

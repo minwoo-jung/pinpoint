@@ -21,11 +21,18 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author HyunGil Jeong
  */
-public class UserPasswordValidator implements ConstraintValidator<UserPasswordConstraint, String> {
+public class UserPasswordValidator extends ValueValidator implements ConstraintValidator<UserPasswordConstraint, String> {
+
+    private static final int PASSWORD_MAX_LENGTH = 30;
+    private static final int PASSWORD_MIN_LENGTH = 8;
+    private static final String PASSWORD_PATTERN_EXPRESSION = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%\\^&*\\(\\)])[A-Za-z\\d!@#$%\\^&*\\(\\)]+$";
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_PATTERN_EXPRESSION);
 
     @Override
     public void initialize(UserPasswordConstraint constraintAnnotation) {
@@ -34,9 +41,11 @@ public class UserPasswordValidator implements ConstraintValidator<UserPasswordCo
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext constraintValidatorContext) {
-        if (StringUtils.hasLength(password)) {
-            // TODO implement user password validation
+        if (validateLength(password, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH) == false) {
+            return false;
         }
-        return true;
+
+        final Matcher matcher = PASSWORD_PATTERN.matcher(password);
+        return matcher.matches();
     }
 }

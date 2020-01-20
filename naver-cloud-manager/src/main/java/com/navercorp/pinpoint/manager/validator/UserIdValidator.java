@@ -21,11 +21,18 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author HyunGil Jeong
  */
-public class UserIdValidator implements ConstraintValidator<UserIdConstraint, String> {
+public class UserIdValidator extends ValueValidator implements ConstraintValidator<UserIdConstraint, String> {
+
+    private static final int USER_ID_MAX_LENGTH = 24;
+    private static final int USER_ID_MIN_LENGTH = 4;
+    private static final String USER_ID_PATTERN_EXPRESSION = "[a-z0-9\\-_]+";
+    private static final Pattern USER_ID_PATTERN = Pattern.compile(USER_ID_PATTERN_EXPRESSION);
 
     @Override
     public void initialize(UserIdConstraint constraintAnnotation) {
@@ -34,9 +41,11 @@ public class UserIdValidator implements ConstraintValidator<UserIdConstraint, St
 
     @Override
     public boolean isValid(String userId, ConstraintValidatorContext constraintValidatorContext) {
-        if (StringUtils.hasLength(userId)) {
-            // TODO implement user id validation
+        if (validateLength(userId, USER_ID_MAX_LENGTH, USER_ID_MIN_LENGTH) == false) {
+            return false;
         }
-        return true;
+
+        final Matcher matcher = USER_ID_PATTERN.matcher(userId);
+        return matcher.matches();
     }
 }

@@ -28,6 +28,8 @@ import java.util.Date;
  */
 public class PaaSOrganizationInfo {
 
+    public static final char DATABASE_NAME_DELIMITER = '_';
+    public static final int DATABASE_NAME_MAX_SIZE = 25;
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static long MAX_EXPIRE_TIME = 4133948399000L;
     private String organization;

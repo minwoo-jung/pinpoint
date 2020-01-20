@@ -103,8 +103,10 @@ public class RepositoryServiceImpl implements RepositoryService {
             throw new IllegalArgumentException("organizationName must not be empty");
         }
         logger.info("Creating repository for organization : {}", organizationName);
-        String databaseName = namespaceGenerationService.generateDatabaseName(organizationName);
-        String hbaseNamespace = namespaceGenerationService.generateHbaseNamespace(organizationName);
+
+        final String generatedName = namespaceGenerationService.gernerateName(organizationName);
+        String databaseName = generatedName;
+        String hbaseNamespace = generatedName;
 
         createOrganization(organizationName, databaseName, hbaseNamespace);
 
@@ -124,8 +126,9 @@ public class RepositoryServiceImpl implements RepositoryService {
             throw new IllegalArgumentException("password must not be empty");
         }
         logger.info("Creating repository for organization : {}", organizationName);
-        String databaseName = namespaceGenerationService.generateDatabaseName(organizationName);
-        String hbaseNamespace = namespaceGenerationService.generateHbaseNamespace(organizationName);
+        final String generatedName = namespaceGenerationService.gernerateName(organizationName);
+        String databaseName = generatedName;
+        String hbaseNamespace = generatedName;
 
         createOrganization(organizationName, databaseName, hbaseNamespace);
 
