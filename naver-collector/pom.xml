@@ -34,6 +34,7 @@
         <sniffer.artifactid>java18</sniffer.artifactid>
         <grpc.version>1.14.0</grpc.version>
         <protoc.version>3.5.1-1</protoc.version>
+        <jetcd.version>0.3.0</jetcd.version>
     </properties>
 
     <dependencies>
@@ -157,6 +158,13 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
+        <!-- etcd for to handle token-->
+        <dependency>
+            <groupId>io.etcd</groupId>
+            <artifactId>jetcd-core</artifactId>
+            <version>${jetcd.version}</version>
         </dependency>
 
         <!-- for zookeeper test -->

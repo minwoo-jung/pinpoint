@@ -16,11 +16,14 @@
 
 package com.navercorp.pinpoint.collector.vo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.navercorp.pinpoint.common.util.Assert;
 import com.navercorp.pinpoint.grpc.security.TokenType;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -29,6 +32,8 @@ import java.util.Objects;
 @JsonSerialize(using = TokenSerializer.class)
 @JsonDeserialize(using = TokenDeserializer.class)
 public class Token {
+
+    private static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
 
     private final String key;
     private final PaaSOrganizationInfo paaSOrganizationInfo;
@@ -67,6 +72,14 @@ public class Token {
 
     public TokenType getTokenType() {
         return tokenType;
+    }
+
+    public byte[] toJson() throws JsonProcessingException {
+        return JSON_OBJECT_MAPPER.writeValueAsBytes(this);
+    }
+
+    public static Token toObject(byte[] payload) throws IOException {
+        return JSON_OBJECT_MAPPER.readValue(payload, Token.class);
     }
 
     @Override
