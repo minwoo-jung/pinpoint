@@ -8,7 +8,6 @@ import { PinpointUserForUsersDataService } from './pinpoint-user-for-users-data.
 import { UserProfileInteractionService } from 'app/core/components/user-profile/user-profile-interaction.service';
 import { ConfirmRemoveUserInteractionService } from 'app/core/components/confirm-remove-user/confirm-remove-user-interaction.service';
 import { ConfigurationUserInfoInteractionService } from 'app/core/components/configuration-user-info/configuration-user-info-interaction.service';
-import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 import { isThatType } from 'app/core/utils/util';
 
 enum MinLength {

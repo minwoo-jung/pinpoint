@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
-
 export interface IChangedProfileState {
     isValid: boolean;
     profile?: IUserProfile;

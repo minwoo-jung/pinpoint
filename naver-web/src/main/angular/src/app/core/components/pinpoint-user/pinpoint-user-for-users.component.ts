@@ -2,8 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter, ElementRef } from '@ang
 import { fromEvent } from 'rxjs';
 import { pluck } from 'rxjs/operators';
 
-import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
-
 @Component({
     selector: 'pp-pinpoint-user-for-users',
     templateUrl: './pinpoint-user-for-users.component.html',

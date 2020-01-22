@@ -3,8 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { retry } from 'rxjs/operators';
 
-import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
-
 @Injectable()
 export class PinpointUserForUsersDataService {
     private url = 'users.pinpoint';
@@ -21,7 +19,7 @@ export class PinpointUserForUsersDataService {
 
     private makeRequestOptionsArgs(query?: string): object {
         return query
-            ? { params: { searchKey: query } }
+            ? {params: {searchKey: query}}
             : {};
     }
 }

@@ -2,7 +2,6 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitte
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { filterObj } from 'app/core/utils/util';
-import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 import { IChangedProfileState } from './user-profile-interaction.service';
 import { CustomFormValidatorService } from 'app/shared/services/custom-form-validator.service';
 
@@ -44,7 +43,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
     ngOnInit() {}
     ngOnChanges(changes: SimpleChanges) {
         const userProfileChange = changes['userProfile'];
-        const { currentValue }: { currentValue: IUserProfile } = userProfileChange;
+        const {currentValue}: {currentValue: IUserProfile} = userProfileChange;
 
         const profileFormattedObj = currentValue
             ? filterObj((key: string) => Object.keys(this.userProfileForm.controls).includes(key), currentValue)

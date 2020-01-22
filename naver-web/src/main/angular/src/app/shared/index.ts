@@ -137,6 +137,6 @@ export class SharedModule {
                 UserPermissionCheckService,
                 FavoriteApplicationListDataService
             ]
-        }
+        };
     }
 }

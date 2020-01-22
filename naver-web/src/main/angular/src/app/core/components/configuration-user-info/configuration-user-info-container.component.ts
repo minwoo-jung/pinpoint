@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { UserProfileInteractionService, IChangedProfileState } from 'app/core/components/user-profile/user-profile-interaction.service';
 import { UserPasswordInteractionService, IChangedPasswordState } from 'app/core/components/user-password/user-password-interaction.service';
-import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
 import { IUserPassword } from 'app/core/components/user-password/user-password-data.service';
 import { IUserInfo } from 'app/core/components/configuration-users/configuration-users-data.service';
 import { UserPermissionCheckService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';

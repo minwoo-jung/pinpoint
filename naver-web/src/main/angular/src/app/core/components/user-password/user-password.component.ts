@@ -33,7 +33,7 @@ export class UserPasswordComponent implements OnInit {
 
         this.hasUserEditPerm ? pwControl.enable() : pwControl.disable();
     }
-    
+
     onKeyUp(): void {
         this.userPasswordForm.valid
             ? this.outUserPasswordChange.emit({ isValid: true, password: this.userPasswordForm.value })

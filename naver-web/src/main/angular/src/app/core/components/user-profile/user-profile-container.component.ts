@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 
 import { UserProfileInteractionService, IChangedProfileState } from './user-profile-interaction.service';
 import { TranslateReplaceService, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
-import { IUserProfile, UserProfileDataService } from 'app/core/components/user-profile/user-profile-data.service';
+import { UserProfileDataService } from 'app/core/components/user-profile/user-profile-data.service';
 import { isThatType } from 'app/core/utils/util';
 
 @Component({

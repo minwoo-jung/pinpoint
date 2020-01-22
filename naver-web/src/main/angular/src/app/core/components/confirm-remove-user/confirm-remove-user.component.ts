@@ -1,7 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { IUserProfile } from 'app/core/components/user-profile/user-profile-data.service';
-
 @Component({
     selector: 'pp-confirm-remove-user',
     templateUrl: './confirm-remove-user.component.html',
