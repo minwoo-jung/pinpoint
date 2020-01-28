@@ -24,11 +24,9 @@
 
         <bean id="serverRequestFactory" class="com.navercorp.pinpoint.collector.receiver.grpc.AddNameSpaceInfoServerRequestFactory"/>
 
-        <bean id="tokenDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryTokenDao"/>
-
         <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.memory.MemoryMetadataDao"/>
 
-        <bean id="tokenConfig" class="com.navercorp.pinpoint.collector.service.TokenConfig"/>
+        <bean id="tokenConfig" class="com.navercorp.pinpoint.collector.config.TokenConfig"/>
 
         <bean id="tokenService" class="com.navercorp.pinpoint.collector.service.TokenServiceImpl"/>
 

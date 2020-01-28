@@ -16,11 +16,14 @@
 
 package com.navercorp.pinpoint.collector.service;
 
+import com.navercorp.pinpoint.collector.config.TokenConfig;
 import com.navercorp.pinpoint.collector.dao.TokenDao;
+import com.navercorp.pinpoint.collector.dao.TokenDaoFactory;
 import com.navercorp.pinpoint.collector.vo.PaaSOrganizationInfo;
 import com.navercorp.pinpoint.collector.vo.Token;
 import com.navercorp.pinpoint.collector.vo.TokenCreateRequest;
 import com.navercorp.pinpoint.grpc.security.TokenType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +47,9 @@ public class TokenServiceImpl implements TokenService {
     private final TokenDao tokenDao;
 
     @Autowired
-    public TokenServiceImpl(TokenConfig tokenConfig, TokenDao tokenDao) {
+    public TokenServiceImpl(TokenConfig tokenConfig) {
         this.tokenConfig = Objects.requireNonNull(tokenConfig, "tokenConfig");
-        this.tokenDao = Objects.requireNonNull(tokenDao, "tokenDao");
+        this.tokenDao = TokenDaoFactory.create(tokenConfig);
     }
 
     @Override

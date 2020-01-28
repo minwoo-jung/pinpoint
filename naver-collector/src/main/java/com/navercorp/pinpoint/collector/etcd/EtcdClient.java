@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -61,11 +62,11 @@ public class EtcdClient {
 
     private final long operationTimeoutMillis;
 
-    public EtcdClient(String address) {
+    public EtcdClient(String[] address) {
         this(address, DEFAULT_OPERATION_TIMEOUT_MILLIS);
     }
 
-    public EtcdClient(String address, long operationTimeoutMillis) {
+    public EtcdClient(String[] address, long operationTimeoutMillis) {
         this.client = create(address);
 
         this.kvClient = client.getKVClient();
@@ -75,7 +76,9 @@ public class EtcdClient {
         this.operationTimeoutMillis = operationTimeoutMillis;
     }
 
-    private Client create(String address) {
+    private Client create(String[] address) {
+        Objects.requireNonNull(address, "address");
+
         Client client = Client.builder().endpoints(address).build();
         return client;
     }

@@ -27,7 +27,7 @@
     <context:component-scan
             base-package="com.navercorp.pinpoint.collector.dao.memory" />
 
-    <bean id="tokenConfig" class="com.navercorp.pinpoint.collector.service.TokenConfig" />
+    <bean id="tokenConfig" class="com.navercorp.pinpoint.collector.config.TokenConfig" />
     <bean id="tokenSevice" class="com.navercorp.pinpoint.collector.service.TokenServiceImpl" />
     <bean id="namespaceService" class="com.navercorp.pinpoint.collector.service.NamespaceServiceImpl" />
     <bean id="metadataDao" class="com.navercorp.pinpoint.collector.dao.mysql.MysqlMetadataDao" />
