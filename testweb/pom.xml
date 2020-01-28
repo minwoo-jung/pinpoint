@@ -554,6 +554,9 @@
     <build>
         <resources>
             <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
                 <directory>${basedir}/src/main/resources-${env}</directory>
             </resource>
         </resources>

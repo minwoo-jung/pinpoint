@@ -34,7 +34,7 @@ import com.navercorp.test.pinpoint.testweb.connector.apachehttp4.ApacheClosableA
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"/applicationContext-testweb.xml", "/servlet-context.xml" })
+@ContextConfiguration({"classpath:applicationContext-testweb.xml", "classpath:servlet-context.xml" })
 public class ApacheClosableAsyncHttpClientTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
