@@ -11,21 +11,29 @@
     <artifactId>pinpoint-naver-plugins</artifactId>
     <name>naver-pinpoint-plugins</name>
     <packaging>pom</packaging>
-    
-    <modules>
-        <module>bom</module>
-        <module>assembly</module>
 
-        <module>bloc</module>
-        <module>line</module>
-        <module>lucynet</module>
-        <module>nbasearc</module>
-        <module>nelo</module>
-        <module>nbaset-jdbc</module>
-        <module>nbaset-cp</module>
-        <module>owfs</module>
-        <module>jeus</module>
-    </modules>
+    <profiles>
+        <profile>
+            <id>build-plugins-module</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>bom</module>
+                <module>assembly</module>
+
+                <module>bloc</module>
+                <module>line</module>
+                <module>lucynet</module>
+                <module>nbasearc</module>
+                <module>nelo</module>
+                <module>nbaset-jdbc</module>
+                <module>nbaset-cp</module>
+                <module>owfs</module>
+                <module>jeus</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>

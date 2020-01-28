@@ -221,7 +221,7 @@
     </build>
     <profiles>
         <profile>
-            <id>front-build</id>
+            <id>build-frontend</id>
             <build>
                 <plugins>
                     <plugin>

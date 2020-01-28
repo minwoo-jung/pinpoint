@@ -34,7 +34,7 @@
 
     <profiles>
         <profile>
-            <id>with-thrift</id>
+            <id>build-thrift</id>
             <properties>
                 <thrift.executable>${thrift.executable.path}</thrift.executable>
             </properties>
