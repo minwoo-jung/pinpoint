@@ -16,10 +16,18 @@
 
 package com.navercorp.pinpoint.collector.config;
 
+import com.navercorp.pinpoint.common.server.config.AnnotationVisitor;
+import com.navercorp.pinpoint.common.server.config.LoggingEvent;
+import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.common.util.StringUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 
 /**
@@ -29,13 +37,15 @@ import java.util.Arrays;
 @Configuration
 public class TokenConfig {
 
-    @Value("${security.token.type:null}")
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Value("${security.token.type:#{null}}")
     private String tokenTypeName;
 
     @Value("${security.token.server.address:}")
     private String[] address = new String[0];
 
-    @Value("${security.token.server.path:#{null}}")
+    @Value("${security.token.server.path:/pinpoint/token}")
     private String path;
 
     @Value("${security.token.operationtimeout:3000}")
@@ -69,6 +79,21 @@ public class TokenConfig {
 
     public int getMaxRetryCount() {
         return maxRetryCount;
+    }
+
+    @PostConstruct
+    public void log() {
+        logger.info("{}", this);
+        AnnotationVisitor visitor = new AnnotationVisitor(Value.class);
+        visitor.visit(this, new LoggingEvent(logger));
+
+        validate();
+    }
+
+    private void validate() {
+        Assert.isTrue(StringUtils.hasLength(path), "path may not be empty");
+        Assert.isTrue(ttl > 0, "0 >= ttl");
+        Assert.isTrue(maxRetryCount > 0, "0 >= maxRetryCount");
     }
 
     @Override
