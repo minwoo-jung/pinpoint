@@ -221,7 +221,7 @@
     </build>
     <profiles>
         <profile>
-            <id>build-frontend</id>
+            <id>naver-build-frontend-cloud-manager</id>
             <build>
                 <plugins>
                     <plugin>

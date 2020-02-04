@@ -38,7 +38,7 @@
         <plugin.antrun.verison>1.8</plugin.antrun.verison>
         
         <!-- java back-end development option -->
-        <pinpoint.web.frontend.build.skip>false</pinpoint.web.frontend.build.skip>
+        <build.frontend.skip>false</build.frontend.skip>
         <frontend.build.dir>${basedir}/src/main/frontend</frontend.build.dir>
         <node.force.clean.skip>true</node.force.clean.skip>
     </properties>
@@ -208,6 +208,146 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.navercorp.pinpoint</groupId>
+                                    <artifactId>pinpoint-web</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>frontend</classifier>
+                                    <type>jar</type>
+                                    <!--                                    <includes>**.*</includes>-->
+                                    <excludes>META-INF/</excludes>
+                                    <outputDirectory>${frontend.build.dir}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                            <skip>${build.frontend.skip}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/angular/</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${frontend.build.dir}</outputDirectory>
+                            <overwrite>true</overwrite>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-war</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <configuration>
+                            <overlays>
+                                <overlay>
+                                    <groupId>com.navercorp.pinpoint</groupId>
+                                    <artifactId>pinpoint-web</artifactId>
+                                    <includes>WEB-INF/</includes>
+                                </overlay>
+                            </overlays>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${plugin.frontend.version}</version>
+                <configuration>
+                    <installDirectory>${project.parent.basedir}/${plugin.frontend.node.install.dir}</installDirectory>
+                    <workingDirectory>${frontend.build.dir}</workingDirectory>
+                    <skip>${build.frontend.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${plugin.frontend.node.version}</nodeVersion>
+                            <npmVersion>${plugin.frontend.npm.version}</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm run build</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build:real</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-frontend-source</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/assembly/frontend.xml</descriptor>
+                            </descriptors>
+                            <attach>true</attach>
+                            <skipAssembly>${build.frontend.skip}</skipAssembly>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -263,153 +403,6 @@
                     <type>pom</type>
                 </dependency>
             </dependencies>
-        </profile>
-
-        <profile>
-            <id>build-frontend</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>com.navercorp.pinpoint</groupId>
-                                            <artifactId>pinpoint-web</artifactId>
-                                            <version>${project.version}</version>
-                                            <classifier>frontend</classifier>
-                                            <type>jar</type>
-                                            <!--                                    <includes>**.*</includes>-->
-                                            <excludes>META-INF/</excludes>
-                                            <outputDirectory>${frontend.build.dir}</outputDirectory>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <!-- here the phase you need -->
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/main/angular/</directory>
-                                        </resource>
-                                    </resources>
-                                    <outputDirectory>${frontend.build.dir}</outputDirectory>
-                                    <overwrite>true</overwrite>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-war</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>war</goal>
-                                </goals>
-                                <configuration>
-                                    <overlays>
-                                        <overlay>
-                                            <groupId>com.navercorp.pinpoint</groupId>
-                                            <artifactId>pinpoint-web</artifactId>
-                                            <includes>WEB-INF/</includes>
-                                        </overlay>
-                                    </overlays>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <version>${plugin.frontend.version}</version>
-                        <configuration>
-                            <installDirectory>${project.parent.basedir}/${plugin.frontend.node.install.dir}</installDirectory>
-                            <workingDirectory>${frontend.build.dir}</workingDirectory>
-                            <skip>${pinpoint.web.frontend.build.skip}</skip>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install node and npm</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>install-node-and-npm</goal>
-                                </goals>
-                                <configuration>
-                                    <nodeVersion>${plugin.frontend.node.version}</nodeVersion>
-                                    <npmVersion>${plugin.frontend.npm.version}</npmVersion>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm install</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>install</arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm run build</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>run build:real</arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>build-frontend-source</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <appendAssemblyId>true</appendAssemblyId>
-                                    <descriptors>
-                                        <descriptor>src/assembly/frontend.xml</descriptor>
-                                    </descriptors>
-                                    <attach>true</attach>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
 
         <profile>

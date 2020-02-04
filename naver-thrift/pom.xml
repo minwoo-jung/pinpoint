@@ -34,7 +34,7 @@
 
     <profiles>
         <profile>
-            <id>build-thrift</id>
+            <id>naver-build-thrift</id>
             <properties>
                 <thrift.executable>${thrift.executable.path}</thrift.executable>
             </properties>
