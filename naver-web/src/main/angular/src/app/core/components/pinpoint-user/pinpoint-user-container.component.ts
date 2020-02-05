@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { TranslateReplaceService, WebAppSettingDataService, UserPermissionCheckService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { PinpointUserDataService, IPinpointUserResponse } from './pinpoint-user-data.service';
-import { isThatType } from 'app/core/utils/util';
+import { isThatType, isEmpty } from 'app/core/utils/util';
 
 @Component({
     selector: 'pp-pinpoint-user-container',
@@ -25,6 +25,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
     };
     i18nGuide: { [key: string]: IFormFieldErrorType };
     i18nText = {
+        EMPTY: '',
         SEARCH_INPUT_GUIDE: ''
     };
     minLength = {
@@ -43,6 +44,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
     showCreate = false;
     errorMessage: string;
     canAddUserGroup = false;
+    isEmpty: boolean;
 
     constructor(
         private webAppSettingDataService: WebAppSettingDataService,
@@ -78,6 +80,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
 
     private getI18NText(): void {
         forkJoin(
+            this.translateService.get('COMMON.EMPTY_ON_SEARCH'),
             this.translateService.get('COMMON.MIN_LENGTH'),
             this.translateService.get('COMMON.REQUIRED'),
             this.translateService.get('CONFIGURATION.COMMON.USER_ID'),
@@ -91,7 +94,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
             this.translateService.get('CONFIGURATION.PINPOINT_USER.PHONE_VALIDATION'),
             this.translateService.get('CONFIGURATION.PINPOINT_USER.EMAIL_VALIDATION'),
         ).subscribe(([
-            minLengthMessage, requiredMessage, idLabel, nameLabel, departmentLabel, phoneLabel, emailLabel,
+            emptyText, minLengthMessage, requiredMessage, idLabel, nameLabel, departmentLabel, phoneLabel, emailLabel,
             userIdValidation, nameValidation, departmentValidation, phoneValidation, emailValidation
         ]: string[]) => {
             this.i18nGuide = {
@@ -115,6 +118,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
                     valueRule: emailValidation
                 }
             };
+            this.i18nText.EMPTY = emptyText;
             this.i18nText.SEARCH_INPUT_GUIDE = this.translateReplaceService.replace(minLengthMessage, this.minLength.search);
 
             this.i18nLabel.USER_ID_LABEL = idLabel;
@@ -135,7 +139,7 @@ export class PinpointUserContainerComponent implements OnInit, OnDestroy {
         ).subscribe((result: IUserProfile[] | IServerErrorShortFormat) => {
             isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
                 ? this.errorMessage = result.errorMessage
-                : this.pinpointUserList = result;
+                : (this.pinpointUserList = result, this.isEmpty = isEmpty(this.pinpointUserList));
             this.hideProcessing();
         }, (error: IServerErrorFormat) => {
             this.errorMessage = error.exception.message;

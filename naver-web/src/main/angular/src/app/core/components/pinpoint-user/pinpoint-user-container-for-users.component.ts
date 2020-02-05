@@ -8,7 +8,7 @@ import { PinpointUserForUsersDataService } from './pinpoint-user-for-users-data.
 import { UserProfileInteractionService } from 'app/core/components/user-profile/user-profile-interaction.service';
 import { ConfirmRemoveUserInteractionService } from 'app/core/components/confirm-remove-user/confirm-remove-user-interaction.service';
 import { ConfigurationUserInfoInteractionService } from 'app/core/components/configuration-user-info/configuration-user-info-interaction.service';
-import { isThatType } from 'app/core/utils/util';
+import { isThatType, isEmpty } from 'app/core/utils/util';
 
 enum MinLength {
     SEARCH = 2
@@ -30,6 +30,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
 
     hasUserEditPerm: boolean;
     searchGuideText$: Observable<string>;
+    emptyText$: Observable<string>;
     pinpointUserList: IUserProfile[] = [];
     errorMessage: string;
     searchUseEnter = true;
@@ -37,6 +38,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
     useDisable = true;
     showLoading = true;
     loggedInUserId: string;
+    isEmpty: boolean;
 
     constructor(
         private webAppSettingDataService: WebAppSettingDataService,
@@ -55,6 +57,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         this.searchGuideText$ = this.translateService.get('COMMON.MIN_LENGTH').pipe(
             map((text: string) => this.translateReplaceService.replace(text, MinLength.SEARCH))
         );
+        this.emptyText$ = this.translateService.get('COMMON.EMPTY_ON_SEARCH');
         this.webAppSettingDataService.getUserId().subscribe((userId: string) => {
             this.loggedInUserId = userId;
         });
@@ -87,7 +90,7 @@ export class PinpointUserContainerForUsersComponent implements OnInit, OnDestroy
         ).subscribe((result: IUserProfile[] | IServerErrorShortFormat) => {
             isThatType<IServerErrorShortFormat>(result, 'errorCode', 'errorMessage')
                 ? this.errorMessage = result.errorMessage
-                : this.pinpointUserList = result;
+                : (this.pinpointUserList = result, this.isEmpty = isEmpty(this.pinpointUserList));
             this.hideProcessing();
         }, (error: IServerErrorFormat) => {
             this.errorMessage = error.exception.message;

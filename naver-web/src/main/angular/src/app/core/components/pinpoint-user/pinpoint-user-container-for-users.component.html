@@ -17,16 +17,21 @@
     <button class="l-search-button" (click)="onSearch(searchInput.value)"><i class="fas fa-search"></i></button>
 </div>
 <div class="l-pinpoint-user-list">
-    <cdk-virtual-scroll-viewport itemSize="28" style="height: 100%;" *ngIf="pinpointUserList.length > 0">
-        <pp-pinpoint-user-for-users
-            *cdkVirtualFor="let pinpointUser of pinpointUserList; templateCacheSize: 22"
-            [pinpointUser]="pinpointUser"
-            [hasUserEditPerm]="hasUserEditPerm"
-            [loggedInUserId]="loggedInUserId"
-            (outSelect)="onSelectUser($event)"
-            (outRemove)="onRemoveUser($event)">
-        </pp-pinpoint-user-for-users>
-    </cdk-virtual-scroll-viewport>
+    <ng-container *ngIf="!isEmpty; else emptyText">
+        <cdk-virtual-scroll-viewport itemSize="28" style="height: 100%;">
+            <pp-pinpoint-user-for-users
+                *cdkVirtualFor="let pinpointUser of pinpointUserList; templateCacheSize: 22"
+                [pinpointUser]="pinpointUser"
+                [hasUserEditPerm]="hasUserEditPerm"
+                [loggedInUserId]="loggedInUserId"
+                (outSelect)="onSelectUser($event)"
+                (outRemove)="onRemoveUser($event)">
+            </pp-pinpoint-user-for-users>
+        </cdk-virtual-scroll-viewport>
+    </ng-container>
+    <ng-template #emptyText>
+        <p class="l-empty-text">{{emptyText$ | async}}</p>
+    </ng-template>
 </div>
 <ng-container *ngIf="errorMessage">
     <pp-server-error-message
