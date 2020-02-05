@@ -50,7 +50,7 @@ public class JtdsIT extends DataBaseTestCase {
     @BeforeClass
     public static void beforeClass() {
         driverProperties = new DriverProperties("database/jtds.properties", "mssqlserver-jtds");
-        driverClass = new JtdsJDBCDriverClass(JtdsIT.class.getClassLoader());
+        driverClass = new JtdsJDBCDriverClass();
         jdbcApi = new DefaultJDBCApi(driverClass);
         // load jdbc driver
         driverClass.getDriver();

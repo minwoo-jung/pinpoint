@@ -43,7 +43,7 @@ public class CubridConnectionIT extends BasePinpointTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static DriverProperties driverProperties;
-    private static JDBCDriverClass driverClass = new CubridJDBCDriverClass(CubridIT.class.getClassLoader());
+    private static JDBCDriverClass driverClass = new CubridJDBCDriverClass();
 
     @BeforeClass
     public static void beforeClass() throws Exception {

@@ -80,7 +80,7 @@ public class CubridIT {
     public static void setup() throws Exception {
         // DriverManager.setLogWriter(new PrintWriter(System.out));
         driverProperties = new DriverProperties("database/cubrid.properties", "cubrid");
-        driverClass = new CubridJDBCDriverClass(CubridIT.class.getClassLoader());
+        driverClass = new CubridJDBCDriverClass();
         jdbcApi = new DefaultJDBCApi(driverClass);
 
         driverClass.getDriver();

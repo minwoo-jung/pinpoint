@@ -28,8 +28,8 @@ import java.sql.Statement;
  * @author Woonduk Kang(emeroad)
  */
 public class MSSqlJDBCDriverClass extends AbstractJDBCDriverClass {
-    public MSSqlJDBCDriverClass(ClassLoader classLoader) {
-        super(classLoader);
+    public MSSqlJDBCDriverClass() {
+        super();
     }
 
     @Override

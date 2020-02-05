@@ -29,9 +29,10 @@ import java.sql.Statement;
  */
 public class JtdsJDBCDriverClass extends AbstractJDBCDriverClass {
 
-    public JtdsJDBCDriverClass(ClassLoader classLoader) {
-        super(classLoader);
+    public JtdsJDBCDriverClass() {
     }
+
+
 
     @Override
     public Class<Driver> getDriver() {

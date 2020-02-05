@@ -62,7 +62,7 @@ public class MSSqlIT extends DataBaseTestCase {
     @BeforeClass
     public static void setup() {
         driverProperties = new DriverProperties("database/mssql.properties", "mssqlserver");
-        driverClass = new MSSqlJDBCDriverClass(MSSqlIT.class.getClassLoader());
+        driverClass = new MSSqlJDBCDriverClass();
         jdbcApi = new DefaultJDBCApi(driverClass);
 
         // load jdbc driver
