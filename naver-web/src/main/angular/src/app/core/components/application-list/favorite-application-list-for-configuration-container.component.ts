@@ -6,32 +6,32 @@ import { WebAppSettingDataService, StoreHelperService, TranslateReplaceService, 
 import { Actions } from 'app/shared/store';
 import { Application } from 'app/core/models';
 import { ServerErrorPopupContainerComponent } from 'app/core/components/server-error-popup/server-error-popup-container.component';
+import { isEmpty } from 'app/core/utils/util';
 
 @Component({
     selector: 'pp-favorite-application-list-for-configuration-container',
-    templateUrl: './favorite-application-list-for-configuration-container.component.html',
-    styleUrls: ['./favorite-application-list-for-configuration-container.component.css']
+    templateUrl: './application-list-for-configuration-container.component.html',
+    styleUrls: ['./application-list-for-configuration-container.component.css']
 })
 export class FavoriteApplicationListForConfigurationContainerComponent implements OnInit, OnDestroy {
     private unsubscribe = new Subject<void>();
-    favoriteApplicationList: IApplication[];
-    applicationList: IApplication[];
-    emptyText: string;
+    private _query = '';
+    private favoriteAppList: IApplication[];
+
+    filteredAppList: IApplication[];
     funcImagePath: Function;
     iconBtnClassName = 'far fa-trash-alt';
-    query = '';
     searchUseEnter = false;
     SEARCH_MIN_LENGTH = 2;
     i18nText = {
-        SEARCH_INPUT_GUIDE: ''
+        SEARCH_INPUT_GUIDE: '',
+        EMPTY: ''
     };
-    useDisable = true;
-    showLoading = true;
+    isEmpty: boolean;
 
     constructor(
         private storeHelperService: StoreHelperService,
         private translateService: TranslateService,
-        private translateReplaceService: TranslateReplaceService,
         private webAppSettingDataService: WebAppSettingDataService,
         private analyticsService: AnalyticsService,
         private dynamicPopupService: DynamicPopupService,
@@ -41,51 +41,51 @@ export class FavoriteApplicationListForConfigurationContainerComponent implement
 
     ngOnInit() {
         this.initList();
+        this.initI18nText();
         this.funcImagePath = this.webAppSettingDataService.getIconPathMakeFunc();
-        this.initEmptyText();
     }
+
     ngOnDestroy() {
         this.unsubscribe.next();
         this.unsubscribe.complete();
     }
 
     private initList(): void {
-        this.storeHelperService.getFavoriteApplicationList(this.unsubscribe).subscribe((favoriteApplicationList: IApplication[]) => {
-            this.favoriteApplicationList = favoriteApplicationList;
-            this.filterApplicationList();
+        this.storeHelperService.getFavoriteApplicationList(this.unsubscribe).subscribe((favoriteAppList: IApplication[]) => {
+            this.favoriteAppList = favoriteAppList;
+            this.filterList();
         });
     }
 
-    private filterApplicationList(): void {
+    private initI18nText(): void {
+        forkJoin(
+            this.translateService.get('COMMON.INPUT_APP_NAME_PLACE_HOLDER'),
+            this.translateService.get('COMMON.EMPTY_ON_SEARCH')
+        ).subscribe(([placeholderText, emptyText]: string[]) => {
+            this.i18nText.SEARCH_INPUT_GUIDE = placeholderText;
+            this.i18nText.EMPTY = emptyText;
+        });
+    }
+
+    private filterList(): void {
         if (this.query !== '') {
-            this.applicationList = this.favoriteApplicationList.filter((app: IApplication) => {
+            this.filteredAppList = this.favoriteAppList.filter((app: IApplication) => {
                 return app.getApplicationName().toLowerCase().indexOf(this.query.toLowerCase()) !== -1;
             });
         } else {
-            this.applicationList = this.favoriteApplicationList;
-        }
-        this.hideProcessing();
-    }
-
-    private initEmptyText(): void {
-        forkJoin(
-            this.translateService.get('COMMON.MIN_LENGTH'),
-            this.translateService.get('COMMON.EMPTY_ON_SEARCH')
-        ).subscribe(([minLengthMessage, emptyText]: string[]) => {
-            this.i18nText.SEARCH_INPUT_GUIDE = this.translateReplaceService.replace(minLengthMessage, this.SEARCH_MIN_LENGTH);
-            this.emptyText = emptyText;
-        });
-    }
-
-    onClearSearch(input: HTMLInputElement): void {
-        if (this.query === '') {
-            return;
+            this.filteredAppList = this.favoriteAppList;
         }
 
-        this.query = '';
-        input.value = '';
-        this.filterApplicationList();
-        input.focus();
+        this.isEmpty = isEmpty(this.filteredAppList);
+    }
+
+    private set query(query: string) {
+        this._query = query;
+        this.filterList();
+    }
+
+    private get query(): string {
+        return this._query;
     }
 
     onSearch(query: string): void {
@@ -94,11 +94,13 @@ export class FavoriteApplicationListForConfigurationContainerComponent implement
         }
 
         this.query = query;
-        this.filterApplicationList();
+    }
+
+    onCancel(): void {
+        this.query = '';
     }
 
     onSelectApp(app: IApplication): void {
-        this.showProcessing();
         this.webAppSettingDataService.removeFavoriteApplication(app).subscribe(({applicationName, serviceType, code}: IFavoriteApplication) => {
             this.storeHelperService.dispatch(new Actions.RemoveFavoriteApplication([new Application(applicationName, serviceType, code)]));
         }, (error: IServerErrorFormat) => {
@@ -112,18 +114,7 @@ export class FavoriteApplicationListForConfigurationContainerComponent implement
                 resolver: this.componentFactoryResolver,
                 injector: this.injector
             });
-            this.hideProcessing();
         });
         this.analyticsService.trackEvent(TRACKED_EVENT_LIST.REMOVE_FAVORITE_APPLICATION);
-    }
-
-    private showProcessing(): void {
-        this.useDisable = true;
-        this.showLoading = true;
-    }
-
-    private hideProcessing(): void {
-        this.useDisable = false;
-        this.showLoading = false;
     }
 }

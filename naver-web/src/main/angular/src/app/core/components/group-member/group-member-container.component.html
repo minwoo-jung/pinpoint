@@ -7,13 +7,18 @@
         </div>
     </div>
     <div class="l-group-member-list">
-        <pp-group-member
-            [groupMemberList]="groupMemberList"
-            [currentUserId]="userId"
-            [canRemoveAllGroupMember]="canRemoveAllGroupMember"
-            [canRemoveAllGroupMemberExceptMe]="canRemoveAllGroupMemberExceptMe"
-            (outRemove)="onRemoveGroupMember($event)"
-        ></pp-group-member>
+        <ng-container *ngIf="!isEmpty(); else emptyText">
+            <pp-group-member
+                [groupMemberList]="groupMemberList"
+                [currentUserId]="userId"
+                [canRemoveAllGroupMember]="canRemoveAllGroupMember"
+                [canRemoveAllGroupMemberExceptMe]="canRemoveAllGroupMemberExceptMe"
+                (outRemove)="onRemoveGroupMember($event)">
+            </pp-group-member>
+        </ng-container>
+        <ng-template #emptyText>
+            <p class="l-empty-text">{{emptyText$ | async}}</p>
+        </ng-template>
     </div>
     <ng-container *ngIf="errorMessage">
         <pp-server-error-message

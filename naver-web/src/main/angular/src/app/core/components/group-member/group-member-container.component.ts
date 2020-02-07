@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 import { WebAppSettingDataService, UserPermissionCheckService, MessageQueueService, MESSAGE_TO, AnalyticsService, TRACKED_EVENT_LIST } from 'app/shared/services';
 import { GroupMemberDataService, IGroupMember, IGroupMemberResponse } from './group-member-data.service';
-import { isThatType } from 'app/core/utils/util';
+import { isThatType, isEmpty } from 'app/core/utils/util';
 
 @Component({
     selector: 'pp-group-member-container',
@@ -11,8 +12,9 @@ import { isThatType } from 'app/core/utils/util';
     styleUrls: ['./group-member-container.component.css']
 })
 export class GroupMemberContainerComponent implements OnInit, OnDestroy {
-    private unsubscribe: Subject<null> = new Subject();
+    private unsubscribe = new Subject<void>();
     private ascendSort = true;
+
     userId: string;
     canRemoveAllGroupMember = false;
     canRemoveAllGroupMemberExceptMe = false;
@@ -21,8 +23,10 @@ export class GroupMemberContainerComponent implements OnInit, OnDestroy {
     useDisable = false;
     showLoading = false;
     errorMessage: string;
+    emptyText$: Observable<string>;
 
     constructor(
+        private translateService: TranslateService,
         private webAppSettingDataService: WebAppSettingDataService,
         private userPermissionCheckService: UserPermissionCheckService,
         private groupMemberDataService: GroupMemberDataService,
@@ -30,6 +34,7 @@ export class GroupMemberContainerComponent implements OnInit, OnDestroy {
         private analyticsService: AnalyticsService,
     ) {}
     ngOnInit() {
+        this.emptyText$ = this.translateService.get('COMMON.EMPTY');
         this.webAppSettingDataService.getUserId().subscribe((userId: string) => {
             this.userId = userId;
         });
@@ -176,5 +181,9 @@ export class GroupMemberContainerComponent implements OnInit, OnDestroy {
     private hideProcessing(): void {
         this.useDisable = false;
         this.showLoading = false;
+    }
+
+    isEmpty(): boolean {
+        return isEmpty(this.groupMemberList);
     }
 }

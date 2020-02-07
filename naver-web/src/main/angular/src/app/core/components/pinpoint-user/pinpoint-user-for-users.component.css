@@ -2,7 +2,7 @@
     display: block;
     width: 100%;
     color: #333;
-    padding: 6px 17px;
+    padding: 12px 15px;
     font-size: 13px;    
     overflow: hidden;
     white-space: nowrap;
@@ -18,7 +18,7 @@
 .fa-trash-alt {
     float: right;
     color: #b3b6bf;
-    font-size: 14px;
+    font-size: 15px;
     margin-left: 4px;
 }
 

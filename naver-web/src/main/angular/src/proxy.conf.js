@@ -49,7 +49,12 @@ const PROXY_CONFIG = [
             "/admin/removeAgentId.pinpoint",
             "/admin/removeInactiveAgents.pinpoint",
             "/users/user/permissionAndConfiguration.pinpoint",
-            "/userConfiguration/favoriteApplications.pinpoint"
+            "/userConfiguration/favoriteApplications.pinpoint",
+            "/users.pinpoint",
+            "/users/user.pinpoint",
+            "/roles.pinpoint",
+            "/users/user/role.pinpoint",
+            "/roles/role.pinpoint"
         ],
         target: 'http://localhost:8080',
         secure: false
