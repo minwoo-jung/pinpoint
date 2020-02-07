@@ -48,7 +48,7 @@ public class CubridConnectionIT extends BasePinpointTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         // DriverManager.setLogWriter(new PrintWriter(System.out));
-        driverProperties = new DriverProperties("database/cubrid.properties", "cubrid");
+        driverProperties = DriverProperties.load("database/cubrid.properties", "cubrid");
     }
 
     @Before

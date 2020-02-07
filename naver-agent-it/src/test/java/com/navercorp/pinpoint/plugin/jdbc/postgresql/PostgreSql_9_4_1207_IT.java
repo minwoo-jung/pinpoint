@@ -43,7 +43,7 @@ public class PostgreSql_9_4_1207_IT extends PostgreSqlBase {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        DriverProperties driverProperties = new DriverProperties("database/postgre.properties", "postgresql");
+        DriverProperties driverProperties = DriverProperties.load("database/postgre.properties", "postgresql");
         driverClass = new PostgreSql_9_4_1207_JDBCDriverClass();
         jdbcApi = new PostgreSqlJDBCApi(driverClass);
 

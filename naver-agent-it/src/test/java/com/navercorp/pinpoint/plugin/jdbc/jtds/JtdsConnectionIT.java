@@ -49,7 +49,7 @@ public class JtdsConnectionIT extends BasePinpointTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        driverProperties = new DriverProperties("database/jtds.properties", "mssqlserver-jtds");
+        driverProperties = DriverProperties.load("database/jtds.properties", "mssqlserver-jtds");
     }
 
     @AfterClass

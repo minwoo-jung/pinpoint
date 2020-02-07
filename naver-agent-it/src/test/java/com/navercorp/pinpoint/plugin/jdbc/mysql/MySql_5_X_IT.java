@@ -45,7 +45,7 @@ public class MySql_5_X_IT extends MySql_IT_Base {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        driverProperties = new DriverProperties("database/mysql.properties", "mysql");
+        driverProperties = DriverProperties.load("database/mysql.properties", "mysql");
         driverClass = new MySql5JDBCDriverClass();
         jdbcApi = new DefaultJDBCApi(driverClass);
         driverClass.getDriver();

@@ -81,7 +81,7 @@ public class OracleIT {
     public static void setup() throws Exception {
         JDBC_API.getJDBCDriverClass().getDriver();
 
-        DriverProperties driverProperties = new DriverProperties("database/oracle.properties", "oracle");
+        DriverProperties driverProperties = DriverProperties.load("database/oracle.properties", "oracle");
         
         JDBC_URL = driverProperties.getUrl();
 

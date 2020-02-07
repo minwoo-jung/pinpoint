@@ -49,7 +49,7 @@ public class MySqlLoadBalance_5_X_IT extends MySql_IT_Base {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final DriverProperties driverProperties = new DriverProperties("database/mysql.properties", "mysql");
+    private final DriverProperties driverProperties = DriverProperties.load("database/mysql.properties", "mysql");
     private final JDBCDriverClass driverClass = new MySql5JDBCDriverClass();
 
     @Override
