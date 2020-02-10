@@ -54,7 +54,8 @@ const PROXY_CONFIG = [
             "/users/user.pinpoint",
             "/roles.pinpoint",
             "/users/user/role.pinpoint",
-            "/roles/role.pinpoint"
+            "/roles/role.pinpoint",
+            "/userGroup/applicationAuth.pinpoint"
         ],
         target: 'http://localhost:8080',
         secure: false

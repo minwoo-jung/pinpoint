@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { map, filter, withLatestFrom } from 'rxjs/operators';
+import { map, filter, withLatestFrom, take } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { LocalStorageService } from 'angular-2-local-storage';
 import 'moment-timezone';
@@ -62,6 +62,7 @@ export class WebAppSettingDataService {
         this.store.pipe(
             select(STORE_KEY.APPLICATION_LIST),
             filter((appList: IApplication[]) => appList.length !== 0),
+            take(1),
             withLatestFrom(this.messageQueueService.receiveMessage(this.unsubscribe, MESSAGE_TO.FAVORITE_APP_LIST_FROM_SERVER)),
             map(([appList, favAppListFromServer]: IApplication[][]) => {
                 return favAppListFromServer.filter((favApp: IApplication) => {
