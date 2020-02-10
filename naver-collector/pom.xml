@@ -211,6 +211,11 @@
                         <overlay>
                             <groupId>com.navercorp.pinpoint</groupId>
                             <artifactId>pinpoint-collector</artifactId>
+
+                             <!-- Pinpoint-collector(grpc-1.14.0) and jetcd(grpc-1.17.1) have different grpc library version. So has excluded grpc libary in Pinpoint-collector. -->
+                            <excludes>
+                                <exclude>WEB-INF/lib/grpc-*.jar</exclude>
+                            </excludes>
                         </overlay>
                     </overlays>
                 </configuration>
