@@ -35,7 +35,7 @@ public class GatewayClientMethodNameFilter implements MethodFilter {
         // object methods.
         this.excludeMethodNames.addAll(Arrays.asList("clone", "equals", "finalize", "getClass", "hashCode", "notify", "notifyAll", "toString", "wait"));
         // unnecessary methods.
-        this.excludeMethodNames.addAll(Arrays.asList("ping", "destroy", "close", "sync", "getGateway", "getClient", "pipeline", "pipelineCallback", "executeBackgroundPool", "execute", "executeCallback", "toExecuteInfo", "quit", "disconnect", "passivate", "isConnected", "getTupledSet", "getConnection", "setKeyspace", "getKeyspace", "connectInfo"));
+        this.excludeMethodNames.addAll(Arrays.asList("setServer", "ping", "destroy", "close", "sync", "getGateway", "getClient", "pipeline", "pipelineCallback", "executeBackgroundPool", "execute", "executeCallback", "toExecuteInfo", "quit", "disconnect", "passivate", "isConnected", "getTupledSet", "getConnection", "setKeyspace", "getKeyspace", "connectInfo"));
     }
 
     @Override
