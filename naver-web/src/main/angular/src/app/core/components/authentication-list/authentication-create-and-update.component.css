@@ -44,6 +44,11 @@ form {
     margin-right: 10px;
 }
 
+.l-required-icon {
+    color: #d00;
+    margin-left: 2px;
+}
+
 .l-wrapper .l-create {
     width: 100%;
     margin-top: 6px;
@@ -62,17 +67,23 @@ form {
     background-color: #000;
 }
 
-select { 
+.l-select {
     width: 100%;
     appearance: none;
     -webkit-appearance: none;
-    border-radius: 0px;
+    border-radius: 4px;
     background-color: #FFF;
-    height: 28px;
-    padding: 0 9px;
-    border:1px solid #4488cb;
-    font-size:13px;
-    color:#666;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+    color: #333;
+    box-shadow: 0 0 1px 0 #ccc;
+    outline: 0;
+}
+
+.l-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0px 1px 1px var(--primary-color);
 }
 
 select[disabled] {
@@ -83,8 +94,8 @@ select[disabled] {
 
 .fa-angle-down {
     position: absolute;
-    top: 29px;
-    right: 8px;
+    top: 33px;
+    right: 10px;
     font-size: 15px;
 }
 
@@ -107,4 +118,23 @@ input[disabled] {
     font-family: 'Open Sans', sans-serif;
     font-weight: 600;
     margin-bottom: 4px;
+}
+
+.ng-valid[required]  {
+    border-left: 5px solid #42A948 !important; 
+}
+
+.ng-valid[required]:focus {
+    border-color: #42a948;
+    box-shadow: 0 0 1px 0px #42a948;
+}
+
+.ng-invalid:not(form).ng-touched  {
+    border-left: 5px solid #a94442 !important;
+    border-color: #d00;
+}
+
+.ng-invalid:not(form).ng-touched:focus {
+    border-color: #d00;
+    box-shadow: 0 0 1px 0px #d00;
 }

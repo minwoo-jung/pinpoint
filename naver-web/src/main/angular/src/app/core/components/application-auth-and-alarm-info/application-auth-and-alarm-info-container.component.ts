@@ -1,6 +1,6 @@
 import { Component, OnInit, Injector, ComponentFactoryResolver, OnDestroy } from '@angular/core';
-import { Subject, Observable, combineLatest } from 'rxjs';
-import { withLatestFrom, filter, map } from 'rxjs/operators';
+import { Subject, Observable, forkJoin } from 'rxjs';
+import { withLatestFrom, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 import { UrlPath, UrlPathId } from 'app/shared/models';
@@ -66,7 +66,7 @@ export class ApplicationAuthAndAlarmInfoContainerComponent implements OnInit, On
     }
 
     private getI18NText(): void {
-        combineLatest(
+        forkJoin(
             this.translateService.get('CONFIGURATION.AUTH.SERVER_MAP'),
             this.translateService.get('CONFIGURATION.AUTH.API_META'),
             this.translateService.get('CONFIGURATION.AUTH.PARAM_META'),

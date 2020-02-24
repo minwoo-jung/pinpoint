@@ -29,7 +29,7 @@
 }
 
 .fa-arrow-right {
-    color: #4a8fd2;
+    color: var(--primary-color);
 }
 
 .disabled {
@@ -54,7 +54,7 @@
 
 .l-submit-button {
     color: #fff;
-    background-color: #4b99e3;
+    background-color: var(--primary-color);
     border-radius: 3px;
     outline: none;
     font-size: 16px;

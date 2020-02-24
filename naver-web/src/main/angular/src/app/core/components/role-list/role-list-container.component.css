@@ -34,13 +34,6 @@
     height: 100%;
     overflow-y: auto;
 }
-.l-search-input {
-    width: 100%;
-    color: #b3b3b4;
-    border: 1px solid #469ae4;
-    padding: 6px 11px;
-    font-size: 13px;
-}
 .btn {
     padding: 0 9px;
     border-radius: 2px;

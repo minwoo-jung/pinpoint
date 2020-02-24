@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
-import { WindowRefService, RouteInfoCollectorService } from 'app/shared/services';
+import { WindowRefService, RouteInfoCollectorService, ThemeService, Theme } from 'app/shared/services';
 
 @Component({
     selector: 'pp-root',
@@ -17,8 +17,10 @@ export class AppComponent implements OnInit {
         private routeInfoCollectorService: RouteInfoCollectorService,
         private router: Router,
         private activatedRoute: ActivatedRoute,
+        private themeService: ThemeService
     ) {
         this.setLang();
+        this.setTheme();
     }
     ngOnInit() {
         this.listenToRouter();
@@ -37,6 +39,12 @@ export class AppComponent implements OnInit {
         } else {
             this.translateService.use(defaultLang);
         }
+    }
+
+    private setTheme(): void {
+        // Fetch the user's theme in the future
+        // in the meantime, set the default theme at the moment
+        this.themeService.changeTheme(Theme.Light);
     }
 
     private listenToRouter(): void {

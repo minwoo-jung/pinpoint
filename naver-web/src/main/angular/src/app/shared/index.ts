@@ -25,6 +25,7 @@ import { AgentHistogramDataService } from './services/agent-histogram-data.servi
 import { TransactionDetailDataService } from './services/transaction-detail-data.service';
 import { StoreHelperService } from './services/store-helper.service';
 import { UrlValidateGuard } from './services/url-validate.guard';
+import { ThemeService } from './services/theme.service';
 
 import { HeaderLogoComponent } from './components/header-logo';
 import { EmptyContentsComponent, NoneComponent } from './components/empty-contents';
@@ -135,7 +136,8 @@ export class SharedModule {
                 UserConfigurationDataService,
                 UserConfigurationResolverService,
                 UserPermissionCheckService,
-                FavoriteApplicationListDataService
+                FavoriteApplicationListDataService,
+                ThemeService
             ]
         };
     }

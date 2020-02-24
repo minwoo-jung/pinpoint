@@ -25,3 +25,4 @@ export * from './user-configuration-data.service';
 export * from './user-configuration-resolver.service';
 export * from './user-permission-check.service';
 export * from './favorite-application-list-data.service';
+export * from './theme.service';
