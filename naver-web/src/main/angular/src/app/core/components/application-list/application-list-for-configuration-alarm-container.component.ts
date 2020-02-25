@@ -78,10 +78,11 @@ export class ApplicationListForConfigurationAlarmContainerComponent implements O
                 return;
             }
 
-            const selectedApp = this.filteredAppList.find((app: IApplication) => this.applicationQuery === app.getApplicationName());
+            const selectedAppIndex = this.filteredAppList.findIndex((app: IApplication) => this.applicationQuery === app.getApplicationName());
 
-            if (selectedApp) {
-                this.onSelectApp(selectedApp);
+            if (selectedAppIndex !== -1) {
+                this.focusIndex = selectedAppIndex
+                this.onSelectApp(this.filteredAppList[selectedAppIndex]);
             }
         });
     }
