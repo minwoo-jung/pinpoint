@@ -70,7 +70,6 @@
         <module>naver-agent</module>
         <module>naver-agent-it</module>
         <module>naver-agent-it7</module>
-        <module>naver-agent-it8</module>
         <module>naver-profiler</module>
         <module>naver-security</module>
         <module>naver-thrift</module>
@@ -78,13 +77,13 @@
         <module>naver-collector</module>
         <module>naver-web</module>
         <module>naver-plugins</module>
+        <module>naver-plugins-it</module>
         <module>naver-flink</module>
         <module>testweb</module>
 <!--        <module>naver-web-oss</module>-->
         <module>test-vertx</module>
         <module>naver-cloud-manager</module>
         <module>naver-batch</module>
-        <!--<module>spark</module>-->
     </modules>
 
 
