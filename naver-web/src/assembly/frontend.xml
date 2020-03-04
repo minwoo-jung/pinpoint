@@ -8,7 +8,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${basedir}/src/main/angular</directory>
+            <directory>${basedir}/src/main/frontend</directory>
             <outputDirectory>./</outputDirectory>
             <excludes>
                 <exclude>node_modules/</exclude>

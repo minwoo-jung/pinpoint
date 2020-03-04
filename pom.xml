@@ -41,12 +41,12 @@
         <repository>
             <id>naver.release.repository</id>
             <name>naver.release</name>
-            <url>http://repo.navercorp.com/maven2</url>
+            <url>https://repo.navercorp.com/maven2</url>
         </repository>
         <snapshotRepository>
             <id>naver.snapshot.repository</id>
             <name>naver.snapshot</name>
-            <url>http://repo.navercorp.com/m2-snapshot-repository</url>
+            <url>https://repo.navercorp.com/m2-snapshot-repository</url>
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
@@ -54,7 +54,7 @@
     <repositories>
         <repository>
             <id>naver.release.repository</id>
-            <url>http://repo.navercorp.com/maven2</url>
+            <url>https://repo.navercorp.com/maven2</url>
         </repository>
     </repositories>
 
@@ -62,7 +62,7 @@
         <pluginRepository>
             <id>naver-plugin-repository</id>
             <name>NHN Maven2 Repository</name>
-            <url>http://repo.navercorp.com/maven2</url>
+            <url>https://repo.navercorp.com/maven2</url>
         </pluginRepository>
     </pluginRepositories>
 

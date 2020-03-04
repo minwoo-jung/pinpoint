@@ -12,7 +12,7 @@
     "test": "ng test pinpoint-naver",
     "lint": "ng lint pinpoint-naver --type-check",
     "e2e": "ng e2e pinpoint-naver",
-    "copy": "cpx '../../src/main/angular/src/**' src",
+    "copy": "cpx '../angular/src/**' src",
     "copy:watch": "cpx '../angular/src/**' src --watch"
   },
   "private": true,
