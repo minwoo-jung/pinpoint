@@ -24,7 +24,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-cubrid-plugin-it</artifactId>
+    <artifactId>naver-pinpoint-cubrid-plugin-it</artifactId>
 
     <packaging>jar</packaging>
 

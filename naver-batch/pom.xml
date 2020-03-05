@@ -5,12 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.navercorp.pinpoint</groupId>
-        <artifactId>pinpoint-naver</artifactId>
+        <artifactId>naver-pinpoint</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-batch</artifactId>
-    <name>naver-pinpoint-batch</name>
+    <artifactId>naver-pinpoint-batch</artifactId>
     <packaging>war</packaging>
 
     <properties>
@@ -31,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-naver-web</artifactId>
+            <artifactId>naver-pinpoint-web</artifactId>
             <classifier>classes</classifier>
         </dependency>
         <dependency>

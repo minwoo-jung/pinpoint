@@ -5,59 +5,58 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.navercorp.pinpoint</groupId>
-        <artifactId>pinpoint-naver</artifactId>
+        <artifactId>naver-pinpoint</artifactId>
         <relativePath>../..</relativePath>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-plugins-assembly</artifactId>
-    <name>pinpoint-naver-plugins-assembly</name>
+    <artifactId>naver-pinpoint-plugins-assembly</artifactId>
     <packaging>pom</packaging>
 
     <dependencies>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-bloc-plugin</artifactId>
+            <artifactId>naver-pinpoint-bloc-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-line-plugin</artifactId>
+            <artifactId>naver-pinpoint-line-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-lucynet-plugin</artifactId>
+            <artifactId>naver-pinpoint-lucynet-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-nbasearc-plugin</artifactId>
+            <artifactId>naver-pinpoint-nbasearc-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-nelo-plugin</artifactId>
+            <artifactId>naver-pinpoint-nelo-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-nbaset-jdbc-driver-plugin</artifactId>
+            <artifactId>naver-pinpoint-nbaset-jdbc-driver-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-nbaset-cp-plugin</artifactId>
+            <artifactId>naver-pinpoint-nbaset-cp-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-owfs-plugin</artifactId>
+            <artifactId>naver-pinpoint-owfs-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-jeus-plugin</artifactId>
+            <artifactId>naver-pinpoint-jeus-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

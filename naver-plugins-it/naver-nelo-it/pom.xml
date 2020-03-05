@@ -24,7 +24,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-nelo-plugin-it</artifactId>
+    <artifactId>naver-pinpoint-nelo-plugin-it</artifactId>
 
     <packaging>jar</packaging>
 

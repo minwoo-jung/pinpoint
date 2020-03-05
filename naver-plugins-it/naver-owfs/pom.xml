@@ -24,7 +24,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-owfs-plugin-it</artifactId>
+    <artifactId>naver-pinpoint-owfs-plugin-it</artifactId>
 
     <packaging>jar</packaging>
 
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.nhncorp.owfs</groupId>
             <artifactId>owfs-api</artifactId>
-            <version>3.6</version>
+            <version>4.0.9</version>
             <scope>test</scope>
         </dependency>
 

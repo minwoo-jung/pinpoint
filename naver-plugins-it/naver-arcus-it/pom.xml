@@ -24,7 +24,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pinpoint-naver-arcus-plugin-it</artifactId>
+    <artifactId>naver-pinpoint-arcus-plugin-it</artifactId>
 
     <packaging>jar</packaging>
 

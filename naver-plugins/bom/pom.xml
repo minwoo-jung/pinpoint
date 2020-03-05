@@ -26,8 +26,7 @@
     </parent>
 
     <packaging>pom</packaging>
-    <artifactId>pinpoint-naver-plugin-bom</artifactId>
-    <name>pinpoint-naver-plugin-bom</name>
+    <artifactId>naver-pinpoint-plugin-bom</artifactId>
 
     <properties>
         <jedis.version>2.4.2</jedis.version>
