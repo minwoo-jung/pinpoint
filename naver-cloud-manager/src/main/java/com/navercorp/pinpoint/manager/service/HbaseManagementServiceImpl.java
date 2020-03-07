@@ -248,7 +248,7 @@ public class HbaseManagementServiceImpl implements HbaseManagementService {
                     return false;
                 }
             } catch (Exception e) {
-                logger.error("[{}] Error initializing namespace : {}", taskId, hbaseNamespace);
+                logger.error("[{}] Error initializing namespace : {}", taskId, hbaseNamespace, e);
                 return false;
             }
             return true;

@@ -55,7 +55,7 @@ public class HbaseAdminClient {
         }
 
         Map<String, String> message = responseEntity.getBody();
-        if ("OK".equals(message.get(RESULT)) == false) {
+        if ("success".equals(message.get(RESULT)) == false) {
             logger.error("can't create namespace({}). because : {}", namespaceName, message.get(MESSAGE));
             return false;
         }
