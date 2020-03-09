@@ -35,6 +35,7 @@
         </property>
         <!-- set "true" in order to catch the errors of declaration of statement more quickly -->
         <property name="failFast" value="true"/>
+        <property name="vfs" value="org.mybatis.spring.boot.autoconfigure.SpringBootVFS"/>
     </bean>
 
     <bean id="metaDataSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -49,6 +50,7 @@
         </property>
         <!-- set "true" in order to catch the errors of declaration of statement more quickly -->
         <property name="failFast" value="true"/>
+        <property name="vfs" value="org.mybatis.spring.boot.autoconfigure.SpringBootVFS"/>
     </bean>
 
     <bean id="statisticsSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -63,6 +65,7 @@
         </property>
         <!-- set "true" in order to catch the errors of declaration of statement more quickly -->
         <property name="failFast" value="true"/>
+        <property name="vfs" value="org.mybatis.spring.boot.autoconfigure.SpringBootVFS"/>
     </bean>
 
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
