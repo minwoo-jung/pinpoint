@@ -20,7 +20,7 @@
     <description> This is the IBM WebSphere Application Server Default Application.</description>
     <module id="WebModule_1" >
         <web>
-            <web-uri>pinpoint-testweb-2.0.0.war</web-uri>
+            <web-uri>pinpoint-testweb-2.0.1-SNAPSHOT.war</web-uri>
             <context-root>/</context-root>
         </web>
     </module>
