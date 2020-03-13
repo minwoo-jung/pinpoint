@@ -103,4 +103,8 @@
     <bean id="hbaseAdminClient" class="com.navercorp.pinpoint.manager.service.HbaseAdminClient">
         <constructor-arg index="0" value="#{pinpointManagerProps['hbase.admin.server.domain']}"/>
     </bean>
+
+    <bean class="com.navercorp.pinpoint.manager.servlet.RewriteFilter">
+        <constructor-arg index="0" value="true"/>
+    </bean>
 </beans>

@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.manager;
 
+import com.navercorp.pinpoint.manager.servlet.RewriteFilter;
 import io.undertow.predicate.Predicate;
 import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
@@ -30,6 +31,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
@@ -101,4 +103,11 @@ public class PinpointCloudManager {
         return factory;
     }
 
+    @Bean
+    public FilterRegistrationBean dawsonApiFilter() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(new RewriteFilter(true));
+        registration.addUrlPatterns("/*");
+        return registration;
+    }
 }
