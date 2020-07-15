@@ -36,7 +36,7 @@ public class AgentDirBaseClassPathResolver implements ClassPathResolver {
 
     private final BootLogger logger = BootLogger.getLogger(this.getClass());
 
-    static final String VERSION_PATTERN = "(-[0-9]+\\.[0-9]+\\.[0-9]+((\\-SNAPSHOT)|(-RC[0-9]+))?)?";
+    static final String VERSION_PATTERN = "(-[0-9]+\\.[0-9]+\\.[0-9]+((\\-SNAPSHOT)|(-RC[0-9]+)|(-[a-zA-Z]+-RC[0-9]+))?)?";
 
     static final JarDescription bootstrap = new JarDescription("pinpoint-bootstrap", true);
 
