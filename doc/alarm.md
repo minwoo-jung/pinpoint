@@ -694,7 +694,7 @@ public interface SmsSender {
 
 Webhook 전송 기능은 Pinpoint의 Alarm message를 Webhook API로 전송 할 수 있는 기능이다.
 
-**webhook message를 전송받는 webhook receiver 서비스는 샘플 프로젝트(링크추가)를 사용하거나 직접 구현해야 한다.**
+**webhook message를 전송받는 webhook receiver 서비스는 [샘플 프로젝트](https://github.com/doll6777/slack-receiver)를 사용하거나 직접 구현해야 한다.**
 Webhook Receiver 서버에 전송되는 Alarm message(이하 payload)는 Alarm Checker 타입에 따라 스키마가 다르다.
 Checker 타입에 따른 payload 스키마는 [**3.기타** - webhook 페이로드 스키마 명세, 예시](##3.기타)에서 설명한다.
 
@@ -730,7 +730,11 @@ WebhookSender 클래스는 Pinpoint-batch의 [applicationContext-batch-sender.xm
 
 **step 1**
 
-알람에 관련된 데이터를 저장하기 위해 Mysql 서버를 준비하고, [jdbc-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/jdbc-root.properties) 파일에 접속 정보를 설정한다.
+알람에 관련된 데이터를 저장하기 위해 Mysql 서버를 준비한다.
+
+**step 2**
+
+mysql 접근을 위해서 pinpoint-batch의 [jdbc-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/jdbc-root.properties) 파일에 접속 정보를 설정한다.
 
 ```properties
 jdbc.driverClassName=com.mysql.jdbc.Driver
@@ -738,7 +742,7 @@ jdbc.url=jdbc:mysql://localhost:13306/pinpoint?characterEncoding=UTF-8
 jdbc.username=admin
 jdbc.password=admin
 ```
-**step 2**
+**step 3**
 
 mysql에 Alarm 기능에 필요한 table을 생성한다. table 스키마는 아래 파일을 참조한다.
 - *[CreateTableStatement-mysql.sql](https://github.com/pinpoint-apm/pinpoint/blob/master/web/src/main/resources/sql/CreateTableStatement-mysql.sql)*
@@ -778,6 +782,8 @@ jdbc.password=admin
 # webhook config
 webhook.enable=true
 ```
+
+!!!!web기능을 활성화하면 아래 그림처럼 webhook 기능이 활성화되는것을 알수 있다.
 
 ## 3. 기타
 
