@@ -522,19 +522,19 @@ DataSourceAlarmListValueAgentChecker
 
 # Alarm 
 
-pinpoint-batch에서 application 상태를 주기적으로 체크하여 application 상태의 수치가 임계치를 초과할 경우 사용자에게 알람을 전송하는 기능을 제공한다. 
+pinpoint는 application 상태를 주기적으로 체크하여 application 상태의 수치가 임계치를 초과할 경우 사용자에게 알람을 전송하는 기능을 제공한다. 
 
-application 상태 값이 사용자가 설정한 임계치를 초과하는 지 판단하는 batch는 pinpoint-batch에서 동작 한다.
-alarm batch는 기본적으로 3분에 한번씩 동작이 된다. 최근 5분동안의 데이터를 수집해서 alarm 조건을 만족하면 user group에 속한 user 들에게 sms /email을 전송한다.
+application 상태 값이 사용자가 설정한 임계치를 초과하는지 판단하는 batch는 [pinpoint-batch](https://github.com/pinpoint-apm/pinpoint/tree/master/batch)에서 동작 한다.
+alarm batch는 기본적으로 3분에 한번씩 동작이 된다. 최근 5분동안의 데이터를 수집해서 alarm 조건을 만족하면 user group에 속한 user 들에게 sms/email/webhook message를 전송한다.
 
-> 연속적으로 알람 조건이 임계치를 초과한 경우에 매번 sms/email/webhook를 전송하지 않습니다.<br/>
-> 알람 조건이 만족할때마다 매번 sms/email/webhook이 전송되는것은 오히려 방해가 된다고 생각하기 때문입니다. 그래서 연속해서 알람이 발생할 경우 sms/email/webhook 전송 주기가 점증적으로 증가됩니다.<br/>
-> 예) 알람이 연속해서 발생할 경우, 전송 주기는 3분 -> 6분 -> 12분 -> 24분 으로 증가합니다.
+> 연속적으로 알람 조건이 임계치를 초과한 경우에 매번 sms/email/webhook를 전송하지 않는다.<br/>
+> 알람 조건이 만족할때마다 매번 sms/email/webhook이 전송되는것은 오히려 방해가 된다고 생각하기 때문이다. 그래서 연속해서 알람이 발생할 경우 sms/email/webhook 전송 주기가 점증적으로 증가된다.<br/>
+> 예) 알람이 연속해서 발생할 경우, 전송 주기는 3분 -> 6분 -> 12분 -> 24분 으로 증가한다.
 
 > **알림**<br/>
 ><br/>
-> batch는 pinpoint 2.2.0 버전까지는 pinpoint-web에서 동작되었으나, 2.2.1 버전 부터는 batch 로직을 pinpoint-batch에서 동작되도록 분리했다.<br/>
-> 앞으로 pinpoint-web의 batch로직은 제거를 할 예정이므로, pinpoint-web에서 batch를 동작시키는 경우 pinpoint-batch에서 batch를 실행하도록 개선하는것을 추천한다. 
+> batch는 pinpoint 2.2.0 버전까지는 [pinpoint-web](https://github.com/pinpoint-apm/pinpoint/tree/master/web)에서 동작되었지만, 2.2.1 버전 부터는 batch가 [pinpoint-batch](https://github.com/pinpoint-apm/pinpoint/tree/master/batch)에서 동작되도록 로직을 분리했다.<br/>
+> 앞으로 pinpoint-web의 batch로직은 제거를 할 예정이므로, pinpoint-web에서 batch를 동작시키는 경우 pinpoint-batch에서 batch를 실행하도록 구성하는것을 추천한다. 
 
 ## 1. Alarm 기능 사용 방법
 
@@ -607,19 +607,41 @@ FILE DESCRIPTOR COUNT
 
 ## 2. 설정 및 구현 방법
 
-alarm 기능을 사용하려면 pinpoint-batch와 pinpoint-web에 설정 또는 추가 구현이 필요하다.
+알람을 전송하는 방법은 총 3가지로서, email, sms와 webhook으로 알람을 전송 할 수 있다.<br/>
 
-## 2.1 pinpoint-batch 설정 및 구현 방법
+email 전송은 설정만 추가하면 기능을 사용할 수 있고, sms 전송을 하기 위해서는 직접 전송 로직을 구현해야 한다.<br/>
+webhook 전송은 webhook message를 받는 webhook receiver 서비스를 별도로 준비해야한다. webhook receiver 서비스는 [샘플 프로젝트](https://github.com/doll6777/slack-receiver)를 사용하거나 직접 구현해야 한다.
 
-알람을 전송하는 방법은 총 3가지로서, email, sms와 webhook으로 알람을 전송을 할 수 있다. 
-email 전송은 설정만 추가하면 기능을 사용할수 있고, sms 전송을 하기 위해서는 직접 전송 로직을 구현해야 한다. 
-webhook 전송은 설정을 추가하면 기능을 사용할 수 있으며, webhook 알람을 받을 webhook receiver 서비스를 별도로 준비해야한다.
-webhook receiver 서비스는 샘플 프로젝트(링크추가)를 사용하거나 직접 구현해야한다.
+alarm 기능을 사용하려면 pinpoint-batch와 pinpoint-web를 수정해야한다.
+pinpoint-batch에는 alarm batch 동작을 위해서 설정 및 구현체를 추가하고
+pinpoint-web에는 사용자가 알람을 추가할수 있도록 설정을 추가해야한다.
+
+## 2.1 pinpoint-batch 설정 및 구현체 방법
 
 ### 2.1.1) email/sms/webhook 전송 설정 및 구현
 
 **A. email 전송**
 
+email 전송 기능을 사용하기 위해서 [batch-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/batch-root.properties)파일에 smtp 서버 정보와 email에 포함될 정보들을 설정해야 한다.
+
+```
+pinpoint.url= #pinpoint-web 서버의 url 
+alarm.mail.server.url= #smtp 서버 주소  
+alarm.mail.server.port= #smtp 서버 port 
+alarm.mail.server.username= #smtp 인증을 위한 userName
+alarm.mail.server.password= #smtp 인증을 위한 password
+alarm.mail.sender.address= # 송신자 email
+
+ex)
+pinpoint.url=http://pinpoint.com
+alarm.mail.server.url=stmp.server.com
+alarm.mail.server.port=587
+alarm.mail.server.username=pinpoint
+alarm.mail.server.password=pinpoint
+alarm.mail.sender.address=pinpoint_operator@pinpoint.com
+```
+
+참고로<br/>
 [applicationContext-batch-sender.xml](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/applicationContext-batch-sender.xml)파일에 email을 전송하는 class가 bean으로 등록 되어있다.
 
 ```
@@ -648,26 +670,8 @@ webhook receiver 서비스는 샘플 프로젝트(링크추가)를 사용하거�
     </bean>
 ```
 
-email 전송 기능을 사용하기 위해서 batch.properties파일에 smtp 서버 정보와 email에 포함될 여러 정보를 설정해야 한다.
-
-```
-pinpoint.url= #pinpoint-web 서버의 url 
-alarm.mail.server.url= #smtp 서버 주소  
-alarm.mail.server.port= #smtp 서버 port 
-alarm.mail.server.username= #smtp 인증을 위한 userName
-alarm.mail.server.password= #smtp 인증을 위한 password
-alarm.mail.sender.address= # 송신자 email
-
-ex)
-pinpoint.url=http://pinpoint.com
-alarm.mail.server.url=stmp.server.com
-alarm.mail.server.port=587
-alarm.mail.server.username=pinpoint
-alarm.mail.server.password=pinpoint
-alarm.mail.sender.address=pinpoint_operator@pinpoint.com
-```
-
-만약 email 전송 로직을 직접 구현하고 싶다면 위의 SpringSmtpMailSender, JavaMailSenderImpl bean 선언을 제거하고 com.navercorp.pinpoint.web.alarm.MailSender interface를 구현해서 bean을 등록하면 된다.
+만약<br/>
+ email 전송 로직을 직접 구현하고 싶다면 위의 SpringSmtpMailSender, JavaMailSenderImpl bean 선언을 제거하고 com.navercorp.pinpoint.web.alarm.MailSender interface를 구현해서 bean을 등록하면 된다.
 
 ```
 public interface MailSender {
@@ -678,7 +682,7 @@ public interface MailSender {
 **B. sms 전송**
 
 sms 전송 기능을 사용 하려면 com.navercorp.pinpoint.batch.alarm.SmsSender interface를 구현하고 bean으로 등록해야 한다.
-반드시 sms 전송 로직을 구현할 필요는 없고, SmsSender 구현 class가 없는 경우 sms는 전송되지 않는다.
+SmsSender 구현 class가 없는 경우 sms는 전송되지 않는다.
 
 ```
 public interface SmsSender {
@@ -688,28 +692,55 @@ public interface SmsSender {
 
 **C. webhook 전송**
 
-Webhook 전송 기능은 Pinpoint의 Alarm을 Webhook API로 전송 할 수 있는 기능이다.
+Webhook 전송 기능은 Pinpoint의 Alarm message를 Webhook API로 전송 할 수 있는 기능이다.
 
-Alarm을 전송받을 webhook Receiver 서비스는 직접 구현해야한다. 
-Webhook Receiver에 서버 전송되는 Alarm message(이하 payload)는 Alarm Checker 타입에 따라 스키마가 다르다.
-Checker 타입에 따른 payload 스키마 예제는 [**3.기타** - webhook 페이로드 스키마 명세 및 예시](##3.기타)에서 설명한다.
+**webhook message를 전송받는 webhook receiver 서비스는 샘플 프로젝트(링크추가)를 사용하거나 직접 구현해야 한다.**
+Webhook Receiver 서버에 전송되는 Alarm message(이하 payload)는 Alarm Checker 타입에 따라 스키마가 다르다.
+Checker 타입에 따른 payload 스키마는 [**3.기타** - webhook 페이로드 스키마 명세, 예시](##3.기타)에서 설명한다.
 
-Pinpoint 2.1.1 이전 버전을 사용하면, Mysql의 'alarm_rule' 테이블에 'webhook_send' 컬럼을 추가해야한다.
+webhook 기능을 활성화 하기위해서,
+[batch-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/batch-root.properties) 파일에 Webhook 전송 여부(webhook.enable)와 receiver 서버 정보(webhook.receiver.url)를 설정한다. 
 
-```mysql
-ALTER TABLE `alarm_rule` ADD COLUMN `webhook_send` CHAR(1) DEFAULT NULL;
+```properties
+# webhook config
+webhook.enable=true
+webhook.receiver.url=http://www.webhookexample.com/alarm/
+```
+
+
+>**알림**<br/>
+>webhook 기능이 추가되면서 mysql 테이블 스키마가 수정되었기 때문에, Pinpoint 2.1.1 미만 버전에서 2.1.1 버전 이상으로 업그레이드한 경우 Mysql의 'alarm_rule' 테이블에 'webhook_send' 컬럼을 추가해야한다.
+>
+>SQL : ALTER TABLE `alarm_rule` ADD COLUMN `webhook_send` CHAR(1) DEFAULT NULL;
+>
+
+참고로<br/>
+Webhook을 전송하는 클래스는 Pinpoint가 제공하는 WebhookSenderImpl가 담당한다.
+WebhookSender 클래스는 Pinpoint-batch의 [applicationContext-batch-sender.xml](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/applicationContext-batch-sender.xml) 파일에 bean으로 등록 되어있다.
+
+```xml
+<bean id="webHookSender" class="com.navercorp.pinpoint.web.alarm.WebhookSenderImpl">
+    <constructor-arg ref="batchConfiguration"/>
+    <constructor-arg ref="userServiceImpl"/>
+    <constructor-arg ref="restTemplate" />
+</bean>
 ```
 
 ### 2.1.2) MYSQL 서버 IP 주소 설정 & table 생성
 
-Mysql 서버를 준비하고 jdbc.properties 파일에 접속 정보를 설정한다.
-```
+**step 1**
+
+알람에 관련된 데이터를 저장하기 위해 Mysql 서버를 준비하고, [jdbc-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/jdbc-root.properties) 파일에 접속 정보를 설정한다.
+
+```properties
 jdbc.driverClassName=com.mysql.jdbc.Driver
 jdbc.url=jdbc:mysql://localhost:13306/pinpoint?characterEncoding=UTF-8
 jdbc.username=admin
 jdbc.password=admin
 ```
-Alarm 기능에 필요한 아래의 table을 생성해야 한다. 
+**step 2**
+
+mysql에 Alarm 기능에 필요한 table을 생성한다. table 스키마는 아래 파일을 참조한다.
 - *[CreateTableStatement-mysql.sql](https://github.com/pinpoint-apm/pinpoint/blob/master/web/src/main/resources/sql/CreateTableStatement-mysql.sql)*
 - *[SpringBatchJobRepositorySchema-mysql.sql](https://github.com/pinpoint-apm/pinpoint/blob/master/web/src/main/resources/sql/SpringBatchJobRepositorySchema-mysql.sql)*
 
@@ -725,20 +756,11 @@ java -Dspring.profiles.active=XXXX -jar pinpoint-batch-VERSION.jar
 ex) java -Dspring.profiles.active=local -jar pinpoint-batch-2.1.1.jar 
 ```
 
-## 2.2 pinpoint-web/pinpoint-batch 설정 방법
+## 2.2 pinpoint-web 설정 방법
 
-Webhook을 전송하는 클래스는 Pinpoint가 제공하는 WebhookSenderImpl를 사용하면 된다.
-WebhookSender 클래스는 Pinpoint-batch의 [applicationContext-batch-sender.xml](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/applicationContext-batch-sender.xml) 파일에 bean으로 등록 되어있다.
 
-```xml
-<bean id="webHookSender" class="com.navercorp.pinpoint.web.alarm.WebhookSenderImpl">
-    <constructor-arg ref="batchConfiguration"/>
-    <constructor-arg ref="userServiceImpl"/>
-    <constructor-arg ref="restTemplate" />
-</bean>
-```
-
-알람 설정을 입력받기 위해서 pinpoint-web의 jdbc.properties 파일에 mysql 접속 정보를 설정한다.
+### 2.2.1) MYSQL 서버 IP 주소 설정
+사용자 알람 설정을 저장하기 위해서 pinpoint-web의 [jdbc-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/web/src/main/resources/jdbc-root.properties) 파일에 mysql 접속 정보를 설정한다.
 
 ```
 jdbc.driverClassName=com.mysql.jdbc.Driver
@@ -747,20 +769,15 @@ jdbc.username=admin
 jdbc.password=admin
 ```
 
-Pinpoint Web 모듈의 설정 파일인 [batch-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/batch-root.properties) 파일에 Webhook 전송 여부(webhook.enable)를 추가한다.
-```properties
-# webhook config
-webhook.enable=true
-```
 
-Webhook 전송 기능을 활성화 하려면, [batch-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/batch/src/main/resources/batch-root.properties) 파일에 Webhook 전송 여부(webhook.enable)와 receiver 서버 정보(webhook.receiver.url)를 설정으로 추가해야한다. 
+### 2.2.2) webhook 기능 활성화
+
+사용자가 알람 설정에 webhook 기능을 적용할수 있도록 [batch-root.properties](https://github.com/pinpoint-apm/pinpoint/blob/master/web/src/main/resources/batch-root.properties) 파일에 webhook 기능을 활성화한다.
 
 ```properties
 # webhook config
 webhook.enable=true
-webhook.receiver.url=http://www.webhookexample.com/alarm/
 ```
-
 
 ## 3. 기타
 
@@ -804,15 +821,13 @@ pinpoint web은 mockDAO를 사용하기 때문에 pinpont web의 설정들을 �
 
 ### 3.2.1 webhook receiver sample project
 
-**5) webhook receiver 프로젝트 예시**
+**webhook receiver 프로젝트 예시**
 
 [Slack-Receiver](https://github.com/doll6777/slack-receiver) 는 Webhook Receiver의 예제 프로젝트이다. 
 이 프로젝트는 Pinpoint의 webhook의 알람을 받아서 Slack으로 메시지를 전송할 수 있는 스프링 부트로 구현된 서비스이다. 
 이 프로젝트의 자세한 사항은 [해당 GitHub 저장소](https://github.com/doll6777/slack-receiver) 를 참고하면 된다. 
 
-### 3.2.2 webhook 메시지 스키마
-
-**6) webhook 페이로드 스키마 명세 및 예시**
+### 3.2.2 webhook 페이로드 스키마, 예시
 
 **페이로드 스키마**
 
@@ -1043,4 +1058,3 @@ DataSourceAlarmListValueAgentChecker
  "sequenceCount": 4
 }
 ```
-
