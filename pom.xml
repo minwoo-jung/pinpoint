@@ -70,6 +70,7 @@
         <module>batch</module>
         <module>report</module>
         <module>metric</module>
+        <module>collector-starter</module>
     </modules>
 
     <properties>
