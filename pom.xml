@@ -71,6 +71,7 @@
         <module>report</module>
         <module>metric</module>
         <module>collector-starter</module>
+        <module>web-starter</module>
     </modules>
 
     <properties>
