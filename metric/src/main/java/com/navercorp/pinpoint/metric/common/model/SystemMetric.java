@@ -39,7 +39,7 @@ public class SystemMetric {
         this.metricName = Objects.requireNonNull(metricName, "metricName");
         this.hostName = Objects.requireNonNull(hostName, "hostName");
         this.fieldName = Objects.requireNonNull(fieldName, "fieldName");
-        this.tags = tags;
+        this.tags = Objects.requireNonNull(tags, "tags");
         this.timestamp = timestamp;
     }
 
