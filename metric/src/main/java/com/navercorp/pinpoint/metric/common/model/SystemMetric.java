@@ -17,7 +17,9 @@
 package com.navercorp.pinpoint.metric.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.navercorp.pinpoint.metric.collector.model.SystemMetricJsonDeserializer;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +27,7 @@ import java.util.Objects;
 /**
  * @author Hyunjoon Cho
  */
-
+@JsonDeserialize(using = SystemMetricJsonDeserializer.class)
 public class SystemMetric {
     protected final String metricName;
     protected final String hostName;
