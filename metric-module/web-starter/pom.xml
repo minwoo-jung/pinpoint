@@ -23,7 +23,7 @@
         <spring.security.version>${spring.security5.version}</spring.security.version>
         <log4j2.version>${log4j2-jdk8.version}</log4j2.version>
 
-        <pinpoint.collector.executable.name>${project.artifactId}-boot-${project.version}</pinpoint.collector.executable.name>
+        <pinpoint.web.executable.name>${project.artifactId}-boot-${project.version}</pinpoint.web.executable.name>
     </properties>
 
     <dependencies>
@@ -47,7 +47,7 @@
                     <outputDirectory>target/deploy</outputDirectory>
                     <executable>true</executable>
                     <attach>false</attach>
-                    <finalName>${pinpoint.collector.executable.name}</finalName>
+                    <finalName>${pinpoint.web.executable.name}</finalName>
                 </configuration>
             </plugin>
         </plugins>
