@@ -16,7 +16,6 @@
 
 package com.navercorp.pinpoint.metric.common.pinot;
 
-import com.navercorp.pinpoint.metric.web.mybatis.PinotConnectionDelegator;
 import org.apache.pinot.client.PinotDriver;
 
 import java.sql.Connection;

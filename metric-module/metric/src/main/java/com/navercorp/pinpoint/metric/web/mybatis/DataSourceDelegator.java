@@ -16,6 +16,8 @@
 
 package com.navercorp.pinpoint.metric.web.mybatis;
 
+import com.navercorp.pinpoint.metric.common.pinot.PinotConnectionDelegator;
+
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
