@@ -50,30 +50,13 @@ public class PinotSystemMetricDoubleDao implements SystemMetricDao<Double> {
     private final SqlSessionTemplate sqlPinotSessionTemplate;
     private final PinotAsyncTemplate asyncTemplate;
 
-    @Value("${pinpoint.pinot.jdbc.url}")
-    private String jdbcUrl;
-
     public PinotSystemMetricDoubleDao(SqlSessionTemplate sqlPinotSessionTemplate, PinotAsyncTemplate asyncTemplate) {
         this.sqlPinotSessionTemplate = Objects.requireNonNull(sqlPinotSessionTemplate, "sqlPinotSessionTemplate");
         this.asyncTemplate = Objects.requireNonNull(asyncTemplate, "asyncTemplate");
     }
 
-    @PostConstruct
-    public void log()  {
-        logger.info("#### jdbcUrl : {}", jdbcUrl);
-    }
-
     @Override
-    public List<SystemMetric> getSystemMetric(QueryParameter queryParameter) {
-        return sqlPinotSessionTemplate.selectList(NAMESPACE + "selectSystemMetric", queryParameter);
-    }
-
-    @Override
-    public List<SampledSystemMetric<Double>> getSampledSystemMetric(QueryParameter queryParameter) {
-        return sqlPinotSessionTemplate.selectList(NAMESPACE + "selectSampledSystemMetric", queryParameter);
-    }
-
-    @Override
+    @Deprecated
     public List<SystemMetricPoint<Double>> getSampledSystemMetricData(MetricDataSearchKey metricDataSearchKey, MetricTag metricTag) {
         StopWatch watch = StopWatch.createStarted();
         logger.info("=========== thread start {} thread. tag:{}", Thread.currentThread().getName(), metricTag);

@@ -31,9 +31,5 @@ import java.util.List;
  */
 public interface SystemMetricDataService {
 
-    List<SystemMetric> getSystemMetricBoList(QueryParameter queryParameter);
-
-    SystemMetricChart<? extends Number> getSystemMetricChart(TimeWindow timeWindow, QueryParameter queryParameter);
-
     SystemMetricData<? extends Number> getCollectedMetricData(MetricDataSearchKey metricDataSearchKey, TimeWindow timeWindow, List<Tag> tags);
 }
