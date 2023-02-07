@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.metric.web.model;
 
-import com.navercorp.pinpoint.metric.common.model.Tag;
+import com.navercorp.pinpoint.common.pinot.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.chart.Point;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 

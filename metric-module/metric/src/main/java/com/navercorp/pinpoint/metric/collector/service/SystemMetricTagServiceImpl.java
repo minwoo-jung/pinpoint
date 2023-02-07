@@ -20,7 +20,7 @@ import com.navercorp.pinpoint.metric.common.model.MetricTag;
 import com.navercorp.pinpoint.metric.common.model.MetricTagCollection;
 import com.navercorp.pinpoint.metric.common.model.MetricTagKey;
 import com.navercorp.pinpoint.metric.common.model.SystemMetric;
-import com.navercorp.pinpoint.metric.common.model.Tag;
+import com.navercorp.pinpoint.common.pinot.model.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;

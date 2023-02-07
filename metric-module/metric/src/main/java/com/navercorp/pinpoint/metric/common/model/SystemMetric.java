@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.metric.common.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.navercorp.pinpoint.common.pinot.model.Tag;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;

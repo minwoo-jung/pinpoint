@@ -1,7 +1,6 @@
-package com.navercorp.pinpoint.metric.common.model.json;
+package com.navercorp.pinpoint.common.pinot.model;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.navercorp.pinpoint.metric.common.model.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
