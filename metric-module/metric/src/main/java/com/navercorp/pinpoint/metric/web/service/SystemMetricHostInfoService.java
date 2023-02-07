@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.metric.web.service;
 
-import com.navercorp.pinpoint.metric.common.model.Tag;
+import com.navercorp.pinpoint.common.pinot.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.MetricInfo;
 import com.navercorp.pinpoint.metric.common.model.MetricTag;
 import com.navercorp.pinpoint.metric.web.mapping.Field;

@@ -18,8 +18,8 @@ package com.navercorp.pinpoint.metric.common.model.mybatis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.navercorp.pinpoint.metric.common.model.Tag;
-import com.navercorp.pinpoint.metric.common.model.json.Tags;
+import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.common.pinot.model.Tags;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;
 import org.apache.ibatis.type.TypeHandler;
@@ -37,7 +37,7 @@ import java.util.List;
  * @author minwoo.jung
  */
 @MappedJdbcTypes({JdbcType.VARCHAR})
-public class TagListTypeHandler implements TypeHandler<List<Tag>> {
+public class  TagListTypeHandler implements TypeHandler<List<Tag>> {
 
     private final Logger logger = LogManager.getLogger(this.getClass());
     private final static ObjectMapper OBJECT_MAPPER = createObjectMapper();

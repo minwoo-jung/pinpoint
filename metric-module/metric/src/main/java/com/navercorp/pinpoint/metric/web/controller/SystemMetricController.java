@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.metric.web.controller;
 
 import com.navercorp.pinpoint.common.server.tenant.TenantProvider;
-import com.navercorp.pinpoint.metric.common.model.Tag;
+import com.navercorp.pinpoint.common.pinot.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.MetricDataSearchKey;
 import com.navercorp.pinpoint.metric.web.model.MetricInfo;
 import com.navercorp.pinpoint.metric.web.model.SystemMetricData;
