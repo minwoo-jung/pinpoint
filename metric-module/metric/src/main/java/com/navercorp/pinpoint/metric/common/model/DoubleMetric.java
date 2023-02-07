@@ -1,5 +1,7 @@
 package com.navercorp.pinpoint.metric.common.model;
 
+import com.navercorp.pinpoint.common.pinot.model.Tag;
+
 import java.util.List;
 
 public class DoubleMetric extends SystemMetric {

@@ -25,7 +25,7 @@ import com.navercorp.pinpoint.metric.collector.service.SystemMetricTagService;
 import com.navercorp.pinpoint.metric.common.model.DoubleMetric;
 import com.navercorp.pinpoint.metric.common.model.Metrics;
 import com.navercorp.pinpoint.metric.common.model.SystemMetric;
-import com.navercorp.pinpoint.metric.common.model.Tag;
+import com.navercorp.pinpoint.common.pinot.model.Tag;
 import com.navercorp.pinpoint.metric.common.model.validation.SimpleErrorMessage;
 import com.navercorp.pinpoint.pinot.tenant.TenantProvider;
 import org.apache.logging.log4j.LogManager;
