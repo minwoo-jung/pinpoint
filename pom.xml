@@ -119,6 +119,7 @@
         <module>pinot</module>
         <module>metric-module</module>
         <module>uristat</module>
+        <module>inspector-collector</module>
 
         <!-- <module>agent-testweb</module> -->
         <!-- <module>plugins-it</module> -->
@@ -452,6 +453,11 @@
             <dependency>
                 <groupId>com.navercorp.pinpoint</groupId>
                 <artifactId>pinpoint-metric</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.navercorp.pinpoint</groupId>
+                <artifactId>pinpoint-inspector-collector</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

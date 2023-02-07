@@ -2,8 +2,8 @@ package com.navercorp.pinpoint.metric.common.model.mybatis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.navercorp.pinpoint.metric.common.model.Tag;
-import com.navercorp.pinpoint.metric.common.model.json.Tags;
+import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.common.pinot.model.Tags;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
