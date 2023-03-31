@@ -35,9 +35,16 @@
             <artifactId>pinpoint-collector</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- todo : (minwoo) metric 쪽 dependency 제거 필요하지 않을까 -->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-commons-pinot</artifactId>
+            <artifactId>pinpoint-metric</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>provided</scope>
         </dependency>
     </dependencies>

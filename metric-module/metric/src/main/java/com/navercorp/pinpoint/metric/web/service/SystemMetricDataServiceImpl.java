@@ -20,7 +20,7 @@ package com.navercorp.pinpoint.metric.web.service;
 import com.navercorp.pinpoint.metric.common.model.MetricDataName;
 import com.navercorp.pinpoint.metric.common.model.MetricDataType;
 import com.navercorp.pinpoint.metric.common.model.MetricTag;
-import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.dao.SystemMetricDao;
 import com.navercorp.pinpoint.metric.web.mapping.Field;
 import com.navercorp.pinpoint.metric.web.mapping.Metric;

@@ -16,7 +16,6 @@
 
 package com.navercorp.pinpoint.metric.common.model;
 
-import com.navercorp.pinpoint.common.pinot.model.Tag;
 
 import java.util.Comparator;
 
