@@ -19,7 +19,7 @@ package com.navercorp.pinpoint.metric.web.view;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.util.TimeWindow;
 import com.navercorp.pinpoint.metric.web.model.chart.Chart;
 import com.navercorp.pinpoint.metric.web.model.chart.Point;

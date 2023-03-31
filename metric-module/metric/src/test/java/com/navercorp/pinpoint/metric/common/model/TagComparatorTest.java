@@ -1,6 +1,6 @@
 package com.navercorp.pinpoint.metric.common.model;
 
-import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

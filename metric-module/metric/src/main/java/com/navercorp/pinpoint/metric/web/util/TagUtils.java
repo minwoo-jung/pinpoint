@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.metric.web.util;
 
 
-import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 
 import java.util.ArrayList;
 import java.util.List;

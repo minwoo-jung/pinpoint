@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.navercorp.pinpoint.metric.collector.model.TelegrafMetric;
 
 import com.navercorp.pinpoint.metric.collector.model.TelegrafMetrics;
-import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.common.model.TagComparator;
 import org.springframework.stereotype.Component;
 
