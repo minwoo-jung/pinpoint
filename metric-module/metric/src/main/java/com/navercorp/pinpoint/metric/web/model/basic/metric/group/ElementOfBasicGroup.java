@@ -17,7 +17,7 @@
 package com.navercorp.pinpoint.metric.web.model.basic.metric.group;
 
 import com.navercorp.pinpoint.metric.common.model.StringPrecondition;
-import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 
 import java.util.List;
 import java.util.Objects;

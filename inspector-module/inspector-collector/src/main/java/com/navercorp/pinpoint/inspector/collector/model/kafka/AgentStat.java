@@ -19,7 +19,7 @@ package com.navercorp.pinpoint.inspector.collector.model.kafka;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.navercorp.pinpoint.common.pinot.model.Tag;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 
 import java.util.Collections;
 import java.util.List;
