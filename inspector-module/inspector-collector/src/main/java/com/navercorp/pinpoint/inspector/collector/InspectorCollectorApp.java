@@ -16,7 +16,14 @@
 
 package com.navercorp.pinpoint.inspector.collector;
 
+import com.navercorp.pinpoint.inspector.collector.config.InspectorKafkaConfiguration;
+import com.navercorp.pinpoint.inspector.collector.config.InspectorPropertySources;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 
@@ -24,8 +31,9 @@ import org.springframework.context.annotation.PropertySource;
  * @author minwoo.jung
  */
 @ComponentScan({"com.navercorp.pinpoint.inspector.collector"})
-@PropertySource({"classpath:inspector/collector/kafka-topic.properties", "classpath:inspector/collector/kafka-producer-factory.properties"})
-// TODO : (minwoo) 환경별로 properties 파일 뽑아주기
-@ImportResource({"classpath:inspector/collector/applicationContext-inspector-pinot-kafka.xml"})
+@EnableAutoConfiguration(exclude = {KafkaAutoConfiguration.class})
+@Import({
+            InspectorPropertySources.class,
+            InspectorKafkaConfiguration.class})
 public class InspectorCollectorApp {
 }

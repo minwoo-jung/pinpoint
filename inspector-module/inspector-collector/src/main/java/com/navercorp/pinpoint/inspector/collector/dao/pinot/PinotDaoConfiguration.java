@@ -30,8 +30,10 @@ import com.navercorp.pinpoint.common.server.bo.stat.LoadedClassBo;
 import com.navercorp.pinpoint.common.server.bo.stat.ResponseTimeBo;
 import com.navercorp.pinpoint.common.server.bo.stat.TotalThreadCountBo;
 import com.navercorp.pinpoint.common.server.bo.stat.TransactionBo;
+import com.navercorp.pinpoint.inspector.collector.dao.AgentStatDao;
 import com.navercorp.pinpoint.inspector.collector.model.kafka.AgentStat;
 import com.navercorp.pinpoint.inspector.collector.model.kafka.AgentStatModelConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -47,13 +49,15 @@ import java.util.function.Function;
 public class PinotDaoConfiguration {
 
     private final KafkaTemplate kafkaAgentStatTemplate;
+    private final String topic;
 
-    public PinotDaoConfiguration(KafkaTemplate kafkaAgentStatTemplate) {
+    public PinotDaoConfiguration(KafkaTemplate kafkaAgentStatTemplate, @Value("${kafka.inspector.topic}") String topic) {
         this.kafkaAgentStatTemplate = Objects.requireNonNull(kafkaAgentStatTemplate, "kafkaAgentStatTemplate");
+        this.topic = topic;
     }
 
     private <T extends AgentStatDataPoint> AgentStatDao<T> newAgentStatDao(Function<AgentStatBo, List<T>> dataPointFunction, Function<List<T>, List<AgentStat>> convertToAgentStat) {
-        return new DefaultAgentStatDao(dataPointFunction, kafkaAgentStatTemplate, convertToAgentStat);
+        return new DefaultAgentStatDao(dataPointFunction, kafkaAgentStatTemplate, convertToAgentStat, topic);
     }
 
     @Bean
