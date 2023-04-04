@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.inspector.collector.dao.pinot;
 
 import com.navercorp.pinpoint.common.server.bo.stat.AgentStatBo;
 import com.navercorp.pinpoint.common.server.bo.stat.AgentStatDataPoint;
+import com.navercorp.pinpoint.inspector.collector.dao.AgentStatDao;
 import com.navercorp.pinpoint.inspector.collector.model.kafka.AgentStat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,11 +38,13 @@ public class DefaultAgentStatDao <T extends AgentStatDataPoint> implements Agent
     private final Function<AgentStatBo, List<T>> dataPointFunction;
     private final Function<List<T>, List<AgentStat>> convertToKafkaModelFunction;
     private final KafkaTemplate kafkaAgentStatTemplate;
+    private final String topic;
 
-    public DefaultAgentStatDao(Function<AgentStatBo, List<T>> dataPointFunction, KafkaTemplate kafkaAgentStatTemplate, Function<List<T>, List<AgentStat>> convertToKafkaModelFunction) {
+    public DefaultAgentStatDao(Function<AgentStatBo, List<T>> dataPointFunction, KafkaTemplate kafkaAgentStatTemplate, Function<List<T>, List<AgentStat>> convertToKafkaModelFunction, String topic) {
         this.dataPointFunction = Objects.requireNonNull(dataPointFunction, "dataPointFunction");
         this.kafkaAgentStatTemplate = Objects.requireNonNull(kafkaAgentStatTemplate, "kafkaAgentStatTemplate");
         this.convertToKafkaModelFunction = convertToKafkaModelFunction;
+        this.topic = topic;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class DefaultAgentStatDao <T extends AgentStatDataPoint> implements Agent
         List<AgentStat> agentStatList = convertDataToKafkaModel(agentStatData);
         for (AgentStat agentStat : agentStatList) {
             String kafkaKey = generateKafkaKey(agentStat);
-            kafkaAgentStatTemplate.send("inspector-stat", kafkaKey, agentStat);
+            kafkaAgentStatTemplate.send(topic, kafkaKey, agentStat);
         }
     }
 
