@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.dao;
+package com.navercorp.pinpoint.inspector.web.definition;
 
-import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
 import com.navercorp.pinpoint.metric.web.mapping.Field;
-import com.navercorp.pinpoint.metric.web.model.SystemMetricData;
-import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
-import com.navercorp.pinpoint.metric.web.util.TimeWindow;
+import com.navercorp.pinpoint.metric.web.mapping.Metric;
+import com.navercorp.pinpoint.metric.web.model.basic.metric.group.GroupingRule;
 
 import java.util.List;
-import java.util.concurrent.Future;
 
 /**
  * @author minwoo.jung
  */
-public interface AgentStatDao {
-    Future<List<SystemMetricPoint<Double>>> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, Field field);
+public class MetricDefinition extends Metric {
+    public MetricDefinition(String name, String title, String definitionId, GroupingRule grouping, String unit, List<Field> fields) {
+        super(name, title, definitionId, grouping, unit, fields);
+    }
 }

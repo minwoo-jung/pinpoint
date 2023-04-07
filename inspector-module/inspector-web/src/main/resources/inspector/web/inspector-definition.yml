@@ -1,0 +1,18 @@
+mappings:
+  - definitionId: "heap"
+    metricName: "jvmGC"
+    title: "Heap Usage"
+    grouping: "TAG"
+    fields:
+      - name: "heapUsed"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+      - name: "heapMax"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+      - name: "gcOldCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction : SUM
+      - name: "gcOldTime"
+        matchingRule: EXACT_ONE
+        aggregationFunction : SUM

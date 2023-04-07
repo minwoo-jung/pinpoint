@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.dao;
+package com.navercorp.pinpoint.inspector.web.dao.pinot;
+
+import com.navercorp.pinpoint.inspector.web.dao.AgentStatDao;
+import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
+import com.navercorp.pinpoint.metric.web.mapping.Field;
+import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
+
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * @author minwoo.jung
  */
-public class DefaultAgentStatDao {
+public class PinotAgentStatDao implements AgentStatDao {
+    @Override
+    public Future<List<SystemMetricPoint<Double>>> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, Field field) {
+        return null;
+    }
 }
