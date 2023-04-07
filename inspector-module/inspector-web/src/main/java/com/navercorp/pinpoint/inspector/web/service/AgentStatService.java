@@ -16,12 +16,15 @@
 
 package com.navercorp.pinpoint.inspector.web.service;
 
+import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
+import com.navercorp.pinpoint.metric.web.model.MetricValue;
 import com.navercorp.pinpoint.metric.web.model.SystemMetricData;
-import com.navercorp.pinpoint.metric.web.util.TimeWindow;
+
+import java.util.List;
 
 /**
  * @author minwoo.jung
  */
 public interface AgentStatService {
-    SystemMetricData<? extends Number> selectAgentStat(String agentId, String chartType, TimeWindow timeWindow);
+    SystemMetricData<? extends Number> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey);
 }

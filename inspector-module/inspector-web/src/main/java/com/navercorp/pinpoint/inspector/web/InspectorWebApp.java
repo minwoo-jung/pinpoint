@@ -22,6 +22,7 @@ import org.springframework.context.annotation.ImportResource;
  * @author minwoo.jung
  */
 @Configuration
+// TODO : (minwoo) xml을 configuration java로 변경
 @ImportResource({"classpath:inspector/web/applicationContext-web-inspector.xml"})
 public class InspectorWebApp {
 }

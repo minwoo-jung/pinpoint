@@ -33,6 +33,7 @@ public enum AgentStatField {
     ACTIVE_TRACE_SLOW_COUNT(5, "activeTrace", "slowCount"),
     ACTIVE_TRACE_VERY_SLOW_COUNT(6, "activeTrace", "verySlowCount"),
 
+    // TODO : (minwoo) 이건 메트릭 두개로 찟어져있는데 metricName을 별도로 정하는건 어떤가?
     JVM_GC_TYPE(7, "jvmGC", "GCType"),
     JVM_GC_HEAP_USED(8, "jvmGC", "heapUsed"),
     JVM_GC_HEAP_MAX(9, "jvmGC", "heapMax"),
