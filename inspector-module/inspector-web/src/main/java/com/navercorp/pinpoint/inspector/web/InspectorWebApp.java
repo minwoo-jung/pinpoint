@@ -16,12 +16,21 @@
 
 package com.navercorp.pinpoint.inspector.web;
 
+import com.navercorp.pinpoint.inspector.web.config.InspectorWebPinotDaoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 /**
  * @author minwoo.jung
  */
 @Configuration
+@ComponentScan(basePackages = {
+        "com.navercorp.pinpoint.inspector.web"
+})
+@Import({
+        InspectorWebPinotDaoConfiguration.class
+})
 // TODO : (minwoo) xml을 configuration java로 변경
 @ImportResource({"classpath:inspector/web/applicationContext-web-inspector.xml"})
 public class InspectorWebApp {

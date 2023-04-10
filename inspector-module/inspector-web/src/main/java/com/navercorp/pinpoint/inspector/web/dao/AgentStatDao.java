@@ -29,5 +29,5 @@ import java.util.concurrent.Future;
  * @author minwoo.jung
  */
 public interface AgentStatDao {
-    Future<List<SystemMetricPoint<Double>>> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, Field field);
+    Future<List<SystemMetricPoint<Double>>> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
 }
