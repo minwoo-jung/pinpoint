@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 NAVER Corp.
+ * Copyright 2023 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.metric.web.dao.model;
+package com.navercorp.pinpoint.inspector.web.dao.model;
 
-import com.navercorp.pinpoint.metric.common.model.MetricTag;
+import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
 import com.navercorp.pinpoint.metric.common.model.Tag;
-import com.navercorp.pinpoint.metric.web.model.MetricDataSearchKey;
 import com.navercorp.pinpoint.metric.web.util.Range;
 import com.navercorp.pinpoint.metric.web.util.TimePrecision;
 
@@ -28,44 +27,37 @@ import java.util.Objects;
 /**
  * @author minwoo.jung
  */
-public class SystemMetricDataSearchKey {
+// TODO : (minwoo) SystemMetricDataSearchKey 과 통일 시킬 필요 있음
+public class InspectorQueryParameter {
 
     private final String tenantId;
-    private final String hostGroupName;
-    private final String hostName;
+    private final String agentId;
     private final String metricName;
     private final String fieldName;
-    private final List<Tag> tagList;
+    private final List<Tag> tagList = null;
+
     private final Range range;
     private final TimePrecision timePrecision;
     private final long limit;
 
-    public SystemMetricDataSearchKey(MetricDataSearchKey metricDataSearchKey, MetricTag metricTag) {
-        Objects.requireNonNull(metricDataSearchKey, "metricDataSearchKey");
-        Objects.requireNonNull(metricTag, "metricTag");
+    public InspectorQueryParameter(InspectorDataSearchKey inspectorDataSearchKey, String metricName, String fieldName) {
+        Objects.requireNonNull(inspectorDataSearchKey, "inspectorDataSearchKey");
 
-        this.tenantId = metricDataSearchKey.getTenantId();
-        this.hostGroupName = metricDataSearchKey.getHostGroupName();
-        this.hostName = metricDataSearchKey.getHostName();
-        this.metricName = metricDataSearchKey.getMetricName();
-        this.range = metricDataSearchKey.getRange();
-        this.timePrecision = metricDataSearchKey.getTimePrecision();
-        this.limit = metricDataSearchKey.getLimit();
-
-        this.fieldName = metricTag.getFieldName();
-        this.tagList = metricTag.getTags();
+        this.tenantId = inspectorDataSearchKey.getTenantId();
+        this.agentId = inspectorDataSearchKey.getAgentId();
+        this.metricName = metricName;
+        this.fieldName = fieldName;
+        this.range = inspectorDataSearchKey.getRange();
+        this.timePrecision = inspectorDataSearchKey.getTimePrecision();
+        this.limit = inspectorDataSearchKey.getLimit();
     }
 
     public String getTenantId() {
         return tenantId;
     }
 
-    public String getHostGroupName() {
-        return hostGroupName;
-    }
-
-    public String getHostName() {
-        return hostName;
+    public String getAgentId() {
+        return agentId;
     }
 
     public String getMetricName() {
@@ -91,5 +83,4 @@ public class SystemMetricDataSearchKey {
     public long getLimit() {
         return limit;
     }
-
 }

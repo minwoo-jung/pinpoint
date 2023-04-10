@@ -17,21 +17,61 @@
 package com.navercorp.pinpoint.inspector.web.model;
 
 import com.navercorp.pinpoint.metric.common.model.StringPrecondition;
+import com.navercorp.pinpoint.metric.web.util.Range;
+import com.navercorp.pinpoint.metric.web.util.TimePrecision;
 import com.navercorp.pinpoint.metric.web.util.TimeWindow;
+
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author minwoo.jung
  */
 // TODO : (minwoo) MetricDataSearchKey과 중복 제거할수 있을듯함.
+// TODO : (minwoo) applicationName, 개념이 없음
 public class InspectorDataSearchKey {
 
+    private final String tenantId;
+    private final String agentId;
     private final String metricDefinitionId;
 
+    private final Range range;
+    private final TimePrecision timePrecision;
+    private final long limit;
+
     public InspectorDataSearchKey(String tenantId, String agentId, String metricDefinitionId, TimeWindow timeWindow) {
-        this.metricDefinitionId = StringPrecondition.requireHasLength(tenantId, "metricDefinitionId");
+        this.tenantId = StringPrecondition.requireHasLength(tenantId, "tenantId");
+        this.agentId = StringPrecondition.requireHasLength(agentId, "agentId");
+        this.metricDefinitionId = StringPrecondition.requireHasLength(metricDefinitionId, "metricDefinitionId");
+
+        Objects.requireNonNull(timeWindow, "timeWindow");
+        this.range = timeWindow.getWindowRange();
+        this.timePrecision = TimePrecision.newTimePrecision(TimeUnit.MILLISECONDS, (int) timeWindow.getWindowSlotSize());
+        this.limit = timeWindow.getWindowRangeCount();
     }
 
     public String getMetricDefinitionId() {
         return metricDefinitionId;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public String getAgentId() {
+        return agentId;
+    }
+
+    public Range getRange() {
+        return range;
+    }
+
+    public TimePrecision getTimePrecision() {
+        return timePrecision;
+    }
+
+    public long getLimit() {
+        return limit;
     }
 }

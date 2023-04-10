@@ -63,10 +63,9 @@ public class DefaultAgentStatService implements AgentStatService {
                 List<SystemMetricPoint<Number>> systemMetricPoints = future.get();
 
                 List<SystemMetricPoint<Double>> doubleList = (List<SystemMetricPoint<Double>>) (List<?>) systemMetricPoints;
-                StopWatch dataProcessWatch = StopWatch.createStarted();
+
                 //데이터 변환 필요함.
                 //MetricValue<Double> doubleMetricValue = createInspectorMetricValue(timeWindow, result.getTag(), doubleList, DoubleUncollectedDataCreator.UNCOLLECTED_DATA_CREATOR);
-                dataProcessWatch.stop();
 
 //                metricValueList.add(doubleMetricValue);
             }
@@ -83,7 +82,7 @@ public class DefaultAgentStatService implements AgentStatService {
         List<QueryResult<? extends Number>> invokeList = new ArrayList<>();
 
         for (Field field : metricDefinition.getFields()) {
-            Future<List<SystemMetricPoint<Double>>> doubleFuture = agentStatDao.selectAgentStat(inspectorDataSearchKey, field);
+            Future<List<SystemMetricPoint<Double>>> doubleFuture = agentStatDao.selectAgentStat(inspectorDataSearchKey, metricDefinition.getName(), field);
             invokeList.add(new QueryResult<>(doubleFuture));
         }
 
@@ -101,8 +100,6 @@ public class DefaultAgentStatService implements AgentStatService {
         public Future<List<SystemMetricPoint<T>>> getFuture() {
             return future;
         }
-
     }
-
 
 }

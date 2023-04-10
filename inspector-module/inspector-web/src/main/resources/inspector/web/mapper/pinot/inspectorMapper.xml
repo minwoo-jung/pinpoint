@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.navercorp.pinpoint.inspector.web.dao.pinot.PinotAgentStatDao">
+
+    <resultMap id="systemMetricPointResultMap" type="SystemMetricPoint">
+        <constructor>
+            <arg column="avgTime" javaType="_long"/>
+            <arg column="avgValue" javaType="Number" typeHandler="DoubleHandler"/>
+        </constructor>
+    </resultMap>
+
+    <select id="selectInspectorAvgData" parameterType="systemMetricPointResultMap" resultType="systemMetricDataSearchKey">
+        SELECT
+            AVG(fieldValue) AS avgValue,
+            DATETIME_CONVERT(eventTime, '1:MILLISECONDS:EPOCH', '1:MILLISECONDS:EPOCH', '#{timePrecision.timeSize}:${timePrecision.timeUnit}') AS avgTime
+        FROM inspectorStat
+        WHERE tenantId = #{tenantId}
+--             AND serviceName = #{serviceName}
+--             AND applicationName = #{applicationName}
+            AND agentId = #{agentId}
+            AND metricName = #{metricName}
+            AND fieldName = #{fieldName}
+            <foreach collection="tagList" item="tag" separator=" ">
+                AND tags = #{tag}
+            </foreach>
+            AND eventTime BETWEEN #{range.from} AND #{range.to}
+            GROUP BY avgTime
+            ORDER BY avgTime asc
+            LIMIT ${limit}
+    </select>
+
+</mapper>

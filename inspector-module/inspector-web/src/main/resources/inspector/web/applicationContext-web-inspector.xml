@@ -8,6 +8,4 @@
     <context:annotation-config/>
     <context:component-scan base-package="com.navercorp.pinpoint.inspector.web" />
 
-    <import resource="classpath:/inspector/web/applicationContext-web-inspector-pinot-dao-config.xml"/>
-
 </beans>
