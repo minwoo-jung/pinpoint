@@ -1,18 +1,72 @@
 mappings:
   - definitionId: "heap"
-    metricName: "jvmGC"
+    metricName: "jvmGc"
     title: "Heap Usage"
-    grouping: "TAG"
     fields:
-      - name: "heapUsed"
+      - fieldName: "heapUsed"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
-      - name: "heapMax"
+      - fieldName: "heapMax"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
-      - name: "gcOldCount"
+      - fieldName: "gcOldCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction : MAX
+        postProcess : "delta"
+      - fieldName: "gcOldTime"
+        matchingRule: EXACT_ONE
+        aggregationFunction : MAX
+        postProcess : "delta"
+  - definitionId: "nonHeap"
+    metricName: "jvmGc"
+    title: "Non Heap Usage"
+    fields:
+      - fieldName: "nonHeapUsed"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+      - fieldName: "gcOldCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction : MAX
+        postProcess : "delta"
+      - fieldName: "gcOldTime"
+        matchingRule: EXACT_ONE
+        aggregationFunction : MAX
+        postProcess : "delta"
+  - definitionId: "cpu"
+    metricName: "cpuLoad"
+    title: "JVM/System CPU Usage"
+    fields:
+      - fieldName: "jvm"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+      - fieldName: "system"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+  - definitionId: "transaction"
+    metricName: "cpuLoad"
+    title: "Transactions Per Second"
+    postProcess: "avgUsingCommintInterval"
+    fields:
+      - fieldName: "sampledNewCount"
         matchingRule: EXACT_ONE
         aggregationFunction : SUM
-      - name: "gcOldTime"
+        postProcess : "avg"
+      - fieldName: "sampledContinuationCount"
         matchingRule: EXACT_ONE
         aggregationFunction : SUM
+      - fieldName: "unsampledNewCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction: SUM
+      - fieldName: "unsampledContinuationCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction: SUM
+      - fieldName: "skippedNewSkipCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction: SUM
+      - fieldName: "skippedContinuationCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction: SUM
+      - fieldName: "skippedContinuationCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction: SUM
+      !! 여기부터 시작 commitInterval값을 가져오고 이것으 이용해서 avg값을 구해주는 역할을 해야함.

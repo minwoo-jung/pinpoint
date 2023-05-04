@@ -16,17 +16,49 @@
 
 package com.navercorp.pinpoint.inspector.web.definition;
 
-import com.navercorp.pinpoint.metric.web.mapping.Field;
-import com.navercorp.pinpoint.metric.web.mapping.Metric;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.navercorp.pinpoint.metric.web.model.basic.metric.group.GroupingRule;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author minwoo.jung
  */
-public class MetricDefinition extends Metric {
-    public MetricDefinition(String name, String title, String definitionId, GroupingRule grouping, String unit, List<Field> fields) {
-        super(name, title, definitionId, grouping, unit, fields);
+//TODO : (minwoo) com.navercorp.pinpoint.metric.web.mapping.Metric 통합 필요
+public class MetricDefinition {
+
+
+    private final String definitionId;
+    private final String metricName;
+    private final String title;
+    private final List<Field> fields;
+
+    @JsonCreator
+    public MetricDefinition(@JsonProperty("definitionId") String definitionId,
+                            @JsonProperty("metricName") String metricName,
+                            @JsonProperty("title") String title,
+                            @JsonProperty("fields") List<Field> fields) {
+        this.definitionId = Objects.requireNonNull(definitionId, "definitionId");
+        this.metricName = Objects.requireNonNull(metricName, "metricName");
+        this.title = Objects.requireNonNull(title, "title");
+        this.fields = Objects.requireNonNull(fields, "fields");
+    }
+
+    public String getDefinitionId() {
+        return definitionId;
+    }
+
+    public String getMetricName() {
+        return metricName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public List<Field> getFields() {
+        return fields;
     }
 }

@@ -46,12 +46,7 @@ public class InspectorWebPinotDaoConfiguration {
     private final Logger logger = LogManager.getLogger(InspectorWebPinotDaoConfiguration.class);
 
     @Bean
-    public TransactionManager pinotTransactionManager(@Qualifier("pinotDataSource") DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
-
-    @Bean
-    public FactoryBean<SqlSessionFactory> sqlPinotSessionFactory(
+    public FactoryBean<SqlSessionFactory> inspectorPinotSessionFactory(
             @Qualifier("pinotDataSource") DataSource dataSource,
             @Value("classpath*:/inspector/web/mapper/pinot/*Mapper.xml") Resource[] mappers) {
 
@@ -61,15 +56,11 @@ public class InspectorWebPinotDaoConfiguration {
 
         SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource);
+        sessionFactoryBean.setConfiguration(newConfiguration());
+
         sessionFactoryBean.setMapperLocations(mappers);
+        sessionFactoryBean.setFailFast(true);
         sessionFactoryBean.setTransactionFactory(transactionFactory());
-
-        Configuration config = MyBatisConfiguration.defaultConfiguration();
-        sessionFactoryBean.setConfiguration(config);
-
-        MyBatisRegistryHandler registry = registryHandler();
-        registry.registerTypeAlias(config.getTypeAliasRegistry());
-        registry.registerTypeHandler(config.getTypeHandlerRegistry());
 
         return sessionFactoryBean;
     }
@@ -78,20 +69,23 @@ public class InspectorWebPinotDaoConfiguration {
         return new ManagedTransactionFactory();
     }
 
+    private Configuration newConfiguration() {
+        Configuration config = MyBatisConfiguration.defaultConfiguration();
+
+        MyBatisRegistryHandler registryHandler = registryHandler();
+        registryHandler.registerTypeAlias(config.getTypeAliasRegistry());
+        registryHandler.registerTypeHandler(config.getTypeHandlerRegistry());
+        return config;
+    }
+
     private MyBatisRegistryHandler registryHandler() {
-        return new WebRegistryHandler();
+        return new InspectorRegistryHandler();
     }
 
 
     @Bean
-    public SqlSessionTemplate sqlPinotSessionTemplate(
-            @Qualifier("sqlPinotSessionFactory") SqlSessionFactory sessionFactory) {
-        return new SqlSessionTemplate(sessionFactory);
-    }
-
-    @Bean
-    public PinotAsyncTemplate pinotAsyncTemplate(
-            @Qualifier("sqlPinotSessionFactory") SqlSessionFactory sessionFactory) {
+    public PinotAsyncTemplate inspectorPinotAsyncTemplate(
+            @Qualifier("inspectorPinotSessionFactory") SqlSessionFactory sessionFactory) {
         return new PinotAsyncTemplate(sessionFactory);
     }
 

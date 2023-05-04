@@ -17,89 +17,138 @@
 package com.navercorp.pinpoint.inspector.web.service;
 
 import com.navercorp.pinpoint.inspector.web.dao.AgentStatDao;
+import com.navercorp.pinpoint.inspector.web.definition.AggregationFunction;
+import com.navercorp.pinpoint.inspector.web.definition.Field;
 import com.navercorp.pinpoint.inspector.web.definition.MetricDefinition;
+import com.navercorp.pinpoint.inspector.web.definition.PostProcessor;
+import com.navercorp.pinpoint.inspector.web.definition.ProcessorManager;
 import com.navercorp.pinpoint.inspector.web.definition.YMLInspectorManager;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
-import com.navercorp.pinpoint.metric.web.mapping.Field;
+import com.navercorp.pinpoint.inspector.web.model.InspectorMetricData;
 import com.navercorp.pinpoint.metric.web.model.MetricValue;
-import com.navercorp.pinpoint.metric.web.model.MetricValueGroup;
-import com.navercorp.pinpoint.metric.web.model.SystemMetricData;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
-import org.apache.commons.lang3.time.StopWatch;
+import com.navercorp.pinpoint.metric.web.util.TimeWindow;
+import com.navercorp.pinpoint.metric.web.util.metric.DoubleUncollectedDataCreator;
+import com.navercorp.pinpoint.metric.web.util.metric.TimeSeriesBuilder;
+import com.navercorp.pinpoint.metric.web.util.metric.UncollectedDataCreator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
 * @author minwoo.jung
  */
+@Service
 public class DefaultAgentStatService implements AgentStatService {
 
     private final Logger logger = LogManager.getLogger(this.getClass());
 
     private final AgentStatDao agentStatDao;
     private final YMLInspectorManager ymlInspectorManager;
+    private final ProcessorManager processorManager;
 
-    public DefaultAgentStatService(AgentStatDao agentStatDao, YMLInspectorManager ymlInspectorManager) {
+    public DefaultAgentStatService(AgentStatDao agentStatDao, YMLInspectorManager ymlInspectorManager, ProcessorManager processorManager) {
         this.agentStatDao = Objects.requireNonNull(agentStatDao, "agentStatDao");
         this.ymlInspectorManager = Objects.requireNonNull(ymlInspectorManager, "ymlInspectorManager");
+        this.processorManager = Objects.requireNonNull(processorManager, "processorManager");
     }
 
     @Override
-    public SystemMetricData<? extends Number> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey){
+    public InspectorMetricData<? extends Number> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow){
         MetricDefinition metricDefinition = ymlInspectorManager.findElementOfBasicGroup(inspectorDataSearchKey.getMetricDefinitionId());
 
-        List<QueryResult<Number>> queryResults =  selectAll(inspectorDataSearchKey, metricDefinition);
+        List<QueryResult> queryResults =  selectAll(inspectorDataSearchKey, metricDefinition);
 
         List<MetricValue<?>> metricValueList = new ArrayList<>(metricDefinition.getFields().size());
 
         try {
-            for (QueryResult<Number> result : queryResults) {
-                Future<List<SystemMetricPoint<Number>>> future = result.getFuture();
-                List<SystemMetricPoint<Number>> systemMetricPoints = future.get();
+            for (QueryResult result : queryResults) {
+                Future<List<SystemMetricPoint<Double>>> future = result.getFuture();
+                List<SystemMetricPoint<Double>> doubleList = future.get();
 
-                List<SystemMetricPoint<Double>> doubleList = (List<SystemMetricPoint<Double>>) (List<?>) systemMetricPoints;
-
-                //데이터 변환 필요함.
-                //MetricValue<Double> doubleMetricValue = createInspectorMetricValue(timeWindow, result.getTag(), doubleList, DoubleUncollectedDataCreator.UNCOLLECTED_DATA_CREATOR);
-
-//                metricValueList.add(doubleMetricValue);
+                MetricValue<Double> doubleMetricValue = createInspectorMetricValue(timeWindow, result.getField(), doubleList, DoubleUncollectedDataCreator.UNCOLLECTED_DATA_CREATOR);
+                metricValueList.add(doubleMetricValue);
             }
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
 
-        //여기서 grouping 하기
-        //List<MetricValueGroup<?>> metricValueGroupList = groupingMetricValue(metricValueList, groupingRule);
-        return null;
+        !! 이쯤에 postProcessor 만들어서 진행해야할듯함.!!! commitInteval값을 하고
+        List<Long> timeStampList = createTimeStampList(timeWindow);
+        return new InspectorMetricData(metricDefinition.getTitle(), timeStampList, metricValueList);
     }
 
-    private List<QueryResult<Number>> selectAll(InspectorDataSearchKey inspectorDataSearchKey, MetricDefinition metricDefinition) {
-        List<QueryResult<? extends Number>> invokeList = new ArrayList<>();
+    //TODO : (minwoo) systemmetric쪽과 중복있음
+    private List<Long> createTimeStampList(TimeWindow timeWindow) {
+        List<Long> timestampList = new ArrayList<>((int) timeWindow.getWindowRangeCount());
 
-        for (Field field : metricDefinition.getFields()) {
-            Future<List<SystemMetricPoint<Double>>> doubleFuture = agentStatDao.selectAgentStat(inspectorDataSearchKey, metricDefinition.getName(), field);
-            invokeList.add(new QueryResult<>(doubleFuture));
+        for (Long timestamp : timeWindow) {
+            timestampList.add(timestamp);
         }
 
-        return (List<QueryResult<Number>>)(List<?>) invokeList;
+        return timestampList;
+    }
+
+    private MetricValue<Double> createInspectorMetricValue(TimeWindow timeWindow, Field field,
+                                                                                   List<SystemMetricPoint<Double>> sampledSystemMetricDataList,
+                                                                                   UncollectedDataCreator<Double> uncollectedDataCreator) {
+
+        PostProcessor postProcessor = processorManager.getPostProcessor(field.getPostProcess());
+        List<SystemMetricPoint<Double>> postProcessedDataList = postProcessor.postProcess(sampledSystemMetricDataList);
+
+        TimeSeriesBuilder<Double> builder = new TimeSeriesBuilder<>(timeWindow, uncollectedDataCreator);
+        List<SystemMetricPoint<Double>> filledSystemMetricDataList = builder.build(postProcessedDataList);
+
+        List<Double> valueList = filledSystemMetricDataList.stream()
+                .map(SystemMetricPoint::getYVal)
+                .collect(Collectors.toList());
+
+        return new MetricValue<>(field.getFieldName(), field.getTags(), valueList);
+    }
+
+    private List<QueryResult> selectAll(InspectorDataSearchKey inspectorDataSearchKey, MetricDefinition metricDefinition) {
+        List<QueryResult> invokeList = new ArrayList<>();
+
+        for (Field field : metricDefinition.getFields()) {
+
+            Future<List<SystemMetricPoint<Double>>> doubleFuture = null;
+            if (AggregationFunction.AVG.equals(field.getAggregationFunction())) {
+                doubleFuture = agentStatDao.selectAgentStatAvg(inspectorDataSearchKey, metricDefinition.getMetricName(), field);
+            } else if (AggregationFunction.MAX.equals(field.getAggregationFunction())) {
+                doubleFuture = agentStatDao.selectAgentStatMax(inspectorDataSearchKey, metricDefinition.getMetricName(), field);
+            } else {
+                throw new IllegalArgumentException("Unknown aggregation function : " + field.getAggregationFunction());
+            }
+            invokeList.add(new QueryResult(doubleFuture, field));
+        }
+
+        return invokeList;
     }
 
     //TODO : (minwoo) 이것도 metric 쪽과 공통화 필요함.
-    private static class QueryResult<T extends Number> {
-        private final Future<List<SystemMetricPoint<T>>> future;
+    private static class QueryResult {
+        private final Future<List<SystemMetricPoint<Double>>> future;
+        private final Field field;
 
-        public QueryResult(Future<List<SystemMetricPoint<T>>> future) {
+        public QueryResult(Future<List<SystemMetricPoint<Double>>> future, Field field) {
             this.future = Objects.requireNonNull(future, "future");
+            this.field = Objects.requireNonNull(field, "field");
         }
 
-        public Future<List<SystemMetricPoint<T>>> getFuture() {
+        public Future<List<SystemMetricPoint<Double>>> getFuture() {
             return future;
         }
+
+        public Field getField() {
+            return field;
+        }
+
     }
 
 }

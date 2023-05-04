@@ -10,15 +10,17 @@
         </constructor>
     </resultMap>
 
-    <select id="selectInspectorAvgData" parameterType="systemMetricPointResultMap" resultType="systemMetricDataSearchKey">
+    <!--TODO : (minwoo) AVG, MAX 이거 통합 가능할듯함. -->
+    <select id="selectInspectorAvgData" parameterType="inspectorQueryParameter" resultMap="systemMetricPointResultMap" >
         SELECT
             AVG(fieldValue) AS avgValue,
             DATETIME_CONVERT(eventTime, '1:MILLISECONDS:EPOCH', '1:MILLISECONDS:EPOCH', '#{timePrecision.timeSize}:${timePrecision.timeUnit}') AS avgTime
         FROM inspectorStat
-        WHERE tenantId = #{tenantId}
---             AND serviceName = #{serviceName}
---             AND applicationName = #{applicationName}
-            AND agentId = #{agentId}
+        WHERE
+      <!--  tenantId = #{tenantId}
+            AND serviceName = #{serviceName}
+            AND applicationName = #{applicationName} -->
+            agentId = #{agentId}
             AND metricName = #{metricName}
             AND fieldName = #{fieldName}
             <foreach collection="tagList" item="tag" separator=" ">
@@ -28,6 +30,27 @@
             GROUP BY avgTime
             ORDER BY avgTime asc
             LIMIT ${limit}
+    </select>
+
+    <select id="selectInspectorMaxData" parameterType="inspectorQueryParameter" resultMap="systemMetricPointResultMap" >
+        SELECT
+        MAX(fieldValue) AS avgValue,
+        DATETIME_CONVERT(eventTime, '1:MILLISECONDS:EPOCH', '1:MILLISECONDS:EPOCH', '#{timePrecision.timeSize}:${timePrecision.timeUnit}') AS avgTime
+        FROM inspectorStat
+        WHERE
+        <!--  tenantId = #{tenantId}
+              AND serviceName = #{serviceName}
+              AND applicationName = #{applicationName} -->
+        agentId = #{agentId}
+        AND metricName = #{metricName}
+        AND fieldName = #{fieldName}
+        <foreach collection="tagList" item="tag" separator=" ">
+            AND tags = #{tag}
+        </foreach>
+        AND eventTime BETWEEN #{range.from} AND #{range.to}
+        GROUP BY avgTime
+        ORDER BY avgTime asc
+        LIMIT ${limit}
     </select>
 
 </mapper>

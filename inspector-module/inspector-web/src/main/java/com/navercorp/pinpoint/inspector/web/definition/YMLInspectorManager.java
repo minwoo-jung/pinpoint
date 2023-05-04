@@ -42,7 +42,7 @@ import java.util.function.BiFunction;
 // TODO : (minwoo) 메트릭쪽 과 공통화 가능할것같은데.
 public class YMLInspectorManager {
 
-    public static final String TELEGRAF_METRIC = "/pinot-web/telegraf-metric.yml";
+    public static final String TELEGRAF_METRIC = "/inspector/web/inspector-definition.yml";
     private final Map<String, MetricDefinition> definitionIdMap;
     private final Map<String, List<String>> metricIdMap;
     private final Comparator<MetricInfo> metricInfoComparator;
@@ -70,7 +70,7 @@ public class YMLInspectorManager {
         Map<String, List<String>> metricIdMap = new HashMap<>();
         for (MetricDefinition metric : metricDefinitions) {
             String definitionId = metric.getDefinitionId();
-            metricIdMap.compute(metric.getName(), new BiFunction<String, List<String>, List<String>>() {
+            metricIdMap.compute(metric.getMetricName(), new BiFunction<String, List<String>, List<String>>() {
                 @Override
                 public List<String> apply(String metricId, List<String> definitionIdList) {
                     if (definitionIdList == null) {

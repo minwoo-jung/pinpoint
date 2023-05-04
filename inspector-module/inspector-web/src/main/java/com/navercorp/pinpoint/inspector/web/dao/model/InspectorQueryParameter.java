@@ -21,6 +21,7 @@ import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.util.Range;
 import com.navercorp.pinpoint.metric.web.util.TimePrecision;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class InspectorQueryParameter {
     private final String agentId;
     private final String metricName;
     private final String fieldName;
-    private final List<Tag> tagList = null;
+    private final List<Tag> tagList = Collections.emptyList();;
 
     private final Range range;
     private final TimePrecision timePrecision;

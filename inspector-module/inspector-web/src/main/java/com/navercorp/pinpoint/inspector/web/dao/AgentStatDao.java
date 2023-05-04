@@ -16,18 +16,20 @@
 
 package com.navercorp.pinpoint.inspector.web.dao;
 
+import com.navercorp.pinpoint.inspector.web.definition.Field;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
-import com.navercorp.pinpoint.metric.web.mapping.Field;
-import com.navercorp.pinpoint.metric.web.model.SystemMetricData;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
-import com.navercorp.pinpoint.metric.web.util.TimeWindow;
+
 
 import java.util.List;
 import java.util.concurrent.Future;
+
 
 /**
  * @author minwoo.jung
  */
 public interface AgentStatDao {
-    Future<List<SystemMetricPoint<Double>>> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
+    Future<List<SystemMetricPoint<Double>>> selectAgentStatAvg(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
+
+    Future<List<SystemMetricPoint<Double>>> selectAgentStatMax(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
 }

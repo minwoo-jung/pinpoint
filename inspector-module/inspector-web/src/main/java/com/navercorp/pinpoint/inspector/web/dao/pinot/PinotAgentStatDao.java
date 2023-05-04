@@ -18,15 +18,12 @@ package com.navercorp.pinpoint.inspector.web.dao.pinot;
 
 import com.navercorp.pinpoint.inspector.web.dao.AgentStatDao;
 import com.navercorp.pinpoint.inspector.web.dao.model.InspectorQueryParameter;
+import com.navercorp.pinpoint.inspector.web.definition.Field;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
-import com.navercorp.pinpoint.metric.web.dao.model.SystemMetricDataSearchKey;
-import com.navercorp.pinpoint.metric.web.dao.pinot.PinotSystemMetricDoubleDao;
-import com.navercorp.pinpoint.metric.web.mapping.Field;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 import com.navercorp.pinpoint.pinot.mybatis.PinotAsyncTemplate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,19 +32,26 @@ import java.util.concurrent.Future;
 /**
  * @author minwoo.jung
  */
+@Repository
 public class PinotAgentStatDao implements AgentStatDao {
 
-    private static final String NAMESPACE = PinotSystemMetricDoubleDao.class.getName() + ".";
+    private static final String NAMESPACE = PinotAgentStatDao.class.getName() + ".";
 
     private final PinotAsyncTemplate asyncTemplate;
 
-    public PinotAgentStatDao(PinotAsyncTemplate asyncTemplate) {
+    public PinotAgentStatDao(@Qualifier("inspectorPinotAsyncTemplate") PinotAsyncTemplate asyncTemplate) {
         this.asyncTemplate = Objects.requireNonNull(asyncTemplate, "asyncTemplate");
     }
 
     @Override
-    public Future<List<SystemMetricPoint<Double>>> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field) {
-        InspectorQueryParameter inspectorQueryParameter = new InspectorQueryParameter(inspectorDataSearchKey, metricName, field.getName());
-        return asyncTemplate.selectList(NAMESPACE + "selectInspectorAvgData", inspectorDataSearchKey);
+    public Future<List<SystemMetricPoint<Double>>> selectAgentStatAvg(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field) {
+        InspectorQueryParameter inspectorQueryParameter = new InspectorQueryParameter(inspectorDataSearchKey, metricName, field.getFieldName());
+        return asyncTemplate.selectList(NAMESPACE + "selectInspectorAvgData", inspectorQueryParameter);
+    }
+
+    @Override
+    public Future<List<SystemMetricPoint<Double>>> selectAgentStatMax(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field) {
+        InspectorQueryParameter inspectorQueryParameter = new InspectorQueryParameter(inspectorDataSearchKey, metricName, field.getFieldName());
+        return asyncTemplate.selectList(NAMESPACE + "selectInspectorMaxData", inspectorQueryParameter);
     }
 }
