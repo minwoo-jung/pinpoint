@@ -53,4 +53,25 @@
         LIMIT ${limit}
     </select>
 
+    <select id="selectInspectorSumData" parameterType="inspectorQueryParameter" resultMap="systemMetricPointResultMap" >
+        SELECT
+        SUM(fieldValue) AS avgValue,
+        DATETIME_CONVERT(eventTime, '1:MILLISECONDS:EPOCH', '1:MILLISECONDS:EPOCH', '#{timePrecision.timeSize}:${timePrecision.timeUnit}') AS avgTime
+        FROM inspectorStat
+        WHERE
+        <!--  tenantId = #{tenantId}
+              AND serviceName = #{serviceName}
+              AND applicationName = #{applicationName} -->
+        agentId = #{agentId}
+        AND metricName = #{metricName}
+        AND fieldName = #{fieldName}
+        <foreach collection="tagList" item="tag" separator=" ">
+            AND tags = #{tag}
+        </foreach>
+        AND eventTime BETWEEN #{range.from} AND #{range.to}
+        GROUP BY avgTime
+        ORDER BY avgTime asc
+        LIMIT ${limit}
+    </select>
+
 </mapper>

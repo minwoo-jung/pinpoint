@@ -289,10 +289,10 @@ public class AgentStatModelConverter <T extends AgentStatDataPoint> {
                                                                                                                     directBufferBo.getDirectMemoryUsed(), directBufferBo.getTimestamp());
                                                                         AgentStat mappedCount = new AgentStat("defaultTenantId", "applicationName", directBufferBo.getAgentId(),
                                                                                                                 AgentStatType.DIRECT_BUFFER.getChartType(), AgentStatField.DIRECT_BUFFER_MAPPED_COUNT.getFieldName(),
-                                                                                                                directBufferBo.getDirectMemoryUsed(), directBufferBo.getTimestamp());
+                                                                                                                directBufferBo.getMappedCount(), directBufferBo.getTimestamp());
                                                                         AgentStat mappedMemoryUsed = new AgentStat("defaultTenantId", "applicationName", directBufferBo.getAgentId(),
                                                                                                                     AgentStatType.DIRECT_BUFFER.getChartType(), AgentStatField.DIRECT_BUFFER_MAPPED_MEMORY_USED.getFieldName(),
-                                                                                                                    directBufferBo.getDirectMemoryUsed(), directBufferBo.getTimestamp());
+                                                                                                                    directBufferBo.getMappedMemoryUsed(), directBufferBo.getTimestamp());
 
                                                                         fileDescriptorStatList.add(directCount);
                                                                         fileDescriptorStatList.add(directMemoryUsed);

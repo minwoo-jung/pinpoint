@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.definition;
+package com.navercorp.pinpoint.inspector.web.definition.metric;
 
-import com.navercorp.pinpoint.common.util.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -25,20 +24,19 @@ import java.util.Map;
 
 /**
  * @author minwoo.jung
- *
  */
 @Component
-public class ProcessorManager {
-    private Map<String, PostProcessor> postProcessorMap = new HashMap<>();
+public class MetricProcessorManager {
+    private Map<String, MetricPostProcessor> postProcessorMap = new HashMap<>();
 
-    public ProcessorManager(List<PostProcessor> postProcessorList) {
-        for (PostProcessor postProcessor : postProcessorList) {
+    public MetricProcessorManager(List<MetricPostProcessor> postProcessorList) {
+        for (MetricPostProcessor postProcessor : postProcessorList) {
             postProcessorMap.put(postProcessor.getName(), postProcessor);
         }
     }
 
-    public PostProcessor getPostProcessor(String name) {
-        if (StringUtils.isEmpty(name)) {
+    public MetricPostProcessor getPostProcessor(String name) {
+        if (EmptyPostProcessor.INSTANCE.getName().equals(name)) {
             return EmptyPostProcessor.INSTANCE;
         }
         if (!postProcessorMap.containsKey(name)) {
@@ -47,5 +45,4 @@ public class ProcessorManager {
 
         return postProcessorMap.get(name);
     }
-
 }

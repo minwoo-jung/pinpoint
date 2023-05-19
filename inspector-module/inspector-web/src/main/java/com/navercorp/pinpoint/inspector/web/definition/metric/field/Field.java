@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.definition;
+package com.navercorp.pinpoint.inspector.web.definition.metric.field;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.navercorp.pinpoint.common.util.StringUtils;
+import com.navercorp.pinpoint.inspector.web.definition.AggregationFunction;
 import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.basic.metric.group.MatchingRule;
 
@@ -46,7 +48,7 @@ public class Field {
         this.tags = defaultTags(tags);
         this.matchingRule = Objects.requireNonNull(matchingRule, "matchingRule");
         this.aggregationFunction = Objects.requireNonNull(aggregationFunction, "aggregationFunction");
-        this.postProcess = postProcess;
+        this.postProcess = StringUtils.defaultString(postProcess, EmptyPostProcessor.INSTANCE.getName());
     }
 
     private List<Tag> defaultTags(List<Tag> tags) {

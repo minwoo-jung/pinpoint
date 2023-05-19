@@ -18,10 +18,12 @@ package com.navercorp.pinpoint.inspector.web.service;
 
 import com.navercorp.pinpoint.inspector.web.dao.AgentStatDao;
 import com.navercorp.pinpoint.inspector.web.definition.AggregationFunction;
-import com.navercorp.pinpoint.inspector.web.definition.Field;
+import com.navercorp.pinpoint.inspector.web.definition.metric.MetricPostProcessor;
+import com.navercorp.pinpoint.inspector.web.definition.metric.MetricProcessorManager;
+import com.navercorp.pinpoint.inspector.web.definition.metric.field.Field;
 import com.navercorp.pinpoint.inspector.web.definition.MetricDefinition;
-import com.navercorp.pinpoint.inspector.web.definition.PostProcessor;
-import com.navercorp.pinpoint.inspector.web.definition.ProcessorManager;
+import com.navercorp.pinpoint.inspector.web.definition.metric.field.FieldPostProcessor;
+import com.navercorp.pinpoint.inspector.web.definition.metric.field.FieldProcessorManager;
 import com.navercorp.pinpoint.inspector.web.definition.YMLInspectorManager;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
 import com.navercorp.pinpoint.inspector.web.model.InspectorMetricData;
@@ -51,12 +53,14 @@ public class DefaultAgentStatService implements AgentStatService {
 
     private final AgentStatDao agentStatDao;
     private final YMLInspectorManager ymlInspectorManager;
-    private final ProcessorManager processorManager;
+    private final MetricProcessorManager metricProcessorManager;
+    private final FieldProcessorManager fieldProcessorManager;
 
-    public DefaultAgentStatService(AgentStatDao agentStatDao, YMLInspectorManager ymlInspectorManager, ProcessorManager processorManager) {
+    public DefaultAgentStatService(AgentStatDao agentStatDao, YMLInspectorManager ymlInspectorManager, MetricProcessorManager metricProcessorManager, FieldProcessorManager fieldProcessorManager) {
         this.agentStatDao = Objects.requireNonNull(agentStatDao, "agentStatDao");
         this.ymlInspectorManager = Objects.requireNonNull(ymlInspectorManager, "ymlInspectorManager");
-        this.processorManager = Objects.requireNonNull(processorManager, "processorManager");
+        this.metricProcessorManager = Objects.requireNonNull(metricProcessorManager, "metricProcessorManager");
+        this.fieldProcessorManager = Objects.requireNonNull(fieldProcessorManager, "fieldProcessorManager");
     }
 
     @Override
@@ -65,7 +69,7 @@ public class DefaultAgentStatService implements AgentStatService {
 
         List<QueryResult> queryResults =  selectAll(inspectorDataSearchKey, metricDefinition);
 
-        List<MetricValue<?>> metricValueList = new ArrayList<>(metricDefinition.getFields().size());
+        List<MetricValue<Double>> metricValueList = new ArrayList<>(metricDefinition.getFields().size());
 
         try {
             for (QueryResult result : queryResults) {
@@ -79,9 +83,15 @@ public class DefaultAgentStatService implements AgentStatService {
             throw new RuntimeException(e);
         }
 
-        !! 이쯤에 postProcessor 만들어서 진행해야할듯함.!!! commitInteval값을 하고
+        List<MetricValue<Double>> processedMetricValueList = processMetricData(metricDefinition, metricValueList);
         List<Long> timeStampList = createTimeStampList(timeWindow);
-        return new InspectorMetricData(metricDefinition.getTitle(), timeStampList, metricValueList);
+        return new InspectorMetricData(metricDefinition.getTitle(), timeStampList, processedMetricValueList);
+    }
+
+    private List<MetricValue<Double>> processMetricData(MetricDefinition metricDefinition, List<MetricValue<Double>> metricValueList) {
+        MetricPostProcessor postProcessor = metricProcessorManager.getPostProcessor(metricDefinition.getPostProcess());
+        return postProcessor.postProcess(metricValueList);
+
     }
 
     //TODO : (minwoo) systemmetric쪽과 중복있음
@@ -99,7 +109,7 @@ public class DefaultAgentStatService implements AgentStatService {
                                                                                    List<SystemMetricPoint<Double>> sampledSystemMetricDataList,
                                                                                    UncollectedDataCreator<Double> uncollectedDataCreator) {
 
-        PostProcessor postProcessor = processorManager.getPostProcessor(field.getPostProcess());
+        FieldPostProcessor postProcessor = fieldProcessorManager.getPostProcessor(field.getPostProcess());
         List<SystemMetricPoint<Double>> postProcessedDataList = postProcessor.postProcess(sampledSystemMetricDataList);
 
         TimeSeriesBuilder<Double> builder = new TimeSeriesBuilder<>(timeWindow, uncollectedDataCreator);
@@ -116,12 +126,14 @@ public class DefaultAgentStatService implements AgentStatService {
         List<QueryResult> invokeList = new ArrayList<>();
 
         for (Field field : metricDefinition.getFields()) {
-
+            //TODO : (minwoo) dao호출을 하나로 변경
             Future<List<SystemMetricPoint<Double>>> doubleFuture = null;
             if (AggregationFunction.AVG.equals(field.getAggregationFunction())) {
                 doubleFuture = agentStatDao.selectAgentStatAvg(inspectorDataSearchKey, metricDefinition.getMetricName(), field);
             } else if (AggregationFunction.MAX.equals(field.getAggregationFunction())) {
                 doubleFuture = agentStatDao.selectAgentStatMax(inspectorDataSearchKey, metricDefinition.getMetricName(), field);
+            } else if (AggregationFunction.SUM.equals(field.getAggregationFunction())) {
+                doubleFuture = agentStatDao.selectAgentStatSum(inspectorDataSearchKey, metricDefinition.getMetricName(), field);
             } else {
                 throw new IllegalArgumentException("Unknown aggregation function : " + field.getAggregationFunction());
             }

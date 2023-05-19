@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.definition;
+package com.navercorp.pinpoint.inspector.web.definition.metric.field;
 
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public class EmptyPostProcessor implements PostProcessor {
+public class EmptyPostProcessor implements FieldPostProcessor {
 
     public static final EmptyPostProcessor INSTANCE = new EmptyPostProcessor();
 
@@ -37,6 +37,6 @@ public class EmptyPostProcessor implements PostProcessor {
 
     @Override
     public String getName() {
-        return "EmptyPostProcessor";
+        return "empty";
     }
 }

@@ -72,11 +72,11 @@ public enum AgentStatField {
 
     TOTAL_THREAD_COUNT(37, "totalThreadCount", "totalThreadCount"),
 
-    CLASS_COUNT_LOAD(37, "classCount", "loaded"),
-    CLASS_COUNT_UN_LOADED(37, "classCount", "unLoaded"),
+    CLASS_COUNT_LOAD(37, "loadedClass", "loaded"),
+    CLASS_COUNT_UN_LOADED(37, "loadedClass", "unLoaded"),
 
-    DATASOURCE_ACTIVE_CONNECTION_SIZE(38, "datasource", "activeConnectionSize"),
-    DATASOURCE_MAX_CONNECTION_SIZE(39, "datasource", "maxConnectionSize");
+    DATASOURCE_ACTIVE_CONNECTION_SIZE(38, "dataSource", "activeConnectionSize"),
+    DATASOURCE_MAX_CONNECTION_SIZE(39, "dataSource", "maxConnectionSize");
 
     private final byte typeCode;
     private final String metricName;

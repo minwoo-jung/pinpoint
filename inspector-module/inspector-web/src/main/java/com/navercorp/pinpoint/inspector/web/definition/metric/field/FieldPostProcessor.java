@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.definition;
+package com.navercorp.pinpoint.inspector.web.definition.metric.field;
 
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @author minwoo.jung
  */
-public interface PostProcessor {
+public interface FieldPostProcessor {
 
     public List<SystemMetricPoint<Double>> postProcess(List<SystemMetricPoint<Double>> systemMetricPointList);
 

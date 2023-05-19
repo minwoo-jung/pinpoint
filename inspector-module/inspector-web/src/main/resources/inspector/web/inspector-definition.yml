@@ -43,14 +43,13 @@ mappings:
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
   - definitionId: "transaction"
-    metricName: "cpuLoad"
+    metricName: "transaction"
     title: "Transactions Per Second"
-    postProcess: "avgUsingCommintInterval"
+    postProcess: "avgUsingCollectInterval"
     fields:
       - fieldName: "sampledNewCount"
         matchingRule: EXACT_ONE
         aggregationFunction : SUM
-        postProcess : "avg"
       - fieldName: "sampledContinuationCount"
         matchingRule: EXACT_ONE
         aggregationFunction : SUM
@@ -66,7 +65,95 @@ mappings:
       - fieldName: "skippedContinuationCount"
         matchingRule: EXACT_ONE
         aggregationFunction: SUM
-      - fieldName: "skippedContinuationCount"
+      - fieldName: "collectInterval"
         matchingRule: EXACT_ONE
         aggregationFunction: SUM
-      !! 여기부터 시작 commitInterval값을 가져오고 이것으 이용해서 avg값을 구해주는 역할을 해야함.
+  - definitionId: "activeTrace"
+    metricName: "activeTrace"
+    title: "Active Request"
+    fields:
+      - fieldName: "fastCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+      - fieldName: "normalCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction: AVG
+      - fieldName: "slowCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction: AVG
+      - fieldName: "verySlowCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction: AVG
+  - definitionId: "totalThreadCount"
+    metricName: "totalThreadCount"
+    title: "Total Thread"
+    fields:
+      - fieldName: "totalThreadCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+  - definitionId: "responseTime"
+    metricName: "responseTime"
+    title: "Response Time"
+    fields:
+      - fieldName: "avg"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+      - fieldName: "max"
+        matchingRule: EXACT_ONE
+        aggregationFunction : MAX
+  - definitionId: "fileDescriptor"
+    metricName: "fileDescriptor"
+    title: "Open File Descriptor"
+    fields:
+      - fieldName: "openFileDescriptorCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+  - definitionId: "directCount"
+    metricName: "directBuffer"
+    title: "Direct Buffer"
+    fields:
+      - fieldName: "directMemoryCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+  - definitionId: "directMemoryUsed"
+    metricName: "directBuffer"
+    title: "Direct Buffer Memory"
+    fields:
+      - fieldName: "directMemoryUsed"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+  - definitionId: "mappedMemoryCount"
+    metricName: "directBuffer"
+    title: "Mapped Buffer Count"
+    fields:
+      - fieldName: "mappedCount"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+  - definitionId: "mappedMemoryUsed"
+    metricName: "directBuffer"
+    title: "Mapped Buffer Memory"
+    fields:
+      - fieldName: "mappedMemoryUsed"
+        matchingRule: EXACT_ONE
+        aggregationFunction : AVG
+  - definitionId: "loadedClass"
+    metricName: "loadedClass"
+    title: "Loaded Class Count"
+    fields:
+      - fieldName: "loaded"
+        matchingRule: EXACT_ONE
+        aggregationFunction: AVG
+  - definitionId: "unloadedClass"
+    metricName: "loadedClass"
+    title: "Loaded Class Count"
+    fields:
+      - fieldName: "unLoaded"
+        matchingRule: EXACT_ONE
+        aggregationFunction: AVG
+  - definitionId: "dataSource"
+    metricName: "dataSource"
+    title: "Loaded Class Count"
+    fields:
+      - fieldName: "unLoaded"
+        matchingRule: EXACT_ONE
+        aggregationFunction: AVG

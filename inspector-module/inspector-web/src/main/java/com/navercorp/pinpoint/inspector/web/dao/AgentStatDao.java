@@ -16,7 +16,7 @@
 
 package com.navercorp.pinpoint.inspector.web.dao;
 
-import com.navercorp.pinpoint.inspector.web.definition.Field;
+import com.navercorp.pinpoint.inspector.web.definition.metric.field.Field;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 
@@ -32,4 +32,6 @@ public interface AgentStatDao {
     Future<List<SystemMetricPoint<Double>>> selectAgentStatAvg(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
 
     Future<List<SystemMetricPoint<Double>>> selectAgentStatMax(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
+
+    Future<List<SystemMetricPoint<Double>>> selectAgentStatSum(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
 }

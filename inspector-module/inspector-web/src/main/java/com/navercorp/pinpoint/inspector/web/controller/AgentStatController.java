@@ -42,7 +42,7 @@ public class AgentStatController {
 
     AgentStatService agentStatChartService;
 
-    private final TimeWindowSampler DEFAULT_TIME_WINDOW_SAMPLER = new TimeWindowSlotCentricSampler(10000L, 200);
+    private final TimeWindowSampler DEFAULT_TIME_WINDOW_SAMPLER = new TimeWindowSlotCentricSampler(5000L, 200);
     private final TenantProvider tenantProvider;
 
     public AgentStatController(AgentStatService agentStatChartService, TenantProvider tenantProvider) {

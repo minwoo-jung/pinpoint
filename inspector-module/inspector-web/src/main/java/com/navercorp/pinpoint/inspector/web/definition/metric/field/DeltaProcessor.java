@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.definition;
+package com.navercorp.pinpoint.inspector.web.definition.metric.field;
 
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ import java.util.List;
  * @author minwoo.jung
  */
 @Component
-public class DeltaProcessor implements PostProcessor {
+public class DeltaProcessor implements FieldPostProcessor {
 
     @Override
     public List<SystemMetricPoint<Double>> postProcess(List<SystemMetricPoint<Double>> systemMetricPointList) {

@@ -18,7 +18,9 @@ package com.navercorp.pinpoint.inspector.web.definition;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.navercorp.pinpoint.metric.web.model.basic.metric.group.GroupingRule;
+import com.navercorp.pinpoint.common.util.StringUtils;
+import com.navercorp.pinpoint.inspector.web.definition.metric.EmptyPostProcessor;
+import com.navercorp.pinpoint.inspector.web.definition.metric.field.Field;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,16 +35,20 @@ public class MetricDefinition {
     private final String definitionId;
     private final String metricName;
     private final String title;
+    private final String postProcess;
     private final List<Field> fields;
+
 
     @JsonCreator
     public MetricDefinition(@JsonProperty("definitionId") String definitionId,
                             @JsonProperty("metricName") String metricName,
                             @JsonProperty("title") String title,
+                            @JsonProperty("postProcess") String postProcess,
                             @JsonProperty("fields") List<Field> fields) {
         this.definitionId = Objects.requireNonNull(definitionId, "definitionId");
         this.metricName = Objects.requireNonNull(metricName, "metricName");
         this.title = Objects.requireNonNull(title, "title");
+        this.postProcess = StringUtils.defaultString(postProcess, EmptyPostProcessor.INSTANCE.getName());
         this.fields = Objects.requireNonNull(fields, "fields");
     }
 
@@ -56,6 +62,10 @@ public class MetricDefinition {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getPostProcess() {
+        return postProcess;
     }
 
     public List<Field> getFields() {
