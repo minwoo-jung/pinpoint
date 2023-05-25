@@ -13,7 +13,7 @@
             <arg column="tags" javaType="list" typeHandler="TagListTypeHandler" />
             <arg column="saveTime" javaType="_long"/>
         </constructor>
-    </resultMap>
+    </resultMap>MetricTagKey
 
     <select id="selectMetricTagList" resultMap="MetricTagResultMap" parameterType="MetricTagKey">
         SELECT tenantId, hostGroupName, hostName, metricName, fieldName, tags, cast(saveTime AS long) as saveTime

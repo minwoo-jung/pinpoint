@@ -145,15 +145,25 @@ mappings:
         aggregationFunction: AVG
   - definitionId: "unloadedClass"
     metricName: "loadedClass"
-    title: "Loaded Class Count"
+    title: "Unloaded Class Count"
     fields:
       - fieldName: "unLoaded"
         matchingRule: EXACT_ONE
         aggregationFunction: AVG
   - definitionId: "dataSource"
     metricName: "dataSource"
-    title: "Loaded Class Count"
+    title: "Data Source"
+    grouping: "TAG"
+    preProcess: "usingDataSourceTag"
     fields:
-      - fieldName: "unLoaded"
-        matchingRule: EXACT_ONE
+      - fieldName: "activeConnectionSize"
+        fieldAlias: "activeAvg"
+        matchingRule: ALL
         aggregationFunction: AVG
+      - fieldName: "activeConnectionSize"
+        fieldAlias: "activeMax"
+        matchingRule: ALL
+        aggregationFunction: MAX
+      - fieldName: "maxConnectionSize"
+        matchingRule: ALL
+        aggregationFunction: MAX

@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.inspector.web.service;
 import com.navercorp.pinpoint.inspector.web.dao.AgentStatDao;
 import com.navercorp.pinpoint.inspector.web.definition.AggregationFunction;
 import com.navercorp.pinpoint.inspector.web.definition.metric.MetricPostProcessor;
+import com.navercorp.pinpoint.inspector.web.definition.metric.MetricPreProcessor;
 import com.navercorp.pinpoint.inspector.web.definition.metric.MetricProcessorManager;
 import com.navercorp.pinpoint.inspector.web.definition.metric.field.Field;
 import com.navercorp.pinpoint.inspector.web.definition.MetricDefinition;
@@ -64,7 +65,7 @@ public class DefaultAgentStatService implements AgentStatService {
     }
 
     @Override
-    public InspectorMetricData<? extends Number> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow){
+    public InspectorMetricData<Double> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow){
         MetricDefinition metricDefinition = ymlInspectorManager.findElementOfBasicGroup(inspectorDataSearchKey.getMetricDefinitionId());
 
         List<QueryResult> queryResults =  selectAll(inspectorDataSearchKey, metricDefinition);
@@ -83,12 +84,49 @@ public class DefaultAgentStatService implements AgentStatService {
             throw new RuntimeException(e);
         }
 
-        List<MetricValue<Double>> processedMetricValueList = processMetricData(metricDefinition, metricValueList);
+        List<MetricValue<Double>> processedMetricValueList = postprocessMetricData(metricDefinition, metricValueList);
         List<Long> timeStampList = createTimeStampList(timeWindow);
         return new InspectorMetricData(metricDefinition.getTitle(), timeStampList, processedMetricValueList);
     }
 
-    private List<MetricValue<Double>> processMetricData(MetricDefinition metricDefinition, List<MetricValue<Double>> metricValueList) {
+    public InspectorMetricData<Double> selectAgentStatWithGrouping(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow){
+        MetricDefinition metricDefinition = ymlInspectorManager.findElementOfBasicGroup(inspectorDataSearchKey.getMetricDefinitionId());
+        MetricDefinition newMetricDefinition = preProcess(inspectorDataSearchKey, metricDefinition);
+
+        List<QueryResult> queryResults =  selectAll(inspectorDataSearchKey, newMetricDefinition);
+
+        List<MetricValue<Double>> metricValueList = new ArrayList<>(newMetricDefinition.getFields().size());
+
+        try {
+            for (QueryResult result : queryResults) {
+                Future<List<SystemMetricPoint<Double>>> future = result.getFuture();
+                List<SystemMetricPoint<Double>> doubleList = future.get();
+
+                MetricValue<Double> doubleMetricValue = createInspectorMetricValue(timeWindow, result.getField(), doubleList, DoubleUncollectedDataCreator.UNCOLLECTED_DATA_CREATOR);
+                metricValueList.add(doubleMetricValue);
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+
+        List<MetricValue<Double>> processedMetricValueList = postprocessMetricData(newMetricDefinition, metricValueList);
+        List<Long> timeStampList = createTimeStampList(timeWindow);
+
+        여기서 데이터 확인 필요함.
+//        List<List<MetricValue<Double>>> groupedMetricValueList = groupingMetricValue(processedMetricValueList);
+//        여기서 데이터 확인 필요함.
+        return null;
+//        //return new InspectorMetricData(metricDefinition.getTitle(), timeStampList, processedMetricValueList);
+//        리턴 데이터 필요함.
+    }
+
+    private MetricDefinition preProcess(InspectorDataSearchKey inspectorDataSearchKey, MetricDefinition metricDefinition) {
+        MetricPreProcessor metricPreProcessor = metricProcessorManager.getPreProcessor(metricDefinition.getPreProcess());
+        return metricPreProcessor.preProcess(inspectorDataSearchKey, metricDefinition);
+    }
+
+    //TODO : (minwoo) metric 레벨의 process를 담당하는 객체를 벌도록 빼자
+    private List<MetricValue<Double>> postprocessMetricData(MetricDefinition metricDefinition, List<MetricValue<Double>> metricValueList) {
         MetricPostProcessor postProcessor = metricProcessorManager.getPostProcessor(metricDefinition.getPostProcess());
         return postProcessor.postProcess(metricValueList);
 
@@ -105,6 +143,7 @@ public class DefaultAgentStatService implements AgentStatService {
         return timestampList;
     }
 
+    //TODO : (minwoo) field 레벨의 process를 담당하는 객체를 벌도록 빼자
     private MetricValue<Double> createInspectorMetricValue(TimeWindow timeWindow, Field field,
                                                                                    List<SystemMetricPoint<Double>> sampledSystemMetricDataList,
                                                                                    UncollectedDataCreator<Double> uncollectedDataCreator) {

@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.service;
-
-import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
-import com.navercorp.pinpoint.inspector.web.model.InspectorMetricData;
-import com.navercorp.pinpoint.metric.web.util.TimeWindow;
-
-import java.util.List;
+package com.navercorp.pinpoint.common.util;
 
 /**
  * @author minwoo.jung
  */
-public interface AgentStatService {
-    InspectorMetricData<Double> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow);
+public class ObjectUtils {
+
+    public static <T> T defaultIfNull(T object, T defaultValue) {
+        return object != null ? object : defaultValue;
+    }
 }

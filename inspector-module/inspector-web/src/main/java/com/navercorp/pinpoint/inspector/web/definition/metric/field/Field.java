@@ -33,6 +33,7 @@ import java.util.Objects;
 public class Field {
 
     private final String fieldName;
+    private final String fieldAlias;
     private final List<Tag> tags;
     private final MatchingRule matchingRule;
     private final AggregationFunction aggregationFunction;
@@ -40,11 +41,13 @@ public class Field {
 
     @JsonCreator
     public Field(@JsonProperty("fieldName") String fieldName,
+                 @JsonProperty("fieldAlias") String fieldAlias,
                  @JsonProperty("tags") List<Tag> tags,
                  @JsonProperty("matchingRule") MatchingRule matchingRule,
                  @JsonProperty("aggregationFunction") AggregationFunction aggregationFunction,
                  @JsonProperty("postProcess") String postProcess){
-        this.fieldName = Objects.requireNonNull(fieldName, "name");
+        this.fieldName = Objects.requireNonNull(fieldName, "fieldName");
+        this.fieldAlias = StringUtils.defaultString(fieldAlias, fieldName);
         this.tags = defaultTags(tags);
         this.matchingRule = Objects.requireNonNull(matchingRule, "matchingRule");
         this.aggregationFunction = Objects.requireNonNull(aggregationFunction, "aggregationFunction");
@@ -56,6 +59,10 @@ public class Field {
             return Collections.emptyList();
         }
         return tags;
+    }
+
+    public String getFieldAlias() {
+        return fieldAlias;
     }
 
     public String getFieldName() {

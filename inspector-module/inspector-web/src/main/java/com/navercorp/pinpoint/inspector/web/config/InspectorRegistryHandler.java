@@ -22,6 +22,7 @@ import com.navercorp.pinpoint.metric.collector.config.MyBatisRegistryHandler;
 import com.navercorp.pinpoint.metric.common.config.CommonRegistryHandler;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 import com.navercorp.pinpoint.metric.web.mybatis.typehandler.DoubleTypeHandler;
+import com.navercorp.pinpoint.metric.web.mybatis.typehandler.TagTypeHandler;
 import org.apache.ibatis.type.TypeAliasRegistry;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
@@ -42,8 +43,10 @@ public class InspectorRegistryHandler implements MyBatisRegistryHandler {
         registryHandler.registerTypeAlias(typeAliasRegistry);
 
         typeAliasRegistry.registerAlias("SystemMetricPoint", SystemMetricPoint.class);
-        typeAliasRegistry.registerAlias("DoubleHandler", DoubleTypeHandler.class);
         typeAliasRegistry.registerAlias("inspectorQueryParameter", InspectorQueryParameter.class);
+
+        typeAliasRegistry.registerAlias("DoubleHandler", DoubleTypeHandler.class);
+        typeAliasRegistry.registerAlias("TagHandler", TagTypeHandler.class);
     }
 
     @Override

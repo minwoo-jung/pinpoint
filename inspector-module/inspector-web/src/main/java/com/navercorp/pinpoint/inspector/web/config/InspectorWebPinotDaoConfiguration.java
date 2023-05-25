@@ -89,4 +89,10 @@ public class InspectorWebPinotDaoConfiguration {
         return new PinotAsyncTemplate(sessionFactory);
     }
 
+    @Bean
+    public SqlSessionTemplate inspectorPinotTemplate(
+            @Qualifier("inspectorPinotSessionFactory") SqlSessionFactory sessionFactory) {
+        return new SqlSessionTemplate(sessionFactory);
+    }
+
 }

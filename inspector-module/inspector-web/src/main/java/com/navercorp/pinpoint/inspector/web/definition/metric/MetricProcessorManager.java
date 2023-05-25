@@ -27,11 +27,19 @@ import java.util.Map;
  */
 @Component
 public class MetricProcessorManager {
+    private Map<String, MetricPreProcessor> preProcessorMap = new HashMap<>();
     private Map<String, MetricPostProcessor> postProcessorMap = new HashMap<>();
 
-    public MetricProcessorManager(List<MetricPostProcessor> postProcessorList) {
+    public MetricProcessorManager(List<MetricPostProcessor> postProcessorList, List<MetricPreProcessor> preProcessorList) {
         for (MetricPostProcessor postProcessor : postProcessorList) {
             postProcessorMap.put(postProcessor.getName(), postProcessor);
+        }
+
+        for(MetricPreProcessor preProcessor : preProcessorList) {
+            if (preProcessor instanceof EmptyPreProcessor) {
+                preProcessorMap.put(preProcessor.getName(), preProcessor);
+            }
+
         }
     }
 
@@ -44,5 +52,16 @@ public class MetricProcessorManager {
         }
 
         return postProcessorMap.get(name);
+    }
+
+    public MetricPreProcessor getPreProcessor(String name) {
+        if (EmptyPreProcessor.INSTANCE.getName().equals(name)) {
+            return EmptyPreProcessor.INSTANCE;
+        }
+        if (!preProcessorMap.containsKey(name)) {
+            throw new IllegalArgumentException("preProcessor not found. name:" + name);
+        }
+
+        return preProcessorMap.get(name);
     }
 }

@@ -20,8 +20,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import com.navercorp.pinpoint.common.util.Assert;
+import com.navercorp.pinpoint.inspector.web.definition.metric.field.Field;
 import com.navercorp.pinpoint.metric.web.mapping.Metric;
 import com.navercorp.pinpoint.metric.web.model.MetricInfo;
+import com.navercorp.pinpoint.metric.web.model.basic.metric.group.MatchingRule;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -96,5 +98,15 @@ public class YMLInspectorManager {
             return metricDefinition;
         }
         throw new UnsupportedOperationException("unsupported metric :" + metricDefinitionId);
+    }
+
+    public static boolean containedMatchingRule(MetricDefinition metricDefinition, MatchingRule matchingRule) {
+        for (Field field : metricDefinition.getFields()) {
+            if (matchingRule.equals(field.getMatchingRule())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

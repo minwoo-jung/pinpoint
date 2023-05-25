@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.inspector.web.dao.model;
 
+import com.navercorp.pinpoint.common.util.ObjectUtils;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
 import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.util.Range;
@@ -35,19 +36,24 @@ public class InspectorQueryParameter {
     private final String agentId;
     private final String metricName;
     private final String fieldName;
-    private final List<Tag> tagList = Collections.emptyList();;
+    private final List<Tag> tagList;
 
     private final Range range;
     private final TimePrecision timePrecision;
     private final long limit;
 
     public InspectorQueryParameter(InspectorDataSearchKey inspectorDataSearchKey, String metricName, String fieldName) {
+        this(inspectorDataSearchKey, metricName, fieldName, Collections.emptyList());
+    }
+
+    public InspectorQueryParameter(InspectorDataSearchKey inspectorDataSearchKey, String metricName, String fieldName, List<Tag> tagList) {
         Objects.requireNonNull(inspectorDataSearchKey, "inspectorDataSearchKey");
 
         this.tenantId = inspectorDataSearchKey.getTenantId();
         this.agentId = inspectorDataSearchKey.getAgentId();
         this.metricName = metricName;
         this.fieldName = fieldName;
+        this.tagList = tagList;
         this.range = inspectorDataSearchKey.getRange();
         this.timePrecision = inspectorDataSearchKey.getTimePrecision();
         this.limit = inspectorDataSearchKey.getLimit();

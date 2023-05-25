@@ -64,4 +64,18 @@ public class AgentStatController {
         InspectorMetricData<? extends Number> inspectorMetricData =  agentStatChartService.selectAgentStat(inspectorDataSearchKey, timeWindow);
         return new InspectorMetricView(inspectorMetricData);
     }
+
+    @GetMapping(value = "/chartList")
+    public InspectorMetricListView getAgentStatChartList(
+            @RequestParam("agentId") String agentId,
+            @RequestParam("metricDefinitionId") String metricDefinitionId,
+            @RequestParam("from") long from,
+            @RequestParam("to") long to) {
+        String tenantId = tenantProvider.getTenantId();
+        TimeWindow timeWindow = new TimeWindow(Range.newRange(from, to), DEFAULT_TIME_WINDOW_SAMPLER);
+        InspectorDataSearchKey inspectorDataSearchKey = new InspectorDataSearchKey(tenantId, agentId, metricDefinitionId, timeWindow);
+
+        InspectorMetricData<? extends Number> inspectorMetricData =  agentStatChartService.selectAgentStatWithGrouping(inspectorDataSearchKey, timeWindow);
+        return new InspectorMetricListView(inspectorMetricData);
+    }
 }

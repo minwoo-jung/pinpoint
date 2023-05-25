@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.navercorp.pinpoint.inspector.web.service;
+package com.navercorp.pinpoint.inspector.web.definition.metric;
 
+import com.navercorp.pinpoint.inspector.web.definition.MetricDefinition;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
-import com.navercorp.pinpoint.inspector.web.model.InspectorMetricData;
-import com.navercorp.pinpoint.metric.web.util.TimeWindow;
-
-import java.util.List;
 
 /**
  * @author minwoo.jung
  */
-public interface AgentStatService {
-    InspectorMetricData<Double> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow);
+public interface MetricPreProcessor {
+    String getName();
+
+    MetricDefinition preProcess(InspectorDataSearchKey inspectorDataSearchKey, MetricDefinition metricDefinition);
 }

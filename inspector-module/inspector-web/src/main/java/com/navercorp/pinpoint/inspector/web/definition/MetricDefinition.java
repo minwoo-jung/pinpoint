@@ -18,9 +18,12 @@ package com.navercorp.pinpoint.inspector.web.definition;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.navercorp.pinpoint.common.util.ObjectUtils;
 import com.navercorp.pinpoint.common.util.StringUtils;
 import com.navercorp.pinpoint.inspector.web.definition.metric.EmptyPostProcessor;
+import com.navercorp.pinpoint.inspector.web.definition.metric.EmptyPreProcessor;
 import com.navercorp.pinpoint.inspector.web.definition.metric.field.Field;
+import com.navercorp.pinpoint.metric.web.model.basic.metric.group.GroupingRule;
 
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +39,8 @@ public class MetricDefinition {
     private final String metricName;
     private final String title;
     private final String postProcess;
+    private final String preProcess;
+    private final GroupingRule groupingRule;
     private final List<Field> fields;
 
 
@@ -43,11 +48,15 @@ public class MetricDefinition {
     public MetricDefinition(@JsonProperty("definitionId") String definitionId,
                             @JsonProperty("metricName") String metricName,
                             @JsonProperty("title") String title,
+                            @JsonProperty("grouping") GroupingRule groupingRule,
+                            @JsonProperty("preProcess") String preProcess,
                             @JsonProperty("postProcess") String postProcess,
                             @JsonProperty("fields") List<Field> fields) {
         this.definitionId = Objects.requireNonNull(definitionId, "definitionId");
         this.metricName = Objects.requireNonNull(metricName, "metricName");
         this.title = Objects.requireNonNull(title, "title");
+        this.groupingRule = ObjectUtils.defaultIfNull(groupingRule, GroupingRule.UNKNOWN);
+        this.preProcess = StringUtils.defaultString(postProcess, EmptyPreProcessor.INSTANCE.getName());
         this.postProcess = StringUtils.defaultString(postProcess, EmptyPostProcessor.INSTANCE.getName());
         this.fields = Objects.requireNonNull(fields, "fields");
     }
@@ -68,7 +77,15 @@ public class MetricDefinition {
         return postProcess;
     }
 
+    public String getPreProcess() {
+        return preProcess;
+    }
+
     public List<Field> getFields() {
         return fields;
+    }
+
+    public GroupingRule getGroupingRule() {
+        return groupingRule;
     }
 }
