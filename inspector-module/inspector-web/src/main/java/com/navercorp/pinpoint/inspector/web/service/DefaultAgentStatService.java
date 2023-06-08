@@ -112,7 +112,7 @@ public class DefaultAgentStatService implements AgentStatService {
         List<MetricValue<Double>> processedMetricValueList = postprocessMetricData(newMetricDefinition, metricValueList);
         List<Long> timeStampList = createTimeStampList(timeWindow);
 
-        여기서 데이터 확인 필요함.
+//        여기서 데이터 확인 필요함.
 //        List<List<MetricValue<Double>>> groupedMetricValueList = groupingMetricValue(processedMetricValueList);
 //        여기서 데이터 확인 필요함.
         return null;

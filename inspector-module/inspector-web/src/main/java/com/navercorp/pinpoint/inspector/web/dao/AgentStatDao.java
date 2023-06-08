@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 
@@ -38,5 +39,5 @@ public interface AgentStatDao {
 
     List<Tag> getTagInfo(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
 
-    List<Tag> getTagInfoContainedSpecificTag(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field, Tag tag);
+    Map getTagInfoContainedSpecificTag(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field, Tag tag);
 }

@@ -34,19 +34,15 @@ public class MetricProcessorManager {
         for (MetricPostProcessor postProcessor : postProcessorList) {
             postProcessorMap.put(postProcessor.getName(), postProcessor);
         }
+        postProcessorMap.put(EmptyPostProcessor.INSTANCE.getName(), EmptyPostProcessor.INSTANCE);
 
         for(MetricPreProcessor preProcessor : preProcessorList) {
-            if (preProcessor instanceof EmptyPreProcessor) {
-                preProcessorMap.put(preProcessor.getName(), preProcessor);
-            }
-
+            preProcessorMap.put(preProcessor.getName(), preProcessor);
         }
+        preProcessorMap.put(EmptyPreProcessor.INSTANCE.getName(), EmptyPreProcessor.INSTANCE);
     }
 
     public MetricPostProcessor getPostProcessor(String name) {
-        if (EmptyPostProcessor.INSTANCE.getName().equals(name)) {
-            return EmptyPostProcessor.INSTANCE;
-        }
         if (!postProcessorMap.containsKey(name)) {
             throw new IllegalArgumentException("postProcessor not found. name:" + name);
         }
@@ -55,9 +51,6 @@ public class MetricProcessorManager {
     }
 
     public MetricPreProcessor getPreProcessor(String name) {
-        if (EmptyPreProcessor.INSTANCE.getName().equals(name)) {
-            return EmptyPreProcessor.INSTANCE;
-        }
         if (!preProcessorMap.containsKey(name)) {
             throw new IllegalArgumentException("preProcessor not found. name:" + name);
         }

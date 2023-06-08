@@ -66,7 +66,8 @@ public class AgentStatController {
     }
 
     @GetMapping(value = "/chartList")
-    public InspectorMetricListView getAgentStatChartList(
+//    public InspectorMetricListView getAgentStatChartList(
+    public String getAgentStatChartList(
             @RequestParam("agentId") String agentId,
             @RequestParam("metricDefinitionId") String metricDefinitionId,
             @RequestParam("from") long from,
@@ -76,6 +77,7 @@ public class AgentStatController {
         InspectorDataSearchKey inspectorDataSearchKey = new InspectorDataSearchKey(tenantId, agentId, metricDefinitionId, timeWindow);
 
         InspectorMetricData<? extends Number> inspectorMetricData =  agentStatChartService.selectAgentStatWithGrouping(inspectorDataSearchKey, timeWindow);
-        return new InspectorMetricListView(inspectorMetricData);
+//        return new InspectorMetricListView(inspectorMetricData);
+        return null;
     }
 }

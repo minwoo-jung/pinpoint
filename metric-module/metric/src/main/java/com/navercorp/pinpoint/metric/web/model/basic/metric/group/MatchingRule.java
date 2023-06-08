@@ -14,6 +14,7 @@ public enum MatchingRule {
     CONTAIN(100, "contain"),
     PASSED_ALL(200, "passed_all"),
 
+    ALL(300, "passed_all"),
 
     UNKNOWN(999, "unknown");
 

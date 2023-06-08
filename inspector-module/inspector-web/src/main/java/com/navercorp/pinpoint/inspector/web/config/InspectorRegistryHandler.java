@@ -17,9 +17,13 @@
 package com.navercorp.pinpoint.inspector.web.config;
 
 import com.navercorp.pinpoint.inspector.web.dao.model.InspectorQueryParameter;
+import com.navercorp.pinpoint.inspector.web.dao.pinot.MultiValueTagTypeHandler;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
+import com.navercorp.pinpoint.inspector.web.model.TagInformation;
+import com.navercorp.pinpoint.inspector.web.model.TagInformation2;
 import com.navercorp.pinpoint.metric.collector.config.MyBatisRegistryHandler;
 import com.navercorp.pinpoint.metric.common.config.CommonRegistryHandler;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 import com.navercorp.pinpoint.metric.web.mybatis.typehandler.DoubleTypeHandler;
 import com.navercorp.pinpoint.metric.web.mybatis.typehandler.TagTypeHandler;
@@ -44,13 +48,15 @@ public class InspectorRegistryHandler implements MyBatisRegistryHandler {
 
         typeAliasRegistry.registerAlias("SystemMetricPoint", SystemMetricPoint.class);
         typeAliasRegistry.registerAlias("inspectorQueryParameter", InspectorQueryParameter.class);
-
         typeAliasRegistry.registerAlias("DoubleHandler", DoubleTypeHandler.class);
-        typeAliasRegistry.registerAlias("TagHandler", TagTypeHandler.class);
+        typeAliasRegistry.registerAlias("TagInformation", TagInformation.class);
+        // TODO : (minwoo) 정리필요
+        typeAliasRegistry.registerAlias("TagInformation2", TagInformation2.class);
+        typeAliasRegistry.registerAlias("MultiValueTagTypeHandler", MultiValueTagTypeHandler.class);
     }
 
     @Override
     public void registerTypeHandler(TypeHandlerRegistry typeHandlerRegistry) {
-
+        typeHandlerRegistry.register(Tag.class, TagTypeHandler.class);
     }
 }

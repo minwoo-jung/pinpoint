@@ -27,4 +27,6 @@ import java.util.List;
  */
 public interface AgentStatService {
     InspectorMetricData<Double> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow);
+
+    InspectorMetricData<Double> selectAgentStatWithGrouping(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow);
 }

@@ -56,7 +56,7 @@ public class MetricDefinition {
         this.metricName = Objects.requireNonNull(metricName, "metricName");
         this.title = Objects.requireNonNull(title, "title");
         this.groupingRule = ObjectUtils.defaultIfNull(groupingRule, GroupingRule.UNKNOWN);
-        this.preProcess = StringUtils.defaultString(postProcess, EmptyPreProcessor.INSTANCE.getName());
+        this.preProcess = StringUtils.defaultString(preProcess, EmptyPreProcessor.INSTANCE.getName());
         this.postProcess = StringUtils.defaultString(postProcess, EmptyPostProcessor.INSTANCE.getName());
         this.fields = Objects.requireNonNull(fields, "fields");
     }

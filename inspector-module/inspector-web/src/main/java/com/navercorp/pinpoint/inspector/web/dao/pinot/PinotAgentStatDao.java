@@ -20,6 +20,8 @@ import com.navercorp.pinpoint.inspector.web.dao.AgentStatDao;
 import com.navercorp.pinpoint.inspector.web.dao.model.InspectorQueryParameter;
 import com.navercorp.pinpoint.inspector.web.definition.metric.field.Field;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
+import com.navercorp.pinpoint.inspector.web.model.TagInformation;
+import com.navercorp.pinpoint.inspector.web.model.TagInformation2;
 import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 import com.navercorp.pinpoint.pinot.mybatis.PinotAsyncTemplate;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
@@ -74,11 +77,13 @@ public class PinotAgentStatDao implements AgentStatDao {
     }
 
     @Override
-    public List<Tag> getTagInfoContainedSpecificTag(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field, Tag tag) {
+    public Map getTagInfoContainedSpecificTag(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field, Tag tag) {
         List<Tag> tagList = new ArrayList<Tag>();
         tagList.add(tag);
         InspectorQueryParameter inspectorQueryParameter = new InspectorQueryParameter(inspectorDataSearchKey, metricName, field.getFieldName(), tagList);
 
-        return syncTemplate.selectList(NAMESPACE + "selectTagInfoContainedSpecificTag", inspectorQueryParameter);
+        TagInformation tagInformation = syncTemplate.selectOne(NAMESPACE + "selectTagInfoContainedSpecificTag", inspectorQueryParameter);
+        return null;
+        null 리턴하지 말고 제대로 model객체로 제대로 하자.
     }
 }
