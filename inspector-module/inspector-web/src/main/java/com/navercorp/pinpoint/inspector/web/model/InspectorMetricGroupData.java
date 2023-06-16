@@ -17,24 +17,25 @@
 package com.navercorp.pinpoint.inspector.web.model;
 
 import com.navercorp.pinpoint.metric.common.model.StringPrecondition;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.MetricValue;
-import com.navercorp.pinpoint.metric.web.model.MetricValueGroup;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * @author minwoo.jung
  */
-// TODO : (minwoo) com.navercorp.pinpoint.metric.web.model.SystemMetricData와 하나로 합치는게 좋을듯함.
-public class InspectorMetricData {
+public class InspectorMetricGroupData {
     private final String title;
     private final List<Long> timeStampList;
-    private final List<MetricValue<Double>> metricValueList;
-    public InspectorMetricData(String title, List<Long> timeStampList, List<MetricValue<Double>> metricValueList) {
+    private final Map<List<Tag>,List<MetricValue<Double>>> metricValueGroups;
+
+    public InspectorMetricGroupData(String title, List<Long> timeStampList, Map<List<Tag>,List<MetricValue<Double>>> metricValueGroups) {
         this.title = StringPrecondition.requireHasLength(title, "title");
         this.timeStampList = Objects.requireNonNull(timeStampList, "timeStampList");
-        this.metricValueList = Objects.requireNonNull(metricValueList, "metricValueList");
+        this.metricValueGroups = Objects.requireNonNull(metricValueGroups, "metricValueGroups");
     }
 
     public String getTitle() {
@@ -45,7 +46,8 @@ public class InspectorMetricData {
         return timeStampList;
     }
 
-    public List<MetricValue<Double>> getMetricValueList() {
-        return metricValueList;
+    public Map<List<Tag>, List<MetricValue<Double>>> getMetricValueGroups() {
+        return metricValueGroups;
     }
+
 }

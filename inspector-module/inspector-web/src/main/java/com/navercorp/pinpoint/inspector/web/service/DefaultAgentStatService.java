@@ -28,6 +28,8 @@ import com.navercorp.pinpoint.inspector.web.definition.metric.field.FieldProcess
 import com.navercorp.pinpoint.inspector.web.definition.YMLInspectorManager;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
 import com.navercorp.pinpoint.inspector.web.model.InspectorMetricData;
+import com.navercorp.pinpoint.inspector.web.model.InspectorMetricGroupData;
+import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.MetricValue;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 import com.navercorp.pinpoint.metric.web.util.TimeWindow;
@@ -40,6 +42,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -65,7 +68,7 @@ public class DefaultAgentStatService implements AgentStatService {
     }
 
     @Override
-    public InspectorMetricData<Double> selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow){
+    public InspectorMetricData selectAgentStat(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow){
         MetricDefinition metricDefinition = ymlInspectorManager.findElementOfBasicGroup(inspectorDataSearchKey.getMetricDefinitionId());
 
         List<QueryResult> queryResults =  selectAll(inspectorDataSearchKey, metricDefinition);
@@ -89,7 +92,7 @@ public class DefaultAgentStatService implements AgentStatService {
         return new InspectorMetricData(metricDefinition.getTitle(), timeStampList, processedMetricValueList);
     }
 
-    public InspectorMetricData<Double> selectAgentStatWithGrouping(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow){
+    public InspectorMetricGroupData selectAgentStatWithGrouping(InspectorDataSearchKey inspectorDataSearchKey, TimeWindow timeWindow){
         MetricDefinition metricDefinition = ymlInspectorManager.findElementOfBasicGroup(inspectorDataSearchKey.getMetricDefinitionId());
         MetricDefinition newMetricDefinition = preProcess(inspectorDataSearchKey, metricDefinition);
 
@@ -111,14 +114,28 @@ public class DefaultAgentStatService implements AgentStatService {
 
         List<MetricValue<Double>> processedMetricValueList = postprocessMetricData(newMetricDefinition, metricValueList);
         List<Long> timeStampList = createTimeStampList(timeWindow);
+        Map<List<Tag>,List<MetricValue<Double>>> metricValueGroups = groupingMetricValue(processedMetricValueList, metricDefinition);
 
-//        여기서 데이터 확인 필요함.
-//        List<List<MetricValue<Double>>> groupedMetricValueList = groupingMetricValue(processedMetricValueList);
-//        여기서 데이터 확인 필요함.
-        return null;
-//        //return new InspectorMetricData(metricDefinition.getTitle(), timeStampList, processedMetricValueList);
-//        리턴 데이터 필요함.
+        return new InspectorMetricGroupData(metricDefinition.getTitle(), timeStampList, metricValueGroups);
     }
+
+    private Map<List<Tag>,List<MetricValue<Double>>> groupingMetricValue(List<MetricValue<Double>> processedMetricValueList, MetricDefinition metricDefinition) {
+    switch (metricDefinition.getGroupingRule()) {
+            case TAG:
+                return processedMetricValueList.stream().collect(Collectors.groupingBy(MetricValue::getTagList));
+            default:
+                throw new UnsupportedOperationException("not supported grouping rule : " + metricDefinition.getGroupingRule());
+        }
+    }
+
+//    private List<List<MetricValue<Double>>> groupingMetricValue(List<MetricValue<Double>> processedMetricValueList, MetricDefinition metricDefinition) {
+//        switch (metricDefinition.getGroupingRule()) {
+//            case TAG:
+//                return processedMetricValueList.stream().collect(Collectors.groupingBy(MetricValue::getTagList)).values().stream().collect(Collectors.toList());
+//            default:
+//                throw new UnsupportedOperationException("not supported grouping rule : " + metricDefinition.getGroupingRule());
+//        }
+//    }
 
     private MetricDefinition preProcess(InspectorDataSearchKey inspectorDataSearchKey, MetricDefinition metricDefinition) {
         MetricPreProcessor metricPreProcessor = metricProcessorManager.getPreProcessor(metricDefinition.getPreProcess());

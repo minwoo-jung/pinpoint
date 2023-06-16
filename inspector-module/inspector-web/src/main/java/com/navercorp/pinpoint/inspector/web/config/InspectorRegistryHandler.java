@@ -20,7 +20,6 @@ import com.navercorp.pinpoint.inspector.web.dao.model.InspectorQueryParameter;
 import com.navercorp.pinpoint.inspector.web.dao.pinot.MultiValueTagTypeHandler;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
 import com.navercorp.pinpoint.inspector.web.model.TagInformation;
-import com.navercorp.pinpoint.inspector.web.model.TagInformation2;
 import com.navercorp.pinpoint.metric.collector.config.MyBatisRegistryHandler;
 import com.navercorp.pinpoint.metric.common.config.CommonRegistryHandler;
 import com.navercorp.pinpoint.metric.common.model.Tag;
@@ -50,8 +49,6 @@ public class InspectorRegistryHandler implements MyBatisRegistryHandler {
         typeAliasRegistry.registerAlias("inspectorQueryParameter", InspectorQueryParameter.class);
         typeAliasRegistry.registerAlias("DoubleHandler", DoubleTypeHandler.class);
         typeAliasRegistry.registerAlias("TagInformation", TagInformation.class);
-        // TODO : (minwoo) 정리필요
-        typeAliasRegistry.registerAlias("TagInformation2", TagInformation2.class);
         typeAliasRegistry.registerAlias("MultiValueTagTypeHandler", MultiValueTagTypeHandler.class);
     }
 

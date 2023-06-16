@@ -18,7 +18,9 @@ package com.navercorp.pinpoint.inspector.web.controller;
 
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
 import com.navercorp.pinpoint.inspector.web.model.InspectorMetricData;
+import com.navercorp.pinpoint.inspector.web.model.InspectorMetricGroupData;
 import com.navercorp.pinpoint.inspector.web.service.AgentStatService;
+import com.navercorp.pinpoint.inspector.web.view.InspectorMetricGroupDataVeiw;
 import com.navercorp.pinpoint.inspector.web.view.InspectorMetricView;
 import com.navercorp.pinpoint.metric.web.util.Range;
 import com.navercorp.pinpoint.metric.web.util.TimeWindow;
@@ -61,13 +63,12 @@ public class AgentStatController {
         TimeWindow timeWindow = new TimeWindow(Range.newRange(from, to), DEFAULT_TIME_WINDOW_SAMPLER);
         InspectorDataSearchKey inspectorDataSearchKey = new InspectorDataSearchKey(tenantId, agentId, metricDefinitionId, timeWindow);
 
-        InspectorMetricData<? extends Number> inspectorMetricData =  agentStatChartService.selectAgentStat(inspectorDataSearchKey, timeWindow);
+        InspectorMetricData inspectorMetricData =  agentStatChartService.selectAgentStat(inspectorDataSearchKey, timeWindow);
         return new InspectorMetricView(inspectorMetricData);
     }
 
     @GetMapping(value = "/chartList")
-//    public InspectorMetricListView getAgentStatChartList(
-    public String getAgentStatChartList(
+    public InspectorMetricGroupDataVeiw getAgentStatChartList(
             @RequestParam("agentId") String agentId,
             @RequestParam("metricDefinitionId") String metricDefinitionId,
             @RequestParam("from") long from,
@@ -76,8 +77,7 @@ public class AgentStatController {
         TimeWindow timeWindow = new TimeWindow(Range.newRange(from, to), DEFAULT_TIME_WINDOW_SAMPLER);
         InspectorDataSearchKey inspectorDataSearchKey = new InspectorDataSearchKey(tenantId, agentId, metricDefinitionId, timeWindow);
 
-        InspectorMetricData<? extends Number> inspectorMetricData =  agentStatChartService.selectAgentStatWithGrouping(inspectorDataSearchKey, timeWindow);
-//        return new InspectorMetricListView(inspectorMetricData);
-        return null;
+        InspectorMetricGroupData inspectorMetricGroupData = agentStatChartService.selectAgentStatWithGrouping(inspectorDataSearchKey, timeWindow);
+        return new InspectorMetricGroupDataVeiw(inspectorMetricGroupData);
     }
 }

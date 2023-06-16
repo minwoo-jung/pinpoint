@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.inspector.web.dao;
 
 import com.navercorp.pinpoint.inspector.web.definition.metric.field.Field;
 import com.navercorp.pinpoint.inspector.web.model.InspectorDataSearchKey;
+import com.navercorp.pinpoint.inspector.web.model.TagInformation;
 import com.navercorp.pinpoint.metric.common.model.Tag;
 import com.navercorp.pinpoint.metric.web.model.chart.SystemMetricPoint;
 
@@ -39,5 +40,5 @@ public interface AgentStatDao {
 
     List<Tag> getTagInfo(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field);
 
-    Map getTagInfoContainedSpecificTag(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field, Tag tag);
+    TagInformation getTagInfoContainedSpecificTag(InspectorDataSearchKey inspectorDataSearchKey, String metricName, Field field, Tag tag);
 }

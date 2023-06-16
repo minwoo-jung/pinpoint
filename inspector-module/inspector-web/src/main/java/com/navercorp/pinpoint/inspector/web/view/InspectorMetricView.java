@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
  */
 // TODO : (minwoo) SystemMetricView 과 중복 제거
 public class InspectorMetricView {
-    private final InspectorMetricData<? extends Number> inspectorMetricData;
+    private final InspectorMetricData inspectorMetricData;
 
-    public InspectorMetricView(InspectorMetricData<? extends Number> inspectorMetricData) {
+    public InspectorMetricView(InspectorMetricData inspectorMetricData) {
         this.inspectorMetricData = Objects.requireNonNull(inspectorMetricData, "inspectorMetricData");
     }
 

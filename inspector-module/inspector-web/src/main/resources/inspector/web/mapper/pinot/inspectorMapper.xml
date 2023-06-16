@@ -107,32 +107,4 @@
         LIMIT 1
     </select>
 
-<!--    <select id="selectTagInfoContainedSpecificTag" parameterType="inspectorQueryParameter" resultType="Map">-->
-<!--        SELECT agentId, metricName, fieldName, tags-->
-<!--        FROM inspectorStat-->
-<!--        WHERE-->
-<!--        agentId = #{agentId}-->
-<!--        AND metricName = #{metricName}-->
-<!--        AND fieldName = #{fieldName}-->
-<!--        <foreach collection="tagList" item="tag" separator=" ">-->
-<!--            AND tags = #{tag}-->
-<!--        </foreach>-->
-<!--        AND eventTime BETWEEN #{range.from} AND #{range.to}-->
-<!--        LIMIT 1-->
-<!--    </select>-->
-
-<!--    <select id="selectTagInfoContainedSpecificTag" parameterType="inspectorQueryParameter" resultType="TagInformation2">-->
-<!--        SELECT agentId, metricName, fieldName, tags-->
-<!--        FROM inspectorStat-->
-<!--        WHERE-->
-<!--        agentId = #{agentId}-->
-<!--        AND metricName = #{metricName}-->
-<!--        AND fieldName = #{fieldName}-->
-<!--        <foreach collection="tagList" item="tag" separator=" ">-->
-<!--            AND tags = #{tag}-->
-<!--        </foreach>-->
-<!--        AND eventTime BETWEEN #{range.from} AND #{range.to}-->
-<!--        LIMIT 1-->
-<!--    </select>-->
-
 </mapper>
