@@ -6,16 +6,24 @@ mappings:
       - fieldName: "heapUsed"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "areaSplineChart"
+        unit : "byte"
       - fieldName: "heapMax"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "splineChart"
+        unit : "byte"
       - fieldName: "gcOldCount"
         matchingRule: EXACT_ONE
         aggregationFunction : MAX
+        chartType : "barChart"
+        unit : "count"
         postProcess : "delta"
       - fieldName: "gcOldTime"
         matchingRule: EXACT_ONE
         aggregationFunction : MAX
+        chartType : "barChart"
+        unit : "time"
         postProcess : "delta"
   - definitionId: "nonHeap"
     metricName: "jvmGc"
@@ -24,13 +32,19 @@ mappings:
       - fieldName: "nonHeapUsed"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "areaSplineChart"
+        unit : "byte"
       - fieldName: "gcOldCount"
         matchingRule: EXACT_ONE
         aggregationFunction : MAX
+        chartType : "barChart"
+        unit : "count"
         postProcess : "delta"
       - fieldName: "gcOldTime"
         matchingRule: EXACT_ONE
         aggregationFunction : MAX
+        chartType : "barChart"
+        unit : "time"
         postProcess : "delta"
   - definitionId: "cpu"
     metricName: "cpuLoad"
@@ -39,9 +53,13 @@ mappings:
       - fieldName: "jvm"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "areaSplineChart"
+        unit : "percent"
       - fieldName: "system"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "splineChart"
+        unit : "percent"
   - definitionId: "transaction"
     metricName: "transaction"
     title: "Transactions Per Second"
@@ -50,21 +68,33 @@ mappings:
       - fieldName: "sampledNewCount"
         matchingRule: EXACT_ONE
         aggregationFunction : SUM
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "sampledContinuationCount"
         matchingRule: EXACT_ONE
         aggregationFunction : SUM
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "unsampledNewCount"
         matchingRule: EXACT_ONE
         aggregationFunction: SUM
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "unsampledContinuationCount"
         matchingRule: EXACT_ONE
         aggregationFunction: SUM
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "skippedNewSkipCount"
         matchingRule: EXACT_ONE
         aggregationFunction: SUM
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "skippedContinuationCount"
         matchingRule: EXACT_ONE
         aggregationFunction: SUM
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "collectInterval"
         matchingRule: EXACT_ONE
         aggregationFunction: SUM
@@ -75,15 +105,23 @@ mappings:
       - fieldName: "fastCount"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "normalCount"
         matchingRule: EXACT_ONE
         aggregationFunction: AVG
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "slowCount"
         matchingRule: EXACT_ONE
         aggregationFunction: AVG
+        chartType : "areaSplineChart"
+        unit : "count"
       - fieldName: "verySlowCount"
         matchingRule: EXACT_ONE
         aggregationFunction: AVG
+        chartType : "areaSplineChart"
+        unit : "count"
   - definitionId: "totalThreadCount"
     metricName: "totalThreadCount"
     title: "Total Thread"
@@ -91,6 +129,8 @@ mappings:
       - fieldName: "totalThreadCount"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "splineChart"
+        unit : "count"
   - definitionId: "responseTime"
     metricName: "responseTime"
     title: "Response Time"
@@ -98,9 +138,13 @@ mappings:
       - fieldName: "avg"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "areaSplineChart"
+        unit : "time"
       - fieldName: "max"
         matchingRule: EXACT_ONE
         aggregationFunction : MAX
+        chartType : "splineChart"
+        unit : "time"
   - definitionId: "fileDescriptor"
     metricName: "fileDescriptor"
     title: "Open File Descriptor"
@@ -108,6 +152,8 @@ mappings:
       - fieldName: "openFileDescriptorCount"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "splineChart"
+        unit : "count"
   - definitionId: "directCount"
     metricName: "directBuffer"
     title: "Direct Buffer"
@@ -115,6 +161,8 @@ mappings:
       - fieldName: "directMemoryCount"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "splineChart"
+        unit : "count"
   - definitionId: "directMemoryUsed"
     metricName: "directBuffer"
     title: "Direct Buffer Memory"
@@ -122,6 +170,8 @@ mappings:
       - fieldName: "directMemoryUsed"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "splineChart"
+        unit : "byte"
   - definitionId: "mappedMemoryCount"
     metricName: "directBuffer"
     title: "Mapped Buffer Count"
@@ -129,6 +179,8 @@ mappings:
       - fieldName: "mappedCount"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "splineChart"
+        unit : "count"
   - definitionId: "mappedMemoryUsed"
     metricName: "directBuffer"
     title: "Mapped Buffer Memory"
@@ -136,6 +188,8 @@ mappings:
       - fieldName: "mappedMemoryUsed"
         matchingRule: EXACT_ONE
         aggregationFunction : AVG
+        chartType : "splineChart"
+        unit : "byte"
   - definitionId: "loadedClass"
     metricName: "loadedClass"
     title: "Loaded Class Count"
@@ -143,6 +197,8 @@ mappings:
       - fieldName: "loaded"
         matchingRule: EXACT_ONE
         aggregationFunction: AVG
+        chartType : "splineChart"
+        unit : "count"
   - definitionId: "unloadedClass"
     metricName: "loadedClass"
     title: "Unloaded Class Count"
@@ -150,6 +206,8 @@ mappings:
       - fieldName: "unLoaded"
         matchingRule: EXACT_ONE
         aggregationFunction: AVG
+        chartType : "splineChart"
+        unit : "count"
   - definitionId: "dataSource"
     metricName: "dataSource"
     title: "Data Source"
@@ -160,10 +218,14 @@ mappings:
         fieldAlias: "activeAvg"
         matchingRule: ALL
         aggregationFunction: AVG
+        chartType : "splineChart"
+        unit : "count"
       - fieldName: "activeConnectionSize"
         fieldAlias: "activeMax"
         matchingRule: ALL
         aggregationFunction: MAX
+        unit : "count"
       - fieldName: "maxConnectionSize"
         matchingRule: ALL
         aggregationFunction: MAX
+        unit : "count"
