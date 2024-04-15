@@ -28,6 +28,10 @@ import com.navercorp.pinpoint.hbase.schema.service.HbaseSchemaServiceImpl;
 import com.navercorp.pinpoint.hbase.schema.service.SchemaChangeLogService;
 import com.navercorp.pinpoint.hbase.schema.service.SchemaChangeLogServiceImpl;
 import org.apache.hadoop.hbase.HTableDescriptor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,10 +40,14 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class AppConfig {
+    private final Logger logger = LoggerFactory.getLogger(AppConfig.class);
+
 
     @Bean
-    public HbaseSchemaReader hbaseSchemaReader() {
-        return new XmlHbaseSchemaReader();
+    public HbaseSchemaReader hbaseSchemaReader(@Value("${cloud-manager.hbase-schema-path:" + XmlHbaseSchemaReader.DEFAULT_HBASE_SCHEMA_PATH + "}")
+                                                   String schemaPath) {
+        logger.info("hbase-schema-path:{}", schemaPath);
+        return new XmlHbaseSchemaReader(schemaPath);
     }
 
     @Bean
