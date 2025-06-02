@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';  // 라우팅 해주는 라이브러리
 import { Provider as JotaiProvider } from 'jotai';
 import { IconContext } from 'react-icons';
 // import { ReactToastContainer, queryClient } from '@pinpoint-fe/ui';
@@ -11,17 +11,18 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import { QueryClientProvider } from '@tanstack/react-query';
 
+//  index.html의 root 와 연결부분
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.Fragment>
-    <I18nextProvider i18n={i18n}>
-      <QueryClientProvider client={queryClient}>
-        <JotaiProvider>
-          <IconContext.Provider value={{ style: { verticalAlign: 'middle' } }}>
-            <RouterProvider router={router} />
-            <ReactToastContainer />
-          </IconContext.Provider>
-        </JotaiProvider>
-      </QueryClientProvider>
-    </I18nextProvider>
-  </React.Fragment>,
+    <React.Fragment>
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <JotaiProvider>
+            <IconContext.Provider value={{ style: { verticalAlign: 'middle' } }}>
+              <RouterProvider router={router} />
+              <ReactToastContainer />
+            </IconContext.Provider>
+          </JotaiProvider>
+        </QueryClientProvider>
+      </I18nextProvider>
+    </React.Fragment>,
 );

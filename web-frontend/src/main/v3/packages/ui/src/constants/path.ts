@@ -1,3 +1,5 @@
+// 라우터 관련 상수 파일
+
 export const BASE_PATH = process.env.BASE_PATH || '';
 export const IMAGE_PATH = `${BASE_PATH}/img`;
 export const APP_PATH = {

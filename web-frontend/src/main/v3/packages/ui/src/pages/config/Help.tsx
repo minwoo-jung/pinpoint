@@ -17,7 +17,7 @@ export const HelpPage = () => {
         <h4 className="font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
           Document & Guide
         </h4>
-        <HelpDocument />
+        <HelpDocument /> // TODO : (fe_minwoo) 네이버는 이쪽에 외부 링크이던데 이걸 어떻게 다르게 매칭하는거지?
       </div>
       <div className="space-y-2">
         <h4 className="font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">

@@ -1,5 +1,5 @@
 {
-  "name": "@pinpoint-fe/ui",
+  "name": "@pinpoint-fe/ui", // import 할때 네이밍!!
   "version": "0.0.0",
   "license": "Apache-2.0",
   "type": "module",
